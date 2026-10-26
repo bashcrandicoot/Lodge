@@ -38,6 +38,8 @@ struct ReadyToFormatBadge: View {
     var body: some View {
         Label("Ready to format", systemImage: "checkmark.seal.fill")
             .font(.caption.weight(.semibold))
+            .lineLimit(1)
+            .fixedSize()
             .foregroundStyle(.green)
             .padding(.horizontal, 7)
             .padding(.vertical, 2)
