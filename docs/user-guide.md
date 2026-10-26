@@ -1,8 +1,10 @@
 # User guide
 
-Lodge copies video, photos, audio, and the small files that belong with them off a camera card, checks every copy, and names the result from a template. This guide is everything the window does. Install steps are in [Getting started](getting-started.md).
+Home base for your media. Lodge is a universal app for Apple silicon and Intel Macs, on macOS 14 or later. It copies video, photos, audio, and the small files that belong with them off a camera card, checks every copy, and names the result from a template. This guide is everything the window does. Install steps are in [Getting started](getting-started.md).
 
-The main window reads left to right: **Card**, **Media**, **Destination**, with the offload bar along the bottom. The preset menu at the top right of the window sits just left of **Recent Offloads** and **Settings**. Closing the window quits Lodge.
+The main window reads left to right: **Card**, **Media**, **Destination**, with the offload bar along the bottom. Closing the window quits Lodge.
+
+**Coming in the next update.** The preset menu sits at the top right of the window, just left of **Recent Offloads** and **Settings**, and the window title is hidden. In Lodge 1.0.0 the preset menu is in the center of the toolbar, and the title reads Lodge.
 
 ![Lodge ready to offload, Default theme, Dark mode](assets/screenshots/ready-dark.png)
 
@@ -151,7 +153,7 @@ Click a token to insert it into the field you were editing. Mistakes are explain
 
 ### Examples
 
-The **Examples** menu in Settings > Naming fills in a folder template and a file template. It is separate from the preset menu at the top right of the window, which saves a whole setup.
+The **Examples** menu in Settings > Naming fills in a folder template and a file template. A preset, described under [Presets](#presets), saves a whole setup. **Coming in the next update.** The preset menu sits at the top right of the window. In Lodge 1.0.0 it is in the center of the toolbar.
 
 | Example | Folder | File |
 | --- | --- | --- |
@@ -188,7 +190,9 @@ A card whose only remaining files are skipped short clips can still be formatted
 
 ## Presets
 
-The preset menu at the top right of the window switches presets. A preset saves the destination, the folder and file templates, the camera, the short-clip setting, quick dump, and the file rules.
+**Coming in the next update.** The preset menu sits at the top right of the window, just left of **Recent Offloads** and **Settings**, and the window title is hidden. In Lodge 1.0.0 the preset menu is in the center of the toolbar, and the title reads Lodge.
+
+A preset saves the destination, the folder and file templates, the camera, the short-clip setting, quick dump, and the file rules.
 
 **Save Current Setup as Preset…** saves what the window is using now. Change any of that afterwards and the menu shows **Edited**, and offers **Update “Name”** for the preset in use. **Manage Presets…** opens Settings > Presets. With no preset selected the menu says **No Preset**.
 
@@ -220,19 +224,16 @@ The next time Lodge opens, it selects the default favorite when that drive is co
 
 Drop a folder from Finder anywhere on Destination. The column lifts slightly and reads **Copy Files Here**. Dropping on the Layout tree does the same. A folder Lodge accepts gives a light click on a Force Touch trackpad. A file that is not a folder is refused.
 
-Once a card is scanned, **Layout** shows every folder the offload will make, the example file name, and **Proxies** and **Sidecars** when the plan has those files.
+Once a card is scanned, **Layout** shows every folder the offload will make, including **Proxies** and **Sidecars** when the plan has those files.
 
-Click a triangle to open a folder. The tooltip reads **Expand (Option-click to expand everything inside)** or **Collapse (Option-click to collapse everything inside)**. **Expand All** and **Collapse All** sit beside the **Layout** title. Expand All also opens folders that are already at the destination, three levels in. A long tree scrolls, and a long name wraps after `_`, `-`, `.`, or a space.
+In Lodge 1.0.0 the header says **Drag to rearrange** while nothing is copying. Drag a level between folders, or drag a token from **Add a level** onto the tree. Click a token to add it at the end. Hover a level and click the remove button. Its help reads **Remove this folder level**. The tree shows one example file name. When the shoot has more than one folder, the extra ones are a line such as **+ 2 more folders**. A level that quick dump removes is struck through and tagged **Quick dump**.
 
-A folder Lodge will create has an outlined icon. A folder that is already there is filled. When any of those folders is already on disk, the legend reads **New** and **Already there**. Other folders already at the destination are dimmed. When a folder holds more than one file, they start as one line: the first name, with **+ N more** under it. Open that line to see each file.
+**Coming in the next update.**
 
-While you are not copying, the header says **Drag to rearrange**:
-
-- Drag a level between two folders to make it its own level.
-- Drag a token from **Add a level** between two folders, or click the token to add it at the end.
-- Drop a level or a token on the left or right side of a folder’s name to put the tokens side by side in that level, such as `{project}_{date}`.
-- Drag a piece of a combined name between folders to give it its own level again, or along the name to reorder it. Right-click a piece to remove it, or remove the whole level.
-- Hover a level and click the remove button to drop that level. Its help reads **Remove this folder level**.
+- Click a triangle to open a folder. The tooltip reads **Expand (Option-click to expand everything inside)** or **Collapse (Option-click to collapse everything inside)**. **Expand All** and **Collapse All** sit beside the **Layout** title. Expand All also opens folders that are already at the destination, three levels in. A long tree scrolls, and a long name wraps after `_`, `-`, `.`, or a space.
+- A folder Lodge will create has an outlined icon. A folder that is already there is filled. When any of those folders is already on disk, the legend reads **New** and **Already there**. Other folders already at the destination are dimmed.
+- When a folder holds more than one file, they start as one line: the first name, with **+ N more** under it. Open that line to see each file. Lodge 1.0.0 shows one example file name on its own line.
+- Drop a level or a token on the left or right side of a folder’s name to put the tokens side by side in that level, such as `{project}_{date}`. Drag a piece of a combined name between folders to give it its own level again, or along the name to reorder it. Right-click a piece to remove it.
 - Hover a combined level for the separator menu: **Underscore**, **Hyphen**, **Space**, or **None**.
 
 A combined level is ordinary template text, so a saved template or preset keeps it. A change that would make the template invalid is refused, with a beep. Quick dump levels that are left out stay visible, struck through, so you can see what the template still contains.

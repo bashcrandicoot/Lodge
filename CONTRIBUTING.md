@@ -51,11 +51,15 @@ open -n build/DerivedData/Build/Products/Debug/Lodge.app --args \
 
 Demo windows are drawn as if they were active, so a screenshot taken with the app in the background still shows the accent on switches and segments. The sample card has Sony XML sidecars, RAW photos, WAVs, two short clips, a few missing copies, and a few cameras. Thumbnails are drawn placeholders. Views also have `#Preview`s for the Xcode canvas. Screenshots checked into the repo live in `Design/screenshots/`, and the ones used on the site are copied to `docs/assets/screenshots/`.
 
-## Icon
+## Icon and design files
 
-The Lodge Cabin icon on the website and in the README is `docs/assets/app-icon/` (`icon_16x16.png` through `icon_1024.png`, plus `Contents.json`). The icon the built app uses is `Lodge/Assets.xcassets/AppIcon.appiconset`. Those are separate. Replacing the in-app icon means replacing the asset catalog. Leave the docs set as the public artwork.
+The icon on the website and in the README is `docs/assets/app-icon/` (`icon_16x16.png` through `icon_1024.png`, plus `Contents.json`). The icon the built app uses is `Lodge/Assets.xcassets/AppIcon.appiconset`. Those are separate.
 
-`Design/` holds the screenshots and earlier icon drafts. The small sizes in a macOS icon set are drawn for the menu bar and Finder, so generate replacements as a real set rather than by scaling one PNG.
+What lives under `Design/`, including earlier icon drafts and the steps for replacing the in-app set, is in [Design/README.md](Design/README.md). The small sizes are drawn for the menu bar and Finder. Generate a real set rather than scaling one PNG.
+
+## Themes
+
+Palettes live in `Theme.swift`. Each theme is tuned separately for Light and Dark, and button text stays readable. `LodgeTests/ThemeTests.swift` checks that every theme defines its tokens. The asset catalog’s `AccentColor` is system blue. AppKit uses it when the system accent is Multicolor, and as the fallback outside SwiftUI. A saved theme named Comet or Graphite opens as Default. With Increase Contrast or Reduce Transparency, every theme uses solid colours.
 
 ## Code map
 
@@ -111,7 +115,7 @@ The Lodge Cabin icon on the website and in the README is `docs/assets/app-icon/`
 
 User-facing pages live in `README.md` and `docs/`. The site is `docs/index.html`, ready for GitHub Pages from the `/docs` folder on `main`. `docs/.nojekyll` keeps Pages from running Jekyll.
 
-The README hero is a `<picture>` pointing at `docs/assets/lodge-header-dark.png` and `docs/assets/lodge-header-light.png` (1600×500). The landing page uses the dark banner. Open Graph uses `docs/assets/lodge-social-preview.png` (1280×640). Replace those files in place when a new banner or social image arrives. The tagline on the page title, the meta description, and the image alt text is “Media made easy.”
+The README hero is a `<picture>` pointing at `docs/assets/lodge-header-dark.png` and `docs/assets/lodge-header-light.png` (1600×500). Open Graph uses `docs/assets/lodge-social-preview.png` (1280×640). Replace those files in place when a new banner or social image arrives. The headline is “From card to calm.” The slogan, on the page title, the meta description, and the image alt text, is “Home base for your media.”
 
 ## License
 

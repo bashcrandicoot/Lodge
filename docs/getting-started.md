@@ -1,6 +1,6 @@
 # Getting started
 
-Lodge runs on macOS 14 or later. This is the path from the download to the first offload. The [user guide](user-guide.md) covers every control.
+Home base for your media. Lodge is a universal app for Apple silicon and Intel Macs, on macOS 14 or later. This is the path from the download to the first offload. The [user guide](user-guide.md) covers every control.
 
 ## Download Lodge
 

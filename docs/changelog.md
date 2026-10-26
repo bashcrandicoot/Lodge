@@ -2,11 +2,12 @@
 
 ## Unreleased
 
-Not in the [Lodge 1.0.0](https://github.com/bashcrandicoot/Lodge/releases/tag/v1.0.0) download.
+**Coming in the next update.** Not in the [Lodge 1.0.0](https://github.com/bashcrandicoot/Lodge/releases/tag/v1.0.0) download.
 
-- The **Layout** tree opens and closes. Click a triangle, Option-click to open or close everything inside a folder, or use **Expand All** and **Collapse All**. Expand All also opens folders already at the destination, three levels in.
-- A folder Lodge will create is marked **New**. One already there is marked **Already there**. A folder’s files can fold into one line, the first name with **+ N more** under it.
+- **Expand All** and **Collapse All** open and close the Layout tree. Click a triangle, or Option-click to open or close everything inside a folder. Expand All also opens folders already at the destination, three levels in. In Lodge 1.0.0 the tree shows the folders, and you drag a level, or a token from **Add a level**, to rearrange it.
+- A folder Lodge will create is marked **New**. One already there is marked **Already there**. A folder’s files can fold into one line, the first name with **+ N more** under it. Lodge 1.0.0 shows one example file name, and notes extra folders as a line such as **+ 2 more folders**.
 - Tokens can sit side by side in one folder level, such as `{project}_{date}`. Drop a level or a token on the left or right side of a name. Drag a piece back out between folders to give it its own level. The separator is **Underscore**, **Hyphen**, **Space**, or **None**.
+- The preset menu sits at the top right of the window, just left of **Recent Offloads** and **Settings**, and the window title is hidden. In Lodge 1.0.0 the preset menu is in the center of the toolbar, and the title reads Lodge.
 
 ## 1.0.0
 

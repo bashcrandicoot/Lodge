@@ -26,11 +26,15 @@ Lodge formats exFAT, FAT32, and FAT16, and keeps the card’s name. Other format
 
 ## What is the difference between a preset and Examples?
 
-**Examples**, in Settings > Naming, fills in a folder template and a file template. A preset, from the preset menu at the top right of the window, saves the whole setup: destination, templates, camera, short clips, quick dump, and file rules. After you change that setup, the menu says **Edited**.
+**Examples**, in Settings > Naming, fills in a folder template and a file template. A preset saves the whole setup: destination, templates, camera, short clips, quick dump, and file rules. After you change that setup, the menu says **Edited**.
+
+**Coming in the next update.** The preset menu sits at the top right of the window, and the window title is hidden. In Lodge 1.0.0 the preset menu is in the center of the toolbar, and the title reads Lodge.
 
 ## How do I change the folders in Layout?
 
-Once a card is scanned, **Layout** in Destination shows the folders Lodge will make, including **Proxies** and **Sidecars** when those files are in the plan. Click a triangle to open a folder, or use **Expand All**. Drag a level between folders to move it. Drop a token on the left or right side of a name to put tokens side by side, such as `{project}_{date}`. The separator can be an underscore, a hyphen, a space, or nothing. A level quick dump removes stays in the tree, struck through.
+Once a card is scanned, **Layout** in Destination shows the folders Lodge will make, including **Proxies** and **Sidecars** when those files are in the plan. In Lodge 1.0.0, drag a level to move it, or drag or click a token from **Add a level**. The header says **Drag to rearrange**. One example file name is shown, and extra folders appear as a line such as **+ 2 more folders**. A level quick dump removes stays in the tree, struck through.
+
+**Coming in the next update.** **Expand All** and **Collapse All** open or close the tree, and Option-click a triangle does the same for everything inside that folder. Drop a token on the left or right side of a name to put tokens side by side, such as `{project}_{date}`. The separator can be an underscore, a hyphen, a space, or nothing. A folder’s files can fold into one line, the first name with **+ N more** under it.
 
 ## What is quick dump?
 
