@@ -429,7 +429,9 @@ Support Lodge card,
 `-LodgeDemoPlainTheme YES` to see the solid colours used with Increase contrast.
 `-LodgeDemoMenuBar YES` turns menu bar mode on (with one "Don't ask" card),
 `-LodgeDemoMount YES` simulates a card being plugged in (the import prompt) and
-`-LodgeDemoMenuPreview YES` draws the menu bar icon's menu in a window. Demo windows
+`-LodgeDemoMenuPreview YES` draws the menu bar icon's menu in a window and
+`-LodgeDemoInfoHint "Quick dump"` draws that ⓘ hint's popover to `/tmp/lodge-infohint.png`
+(the real popover closes while Lodge is in the background). Demo windows
 are drawn as if they were active, so screenshots taken with the app in the background still
 show the accent colour on switches and segments.
 Formatting can never run in demo mode.
