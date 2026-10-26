@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 /// The main window: a left-to-right funnel (Card → Clips → Destination)
 /// with the offload bar along the bottom.
@@ -33,11 +34,17 @@ struct ContentView: View {
         }
         .background(ThemeBackground())
         .toolbar {
-            // Presets sit above the funnel: one click changes where files go and how they're named.
-            ToolbarItem(placement: .principal) {
+            // With the title hidden the toolbar has nothing on the left, so a flexible space
+            // keeps Recent Offloads and Settings on the trailing side, away from the traffic lights.
+            ToolbarItem(placement: .automatic) {
+                Spacer()
+            }
+            // Presets: one click changes where files go and how they're named. Kept at the
+            // right, out of the way, just before Recent Offloads and Settings.
+            ToolbarItem(placement: .automatic) {
                 PresetSwitcher()
             }
-            ToolbarItem(placement: .primaryAction) {
+            ToolbarItem(placement: .automatic) {
                 Button {
                     model.showingRecent.toggle()
                 } label: {
@@ -48,15 +55,18 @@ struct ContentView: View {
                     RecentOffloadsView()
                 }
             }
-            ToolbarItem(placement: .primaryAction) {
+            ToolbarItem(placement: .automatic) {
                 SettingsLink {
                     Label("Settings", systemImage: "gearshape")
                 }
                 .help("Settings (⌘,)")
             }
         }
+        // The window is still called "Lodge" (Window menu, Mission Control, VoiceOver), but the
+        // title bar only shows the traffic lights and the toolbar buttons. The card's name is
+        // in the Card pane.
         .navigationTitle("Lodge")
-        .navigationSubtitle(model.selectedCard?.name ?? "No card")
+        .background(HiddenWindowTitle())
         #if DEBUG
         .task {
             // Screenshots: `-LodgeDemoSettingsTab naming` opens Settings on that tab.
@@ -116,3 +126,16 @@ extension View {
         .preferredColorScheme(.dark)
 }
 #endif
+
+/// Hides the window's title text without changing the title itself.
+private struct HiddenWindowTitle: NSViewRepresentable {
+    func makeNSView(context: Context) -> NSView { TitleHidingView() }
+    func updateNSView(_ nsView: NSView, context: Context) {}
+
+    private final class TitleHidingView: NSView {
+        override func viewDidMoveToWindow() {
+            super.viewDidMoveToWindow()
+            window?.titleVisibility = .hidden
+        }
+    }
+}

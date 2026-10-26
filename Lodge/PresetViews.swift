@@ -46,8 +46,8 @@ struct ShortClipSlider: View {
 
 // MARK: - Main window switcher
 
-/// The preset switcher in the toolbar, above the funnel: pick a preset, save the current
-/// setup as one, update the active one, or manage them in Settings.
+/// The preset switcher at the right of the toolbar, next to Recent Offloads and Settings:
+/// pick a preset, save the current setup as one, update the active one, or manage them in Settings.
 struct PresetSwitcher: View {
     @EnvironmentObject private var model: AppModel
     @EnvironmentObject private var presets: PresetStore
@@ -92,6 +92,10 @@ struct PresetSwitcher: View {
                 Image(systemName: "square.stack.3d.up")
                 Text(active?.displayName ?? "No Preset")
                     .fontWeight(.medium)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    // A very long name can't push the toolbar into overflow at the minimum width.
+                    .frame(maxWidth: 220)
                 if edited {
                     Text("Edited")
                         .font(.caption2.weight(.semibold))
@@ -126,7 +130,7 @@ struct PresetsSettingsView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Presets")
                     .font(.headline)
-                Text("A preset saves where files go, how they’re named, the camera, short-clip skipping, quick dump and the file rules. Switch presets from the main window’s toolbar.")
+                Text("A preset saves where files go, how they’re named, the camera, short-clip skipping, quick dump and the file rules. Switch presets from the menu at the top right of the main window.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
