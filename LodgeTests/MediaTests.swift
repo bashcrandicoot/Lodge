@@ -106,19 +106,20 @@ final class MediaTests: XCTestCase {
             "2026-10-25_S_0004.mp4",
         ])
         XCTAssertEqual(plan.map(\.sidecarOf), [nil, "C0001.MP4", nil, "C0002.MP4", "C0002.MP4", nil, nil])
-        XCTAssertTrue(plan.allSatisfy { $0.folder == "2026-10-25/S" })
+        XCTAssertTrue(plan.allSatisfy { $0.templateFolder == "2026-10-25/S" })
+        XCTAssertEqual(plan.map(\.sortFolder), ["MP4", "XML", "MP4", "WAV", "XML", "XML", "MP4"])
     }
 
     func testSidecarFollowsTypeFolderOfItsClipAndAvoidsCollisions() {
         let naming = NamingTemplates(folder: "{type}", file: "{original}")!
         let files = [file("CLIP/C0001.MP4"), file("CLIP/C0001M01.XML")]
         let plan = OffloadPlanner.plan(files: files, naming: naming, context: NamingContext(), rules: .keepTogether,
-                                       existingNames: { $0 == "Video" ? ["C0001M01.xml"] : [] })
-        XCTAssertEqual(plan.map(\.relativePath), ["Video/C0001.mp4", "Video/C0001M01_2.xml"])
+                                       existingNames: { $0 == "Video/XML" ? ["C0001M01.xml"] : [] })
+        XCTAssertEqual(plan.map(\.relativePath), ["Video/MP4/C0001.mp4", "Video/XML/C0001M01_2.xml"])
         // With the standard rules the XML goes into the clip folder's Sidecars/ subfolder instead.
         let routed = OffloadPlanner.plan(files: files, naming: naming, context: NamingContext(),
                                          existingNames: { $0 == "Video/Sidecars" ? ["C0001M01.xml"] : [] })
-        XCTAssertEqual(routed.map(\.relativePath), ["Video/C0001.mp4", "Video/Sidecars/C0001M01_2.xml"])
+        XCTAssertEqual(routed.map(\.relativePath), ["Video/MP4/C0001.mp4", "Video/Sidecars/C0001M01_2.xml"])
     }
 
     // MARK: Session
@@ -206,15 +207,15 @@ final class MediaTests: XCTestCase {
                                        rules: .keepTogether, existingNames: OffloadPlanner.diskLister(root: destination))
         let date = Renamer.dateString(for: files[0].captureDate)
         XCTAssertEqual(plan.map(\.relativePath), [
-            "Video/\(date)_Beach_0001.mp4",
-            "Video/\(date)_Beach_0001M01.xml",
-            "Photo/\(date)_Beach_0001.arw",
-            "Photo/\(date)_Beach_0002.jpg",
-            "Video/\(date)_Beach_0002.mp4",
-            "Video/\(date)_Beach_0002M01.xml",
-            "Audio/\(date)_Beach_0001.wav",
-            "Other/\(date)_Beach_0001.xml",
-            "Other/\(date)_Beach_0002.dat",
+            "Video/MP4/\(date)_Beach_0001.mp4",
+            "Video/XML/\(date)_Beach_0001M01.xml",
+            "Photo/ARW/\(date)_Beach_0001.arw",
+            "Photo/JPG/\(date)_Beach_0002.jpg",
+            "Video/MP4/\(date)_Beach_0002.mp4",
+            "Video/XML/\(date)_Beach_0002M01.xml",
+            "Audio/WAV/\(date)_Beach_0001.wav",
+            "Other/XML/\(date)_Beach_0001.xml",
+            "Other/DAT/\(date)_Beach_0002.dat",
         ])
 
         let volume = CardVolume(url: card, name: "CARD", uuid: "CARD-UUID")

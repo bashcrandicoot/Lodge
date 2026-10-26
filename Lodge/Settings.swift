@@ -107,7 +107,7 @@ final class AppSettings: ObservableObject {
         }
     }
 
-    /// "Quick dump: skip project name" (main window): `{project}` is left out of the names.
+    /// "Quick dump" (main window): `{project}` is left out of the names.
     @Published var quickDump: Bool {
         didSet { defaults?.set(quickDump, forKey: Key.quickDump) }
     }

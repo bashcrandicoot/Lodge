@@ -28,11 +28,15 @@ struct ContentView: View {
             Divider()
 
             OffloadBar()
-                .padding(.horizontal, 20)
-                .padding(.vertical, 12)
                 .background(.bar)
         }
         .background(ThemeBackground())
+        .modifier(SupportPromptOverlay())
+        .task {
+            // Lodge is idle a moment after launch: the support card may show then too.
+            try? await Task.sleep(for: .seconds(3))
+            model.considerSupportPrompt()
+        }
         .toolbar {
             // With the title hidden the toolbar has nothing on the left, so a flexible space
             // keeps Recent Offloads and Settings on the trailing side, away from the traffic lights.
@@ -66,7 +70,7 @@ struct ContentView: View {
         // title bar only shows the traffic lights and the toolbar buttons. The card's name is
         // in the Card pane.
         .navigationTitle("Lodge")
-        .background(HiddenWindowTitle())
+        .modifier(HideWindowTitle())
         #if DEBUG
         .task {
             // Screenshots: `-LodgeDemoSettingsTab naming` opens Settings on that tab.
@@ -80,6 +84,11 @@ struct ContentView: View {
                         DemoData.centreOnSharpestScreen(window)
                     }
                 }
+            }
+            // Screenshots: `-LodgeDemoSupportPrompt YES` shows the support card.
+            if DemoData.launchState != nil, UserDefaults.standard.bool(forKey: "LodgeDemoSupportPrompt") {
+                try? await Task.sleep(for: .milliseconds(600))
+                model.supportPrompt.forceShow()
             }
             // Screenshots: `-LodgeDemoShowFormatAlert YES` opens the Format confirmation.
             if DemoData.launchState != nil, UserDefaults.standard.bool(forKey: "LodgeDemoShowFormatAlert") {
@@ -105,6 +114,7 @@ extension View {
             .environmentObject(model.cameras)
             .environmentObject(model.destinations)
             .environmentObject(model.presets)
+            .environmentObject(model.supportPrompt)
     }
 }
 
@@ -127,15 +137,40 @@ extension View {
 }
 #endif
 
-/// Hides the window's title text without changing the title itself.
+/// Hides the window's title text without changing the title itself (so the Window menu,
+/// Mission Control and VoiceOver still say "Lodge").
+private struct HideWindowTitle: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(macOS 15.0, *) {
+            content
+                .toolbar(removing: .title)
+                .background(HiddenWindowTitle())
+        } else {
+            content
+                .background(HiddenWindowTitle())
+        }
+    }
+}
+
+/// AppKit side of `HideWindowTitle`. SwiftUI turns the title back on when it rebuilds the
+/// toolbar (for example after Done, when the bar and the preset menu change), so this keeps
+/// watching the window and hides the title again whenever it reappears.
 private struct HiddenWindowTitle: NSViewRepresentable {
     func makeNSView(context: Context) -> NSView { TitleHidingView() }
     func updateNSView(_ nsView: NSView, context: Context) {}
 
     private final class TitleHidingView: NSView {
+        private var observation: NSKeyValueObservation?
+
         override func viewDidMoveToWindow() {
             super.viewDidMoveToWindow()
-            window?.titleVisibility = .hidden
+            observation = nil
+            guard let window else { return }
+            window.titleVisibility = .hidden
+            observation = window.observe(\.titleVisibility, options: [.new]) { window, _ in
+                guard window.titleVisibility != .hidden else { return }
+                DispatchQueue.main.async { window.titleVisibility = .hidden }
+            }
         }
     }
 }

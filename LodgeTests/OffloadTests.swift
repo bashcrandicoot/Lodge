@@ -73,15 +73,16 @@ final class OffloadTests: XCTestCase {
         XCTAssertEqual(summary.failed, 0)
         XCTAssertFalse(summary.cancelled)
 
-        let names = try FileManager.default.contentsOfDirectory(atPath: folder.path).sorted()
+        // Numbering carries on from the older file in the shoot folder, across the format folders.
+        let names = try FileManager.default.subpathsOfDirectory(atPath: folder.path).sorted()
         XCTAssertEqual(names, [
             "\(date)_BeachShoot_0003.mp4",
-            "\(date)_BeachShoot_0004.mp4",
-            "\(date)_BeachShoot_0005.mov",
+            "MOV", "MOV/\(date)_BeachShoot_0005.mov",
+            "MP4", "MP4/\(date)_BeachShoot_0004.mp4",
         ])
 
         // Copy is byte-identical to the source and the old file is untouched.
-        let copied = folder.appendingPathComponent("\(date)_BeachShoot_0004.mp4")
+        let copied = folder.appendingPathComponent("MP4/\(date)_BeachShoot_0004.mp4")
         XCTAssertEqual(try Copier.sha256(of: copied), try Copier.sha256(of: clips[0].url))
         XCTAssertEqual(try Data(contentsOf: folder.appendingPathComponent("\(date)_BeachShoot_0003.mp4")), Data("old".utf8))
 

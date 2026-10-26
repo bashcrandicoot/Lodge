@@ -7,16 +7,24 @@ struct OffloadBar: View {
     @EnvironmentObject private var model: AppModel
 
     var body: some View {
-        Group {
-            if let session = model.session {
-                OffloadBarContent(session: session)
-            } else {
-                ReadyRow(title: OffloadFormatting.offloadButtonTitle(fileCount: 0),
-                         blocker: model.offloadBlocker,
-                         start: {})
-            }
+        if let session = model.session {
+            OffloadBarContent(session: session)
+        } else {
+            ReadyRow(title: OffloadFormatting.offloadButtonTitle(fileCount: 0),
+                     blocker: model.offloadBlocker,
+                     start: {})
+                .modifier(OffloadBarRowPadding())
         }
-        .frame(minHeight: 64)
+    }
+}
+
+/// The ready and finished rows keep the bar's usual size and margins.
+private struct OffloadBarRowPadding: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .frame(minHeight: 64)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 12)
     }
 }
 
@@ -25,25 +33,76 @@ private struct OffloadBarContent: View {
     @EnvironmentObject private var model: AppModel
     @EnvironmentObject private var settings: AppSettings
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var strip = WagonStripPresence()
 
     var body: some View {
-        ZStack {
-            switch session.phase {
-            case .ready:
-                ReadyRow(
-                    title: OffloadFormatting.offloadButtonTitle(fileCount: session.newClips.count),
-                    blocker: blocker,
-                    start: model.startOffload)
-                    .transition(transition)
-            case .running:
-                ProgressRow(session: session)
-                    .transition(transition)
-            case .finished:
-                CompletionRow(session: session)
-                    .transition(transition)
+        VStack(spacing: 0) {
+            ZStack {
+                switch session.phase {
+                case .ready:
+                    ReadyRow(
+                        title: OffloadFormatting.offloadButtonTitle(fileCount: session.newClips.count),
+                        blocker: blocker,
+                        start: start)
+                        .modifier(OffloadBarRowPadding())
+                        .transition(transition)
+                case .running:
+                    ProgressRow(session: session)
+                        .transition(transition)
+                case .finished:
+                    CompletionRow(session: session, done: done)
+                        .modifier(OffloadBarRowPadding())
+                        .transition(transition)
+                }
+            }
+            // The wagon drives to the lodge while the files copy and verify, and stays parked
+            // (lodge lit) under the summary once they're done. It rises in when the offload
+            // starts and sinks away after Done.
+            if strip.isVisible(in: session.phase) {
+                WagonStrip(progress: session.progress.fraction,
+                           arrived: arrived,
+                           stopped: session.phase == .finished && !arrived)
+                    .transition(stripTransition)
             }
         }
-        .animation(reduceMotion ? nil : .spring(duration: 0.35), value: session.phase)
+        .animation(barAnimation, value: session.phase)
+        .animation(barAnimation, value: strip)
+        .onChange(of: session.phase) { _, phase in
+            strip.phaseChanged(to: phase)
+        }
+    }
+
+    /// Offload: start it inside the bar's animation, so the window's panels ease up with
+    /// the bar as the strip rises in instead of jumping.
+    private func start() {
+        withAnimation(barAnimation) { model.startOffload() }
+    }
+
+    /// Done: the strip sinks away first, then the ready row comes back.
+    private func done() {
+        var leaving = strip
+        guard leaving.beginDismissal(in: session.phase) else { return }
+        withAnimation(barAnimation) {
+            strip = leaving
+        } completion: {
+            model.finishSession()
+        }
+    }
+
+    /// Ease-out rise and fall (a short crossfade under Reduce Motion).
+    private var barAnimation: Animation {
+        reduceMotion
+            ? .easeInOut(duration: WagonStripPresence.reducedMotionDuration)
+            : .easeOut(duration: WagonStripPresence.duration)
+    }
+
+    private var stripTransition: AnyTransition {
+        reduceMotion ? .opacity : .opacity.combined(with: .offset(y: WagonStripPresence.rise))
+    }
+
+    private var arrived: Bool {
+        guard session.phase == .finished, let summary = session.summary else { return false }
+        return OffloadFeedback.isCleanSuccess(summary)
     }
 
     private var transition: AnyTransition {
@@ -114,43 +173,56 @@ private struct ProgressRow: View {
                 bytesDone: progress.bytesDone,
                 bytesTotal: progress.bytesTotal,
                 elapsed: context.date.timeIntervalSince(session.startedAt ?? context.date)))
+            let percent = Int(progress.fraction * 100)
+            let fileNumber = min(progress.filesDone + 1, max(progress.filesTotal, 1))
+            let bytes = OffloadFormatting.bytesProgress(done: progress.bytesDone, total: progress.bytesTotal)
 
-            VStack(alignment: .leading, spacing: 8) {
-                HStack(spacing: 10) {
-                    stageLabel(progress.isVerifying)
-                    Text(progress.currentFile)
-                        .font(.body.monospaced())
-                        .lineLimit(1)
-                        .truncationMode(.middle)
-                    Spacer()
-                    Text("\(min(progress.filesDone + 1, max(progress.filesTotal, 1))) of \(progress.filesTotal)")
-                        .font(.callout.monospacedDigit())
-                        .foregroundStyle(.secondary)
+            HStack(spacing: 14) {
+                stageLabel(progress.isVerifying)
+                    .fixedSize()
+                Text(progress.currentFile)
+                    .font(.system(size: 12.5, design: .monospaced))
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                Spacer(minLength: 0)
+
+                HStack(spacing: 0) {
+                    Text("\(percent)%")
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.primary)
+                        .contentTransition(.numericText(value: Double(percent)))
+                    separator
+                    Text("\(fileNumber) of \(progress.filesTotal)")
                         .contentTransition(.numericText(value: Double(progress.filesDone)))
-                        .animation(reduceMotion ? nil : .snappy, value: progress.filesDone)
-                }
-
-                ShimmerProgressBar(fraction: progress.fraction)
-                    .accessibilityElement(children: .ignore)
-                    .accessibilityLabel("Offload progress")
-                    .accessibilityValue("\(Int(progress.fraction * 100)) percent. \(eta)")
-                    .accessibilityAddTraits(.updatesFrequently)
-
-                HStack {
-                    Text(OffloadFormatting.bytesProgress(done: progress.bytesDone, total: progress.bytesTotal))
-                        .monospacedDigit()
+                    separator
+                    Text(bytes)
                         .contentTransition(.numericText())
-                        .animation(reduceMotion ? nil : .snappy, value: progress.bytesDone)
-                    Text("·").foregroundStyle(.tertiary)
+                    separator
                     Text(eta)
-                    Spacer()
-                    Button("Cancel", role: .cancel, action: session.cancel)
-                        .keyboardShortcut(.cancelAction)
                 }
-                .font(.callout)
+                .font(.system(size: 12).monospacedDigit())
                 .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .fixedSize()
+                .animation(reduceMotion ? nil : .snappy, value: progress.bytesDone)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("Offload progress")
+                .accessibilityValue("\(percent) percent. File \(fileNumber) of \(progress.filesTotal). \(bytes). \(eta)")
+                .accessibilityAddTraits(.updatesFrequently)
+
+                Button("Cancel", role: .cancel, action: session.cancel)
+                    .keyboardShortcut(.cancelAction)
             }
+            .frame(height: 41)
+            .padding(.horizontal, 20)
         }
+    }
+
+    private var separator: some View {
+        Text("·")
+            .foregroundStyle(.tertiary)
+            .padding(.horizontal, 5)
+            .accessibilityHidden(true)
     }
 
     @ViewBuilder
@@ -159,11 +231,11 @@ private struct ProgressRow: View {
             Label("Verifying", systemImage: "checkmark.shield.fill")
                 .foregroundStyle(.tint)
                 .symbolEffect(.pulse, options: .repeating, isActive: !reduceMotion)
-                .font(.body.weight(.semibold))
+                .font(.system(size: 13, weight: .semibold))
         } else {
             Label("Copying", systemImage: "arrow.down.circle.fill")
                 .foregroundStyle(.tint)
-                .font(.body.weight(.semibold))
+                .font(.system(size: 13, weight: .semibold))
         }
     }
 }
@@ -172,6 +244,8 @@ private struct ProgressRow: View {
 
 private struct CompletionRow: View {
     @ObservedObject var session: OffloadSession
+    /// Done: the bar lets the wagon strip leave before the ready row returns.
+    let done: () -> Void
     @EnvironmentObject private var model: AppModel
     @EnvironmentObject private var settings: AppSettings
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -248,7 +322,7 @@ private struct CompletionRow: View {
                 Label(session.cardRemoved ? "Ejected" : "Eject Card", systemImage: "eject.fill")
             }
             .disabled(session.cardRemoved || model.isEjecting)
-            Button("Done", action: model.finishSession)
+            Button("Done", action: done)
                 .buttonStyle(.themeProminent)
                 .keyboardShortcut(.defaultAction)
         }

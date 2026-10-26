@@ -91,6 +91,6 @@ final class CameraStoreTests: XCTestCase {
 
         model.selectCamera(fx3.id)
         XCTAssertEqual(store.suggestedCamera(forCard: "UUID-1"), fx3.id)
-        XCTAssertTrue(model.previewPlan(for: session).first?.folder.hasSuffix("/A") == true)
+        XCTAssertTrue(model.previewPlan(for: session).first?.templateFolder.hasSuffix("/A") == true)
     }
 }

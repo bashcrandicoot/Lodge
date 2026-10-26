@@ -150,10 +150,10 @@ final class FileRulesTests: XCTestCase {
         let plan = OffloadPlanner.plan(files: files, naming: .standard, context: NamingContext(project: "Surf"),
                                        existingNames: { _ in [] })
         XCTAssertEqual(plan.map(\.relativePath), [
-            "2026-10-25/Surf/2026-10-25_Surf_0001.mp4",
+            "2026-10-25/Surf/MP4/2026-10-25_Surf_0001.mp4",
             "2026-10-25/Surf/Proxies/2026-10-25_Surf_0001.lrv",
             "2026-10-25/Surf/Sidecars/2026-10-25_Surf_0001.thm",
-            "2026-10-25/Surf/2026-10-25_Surf_0002.mp4",
+            "2026-10-25/Surf/MP4/2026-10-25_Surf_0002.mp4",
             "2026-10-25/Surf/Proxies/2026-10-25_Surf_0002.lrv",
             "2026-10-25/Surf/Sidecars/2026-10-25_Surf_0002.thm",
         ])
@@ -165,7 +165,7 @@ final class FileRulesTests: XCTestCase {
         let files = [
             file("DCIM/DJI_001/DJI_0001.MP4"), file("DCIM/DJI_001/DJI_0001.LRF"), file("DCIM/DJI_001/DJI_0001.SRT"),
             file("CLIP/C0001.MP4", minutesAfter: 1), file("CLIP/C0001M01.XML", minutesAfter: 1),
-            file("CLIP/C0001.WAV", minutesAfter: 1),                  // audio partner: stays next to the clip
+            file("CLIP/C0001.WAV", minutesAfter: 1),                  // audio partner: WAV folder, clip's name
             file("MEDIAPRO.XML", minutesAfter: 2),                    // no partner: own name, no number
             file("DCIM/DJI_001/DJI_0009.LRF", minutesAfter: 3),       // proxy without its clip
             file("CLIP/C0002.MP4", minutesAfter: 4),
@@ -173,15 +173,15 @@ final class FileRulesTests: XCTestCase {
         let plan = OffloadPlanner.plan(files: files, naming: NamingTemplates(folder: "{date}", file: "{date}_{seq}")!,
                                        context: NamingContext(), existingNames: { _ in [] })
         XCTAssertEqual(plan.map(\.relativePath), [
-            "2026-10-25/2026-10-25_0001.mp4",
+            "2026-10-25/MP4/2026-10-25_0001.mp4",
             "2026-10-25/Proxies/2026-10-25_0001.lrf",
             "2026-10-25/Sidecars/2026-10-25_0001.srt",
-            "2026-10-25/2026-10-25_0002.mp4",
-            "2026-10-25/2026-10-25_0002.wav",
+            "2026-10-25/MP4/2026-10-25_0002.mp4",
+            "2026-10-25/WAV/2026-10-25_0002.wav",
             "2026-10-25/Sidecars/2026-10-25_0002M01.xml",
             "2026-10-25/Sidecars/MEDIAPRO.xml",
             "2026-10-25/Proxies/DJI_0009.lrf",
-            "2026-10-25/2026-10-25_0003.mp4",
+            "2026-10-25/MP4/2026-10-25_0003.mp4",
         ], "Proxies and sidecars never use up a sequence number")
     }
 
@@ -190,10 +190,10 @@ final class FileRulesTests: XCTestCase {
         let rules = FileRules(proxyExtensions: ["lrv", "thm"], sidecarExtensions: [], ignorePatterns: [])
         let plan = OffloadPlanner.plan(files: files, naming: NamingTemplates(folder: "", file: "{original}")!,
                                        context: NamingContext(), rules: rules, existingNames: { _ in [] })
-        XCTAssertEqual(plan.map(\.relativePath), ["GX010001.mp4", "Proxies/GX010001.lrv", "Proxies/GX010001.thm"])
+        XCTAssertEqual(plan.map(\.relativePath), ["MP4/GX010001.mp4", "Proxies/GX010001.lrv", "Proxies/GX010001.thm"])
         let together = OffloadPlanner.plan(files: files, naming: NamingTemplates(folder: "", file: "{original}")!,
                                            context: NamingContext(), rules: .keepTogether, existingNames: { _ in [] })
-        XCTAssertEqual(together.map(\.relativePath), ["GX010001.mp4", "GX010001.lrv", "GX010001.thm"])
+        XCTAssertEqual(together.map(\.relativePath), ["MP4/GX010001.mp4", "LRV/GX010001.lrv", "THM/GX010001.thm"])
     }
 
     func testProxiesAreNeverSkippedAsShortClipsAndStayWithTheirClip() {

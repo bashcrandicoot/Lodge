@@ -10,6 +10,11 @@ struct LodgeApp: App {
     /// The one shared "brain" of the app. `@StateObject` keeps it alive for the app's lifetime.
     @StateObject private var model = LodgeApp.makeModel()
 
+    init() {
+        // Create (and start) Sparkle at launch, as its docs recommend.
+        _ = AppUpdates.controller
+    }
+
     var body: some Scene {
         // A single main window (not a document-style app with many windows).
         Window("Lodge", id: "main") {
@@ -20,10 +25,23 @@ struct LodgeApp: App {
         .defaultSize(width: 1080, height: 660)
         .windowResizability(.contentMinSize)
         .windowToolbarStyle(.unified)
+        .commands {
+            // Lodge ▸ About Lodge (with the support link), then Check for Updates…
+            CommandGroup(replacing: .appInfo) {
+                Button("About Lodge") { Support.showAboutPanel() }
+                CheckForUpdatesView(updater: AppUpdates.updater)
+                Button("Support Lodge…") { Support.openTipJar() }
+            }
+            // Help ▸ Contact Support… and Support Lodge…
+            CommandGroup(after: .help) {
+                Button("Contact Support…") { Support.contactSupport() }
+                Button("Support Lodge…") { Support.openTipJar() }
+            }
+        }
 
         // Lodge ▸ Settings… (⌘,)
         Settings {
-            SettingsView()
+            SettingsView(updater: AppUpdates.updater)
                 .appEnvironment(model)
         }
     }
@@ -61,6 +79,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         #if DEBUG
         if DemoData.launchState != nil { DemoData.drawWindowsAsActive() }
+        // Screenshots: `-LodgeDemoAbout YES` opens the About window.
+        if DemoData.launchState != nil, UserDefaults.standard.bool(forKey: "LodgeDemoAbout") {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { Support.showAboutPanel() }
+        }
         switch UserDefaults.standard.string(forKey: "LodgeDemoAppearance") {
         case "light": NSApp.appearance = NSAppearance(named: .aqua)
         case "dark": NSApp.appearance = NSAppearance(named: .darkAqua)

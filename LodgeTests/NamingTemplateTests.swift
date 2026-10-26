@@ -124,7 +124,7 @@ final class NamingTemplateTests: XCTestCase {
         let context = NamingContext(project: "Bad:Name/Here", camera: "..hidden", card: " A*B?C ")
         let plan = OffloadPlanner.plan(files: [file("DCIM/we:ird.MP4")], naming: naming, context: context,
                                        existingNames: { _ in [] })
-        XCTAssertEqual(plan.first?.folder, "Bad-Name-Here/hidden")
+        XCTAssertEqual(plan.first?.folder, "Bad-Name-Here/hidden/MP4")
         XCTAssertEqual(plan.first?.fileName, "A-B-C_we-ird.mp4")
     }
 
@@ -132,7 +132,7 @@ final class NamingTemplateTests: XCTestCase {
         let naming = NamingTemplates(folder: "{project}", file: "{camera}")!
         let plan = OffloadPlanner.plan(files: [file("A.MP4")], naming: naming, context: NamingContext(),
                                        existingNames: { _ in [] })
-        XCTAssertEqual(plan.first?.relativePath, "Untitled/Untitled.mp4")
+        XCTAssertEqual(plan.first?.relativePath, "Untitled/MP4/Untitled.mp4")
     }
 
     func testLongNamesAreShortened() {
@@ -155,14 +155,14 @@ final class NamingTemplateTests: XCTestCase {
     func testEveryPreset() {
         let context = NamingContext(project: "Doc", camera: "FX3", card: "CardA")
         let expected: [String: [String]] = [
-            "Date / Project": ["2026-10-25/Doc/2026-10-25_Doc_0001.mp4", "2026-10-25/Doc/2026-10-25_Doc_0002.arw"],
-            "Project / Date / Camera": ["Doc/2026-10-25/FX3/2026-10-25_Doc_FX3_0001.mp4",
-                                        "Doc/2026-10-25/FX3/2026-10-25_Doc_FX3_0002.arw"],
-            "Project / Type / Date": ["Doc/Video/2026-10-25/2026-10-25_Doc_0001.mp4",
-                                      "Doc/Photo/2026-10-25/2026-10-25_Doc_0001.arw"],
-            "Year / Month / Day": ["2026/10/25/2026-10-25_Doc_0001.mp4", "2026/10/25/2026-10-25_Doc_0002.arw"],
-            "Date / Project, Original Names": ["2026-10-25/Doc/C0001.mp4", "2026-10-25/Doc/DSC00012.arw"],
-            "Flat": ["2026-10-25_Doc_0001.mp4", "2026-10-25_Doc_0002.arw"],
+            "Date / Project": ["2026-10-25/Doc/MP4/2026-10-25_Doc_0001.mp4", "2026-10-25/Doc/ARW/2026-10-25_Doc_0002.arw"],
+            "Project / Date / Camera": ["Doc/2026-10-25/FX3/MP4/2026-10-25_Doc_FX3_0001.mp4",
+                                        "Doc/2026-10-25/FX3/ARW/2026-10-25_Doc_FX3_0002.arw"],
+            "Project / Type / Date": ["Doc/Video/2026-10-25/MP4/2026-10-25_Doc_0001.mp4",
+                                      "Doc/Photo/2026-10-25/ARW/2026-10-25_Doc_0001.arw"],
+            "Year / Month / Day": ["2026/10/25/MP4/2026-10-25_Doc_0001.mp4", "2026/10/25/ARW/2026-10-25_Doc_0002.arw"],
+            "Date / Project, Original Names": ["2026-10-25/Doc/MP4/C0001.mp4", "2026-10-25/Doc/ARW/DSC00012.arw"],
+            "Flat": ["MP4/2026-10-25_Doc_0001.mp4", "ARW/2026-10-25_Doc_0002.arw"],
         ]
         XCTAssertEqual(Set(NamingPreset.all.map(\.name)), Set(expected.keys))
         for preset in NamingPreset.all {
@@ -227,7 +227,7 @@ final class NamingTemplateTests: XCTestCase {
         let files = [file("A.MP4"), file("B.JPG", minutesAfter: 1), file("C.MP4", minutesAfter: 2)]
         let plan = OffloadPlanner.plan(files: files, naming: naming, context: NamingContext(project: "S"),
                                        existingNames: { $0 == "Video" ? ["S_0002.mp4"] : [] })
-        XCTAssertEqual(plan.map(\.relativePath), ["Video/S_0003.mp4", "Photo/S_0001.jpg", "Video/S_0004.mp4"])
+        XCTAssertEqual(plan.map(\.relativePath), ["Video/MP4/S_0003.mp4", "Photo/JPG/S_0001.jpg", "Video/MP4/S_0004.mp4"])
     }
 
     func testFreeURLNeverOverwrites() throws {
@@ -265,7 +265,7 @@ final class NamingTemplateTests: XCTestCase {
         let context = NamingContext(project: "Doc")
         let preview = OffloadPlanner.plan(files: clips, naming: naming, context: context,
                                           existingNames: OffloadPlanner.diskLister(root: destination))
-        XCTAssertEqual(preview.map(\.relativePath), ["Doc/Video/Doc_006.mp4", "Doc/Video/Doc_007.mov", "Doc/Video/Doc_008.mp4"])
+        XCTAssertEqual(preview.map(\.relativePath), ["Doc/Video/MP4/Doc_006.mp4", "Doc/Video/MOV/Doc_007.mov", "Doc/Video/MP4/Doc_008.mp4"])
         XCTAssertEqual(preview.map(\.originalName), ["B.MP4", "A.MOV", "C.mp4"])
 
         let job = OffloadJob(card: CardVolume(url: root.appendingPathComponent("Card"), name: "Card", uuid: "U"),
@@ -318,7 +318,7 @@ final class NamingTemplateTests: XCTestCase {
         XCTAssertEqual(errors("{shoot:3}", .file), ["Only {seq} can take a number, like {seq:3}."])
         let plan = OffloadPlanner.plan(files: [file("C0001.MP4")], naming: old!,
                                        context: NamingContext(project: "Doc"), existingNames: { _ in [] })
-        XCTAssertEqual(plan.map(\.relativePath), ["2026-10-25/Doc/2026-10-25_Doc_0001.mp4"])
+        XCTAssertEqual(plan.map(\.relativePath), ["2026-10-25/Doc/MP4/2026-10-25_Doc_0001.mp4"])
     }
 
     func testMigrationReplacesShootAndMergesDuplicates() {

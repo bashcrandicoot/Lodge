@@ -6,6 +6,10 @@
 	objectVersion = 90;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		5D0000000000000400000001 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 5D0000000000000400000003 /* Sparkle */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		5D0000000000000300000000 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -21,9 +25,22 @@
 		5D0000000000000000000121 /* LodgeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LodgeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		5D0000000000000400000004 /* Exceptions for "Lodge" folder in "Lodge" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 5D0000000000000100000000 /* Lodge */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		5D0000000000000000000010 /* Lodge */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				5D0000000000000400000004 /* Exceptions for "Lodge" folder in "Lodge" target */,
+			);
 			path = Lodge;
 			sourceTree = "<group>";
 		};
@@ -38,6 +55,7 @@
 		5D0000000000000130000000 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				5D0000000000000400000001 /* Sparkle in Frameworks */,
 			);
 		};
 		5D0000000000000230000000 /* Frameworks */ = {
@@ -83,6 +101,9 @@
 				5D0000000000000000000010 /* Lodge */,
 			);
 			name = Lodge;
+			packageProductDependencies = (
+				5D0000000000000400000003 /* Sparkle */,
+			);
 			productName = Lodge;
 			productReference = 5D0000000000000000000120 /* Lodge.app */;
 			productType = "com.apple.product-type.application";
@@ -136,6 +157,9 @@
 			);
 			mainGroup = 5D0000000000000000000001;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				5D0000000000000400000002 /* XCRemoteSwiftPackageReference "Sparkle" */,
+			);
 			preferredProjectObjectVersion = 90;
 			productRefGroup = 5D0000000000000000000020 /* Products */;
 			projectDirPath = "";
@@ -323,9 +347,10 @@
 				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Lodge/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Lodge;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2026 Sebastian Phillips";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2026 BashFrames";
 				INFOPLIST_KEY_NSRemovableVolumesUsageDescription = "Lodge reads your memory cards so it can copy and verify your clips. It never changes or deletes anything on a card.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -358,9 +383,10 @@
 				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Lodge/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Lodge;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2026 Sebastian Phillips";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2026 BashFrames";
 				INFOPLIST_KEY_NSRemovableVolumesUsageDescription = "Lodge reads your memory cards so it can copy and verify your clips. It never changes or deletes anything on a card.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -458,6 +484,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5D0000000000000400000002 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.10.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5D0000000000000400000003 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5D0000000000000400000002 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 5D0000000000000000000000 /* Project object */;
 }
