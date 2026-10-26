@@ -268,16 +268,25 @@
       width: min(1060px, 100%);
       margin: var(--space-6) auto 0;
     }
+    .motion-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-4);
+      align-items: start;
+      margin-top: var(--space-6);
+    }
+    .motion-row .motion { margin-inline: auto; }
     .motion-check {
       --motion-ratio: 720 / 200;
       width: min(360px, 100%);
-      margin-top: var(--space-4);
     }
     .motion-glow {
       --motion-ratio: 540 / 560;
       width: min(270px, 100%);
-      margin-top: var(--space-5);
-      align-self: center;
+    }
+    .motion-note {
+      margin: var(--space-4) 0 0;
+      text-align: center;
     }
 
     section { padding-block: var(--space-8); }
@@ -331,7 +340,7 @@
       letter-spacing: -0.02em;
       line-height: 1.25;
     }
-    .features h3 { min-height: 2.5em; }
+    .features h3 { min-height: 1.25em; }
     .card p,
     .steps p { margin: 0; color: var(--muted); font-size: var(--small); line-height: 1.5; }
     .soon {
@@ -376,16 +385,12 @@
       min-width: 0;
     }
     .num {
-      display: grid;
-      place-items: center;
-      width: 32px;
-      height: 32px;
+      display: block;
       margin: 0 0 var(--space-4);
-      border-radius: 50%;
-      background: var(--button);
-      color: #fff;
+      color: var(--accent);
       font-weight: 650;
-      font-size: 14px;
+      font-size: 48px;
+      letter-spacing: -0.04em;
       line-height: 1;
       flex: none;
     }
@@ -459,7 +464,7 @@
     footer a.support:hover { color: var(--accent); border-color: var(--accent); }
 
     @media (max-width: 800px) {
-      .pair, .install-grid, .steps { grid-template-columns: 1fr; }
+      .pair, .install-grid, .steps, .motion-row { grid-template-columns: 1fr; }
       .features h3 { min-height: 0; }
       section { padding-block: var(--space-7); }
       .hero { padding-block: var(--space-6) var(--space-4); }
@@ -514,7 +519,7 @@
 
     <div class="wrap">
       <img class="shot" src="assets/screenshots/ready-dark.png" width="1440" alt="Lodge in Dark mode, ready to offload. The preset control at the top right reads Sony Shoot, and the window title is hidden. Offload 54 Files sits along the bottom.">
-      <p class="caption">Default theme, Dark mode. The card line shows how many files are new, and how many were ignored. <span class="soon">Coming in the next update</span> This picture’s preset menu is at the top right, and the title is hidden. Lodge 1.0.0 keeps that menu in the center of the toolbar, and the title reads Lodge.</p>
+      <p class="caption"><span class="soon">Coming in the next update</span> This picture’s preset menu is at the top right, and the title is hidden.</p>
       <figure class="motion motion-wagon">
         <video autoplay muted loop playsinline preload="metadata" poster="assets/motion/lodge-wagon-progress@2x.png" width="1060" height="153" aria-label="A wagon crossing the copy progress bar.">
           <source src="assets/motion/lodge-wagon-progress@2x.mp4" type="video/mp4">
@@ -527,63 +532,52 @@
     <section id="features">
       <div class="wrap">
         <h2>From the card to a folder you trust</h2>
-        <p class="section-intro">Insert a card. Lodge fills the window, left to right: Card, Media, Destination, and the offload bar along the bottom.</p>
+        <p class="section-intro">Card, Media, Destination, and the offload bar.</p>
         <div class="features">
           <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12.5l2.5 2.5L16 9"/></svg>
-            <h3>SHA-256 on every copy</h3>
-            <p>Lodge writes <code>&lt;name&gt;.lodge-partial</code>, reads it back, and compares the hash with the card. A match becomes the finished file. A mismatch is deleted and reported. The card is only read.</p>
+            <h3>Checked with SHA-256</h3>
+            <p>Every copy is read back and matched to the card.</p>
           </article>
           <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h12M6 12h8M6 18h10"/></svg>
-            <h3>Names you can read later</h3>
-            <p>Templates use <code>{project}</code>, <code>{date}</code>, <code>{camera}</code>, <code>{seq}</code>, and more. The <strong>Examples</strong> menu in Settings &gt; Naming drops in a ready-made pair, and the main window previews every name before the copy starts.</p>
+            <h3>Names you can read</h3>
+            <p>Templates preview every name before copying.</p>
           </article>
           <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7h11v12H8z"/><path d="M5 5h11v2"/></svg>
             <h3>Only what is new</h3>
-            <p>A ledger remembers each verified file. Insert the same card again and Lodge copies the new ones. The line on the card reads <strong>54 new files · 5 ignored</strong>, then <strong>57 copied · 5 ignored</strong> when the offload finishes.</p>
+            <p>The same card again copies only new files.</p>
           </article>
           <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l8 14H4z"/><path d="M12 10v4M12 16.5v.5"/></svg>
-            <h3>Missing copies, called out</h3>
-            <p>If a file in the ledger is gone from the destination, or its size has changed, Media shows an orange count: <strong>3 missing at destination</strong>. <strong>Re-offload Missing Copies</strong> makes a new copy. Existing files stay where they are.</p>
+            <h3>Missing copies</h3>
+            <p>A lost copy is marked so you can replace it.</p>
           </article>
           <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 7h6"/></svg>
             <h3>Ready to format</h3>
-            <p>When every file has a verified copy that is still in the destination, the card shows a glowing green <strong>Ready to format</strong> badge. <strong>Format Card…</strong> asks first, with <strong>Cancel</strong> as the default, and keeps exFAT, FAT32, or FAT16.</p>
-            <figure class="motion motion-check">
-              <video autoplay muted loop playsinline preload="metadata" poster="assets/motion/lodge-complete-check@2x.png" width="360" height="100" aria-label="A green checkmark draws in beside Offload complete.">
-                <source src="assets/motion/lodge-complete-check@2x.mp4" type="video/mp4">
-              </video>
-              <img class="motion-still" src="assets/motion/lodge-complete-check@2x.png" width="360" height="100" alt="A green checkmark beside Offload complete. 57 copied, 128 GB.">
-            </figure>
+            <p>A green badge shows when every copy is verified.</p>
           </article>
           <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h16M4 16h16"/><circle cx="9" cy="8" r="2" fill="var(--card)"/><circle cx="15" cy="16" r="2" fill="var(--card)"/></svg>
-            <h3>Short clips, presets, quick dump</h3>
-            <p><strong>Skip videos shorter than</strong> runs from <strong>Off</strong> to <strong>30 s</strong>, and starts at <strong>5 s</strong>. A preset saves where the footage goes, how folders are named, which camera, short clips, quick dump, and the file rules. You choose it from the preset menu. Lodge remembers the camera for each card and selects it again when that card is inserted. <span class="soon">Coming in the next update</span> The preset menu sits at the top right of the window, and the title is hidden. In Lodge 1.0.0 that menu is in the center of the toolbar. Quick dump leaves <code>{project}</code> out so you can just empty the card. The checkbox then reads <strong>Quick dump</strong>, with an ⓘ that says it skips the project name and dumps the footage into a dated folder. In Lodge 1.0.0 the checkbox reads <strong>Quick dump: skip project name</strong>.</p>
+            <h3>Presets and quick dump</h3>
+            <p>Skip short clips, or save the whole setup.</p>
           </article>
           <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h6l2 2h8v9H4z"/></svg>
-            <h3>Drop a folder, or a level</h3>
-            <p>Drop a Finder folder on Destination or on the Layout tree. In Lodge 1.0.0, drag a level to rearrange the folders, or add one from <strong>Add a level</strong>. An accepted drop clicks on a Force Touch trackpad. <span class="soon">Coming in the next update</span> <strong>Expand All</strong> and <strong>Collapse All</strong> open the tree, and folder names can sit side by side, such as <code>{project}_{date}</code>, with the separator you pick. A long file list folds to the first name, with <strong>+ N more</strong> under it.</p>
+            <h3>Drop a folder</h3>
+            <p>Drop a Finder folder to set the destination.</p>
           </article>
           <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h7l4 4v12H7z"/><path d="M14 4v4h4"/></svg>
-            <h3>Proxies, sidecars, ignore list</h3>
-            <p>A <code>.lrv</code> file is a proxy, and Lodge does not copy it as video. Settings &gt; Files sends <code>.lrv</code> and <code>.lrf</code> to <strong>Proxies/</strong>, and <code>.thm</code>, <code>.xml</code>, and <code>.srt</code> to <strong>Sidecars/</strong>. They keep the clip’s new name. The ignore list is never copied, and Lodge also skips system junk such as <code>recycler</code> and <code>recycled</code>. In Lodge 1.0.0 the other files land in the folder the template makes, and audio recorded with a clip stays next to that clip. <span class="soon">Coming in the next update</span> Each extension gets its own folder, such as <strong>MP4/</strong>, <strong>ARW/</strong>, and <strong>WAV/</strong>. <code>.JPG</code> and <code>.JPEG</code> share <strong>JPG/</strong>. Proxies and sidecars stay separate.</p>
+            <h3>Proxies and sidecars</h3>
+            <p>Small files travel with the clip, not as footage.</p>
           </article>
           <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.2-5.5"/><path d="M20 5v5h-5"/></svg>
             <h3>Updates</h3>
-            <p>Lodge 1.0.0 does not check for a new version. Download the next one from Gumroad. <span class="soon">Coming in the next update</span> <strong>Lodge &gt; Check for Updates…</strong> looks now. In Settings &gt; General, under <strong>Updates</strong>, <strong>Automatically check for updates</strong> is on, and <strong>Automatically download and install updates</strong> is off. Lodge checks once a day.</p>
-          </article>
-          <article class="card">
-            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15c2-4 4-4 6 0s4 4 6 0 4-4 6 0"/></svg>
-            <h3>Motion, quietly</h3>
-            <p>The finished checkmark draws itself. The copied count and the size count up. A card glows as it is inserted, rows and tiles lift under the pointer, and the Ready badge glows when it appears. Reduce Motion turns the movement off.</p>
+            <p>Daily update checks are coming in the next update.</p>
           </article>
         </div>
       </div>
@@ -591,30 +585,41 @@
 
     <section id="how" aria-labelledby="how-title">
       <div class="wrap">
-        <h2 id="how-title">Three steps, then the card can rest</h2>
+        <h2 id="how-title">Three steps</h2>
         <ol class="steps">
           <li>
             <span class="num" aria-hidden="true">1</span>
-            <h3>Insert</h3>
-            <p>Any removable drive under <code>/Volumes</code> shows up in Card, including one that was already mounted. An empty card says <strong>Card Is Empty</strong>.</p>
-            <figure class="motion motion-glow">
-              <video autoplay muted loop playsinline preload="metadata" poster="assets/motion/lodge-card-glow@2x.png" width="270" height="280" aria-label="A memory card glowing as it is inserted.">
-                <source src="assets/motion/lodge-card-glow@2x.mp4" type="video/mp4">
-              </video>
-              <img class="motion-still" src="assets/motion/lodge-card-glow@2x.png" width="270" height="280" alt="A memory card glowing as it is inserted.">
-            </figure>
+            <h3>Insert the card</h3>
+            <p>A mounted card shows up in Lodge.</p>
           </li>
           <li>
             <span class="num" aria-hidden="true">2</span>
-            <h3>Name</h3>
-            <p>Fill in the project when the template needs it. “Beach Shoot” becomes <code>BeachShoot</code>. Recent projects are one click away. The list shows the finished names.</p>
+            <h3>Name the files</h3>
+            <p>See every finished name before you copy.</p>
           </li>
           <li>
             <span class="num" aria-hidden="true">3</span>
-            <h3>Offload</h3>
-            <p>The button says why it is waiting, or <strong>Offload 12 Files</strong> when it is ready. Afterwards: <strong>Show in Finder</strong>, <strong>Format Card…</strong> when the card is ready, <strong>Eject Card</strong>, and <strong>Done</strong>.</p>
+            <h3>Offload the card</h3>
+            <p>Copy and check every file.</p>
           </li>
         </ol>
+        <div class="motion-row">
+          <figure class="motion motion-glow">
+            <video autoplay muted loop playsinline preload="metadata" poster="assets/motion/lodge-card-glow@2x.png" width="270" height="280" aria-label="A memory card glowing as it is inserted.">
+              <source src="assets/motion/lodge-card-glow@2x.mp4" type="video/mp4">
+            </video>
+            <img class="motion-still" src="assets/motion/lodge-card-glow@2x.png" width="270" height="280" alt="A memory card glowing as it is inserted.">
+            <figcaption class="caption">A card glows when it is inserted.</figcaption>
+          </figure>
+          <figure class="motion motion-check">
+            <video autoplay muted loop playsinline preload="metadata" poster="assets/motion/lodge-complete-check@2x.png" width="360" height="100" aria-label="A green checkmark draws in beside Offload complete.">
+              <source src="assets/motion/lodge-complete-check@2x.mp4" type="video/mp4">
+            </video>
+            <img class="motion-still" src="assets/motion/lodge-complete-check@2x.png" width="360" height="100" alt="A green checkmark beside Offload complete. 57 copied, 128 GB.">
+            <figcaption class="caption">The finished checkmark draws itself.</figcaption>
+          </figure>
+        </div>
+        <p class="note motion-note">Reduce Motion turns the movement off.</p>
       </div>
     </section>
 
