@@ -6,6 +6,8 @@ import AppKit
 struct ContentView: View {
     @EnvironmentObject private var model: AppModel
     @EnvironmentObject private var settings: AppSettings
+    /// Saved for `MainWindow`, to reopen this window from the menu bar or an import prompt.
+    @Environment(\.openWindow) private var openWindow
     #if DEBUG
     @Environment(\.openSettings) private var openSettings
     #endif
@@ -71,6 +73,10 @@ struct ContentView: View {
         // in the Card pane.
         .navigationTitle("Lodge")
         .modifier(HideWindowTitle())
+        .onAppear {
+            MainWindow.openAction = { [openWindow] in openWindow(id: "main") }
+            MainWindow.openSettingsAction = { [openSettings] in openSettings() }
+        }
         #if DEBUG
         .task {
             // Screenshots: `-LodgeDemoSettingsTab naming` opens Settings on that tab.
@@ -89,6 +95,18 @@ struct ContentView: View {
             if DemoData.launchState != nil, UserDefaults.standard.bool(forKey: "LodgeDemoSupportPrompt") {
                 try? await Task.sleep(for: .milliseconds(600))
                 model.supportPrompt.forceShow()
+            }
+            // Screenshots: `-LodgeDemoMount YES` pretends the demo card was just plugged in
+            // (the import prompt; always the floating panel in demo mode).
+            if DemoData.launchState != nil, UserDefaults.standard.bool(forKey: "LodgeDemoMount"),
+               let card = model.watcher.cards.first {
+                try? await Task.sleep(for: .milliseconds(600))
+                model.importPrompter.promptIfAllowed(card, verdict: .prompt)
+            }
+            // Screenshots: `-LodgeDemoMenuPreview YES` draws the menu bar icon's menu in a window.
+            if DemoData.launchState != nil, UserDefaults.standard.bool(forKey: "LodgeDemoMenuPreview") {
+                try? await Task.sleep(for: .milliseconds(600))
+                MenuBarMenuPreview.show(model: model)
             }
             // Screenshots: `-LodgeDemoShowFormatAlert YES` opens the Format confirmation.
             if DemoData.launchState != nil, UserDefaults.standard.bool(forKey: "LodgeDemoShowFormatAlert") {

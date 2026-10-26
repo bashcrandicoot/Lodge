@@ -227,6 +227,12 @@ enum DemoData {
         if let theme = launchTheme { settings.themeID = theme }
         if let layout = launchLayout { settings.mediaLayout = layout }
         settings.showListThumbnails = UserDefaults.standard.bool(forKey: "LodgeDemoListThumbnails")
+        // Screenshots: `-LodgeDemoMenuBar YES` turns menu bar mode on, with one card on the
+        // "Don't ask" list.
+        if UserDefaults.standard.bool(forKey: "LodgeDemoMenuBar") {
+            settings.keepRunningInMenuBar = true
+            settings.ignoreImports(from: CardVolume(url: URL(fileURLWithPath: "/Volumes/H6_SD"), name: "H6_SD", uuid: "DEMO-H6"))
+        }
         model.thumbnails.usesPlaceholders = true
         if let root = settings.destinationPath { model.subfolderLister = existingFolders(root: root) }
         guard state != .empty else { return model }
@@ -384,5 +390,75 @@ extension DemoData {
             }
         }
     }
+}
+#endif
+
+#if DEBUG
+/// Screenshots of the menu bar icon's menu: macOS closes real menus as soon as Lodge is in the
+/// background, so `-LodgeDemoMenuPreview YES` draws the same items in a window instead.
+struct MenuBarMenuPreview: View {
+    let items: [MenuBarItem]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ForEach(Array(items.enumerated()), id: \.offset) { _, item in
+                switch item {
+                case .divider:
+                    Divider().padding(.vertical, 5).padding(.horizontal, 10)
+                case .cardsHeader, .offloading:
+                    row(item.title, enabled: false, shortcut: nil, bold: true)
+                case .importCard(_, _, let enabled):
+                    row(item.title, enabled: enabled, shortcut: nil)
+                case .settings:
+                    row(item.title, enabled: true, shortcut: "⌘,")
+                case .quit:
+                    row(item.title, enabled: true, shortcut: "⌘Q")
+                default:
+                    row(item.title, enabled: true, shortcut: nil)
+                }
+            }
+        }
+        .padding(.vertical, 5)
+        .frame(width: 250)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).strokeBorder(.separator, lineWidth: 0.5))
+        .padding(1)
+    }
+
+    private func row(_ title: String, enabled: Bool, shortcut: String?, bold: Bool = false) -> some View {
+        HStack {
+            Text(title)
+                .font(bold ? .system(size: 11, weight: .semibold) : .system(size: 13))
+            Spacer()
+            if let shortcut { Text(shortcut).foregroundStyle(.secondary) }
+        }
+        .foregroundStyle(enabled ? .primary : .secondary)
+        .padding(.horizontal, 14)
+        .frame(height: bold ? 20 : 22)
+    }
+
+    /// Opens the preview in a borderless window (never activating Lodge).
+    @MainActor
+    static func show(model: AppModel) {
+        let extra = CardVolume(url: URL(fileURLWithPath: "/Volumes/T7"), name: "T7", uuid: "DEMO-T7")
+        let items = MenuBarItem.items(cards: model.watcher.cards + [extra], isPaused: false, isBusy: false)
+        let host = NSHostingView(rootView: MenuBarMenuPreview(items: items).appEnvironment(model))
+        host.frame.size = host.fittingSize
+        let window = NSPanel(contentRect: NSRect(origin: .zero, size: host.fittingSize),
+                             styleMask: [.borderless, .nonactivatingPanel], backing: .buffered, defer: false)
+        window.title = "Menu Preview"
+        window.isOpaque = false
+        window.backgroundColor = .clear
+        window.hasShadow = true
+        window.isReleasedWhenClosed = false
+        window.contentView = host
+        if let screen = NSScreen.main {
+            window.setFrameOrigin(NSPoint(x: screen.visibleFrame.maxX - host.fittingSize.width - 380,
+                                          y: screen.visibleFrame.maxY - host.fittingSize.height - 10))
+        }
+        window.orderFrontRegardless()
+        previewWindow = window
+    }
+    @MainActor private static var previewWindow: NSWindow?
 }
 #endif

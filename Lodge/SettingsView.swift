@@ -89,6 +89,7 @@ struct GeneralSettingsView: View {
                 }
                 Toggle("Play a sound when an offload finishes", isOn: $settings.playSuccessSound)
             }
+            MenuBarSettingsSection(loginItem: model.loginItem)
             if let updater {
                 UpdateSettingsSection(updater: updater)
             }
@@ -101,6 +102,77 @@ struct GeneralSettingsView: View {
         .themeControlTint()
         .frame(width: 560)
         .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
+/// Settings ▸ General ▸ Menu Bar: keep running, ask to import, the icon, open at login,
+/// and the cards Lodge doesn't ask about.
+struct MenuBarSettingsSection: View {
+    @ObservedObject var loginItem: LoginItem
+    @EnvironmentObject private var settings: AppSettings
+
+    static let hiddenIconHint = "With the icon hidden, Lodge keeps running in the background and still asks to import. Open Lodge from Finder, the Dock or Spotlight to show its window, and quit it from there with ⌘Q."
+
+    var body: some View {
+        Section {
+            VStack(alignment: .leading, spacing: 4) {
+                Toggle("Keep Lodge running in the menu bar", isOn: $settings.keepRunningInMenuBar)
+                Text("Closing the window leaves Lodge running, so it can notice cards and drives as they’re plugged in.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Toggle("Ask to import when a card or drive is plugged in", isOn: $settings.askToImport)
+                Text("Whenever Lodge is running. Only for cards and drives with camera folders or media; Lodge never starts an offload on its own.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Toggle(isOn: $settings.showMenuBarIcon) {
+                HStack(spacing: 4) {
+                    Text("Show menu bar icon")
+                    InfoHint(text: Self.hiddenIconHint, subject: "Show menu bar icon")
+                }
+            }
+            .disabled(!settings.keepRunningInMenuBar)
+            VStack(alignment: .leading, spacing: 4) {
+                Toggle("Open at login", isOn: Binding(get: { loginItem.isOn }, set: { loginItem.set($0) }))
+                    .disabled(!settings.keepRunningInMenuBar)
+                if loginItem.needsApproval {
+                    HStack(spacing: 6) {
+                        Text("Allow Lodge in System Settings ▸ General ▸ Login Items.")
+                        Button("Open Login Items…") { loginItem.openLoginItemsSettings() }
+                            .buttonStyle(.link)
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                } else if let error = loginItem.lastError {
+                    Text(error)
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            if !settings.ignoredImportCards.isEmpty {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Don’t ask for these cards")
+                    ForEach(settings.ignoredImportCards) { card in
+                        HStack {
+                            Label(card.name, systemImage: "sdcard")
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                            Button("Ask Again") { settings.stopIgnoringImports(card.identity) }
+                                .controlSize(.small)
+                                .accessibilityLabel("Ask again for \(card.name)")
+                        }
+                    }
+                }
+            }
+        } header: {
+            Text("Menu Bar")
+        }
+        .onAppear { loginItem.refresh() }
     }
 }
 
