@@ -1,9 +1,37 @@
-<?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
     <channel>
         <title>Lodge</title>
         <link>https://github.com/bashcrandicoot/Lodge</link>
         <description>Updates for Lodge, the SD card offloader for macOS.</description>
         <language>en</language>
+        <item>
+            <title>1.0.1</title>
+            <pubDate>Mon, 26 Oct 2026 17:42:23 -0400</pubDate>
+            <link>https://github.com/bashcrandicoot/Lodge</link>
+            <sparkle:version>2</sparkle:version>
+            <sparkle:shortVersionString>1.0.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[## Lodge 1.0.1
+
+**Coming from 1.0.0?** Lodge 1.0.0 can't check for updates, so download 1.0.1 by hand once: open the disk image and drag Lodge to Applications. From 1.0.1 on, Lodge updates itself.
+
+### New
+
+- **Menu bar mode.** Keep Lodge running in the menu bar after you close the window. It watches for camera cards and asks to import them, with a notification or a floating panel (Settings ▸ General).
+- **First-launch setup.** A short guide walks you through your first preset: destination, folders, naming and safety.
+- **A folder for each file type.** Inside the last folder, files are sorted into one folder per extension (MP4, WAV, ARW…). JPG and JPEG share one folder.
+- **Check for Updates.** Lodge ▸ Check for Updates…, plus automatic checks you can turn off in Settings ▸ General.
+- **Support Lodge.** A tip link in the Lodge and Help menus, and a one-time note.
+- **Contact.** BashFrames contact details in About Lodge and the Help menu.
+- **Also new:** a new app icon, an expandable Layout tree, and a progress strip in the offload bar.
+
+### Fixes
+
+- The window title no longer reappears when the toolbar changes.
+- Other small fixes.
+]]></description>
+            <enclosure url="https://github.com/bashcrandicoot/Lodge/releases/download/v1.0.1/Lodge-1.0.1.zip" length="8086029" type="application/octet-stream" sparkle:edSignature="i7Tir1N2N6VJ0aizxXx1eWRXEVpRyVb0Juns8WEZBEe9+tbYC1uYG5ThRTpXc+VswYNGTXRONpSnhJjgT6TzAg=="/>
+        </item>
     </channel>
 </rss>
