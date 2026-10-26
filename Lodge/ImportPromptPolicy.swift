@@ -39,7 +39,7 @@ enum ImportPromptPolicy {
         case system
         case network
         case diskImage
-        /// Internal, or neither removable nor ejectable.
+        /// A fixed internal disk, or a drive that's neither removable nor ejectable.
         case notExternal
         case backup
         /// The current destination drive or a favorite destination's drive.
@@ -55,12 +55,19 @@ enum ImportPromptPolicy {
         guard traits.path.hasPrefix("/Volumes/"), !traits.isRootFileSystem else { return .skip(.system) }
         guard traits.isLocal else { return .skip(.network) }
         guard !traits.isDiskImage else { return .skip(.diskImage) }
-        guard traits.isInternal != true, traits.isRemovable || traits.isEjectable else { return .skip(.notExternal) }
+        guard isPluggableMedia(traits) else { return .skip(.notExternal) }
         guard !traits.isBackup else { return .skip(.backup) }
         if destinationPaths.contains(where: { isPath($0, onVolume: traits.path) }) { return .skip(.destination) }
         guard !ignored.contains(identity) else { return .skip(.ignored) }
         guard looksLikeCameraMedia else { return .skip(.notCameraMedia) }
         return .prompt
+    }
+
+    /// Removable media counts wherever the reader is: a Mac's built-in SD slot reports its
+    /// cards as internal *and* removable. Other drives count when they're external and ejectable
+    /// (USB and Thunderbolt SSDs). Fixed internal disks never do.
+    static func isPluggableMedia(_ traits: VolumeTraits) -> Bool {
+        traits.isRemovable || (traits.isInternal != true && traits.isEjectable)
     }
 
     /// True when `path` is the volume itself or something inside it.

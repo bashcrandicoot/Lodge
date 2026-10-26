@@ -31,8 +31,51 @@ final class ImportPromptPolicyTests: XCTestCase {
         var root = card()
         root.isRootFileSystem = true
         XCTAssertEqual(verdict(root), .skip(.system))
-        XCTAssertEqual(verdict(card(isInternal: true)), .skip(.notExternal))
         XCTAssertEqual(verdict(card(removable: false, ejectable: false)), .skip(.notExternal))
+    }
+
+    // What macOS reports for each kind of drive (`diskutil info` / URL resource values).
+
+    func testBuiltInSDCardReaderPrompts() {
+        // A MacBook Pro's SD slot: Protocol Secure Digital, Device Location Internal, Removable.
+        let sd = card("/Volumes/SD Card", removable: true, ejectable: true, isInternal: true)
+        XCTAssertTrue(ImportPromptPolicy.isPluggableMedia(sd))
+        XCTAssertEqual(verdict(sd), .prompt)
+    }
+
+    func testUSBCardReaderPrompts() {
+        XCTAssertEqual(verdict(card("/Volumes/Untitled", removable: true, ejectable: true, isInternal: false)), .prompt)
+    }
+
+    func testExternalSSDWithMediaPrompts() {
+        // Thunderbolt/USB SSDs: external and ejectable, not "removable media".
+        let ssd = card("/Volumes/T7", removable: false, ejectable: true, isInternal: false)
+        XCTAssertEqual(verdict(ssd), .prompt)
+        XCTAssertEqual(verdict(ssd, media: false), .skip(.notCameraMedia))
+    }
+
+    func testFixedInternalVolumesAreSkipped() {
+        // A second APFS volume or partition on the built-in SSD (e.g. /Volumes/Recovery, /Volumes/Data).
+        XCTAssertEqual(verdict(card("/Volumes/Recovery", removable: false, ejectable: false, isInternal: true)),
+                       .skip(.notExternal))
+        // Internal but ejectable (rare, e.g. some internal bays) is still treated as fixed.
+        XCTAssertEqual(verdict(card("/Volumes/Bay", removable: false, ejectable: true, isInternal: true)),
+                       .skip(.notExternal))
+    }
+
+    /// Reads a real mounted volume (never writes to it). Run with
+    /// `TEST_RUNNER_LODGE_REAL_VOLUME='/Volumes/SD Card' xcodebuild test …`; skipped otherwise.
+    func testRealVolumeFromEnvironment() throws {
+        guard let path = ProcessInfo.processInfo.environment["LODGE_REAL_VOLUME"] else {
+            throw XCTSkip("set TEST_RUNNER_LODGE_REAL_VOLUME to check a real card")
+        }
+        try XCTSkipUnless(FileManager.default.fileExists(atPath: path), "\(path) isn't mounted")
+        let traits = VolumeTraits.read(URL(fileURLWithPath: path))
+        let media = CameraMedia.looksLikeCameraMedia(root: path)
+        let result = ImportPromptPolicy.verdict(for: traits, identity: "real", looksLikeCameraMedia: media,
+                                                destinationPaths: [], ignored: [])
+        print("LODGE_REAL_VOLUME \(path): \(traits) cameraMedia=\(media) verdict=\(result)")
+        XCTAssertEqual(result, .prompt)
     }
 
     func testNetworkDiskImagesAndBackupsAreSkipped() {
