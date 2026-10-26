@@ -13,16 +13,56 @@ enum OnboardingExit: Equatable {
     case openSettings
 }
 
-/// The whole setup window: splash, five steps, done. 1280×800 pt.
+/// How big the setup window is. It's designed at 1280×800 pt; on a smaller screen the whole
+/// design shrinks at the same 16:10 ratio (so nothing reflows), down to 75 %.
+enum OnboardingLayout {
+    /// The size everything in setup is laid out at.
+    static let designSize = CGSize(width: 1280, height: 800)
+    /// The smallest window (75 % of the design); below that the text gets too small.
+    static let minimumSize = CGSize(width: 960, height: 600)
+    /// On a screen too short even for the minimum, the window still never gets shorter than this.
+    static let shortestHeight: CGFloat = 420
+    /// Room left between the window and the edges of the screen.
+    static let screenMargin: CGFloat = 12
+
+    /// The window size for a screen whose visible area (`NSScreen.visibleFrame`: no menu bar,
+    /// no Dock) is `visible`: the design size if it fits, otherwise the biggest 16:10 size that
+    /// does, but never under `minimumSize`. On a screen shorter than the minimum, the height
+    /// follows the screen instead (the step area scrolls; Back/Next stays at the bottom).
+    static func windowSize(fitting visible: CGSize) -> CGSize {
+        let ratio = designSize.width / designSize.height
+        let roomWidth = max(visible.width - 2 * screenMargin, 0)
+        let roomHeight = max(visible.height - 2 * screenMargin, 0)
+        let width = max(minimumSize.width, min(designSize.width, roomWidth, roomHeight * ratio)).rounded(.down)
+        let height = min(width / ratio, max(roomHeight, shortestHeight)).rounded(.down)
+        return CGSize(width: width, height: height)
+    }
+
+    /// How much the design is shrunk in a window of `size`.
+    static func scale(for size: CGSize) -> CGFloat {
+        min(1, size.width / designSize.width)
+    }
+
+    /// The size the views are laid out at (in design points) before shrinking: the design
+    /// width, and as much height as the window has room for.
+    static func canvasSize(for size: CGSize) -> CGSize {
+        let scale = scale(for: size)
+        return CGSize(width: size.width / scale, height: size.height / scale)
+    }
+}
+
+/// The whole setup window: splash, five steps, done. Designed at 1280×800 pt and shrunk to
+/// fit smaller screens (`OnboardingLayout`).
 struct OnboardingView: View {
     @ObservedObject var store: OnboardingStore
     @ObservedObject var model: AppModel
     let drives: [OnboardingDrive]
+    /// The window's size; see `OnboardingLayout.windowSize(fitting:)`.
+    var windowSize: CGSize = OnboardingLayout.designSize
     var finish: (OnboardingExit) -> Void
 
-    static let size = CGSize(width: 1280, height: 800)
-
     var body: some View {
+        let canvas = OnboardingLayout.canvasSize(for: windowSize)
         Group {
             switch store.step {
             case .splash:
@@ -35,7 +75,9 @@ struct OnboardingView: View {
                 OnboardingShell(store: store, model: model, drives: drives, skip: skip)
             }
         }
-        .frame(width: Self.size.width, height: Self.size.height)
+        .frame(width: canvas.width, height: canvas.height)
+        .scaleEffect(OnboardingLayout.scale(for: windowSize), anchor: .topLeading)
+        .frame(width: windowSize.width, height: windowSize.height, alignment: .topLeading)
         .ignoresSafeArea()
     }
 
@@ -61,6 +103,7 @@ struct OnboardingSplash: View {
             Image("OnboardingSplashScene")
                 .resizable()
                 .aspectRatio(contentMode: .fill)
+                .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
                 .accessibilityHidden(true)
             LinearGradient(colors: [Color(hex: 0x0E091E).opacity(0), Color(hex: 0x0E091E).opacity(0.55)],
                            startPoint: .top, endPoint: .bottom)
@@ -126,7 +169,7 @@ struct OnboardingSplash: View {
             .padding(.bottom, 18)
             .frame(maxHeight: .infinity, alignment: .bottom)
         }
-        .frame(width: OnboardingView.size.width, height: OnboardingView.size.height)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .clipped()
     }
 
@@ -187,10 +230,13 @@ struct OnboardingShell: View {
                 header
                     .padding(.top, 28)
                     .padding(.horizontal, 44)
-                stepBody
-                    .padding(.top, 22)
-                    .padding(.horizontal, 44)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                // Scrolls only when the window is too short for the step (very small screens),
+                // so Back/Next always stays in view.
+                ViewThatFits(in: .vertical) {
+                    paddedStepBody
+                    ScrollView(.vertical) { paddedStepBody.padding(.bottom, 22) }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 footer
             }
             .background(palette.window)
@@ -224,6 +270,13 @@ struct OnboardingShell: View {
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var paddedStepBody: some View {
+        stepBody
+            .padding(.top, 22)
+            .padding(.horizontal, 44)
+            .frame(maxWidth: .infinity, alignment: .topLeading)
     }
 
     @ViewBuilder private var stepBody: some View {

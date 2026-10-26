@@ -524,7 +524,7 @@ Every view also has `#Preview`s you can open in Xcode's canvas.
 | `OnboardingSteps.swift` | Setup steps: what's a preset, destination, folder levels, naming & safety, review |
 | `OnboardingDone.swift` | Setup's done screen: the detected card, menu bar and prompt switches |
 | `OnboardingComponents.swift` | Setup's palette, cards, token pills and folder preview tree |
-| `OnboardingWindow.swift` | The setup window (1280×800, forced Dark on splash/done) and when it shows |
+| `OnboardingWindow.swift` | The setup window (1280×800, shrunk to fit smaller screens; forced Dark on splash/done) and when it shows |
 | `MenuBar.swift` | Menu bar mode: the menu bar icon and its menu, opening the main window again, Open at login |
 | `ImportPromptPolicy.swift` | Which mounted volumes get an import prompt (camera media, not disk images/network/Time Machine/destinations) |
 | `ImportPrompter.swift` | The "card connected · Import with Lodge?" notification, its queue and debounce |

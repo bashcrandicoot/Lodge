@@ -26,7 +26,7 @@ struct OnboardingDone: View {
             Image("OnboardingDoneScene")
                 .resizable()
                 .aspectRatio(contentMode: .fill)
-                .frame(width: OnboardingView.size.width, height: OnboardingView.size.height)
+                .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
                 .accessibilityHidden(true)
             Text("Lodge")
                 .font(.system(size: 13, weight: .semibold))
@@ -45,7 +45,7 @@ struct OnboardingDone: View {
                     .padding(.trailing, 56)
             }
         }
-        .frame(width: OnboardingView.size.width, height: OnboardingView.size.height)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .clipped()
     }
 

@@ -369,4 +369,51 @@ final class OnboardingDriveTests: XCTestCase {
         let sony: [String: [String]] = ["/Volumes/Untitled": ["PRIVATE"], "/Volumes/Untitled/PRIVATE": ["M4ROOT"]]
         XCTAssertTrue(CameraMedia.hasCameraFolders(root: "/Volumes/Untitled", list: { sony[$0] }))
     }
+
+    // MARK: Window size
+
+    func testTheWindowIsTheDesignSizeWhenTheScreenHasRoom() {
+        XCTAssertEqual(OnboardingLayout.windowSize(fitting: CGSize(width: 1728, height: 1079)), CGSize(width: 1280, height: 800))
+        XCTAssertEqual(OnboardingLayout.windowSize(fitting: CGSize(width: 2560, height: 1415)), CGSize(width: 1280, height: 800))
+        XCTAssertEqual(OnboardingLayout.scale(for: CGSize(width: 1280, height: 800)), 1)
+        XCTAssertEqual(OnboardingLayout.canvasSize(for: CGSize(width: 1280, height: 800)), CGSize(width: 1280, height: 800))
+    }
+
+    func testOnASmallerScreenItShrinksAtTheDesignRatio() {
+        // 13" MacBook Air (1440×900) with the menu bar and the Dock: 1440×805 visible.
+        let air = OnboardingLayout.windowSize(fitting: CGSize(width: 1440, height: 805))
+        XCTAssertEqual(air, CGSize(width: 1249, height: 780))
+        XCTAssertLessThanOrEqual(air.height, 805 - 2 * OnboardingLayout.screenMargin)
+        // 1280×800 screen: 1280×708 visible.
+        let small = OnboardingLayout.windowSize(fitting: CGSize(width: 1280, height: 708))
+        XCTAssertEqual(small, CGSize(width: 1094, height: 683))
+        // Narrow but tall: the width decides.
+        XCTAssertEqual(OnboardingLayout.windowSize(fitting: CGSize(width: 1100, height: 1200)), CGSize(width: 1076, height: 672))
+        for size in [air, small] {
+            XCTAssertEqual(size.width / size.height, 1.6, accuracy: 0.01)
+            // The views are still laid out at 1280 wide (about 800 tall) and shrunk as a whole.
+            let canvas = OnboardingLayout.canvasSize(for: size)
+            XCTAssertEqual(canvas.width, 1280, accuracy: 0.001)
+            XCTAssertEqual(canvas.height, 800, accuracy: 2)
+        }
+    }
+
+    func testItNeverGoesBelowTheMinimum() {
+        // 1024×768 with the Dock: 1024×673 visible. Fits at 1000×625 (78 %).
+        XCTAssertEqual(OnboardingLayout.windowSize(fitting: CGSize(width: 1024, height: 673)), CGSize(width: 1000, height: 625))
+        XCTAssertEqual(OnboardingLayout.windowSize(fitting: CGSize(width: 960, height: 640)), CGSize(width: 960, height: 600))
+        XCTAssertEqual(OnboardingLayout.windowSize(fitting: CGSize(width: 800, height: 1000)), OnboardingLayout.minimumSize)
+        XCTAssertEqual(OnboardingLayout.scale(for: OnboardingLayout.minimumSize), 0.75)
+    }
+
+    func testOnAVeryShortScreenTheHeightFollowsTheScreenAndTheStepsScroll() {
+        let size = OnboardingLayout.windowSize(fitting: CGSize(width: 1366, height: 560))
+        XCTAssertEqual(size, CGSize(width: 960, height: 536))
+        // Laid out 1280 wide but shorter than the design: the step area scrolls, Back/Next stays.
+        let canvas = OnboardingLayout.canvasSize(for: size)
+        XCTAssertEqual(canvas.width, 1280, accuracy: 0.001)
+        XCTAssertLessThan(canvas.height, OnboardingLayout.designSize.height)
+        // Never shorter than the floor, however small the screen.
+        XCTAssertEqual(OnboardingLayout.windowSize(fitting: CGSize(width: 640, height: 300)).height, OnboardingLayout.shortestHeight)
+    }
 }

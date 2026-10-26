@@ -48,10 +48,20 @@ final class OnboardingWindowController: NSObject, NSWindowDelegate {
         controller.show()
     }
 
+    /// The window's size: the 1280×800 design, shrunk to fit the main screen if it's smaller.
+    /// Screenshots (demo mode) always use the design size.
+    let size: CGSize
+
     init(store: OnboardingStore, model: AppModel, drives: [OnboardingDrive]) {
         self.store = store
         self.model = model
-        window = NSWindow(contentRect: NSRect(origin: .zero, size: OnboardingView.size),
+        if AppModel.isDemo {
+            size = OnboardingLayout.designSize
+        } else {
+            let visible = (NSScreen.main ?? NSScreen.screens.first)?.visibleFrame.size ?? OnboardingLayout.designSize
+            size = OnboardingLayout.windowSize(fitting: visible)
+        }
+        window = NSWindow(contentRect: NSRect(origin: .zero, size: size),
                           styleMask: [.titled, .closable, .miniaturizable, .fullSizeContentView],
                           backing: .buffered, defer: false)
         super.init()
@@ -63,20 +73,21 @@ final class OnboardingWindowController: NSObject, NSWindowDelegate {
         window.identifier = NSUserInterfaceItemIdentifier("onboarding")
         window.tabbingMode = .disallowed
         window.delegate = self
-        let hosting = NSHostingView(rootView: OnboardingView(store: store, model: model, drives: drives) { [weak self] exit in
+        let hosting = NSHostingView(rootView: OnboardingView(store: store, model: model, drives: drives,
+                                                                  windowSize: size) { [weak self] exit in
             self?.finish(exit)
         })
-        // The window keeps its 1280×800 frame: SwiftUI sits in a plain container so it can't
+        // The window keeps its fixed frame: SwiftUI sits in a plain container so it can't
         // grow the window by the title bar's height (the content runs under the title bar).
         hosting.sizingOptions = []
         hosting.safeAreaRegions = []
-        let container = NSView(frame: NSRect(origin: .zero, size: OnboardingView.size))
+        let container = NSView(frame: NSRect(origin: .zero, size: size))
         hosting.frame = container.bounds
         hosting.autoresizingMask = [.width, .height]
         container.addSubview(hosting)
         window.contentView = container
         // Full-size content: the frame is the content (the title bar floats over it).
-        window.setFrame(NSRect(origin: .zero, size: OnboardingView.size), display: false)
+        window.setFrame(NSRect(origin: .zero, size: size), display: false)
         applyAppearance(for: store.step)
         stepObserver = store.$step.sink { [weak self] step in self?.applyAppearance(for: step) }
     }
@@ -88,7 +99,7 @@ final class OnboardingWindowController: NSObject, NSWindowDelegate {
     }
 
     private func show() {
-        window.setFrame(NSRect(origin: window.frame.origin, size: OnboardingView.size), display: false)
+        window.setFrame(NSRect(origin: window.frame.origin, size: size), display: false)
         window.center()
         if AppModel.isDemo {
             #if DEBUG
