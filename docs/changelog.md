@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.0.1
+
+- **Lodge > Check for Updates…** looks for a new version. The item is dimmed while a check is already running. Settings > General has an **Updates** section: **Automatically check for updates** (on) and **Automatically download and install updates** (off, and unavailable while checks are off). Lodge checks once a day. Updates are EdDSA-signed through Sparkle. Copying never uploads anything.
+- **Help > Contact Support…** opens an email to bashframes@gmail.com, subject Lodge Support, with the Lodge and macOS versions under the message. **Lodge > Support Lodge…** and **Help > Support Lodge…** open the Gumroad page in your browser. **Lodge > About Lodge** says Made by BashFrames, with a link to that email. Settings > General ends with the same credit, a **Support** link, and **Support Lodge**.
+- After five offloads where every file was copied and verified, and at least three days after that version first opens, a **Support Lodge** card appears when Lodge is idle. It never appears during a copy. **Maybe Later** asks once more, 30 days later. **Support Lodge** and **Don’t Ask Again** stop it. Lodge asks at most twice.
+- Each file goes in a folder named for its extension, in capitals, inside the folder the template makes: `MP4/`, `ARW/`, `WAV/`, and the rest. `.mp4` and `.MP4` share a folder. `.JPG`, `.JPEG`, and `.JPE` share `JPG/`. `.TIF` and `.TIFF` share `TIF/`. Proxies stay in **Proxies/** and sidecars stay in **Sidecars/**. **Flat** skips the shoot folders and still sorts files into one folder per type.
+- The preset menu sits at the top right of the window, just left of **Recent Offloads** and **Settings**, and the window title is hidden.
+- The Layout tree expands and collapses. **Expand All** (or Option-click a triangle) and **Collapse All** sit beside **Layout**.
+- A wagon drives across the offload bar while files copy, and parks when the copy is verified.
+- The first launch shows **Welcome to Lodge**. Inserting a card can ask **Import with Lodge?**. **Keep Lodge running in the menu bar**, **Show menu bar icon**, and a Login Item keep Lodge available after the window closes.
+- The Quick dump checkbox reads **Quick dump**, with an ⓘ beside it.
+
 ## 1.0.0
 
 First public release of Lodge, a native Mac app (macOS 14 or later) for offloading camera memory cards. [Download Lodge from Gumroad](https://bashframes.gumroad.com/l/lodge).

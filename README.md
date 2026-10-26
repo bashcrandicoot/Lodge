@@ -44,10 +44,12 @@ The first time Lodge reads a card, macOS asks for access to files on a removable
 
 - Scans a card as soon as you insert it, including one that was already mounted.
 - Filters the list, and previews every finished name before anything is copied.
-- Names files from templates, and saves the whole setup as a preset.
-- Checks every copy with SHA-256, then shows **Ready to format** when the card is safe to erase.
+- Names files from templates, with a folder for each file type. **Flat** skips the shoot folders.
+- Saves a setup as a preset, and switches presets from the menu at the top right.
+- Checks every copy with SHA-256, then shows **Ready to format** when the card is ready to format.
 - Reads the card only. A copy never overwrites a file already at the destination.
 - Remembers what was offloaded, so the same card again copies only what is new.
+- Shows a wagon crossing the copy bar, and checks for updates once a day.
 
 <p align="center">
   <img src="docs/assets/motion/lodge-complete-check@2x.gif" width="360" height="100" alt="A green checkmark draws in beside Offload complete. 57 copied, 128 GB.">
@@ -59,7 +61,7 @@ macOS 14 or later. Lodge is a universal app for Apple silicon and Intel Macs.
 
 ## Privacy
 
-No account, no analytics. Lodge 1.0.0 doesn’t use the network, and copying never uploads anything.
+No account, no analytics, and copying never uploads anything. The only time Lodge goes online is a daily check for updates, which you can turn off in Settings > General.
 
 ## Support
 

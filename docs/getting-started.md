@@ -8,7 +8,7 @@ Home base for your media. Lodge is a universal app for Apple silicon and Intel M
 
 [Download Lodge from Gumroad](https://bashframes.gumroad.com/l/lodge). Open the disk image and drag Lodge to Applications. Pay what you want.
 
-No account, no analytics. Lodge 1.0.0 doesn’t use the network. Copying never uploads anything.
+No account, no analytics, and copying never uploads anything. The only time Lodge goes online is a daily check for updates, which you can turn off in Settings > General.
 
 ## Open Lodge the first time
 
@@ -27,7 +27,7 @@ Lodge is not notarized, so macOS asks before it will launch.
 2. Choose **Open**.
 3. Choose **Open** again.
 
-Closing the window quits Lodge. Leave it open while you work so it can see cards as you insert them.
+**Keep Lodge running in the menu bar** leaves Lodge available from its menu bar icon. **Show menu bar icon** and a Login Item are in Settings. The first time Lodge opens, it shows **Welcome to Lodge**. When a card is inserted, Lodge can ask **Import with Lodge?**
 
 ## Allow access to the card
 
