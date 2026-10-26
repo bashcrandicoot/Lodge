@@ -24,6 +24,14 @@ enum DemoData {
         UserDefaults.standard.string(forKey: "LodgeDemoTheme").flatMap(ThemePalette.ID.init(rawValue:))
     }
 
+    /// Set by launching with `-LodgeDemoFolderTemplate '{project}_{date}/{camera}'`. Read from the
+    /// raw arguments: UserDefaults would parse a value starting with "{" as a property list.
+    static var launchFolderTemplate: String? {
+        let arguments = CommandLine.arguments
+        guard let index = arguments.firstIndex(of: "-LodgeDemoFolderTemplate"), index + 1 < arguments.count else { return nil }
+        return arguments[index + 1]
+    }
+
     /// Set by launching with `-LodgeDemoExpandTree YES` (every folder) or `files` (and the file lists).
     static var launchExpandTree: String? {
         guard UserDefaults.standard.bool(forKey: "LodgeDemo"),
@@ -228,7 +236,7 @@ enum DemoData {
             settings.apply(quick)
             presets.markActive(quick.id)
         }
-        if let folder = UserDefaults.standard.string(forKey: "LodgeDemoFolderTemplate"),
+        if let folder = launchFolderTemplate,
            NamingTemplates(folder: folder, file: settings.fileTemplate) != nil {
             settings.folderTemplate = folder
         }

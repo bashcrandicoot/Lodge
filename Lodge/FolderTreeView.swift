@@ -357,6 +357,16 @@ struct FolderLayout: View {
         switch row.kind {
         case .folder(let node, _, _):
             for key in keys(below: node) { expansion[key] = open }
+            if open {
+                for path in node.allPaths {
+                    let planned = node.node(at: path)?.children.map(\.name) ?? []
+                    for name in FolderTree.otherFolders(onDisk: subfolders(path) ?? [], planned: planned) {
+                        let childPath = join(path, name)
+                        expansion[TreeRow.folderKey(childPath)] = true
+                        expandOthers(childPath, depth: 2)
+                    }
+                }
+            }
         case .other(let path, _):
             expansion[row.id] = open
             // Folders already there are read one level at a time; go at most three deep.
@@ -380,9 +390,22 @@ struct FolderLayout: View {
         node.allPaths.flatMap { [TreeRow.folderKey($0), TreeRow.othersKey($0)] }
     }
 
+    /// Opens every folder the offload makes and the folders already there (three levels into
+    /// those, as they're read from disk one at a time). File lists stay folded.
     private func expandAll(_ tree: FolderNode) {
         var updated = expansion
         for key in keys(below: tree) { updated[key] = true }
+        func openOthers(_ path: String, planned: [String], depth: Int) {
+            guard depth > 0 else { return }
+            for name in FolderTree.otherFolders(onDisk: subfolders(path) ?? [], planned: planned) {
+                let childPath = join(path, name)
+                updated[TreeRow.folderKey(childPath)] = true
+                openOthers(childPath, planned: [], depth: depth - 1)
+            }
+        }
+        for path in tree.allPaths {
+            openOthers(path, planned: tree.node(at: path)?.children.map(\.name) ?? [], depth: 3)
+        }
         expansion = updated
     }
 
@@ -660,12 +683,12 @@ private struct TreeRowView: View {
                 }
             }
         } else {
-            HStack(alignment: .firstTextBaseline, spacing: 0) {
-                Text(content.title)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(TreeText.breakable(content.title))
                     .strikethrough(content.style == .ghost, color: .secondary)
                     .foregroundStyle(content.style == .other || content.style == .sidecar ? .secondary : .primary)
                 if let note = content.trailingNote {
-                    Text(" " + note).foregroundStyle(.secondary)
+                    Text(note).font(.caption2).foregroundStyle(.secondary)
                 }
             }
             .lineLimit(nil)
@@ -783,7 +806,7 @@ private struct SegmentView: View {
     @State private var hovering = false
 
     var body: some View {
-        let text = Text(segment.text)
+        let text = Text(TreeText.breakable(segment.text))
             .strikethrough(segment.isLeftOut, color: .secondary)
             .foregroundStyle(segment.isLeftOut || segment.isPlaceholder ? .secondary : .primary)
         if editable {
@@ -965,6 +988,19 @@ private struct RowDropDelegate: DropDelegate {
             }
         }
         return true
+    }
+}
+
+enum TreeText {
+    /// Lets a long name wrap after "_", "-", "." or a space instead of being
+    /// hyphenated in the middle of a word ("Coast-line").
+    static func breakable(_ name: String) -> String {
+        var result = ""
+        for character in name {
+            result.append(character)
+            if character == "_" || character == "-" || character == "." { result.append("\u{200B}") }
+        }
+        return result
     }
 }
 
