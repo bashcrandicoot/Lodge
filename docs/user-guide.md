@@ -4,11 +4,7 @@ Home base for your media. Lodge is a universal app for Apple silicon and Intel M
 
 The main window reads left to right: **Card**, **Media**, **Destination**, with the offload bar along the bottom. Closing the window quits Lodge.
 
-**Coming in the next update.** The preset menu sits at the top right of the window, just left of **Recent Offloads** and **Settings**, and the window title is hidden. In Lodge 1.0.0 the preset menu is in the center of the toolbar, and the title reads Lodge, with the card’s name under the title. Updates, a folder for each file extension, the shorter Quick dump label, and the support items are in their own sections below.
-
-![Lodge in Dark mode, ready to offload. The preset control at the top right reads Sony Shoot, and the window title is hidden. Offload 54 Files sits along the bottom.](assets/screenshots/ready-dark.png)
-
-The pictures in this guide are the next update’s window. The preset control is at the top right and the title is hidden. The copying, grid, and finished pictures include a wagon scene on the offload bar. Lodge 1.0.0 keeps the preset menu in the center of the toolbar, the title reads Lodge, with the card’s name under the title, and the offload bar has no wagon. The pictures still use the 1.0.0 Quick dump label, **Quick dump: skip project name**, and they still put files in the template’s folders, with **Proxies** and **Sidecars**, rather than a folder per extension.
+![Lodge in Dark mode, ready to offload. Offload 54 Files sits along the bottom.](assets/screenshots/ready-dark.png)
 
 ## Cards
 
@@ -32,11 +28,11 @@ The size of the new files counts up when the card is scanned.
 
 **Project** and **Camera** appear when the template uses them. Only those fields are required. “Beach Shoot” becomes `BeachShoot`: letters, digits, and hyphens, each word capitalized, at most 60 characters. Up to six recent projects stay in the menu, and **Clear Recent Projects** empties that list. The camera menu remembers which camera you used with this card. **Edit Cameras…** opens Settings > Cameras.
 
-**Quick dump: skip project name** sits under the camera field. See [Quick dump](#quick-dump). **Coming in the next update.** That checkbox reads **Quick dump**, with an ⓘ beside it.
+**Quick dump: skip project name** sits under the camera field. See [Quick dump](#quick-dump).
 
 The list previews the finished name of every file before anything is copied. The filter is **All**, **Video**, **Photo**, **Audio**, and **Other**. Sidecars are shown with their clip. The switch above the list (list or grid) is remembered. **Settings > Appearance > Show thumbnails in the list** adds a small thumbnail to each row.
 
-![The Media panel as a thumbnail grid while a copy is running. The offload bar shows the file in progress and a wagon scene. The preset control at the top right, and the hidden title, are the next update.](assets/screenshots/grid-dark.png)
+![The Media panel as a thumbnail grid while a copy is running. The offload bar shows the file in progress.](assets/screenshots/grid-dark.png)
 
 In the grid, each tile shows a thumbnail, the new name, the length, the type, and a paperclip count for sidecars that travel with it. The file being copied shows a progress ring. A verified file gets a green tick. Files offloaded earlier are dimmed. A missing copy is marked. A skipped short clip is marked, with **Include Anyway** in its menu.
 
@@ -58,17 +54,13 @@ Each file is written as `<name>.lodge-partial`. Lodge reads that file back and h
 
 While it runs you see the current file, how far through the batch you are, the bytes copied, the time left, a **Verifying** state, and **Cancel**. The list follows the file being copied.
 
-![Lodge copying files. The offload bar shows the file, how far through the batch the copy is, and Cancel, with a wagon scene along the bar. That scene is in the next update.](assets/screenshots/running-dark.png)
-
-The wagon on that bar is in the next update. This is the looping progress clip, at half size. [The same clip as video](assets/motion/lodge-wagon-progress@2x.mp4).
-
-<img src="assets/motion/lodge-wagon-progress@2x.png" width="1060" height="153" alt="A wagon crossing the copy progress bar. Coming in the next update.">
+![Lodge copying files. The offload bar shows the file, how far through the batch the copy is, and Cancel.](assets/screenshots/running-dark.png)
 
 Time left appears after a couple of seconds of copying: **Estimating time…**, **Less than a minute left**, **About 3 min left**, and so on.
 
 When it finishes, the summary reads like **57 copied · 0 skipped · 0 failed**. The copied count counts up. On a clean finish the checkmark draws itself, and Lodge plays the Glass sound if **Play a sound when an offload finishes** is on (it is, by default). Then: **Show in Finder**, **Eject Card**, **Done**, and **Format Card…** when the card is ready.
 
-![A finished offload. The bar reads Offload Complete and offers Show in Finder, Format Card…, Eject Card, and Done, with a wagon scene parked along the bar. The wagon is in the next update.](assets/screenshots/finished-dark.png)
+![A finished offload. The bar reads Offload Complete and offers Show in Finder, Format Card…, Eject Card, and Done.](assets/screenshots/finished-dark.png)
 
 **Eject card after offload** is off by default. It ejects only when every file copied and verified. The same switch ejects the card after a successful format.
 
@@ -159,7 +151,7 @@ Click a token to insert it into the field you were editing. Mistakes are explain
 
 ### Examples
 
-The **Examples** menu in Settings > Naming fills in a folder template and a file template. A preset, described under [Presets](#presets), saves a whole setup. **Coming in the next update.** The preset menu sits at the top right of the window. In Lodge 1.0.0 it is in the center of the toolbar.
+The **Examples** menu in Settings > Naming fills in a folder template and a file template. A preset, described under [Presets](#presets), saves a whole setup.
 
 | Example | Folder | File |
 | --- | --- | --- |
@@ -180,9 +172,7 @@ The same folder structure is the **Layout** tree in Destination once a card is s
 
 In the Layout tree, a level that quick dump removes is struck through and tagged **Quick dump**.
 
-**Coming in the next update.** The checkbox reads **Quick dump**, with an ⓘ beside it. Hover the ⓘ for a moment, or click it, and a small note says: Skips the project name and dumps all the footage straight into a dated folder. The same sentence is the tooltip. The picture below still shows the 1.0.0 label.
-
-![Quick dump on, so the project name is left out. The checkbox still reads Quick dump: skip project name, which is the Lodge 1.0.0 label. The preset control at the top right, and the hidden title, are the next update.](assets/screenshots/ready-quickdump-dark.png)
+![Quick dump on, so the project name is left out. The checkbox reads Quick dump: skip project name.](assets/screenshots/ready-quickdump-dark.png)
 
 ## Short clips
 
@@ -198,13 +188,9 @@ A card whose only remaining files are skipped short clips can still be formatted
 
 ## Presets
 
-**Coming in the next update.** The preset menu sits at the top right of the window, just left of **Recent Offloads** and **Settings**, and the window title is hidden. In Lodge 1.0.0 the preset menu is in the center of the toolbar, and the title reads Lodge.
-
 A preset saves the destination, the folder and file templates, the camera, the short-clip setting, quick dump, and the file rules. You choose it from the menu. When a card is inserted, Lodge selects the camera you last used with that card, identified by the card’s volume UUID, or by its name when it has no UUID. The offload starts when you click **Offload**.
 
 **Save Current Setup as Preset…** saves what the window is using now. Change any of that afterwards and the menu shows **Edited**, and offers **Update “Name”** for the preset in use. **Manage Presets…** opens Settings > Presets. With no preset selected the menu says **No Preset**.
-
-![The preset control at the top right reads Sony Shoot. The window title is hidden. This chrome is the next update. Lodge 1.0.0 puts that menu in the center of the toolbar, and the title reads Lodge. The empty-window picture later on is the one whose preset control reads Sony Shoot Edited.](assets/screenshots/ready-presets-dark.png)
 
 In Settings > Presets you can add, rename, duplicate, edit, and remove presets. The one in use is marked **In use**, or **In use · edited** when the window has drifted from it. Editing the preset that is in use, while it still matches, updates the window too.
 
@@ -236,17 +222,6 @@ Once a card is scanned, **Layout** shows every folder the offload will make, inc
 
 In Lodge 1.0.0 the header says **Drag to rearrange** while nothing is copying. Drag a level between folders, or drag a token from **Add a level** onto the tree. Click a token to add it at the end. Hover a level and click the remove button. Its help reads **Remove this folder level**. The tree shows one example file name. When the shoot has more than one folder, the extra ones are a line such as **+ 2 more folders**. A level that quick dump removes is struck through and tagged **Quick dump**.
 
-**Coming in the next update.**
-
-- Click a triangle to open a folder. The tooltip reads **Expand (Option-click to expand everything inside)** or **Collapse (Option-click to collapse everything inside)**. **Expand All** and **Collapse All** sit beside the **Layout** title. Expand All also opens folders that are already at the destination, three levels in. A long tree scrolls, and a long name wraps after `_`, `-`, `.`, or a space.
-- A folder Lodge will create has an outlined icon. A folder that is already there is filled. When any of those folders is already on disk, the legend reads **New** and **Already there**. Other folders already at the destination are dimmed.
-- When a folder holds more than one file, they start as one line: the first name, with **+ N more** under it. Open that line to see each file. Lodge 1.0.0 shows one example file name on its own line.
-- Drop a level or a token on the left or right side of a folder’s name to put the tokens side by side in that level, such as `{project}_{date}`. Drag a piece of a combined name between folders to give it its own level again, or along the name to reorder it. Right-click a piece to remove it.
-- Hover a combined level for the separator menu: **Underscore**, **Hyphen**, **Space**, or **None**.
-- The tree lists a folder for each extension, such as `MP4/`, `ARW/`, and `WAV/`, in Finder order, then **Proxies** and **Sidecars**. Lodge 1.0.0 puts the files in the folder the template makes. See [Folders for each extension](#folders-for-each-extension).
-
-A combined level is ordinary template text, so a saved template or preset keeps it. A change that would make the template invalid is refused, with a beep. Quick dump levels that are left out stay visible, struck through, so you can see what the template still contains.
-
 ## File rules
 
 Settings > Files decides which extensions are proxies, which are sidecars, and which names are ignored.
@@ -255,7 +230,7 @@ Settings > Files decides which extensions are proxies, which are sidecars, and w
 
 **Proxies** (default `lrv` and `lrf`) are low-resolution copies, such as a GoPro `.LRV` or a DJI `.LRF`. They go in a `Proxies` folder inside the shoot folder and take their clip’s new name. They are never treated as the footage, and they are not skipped as short clips on their own. They follow the clip.
 
-**Sidecars** (default `thm`, `xml`, and `srt`) are thumbnails, metadata, and telemetry. They go in a `Sidecars` folder and keep the clip’s new name. Sony’s `C0001M01.XML` keeps the `M01`. A GoPro proxy named `GL010001.LRV` follows the clip `GX010001.MP4`. In Lodge 1.0.0, an audio file recorded next to a clip, such as `C0001.WAV`, stays beside the clip rather than in Sidecars, and shares its new name. Sidecars do not use up a sequence number. **Coming in the next update**, that WAV goes in `WAV/` instead. See [Folders for each extension](#folders-for-each-extension).
+**Sidecars** (default `thm`, `xml`, and `srt`) are thumbnails, metadata, and telemetry. They go in a `Sidecars` folder and keep the clip’s new name. Sony’s `C0001M01.XML` keeps the `M01`. A GoPro proxy named `GL010001.LRV` follows the clip `GX010001.MP4`. In Lodge 1.0.0, an audio file recorded next to a clip, such as `C0001.WAV`, stays beside the clip rather than in Sidecars, and shares its new name. Sidecars do not use up a sequence number.
 
 A proxy or sidecar whose clip is not on the card keeps its own name.
 
@@ -267,40 +242,9 @@ The card line counts these. They do not block **Ready to format**. Formatting st
 
 Empty files are copied when they are not hidden and not ignored.
 
-## Folders for each extension
-
-**Coming in the next update.** Inside the folder the template makes, every file goes in a folder named for its extension, in capitals.
-
-`.mp4` and `.MP4` share `MP4/`. `.JPG`, `.JPEG`, and `.JPE` share `JPG/`. `.TIF` and `.TIFF` share `TIF/`. An extension Lodge does not know still gets a folder: `.xyz` goes in `XYZ/`. A file with no extension, such as `README`, stays in the template folder.
-
-Proxies stay in `Proxies/` and sidecars stay in `Sidecars/`. They do not get `LRV/` or `XML/`. Take an extension off the proxy or sidecar list and that file is sorted by its extension instead, still named after its clip.
-
-Audio recorded with a clip, such as `C0001.WAV`, is not a sidecar. It goes in `WAV/` and keeps the clip’s new name, including the same sequence number. A JPEG beside a RAW file, such as `DSC00001.JPG` next to `DSC00001.ARW`, is its own photo. It goes in `JPG/` with the next number, not the RAW file’s number. A proxy or sidecar whose clip is on the card keeps the clip’s new name. A lone one, such as `MEDIAPRO.XML`, keeps its own name and does not take a sequence number.
-
-One sequence runs across the whole shoot folder: the template folder and every format folder under it. Numbering continues after the highest number already there, including files an older offload left directly in the shoot folder. In the Layout tree the format folders are listed like the Finder, and **Proxies** and **Sidecars** come after them. If the template uses `{type}`, you still get `Video`, `Photo`, `Audio`, or `Other`, and the extension folder sits inside that, such as `Video/MP4`.
-
-In Lodge 1.0.0 the files land in the folder the template makes. Proxies and sidecars already have their own folders. Audio recorded with a clip stays next to that clip.
-
-## Updates
-
-**Coming in the next update.** Choose **Lodge > Check for Updates…** to look now. The item is dimmed while a check is already running.
-
-Settings > General has an **Updates** section:
-
-- **Automatically check for updates** is on. Lodge checks for a new version once a day.
-- **Automatically download and install updates** is off. It is unavailable while automatic checks are off.
-
-The note under the switches says you can also choose **Lodge > Check for Updates…** any time.
-
-Lodge 1.0.0 has none of this. It never checks. Download the next version from Gumroad. That version is the first one that can look for a newer one. Copying itself still does not upload anything.
-
 ## Support
 
 Write to [bashframes@gmail.com](mailto:bashframes@gmail.com). If Lodge has been useful, [Support Lodge](https://bashframes.gumroad.com/l/lodge). Pay what you want.
-
-**Coming in the next update.** **Help > Contact Support…** opens an email to that address. The subject is Lodge Support. Under a blank line for your message, Lodge adds its version, its build number, and the macOS version. **Lodge > Support Lodge…** and **Help > Support Lodge…** open the Gumroad page. **Lodge > About Lodge** says Made by BashFrames, with a link to the same email. The bottom of Settings > General reads Made by BashFrames, then **Support**, then **Support Lodge ♥**.
-
-After five offloads where every file was copied and verified, and at least three days after you first opened this version of Lodge, a small card appears. It only appears when Lodge is idle, at launch or after **Done**, never during a copy. The card is titled **Support Lodge**. It says Lodge is made by one person at BashFrames, and that you can chip in on Gumroad. **Maybe Later** asks once more, 30 days later. **Support Lodge** opens the page and does not ask again. **Don’t Ask Again** stops it. If a copy starts while the card is up, the card goes away. Lodge asks at most twice.
 
 ## Ready to format
 
@@ -332,9 +276,9 @@ Lodge opens in **Dark** mode with the **Default** theme. Default is neutral blac
 
 ![Settings > Appearance](assets/screenshots/settings-appearance.png)
 
-![The same card in Light mode. The preset control at the top right, and the hidden title, are the next update. Lodge 1.0.0 keeps the preset menu in the center and the title reads Lodge.](assets/screenshots/ready-light.png)
+![The same card in Light mode.](assets/screenshots/ready-light.png)
 
-![The Ember theme in Dark mode, ready to offload. The preset control at the top right, and the hidden title, are the next update.](assets/screenshots/ready-ember-dark.png)
+![The Ember theme in Dark mode, ready to offload.](assets/screenshots/ready-ember-dark.png)
 
 With **Increase Contrast** or **Reduce Transparency** on, every theme uses solid colours instead of gradients. The Appearance footer says so while either setting is on.
 
@@ -384,10 +328,8 @@ The type comes from the extension, in either case. Settings > General can turn e
 | Presets | `~/Library/Application Support/Lodge/presets.json` |
 | Templates, theme, appearance, file rules, short clips, and the other switches | Lodge’s preferences |
 
-Lodge 1.0.0 does not connect to the network. Copying, the ledger, and settings stay on your Mac. **Coming in the next update**, the daily update check reads Lodge’s update feed. The offload itself still does not upload anything.
+Lodge 1.0.0 does not connect to the network. Copying, the ledger, and settings stay on your Mac. Copying never uploads anything.
 
 ## With no card
 
 Before a card is inserted the Card column is empty, Media explains that it is waiting, and Offload says **Insert a card to begin**.
-
-![Lodge with no card inserted. The preset control at the top right reads Sony Shoot Edited, and the window title is hidden. That chrome is the next update. Lodge 1.0.0 keeps the preset menu in the center of the toolbar, and the title reads Lodge.](assets/screenshots/empty-dark.png)

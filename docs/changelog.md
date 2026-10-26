@@ -1,19 +1,5 @@
 # Changelog
 
-## Unreleased
-
-**Coming in the next update.** Not in the Lodge 1.0.0 download.
-
-- **Expand All** and **Collapse All** open and close the Layout tree. Click a triangle, or Option-click to open or close everything inside a folder. Expand All also opens folders already at the destination, three levels in. In Lodge 1.0.0 the tree shows the folders, and you drag a level, or a token from **Add a level**, to rearrange it.
-- A folder Lodge will create is marked **New**. One already there is marked **Already there**. A folder’s files can fold into one line, the first name with **+ N more** under it. Lodge 1.0.0 shows one example file name, and notes extra folders as a line such as **+ 2 more folders**.
-- Tokens can sit side by side in one folder level, such as `{project}_{date}`. Drop a level or a token on the left or right side of a name. Drag a piece back out between folders to give it its own level. The separator is **Underscore**, **Hyphen**, **Space**, or **None**.
-- The preset menu sits at the top right of the window, just left of **Recent Offloads** and **Settings**, and the window title is hidden. In Lodge 1.0.0 the preset menu is in the center of the toolbar, and the title reads Lodge.
-- **Help > Contact Support…** opens an email to bashframes@gmail.com, subject Lodge Support, with the Lodge and macOS versions under the message. **Lodge > Support Lodge…** and **Help > Support Lodge…** open the Gumroad page. **Lodge > About Lodge** says Made by BashFrames, with a link to that email. Settings > General ends with the same credit, a **Support** link, and **Support Lodge**.
-- After five offloads where every file was copied and verified, and at least three days after that version first opens, a **Support Lodge** card appears when Lodge is idle. It never appears during a copy. **Maybe Later** asks once more, 30 days later. **Support Lodge** and **Don’t Ask Again** stop it. Lodge asks at most twice.
-- The Quick dump checkbox reads **Quick dump**, with an ⓘ beside it. The note says: Skips the project name and dumps all the footage straight into a dated folder. In Lodge 1.0.0 the checkbox reads **Quick dump: skip project name**.
-- Each file goes in a folder named for its extension, in capitals, inside the folder the template makes: `MP4/`, `ARW/`, `WAV/`, and the rest. `.mp4` and `.MP4` share a folder. `.JPG`, `.JPEG`, and `.JPE` share `JPG/`. `.TIF` and `.TIFF` share `TIF/`. An unknown extension still gets a folder. A file with no extension stays in the template folder. Proxies stay in **Proxies/** and sidecars stay in **Sidecars/**. Audio recorded with a clip goes in `WAV/` and keeps the clip’s name and number. A JPEG beside a RAW file is its own photo, in `JPG/`, with the next number. One sequence runs across the shoot folder and every format folder, and continues after files already there, including an older offload that put files directly in the shoot folder. `{type}` still adds `Video/`, `Photo/`, `Audio/`, or `Other/`, with the extension folder inside it. In Lodge 1.0.0 the files land in the folder the template makes, and audio recorded with a clip stays next to that clip.
-- **Lodge > Check for Updates…** looks for a new version. The item is dimmed while a check is already running. Settings > General has an **Updates** section: **Automatically check for updates** (on) and **Automatically download and install updates** (off, and unavailable while checks are off). Lodge checks once a day. Lodge 1.0.0 does not check. Download the next version from Gumroad. That version is the first one that can look for a newer one.
-
 ## 1.0.0
 
 First public release of Lodge, a native Mac app (macOS 14 or later) for offloading camera memory cards. [Download Lodge from Gumroad](https://bashframes.gumroad.com/l/lodge).

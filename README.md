@@ -53,8 +53,6 @@ The first time Lodge reads a card, macOS asks for access to files on a removable
   <img src="docs/assets/motion/lodge-complete-check@2x.gif" width="360" height="100" alt="A green checkmark draws in beside Offload complete. 57 copied, 128 GB.">
 </p>
 
-**Coming in the next update.** See the [changelog](docs/changelog.md).
-
 ## Requirements
 
 macOS 14 or later. Lodge is a universal app for Apple silicon and Intel Macs.
