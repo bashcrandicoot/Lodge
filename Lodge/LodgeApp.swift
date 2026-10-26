@@ -117,6 +117,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         if !AppModel.isRunningUnitTests {
             observeMainWindow()
+            // First launch: "Set up your first preset" (never when opened at login).
+            if !Self.launchedAsLoginItem {
+                DispatchQueue.main.async {
+                    if let model = Self.model { OnboardingWindowController.showIfNeeded(for: model) }
+                }
+            }
             // Opened at login in menu bar mode: stay in the menu bar, no window.
             if Self.launchedAsLoginItem, Self.model?.settings.keepRunningInMenuBar == true {
                 DispatchQueue.main.async {

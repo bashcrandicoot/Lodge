@@ -386,14 +386,32 @@ Help ▸ Contact Support… emails [bashframes@gmail.com](mailto:bashframes@gmai
 
 1. Open `Lodge.xcodeproj` in Xcode (double-click it).
 2. Press **⌘R**.
-3. First run: click **Choose Folder…** in the *Destination* panel (or in Settings, ⌘,) and
-   pick the folder for your footage. It's remembered from then on.
+3. First run: **Set up your first preset** walks you through it (see [First-launch setup](#first-launch-setup)),
+   or skip it and click **Choose Folder…** in the *Destination* panel (or in Settings, ⌘,)
+   to pick the folder for your footage. It's remembered from then on.
 4. Insert a card, fill in the project name (and camera if your template uses it),
    and click **Offload N Files**.
 
 The project builds without an Apple developer account ("Sign to Run Locally" /
 ad-hoc signing). The app is not sandboxed so it can read `/Volumes` and write to any
 folder you pick.
+
+### First-launch setup
+
+The first time Lodge opens, a setup window ("Set up your first preset") builds a real
+preset in five steps: what a preset is, the destination (it becomes a favorite and,
+if you like, the default), the folder levels (starting from Film shoot, Photo session,
+Podcast, Daily archive or Blank, which are the Settings ▸ Naming examples), file naming
+and short clips, then a review with a live preview made by the real planner. Saving
+also sets Eject after offload, the success sound and the import prompt, and switches to
+the new preset unless you untick *Switch to this preset now*.
+
+- **Skip setup** changes nothing and never shows it again.
+- Closing the window keeps your progress, and the next launch resumes on the same step.
+- People who already use Lodge (presets, favorites or offloads already there) never see it.
+- `-LodgeDemoOnboarding YES` shows it again (a Release build too), starting from the splash.
+- The splash and done screens always use the night scene in Dark; the five steps follow
+  Lodge's appearance. Design: `Design/onboarding/`.
 
 ### First-launch notes
 
@@ -446,7 +464,11 @@ Support Lodge card,
 `-LodgeDemoMount YES` simulates a card being plugged in (the import prompt) and
 `-LodgeDemoMenuPreview YES` draws the menu bar icon's menu in a window and
 `-LodgeDemoInfoHint "Quick dump"` draws that ⓘ hint's popover to `/tmp/lodge-infohint.png`
-(the real popover closes while Lodge is in the background). Demo windows
+(the real popover closes while Lodge is in the background),
+`-LodgeDemoSettingsScroll menubar` scrolls Settings ▸ General to the Menu Bar section, and
+`-LodgeDemoOnboarding YES` opens first-launch setup with sample drives (add
+`-LodgeDemoOnboardingStep splash|template|destination|folders|naming|review|done` to start on
+a step; `done` saves a sample Film Shoot preset into the demo's in-memory stores). Demo windows
 are drawn as if they were active, so screenshots taken with the app in the background still
 show the accent colour on switches and segments.
 Formatting can never run in demo mode.
@@ -497,6 +519,12 @@ Every view also has `#Preview`s you can open in Xcode's canvas.
 | `DemoData.swift` | Sample data for previews and demo mode (Debug only) |
 | `OffloadSession.swift` | State for one card's offload; runs the copy in the background |
 | `VolumeWatcher.swift` | Detects cards being inserted/removed |
+| `Onboarding.swift` | First-launch setup: steps, starters, the saved draft (resume), who sees it, saving into real settings |
+| `OnboardingView.swift` | Setup window: splash, the five-step shell (sidebar, progress, footer) |
+| `OnboardingSteps.swift` | Setup steps: what's a preset, destination, folder levels, naming & safety, review |
+| `OnboardingDone.swift` | Setup's done screen: the detected card, menu bar and prompt switches |
+| `OnboardingComponents.swift` | Setup's palette, cards, token pills and folder preview tree |
+| `OnboardingWindow.swift` | The setup window (1280×800, forced Dark on splash/done) and when it shows |
 | `MenuBar.swift` | Menu bar mode: the menu bar icon and its menu, opening the main window again, Open at login |
 | `ImportPromptPolicy.swift` | Which mounted volumes get an import prompt (camera media, not disk images/network/Time Machine/destinations) |
 | `ImportPrompter.swift` | The "card connected · Import with Lodge?" notification, its queue and debounce |
