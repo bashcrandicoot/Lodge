@@ -16,10 +16,8 @@
   Lodge is a universal app. It runs on Apple silicon and Intel Macs, on macOS 14 or later.
 </p>
 
-<p align="center">Formerly SnapDrop. On its first launch, Lodge copies SnapDrop’s data and settings and leaves the originals where they are. Anything Lodge already has is kept.</p>
-
 <p align="center">
-  <a href="https://github.com/bashcrandicoot/Lodge/releases/tag/v1.0.0"><img alt="macOS 14 or later" src="https://img.shields.io/badge/macOS-14%2B-3A3A3C?style=flat&logo=apple&logoColor=white"></a>
+  <img alt="macOS 14 or later" src="https://img.shields.io/badge/macOS-14%2B-3A3A3C?style=flat&logo=apple&logoColor=white">
   <a href="https://www.swift.org"><img alt="Swift 5" src="https://img.shields.io/badge/Swift-5-F05138?style=flat&logo=swift&logoColor=white"></a>
   <a href="LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-0A84FF?style=flat"></a>
   <a href="https://github.com/bashcrandicoot/Lodge"><img alt="Vibe Coded" src="https://img.shields.io/badge/-Vibe%20Coded-0A84FF?style=flat"></a>
@@ -59,12 +57,13 @@ The card’s line reads **54 new files · 5 ignored** before and during an offlo
 | --- | --- | --- |
 | ![The Lodge window in Dark mode before an offload, with a card selected, file names previewed in Media, a destination folder chosen, and Offload ready along the bottom.](docs/assets/screenshots/ready-dark.png) | ![Lodge copying files from a card. The offload bar shows the file in progress, how far through the batch the copy is, and Cancel.](docs/assets/screenshots/running-dark.png) | ![A finished Lodge offload. The card shows the green Ready to format badge, and the bar summarizes how many files were copied.](docs/assets/screenshots/finished-dark.png) |
 
-## Download Lodge 1.0.0
+## Download Lodge
 
-Download **Lodge 1.0.0** from the [v1.0.0 release](https://github.com/bashcrandicoot/Lodge/releases/tag/v1.0.0).
+<p align="center">
+  <a href="https://bashframe.gumroad.com/l/lodge"><img src="docs/assets/download-button.png" alt="Download Lodge for Mac" width="320" height="72"></a>
+</p>
 
-- [Lodge-1.0.0.dmg](https://github.com/bashcrandicoot/Lodge/releases/download/v1.0.0/Lodge-1.0.0.dmg) — open the disk image and drag Lodge to Applications.
-- [Lodge-1.0.0.zip](https://github.com/bashcrandicoot/Lodge/releases/download/v1.0.0/Lodge-1.0.0.zip) — unzip it and move Lodge to Applications.
+[Download Lodge from Gumroad](https://bashframe.gumroad.com/l/lodge). Open the disk image and drag Lodge to Applications.
 
 Lodge is not notarized. The first time you open it:
 
@@ -98,7 +97,7 @@ The longer path, including what to do if Offload is waiting, is in [Getting star
 
 Lodge is made by BashFrames. For help, write to [bashframes@gmail.com](mailto:bashframes@gmail.com).
 
-If Lodge has been useful, you can [Support Lodge](https://bashframe.gumroad.com/l/lodge).
+If Lodge has been useful, [Support Lodge](https://bashframe.gumroad.com/l/lodge). Pay what you want.
 
 ## License
 

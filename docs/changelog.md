@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-**Coming in the next update.** Not in the [Lodge 1.0.0](https://github.com/bashcrandicoot/Lodge/releases/tag/v1.0.0) download.
+**Coming in the next update.** Not in the Lodge 1.0.0 download.
 
 - **Expand All** and **Collapse All** open and close the Layout tree. Click a triangle, or Option-click to open or close everything inside a folder. Expand All also opens folders already at the destination, three levels in. In Lodge 1.0.0 the tree shows the folders, and you drag a level, or a token from **Add a level**, to rearrange it.
 - A folder Lodge will create is marked **New**. One already there is marked **Already there**. A folder’s files can fold into one line, the first name with **+ N more** under it. Lodge 1.0.0 shows one example file name, and notes extra folders as a line such as **+ 2 more folders**.
@@ -12,7 +12,7 @@
 
 ## 1.0.0
 
-First public release of Lodge, a native Mac app (macOS 14 or later) for offloading camera memory cards. Download it from the [v1.0.0 release](https://github.com/bashcrandicoot/Lodge/releases/tag/v1.0.0): `Lodge-1.0.0.dmg` and `Lodge-1.0.0.zip`.
+First public release of Lodge, a native Mac app (macOS 14 or later) for offloading camera memory cards. [Download Lodge from Gumroad](https://bashframe.gumroad.com/l/lodge).
 
 ### Offload and verification
 

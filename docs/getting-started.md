@@ -4,10 +4,9 @@ Home base for your media. Lodge is a universal app for Apple silicon and Intel M
 
 ## Download Lodge
 
-Get **Lodge 1.0.0** from the [v1.0.0 release](https://github.com/bashcrandicoot/Lodge/releases/tag/v1.0.0).
+<a href="https://bashframe.gumroad.com/l/lodge"><img src="assets/download-button.png" alt="Download Lodge for Mac" width="320" height="72"></a>
 
-- [Lodge-1.0.0.dmg](https://github.com/bashcrandicoot/Lodge/releases/download/v1.0.0/Lodge-1.0.0.dmg) — open the disk image and drag Lodge to Applications.
-- [Lodge-1.0.0.zip](https://github.com/bashcrandicoot/Lodge/releases/download/v1.0.0/Lodge-1.0.0.zip) — unzip it and move Lodge to Applications.
+[Download Lodge from Gumroad](https://bashframe.gumroad.com/l/lodge). Open the disk image and drag Lodge to Applications.
 
 ## Open Lodge the first time
 

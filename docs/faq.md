@@ -60,7 +60,7 @@ The first time Lodge reads a card, also allow access to files on a removable vol
 
 ## How do I get help?
 
-Write to [bashframes@gmail.com](mailto:bashframes@gmail.com). If Lodge has been useful, you can [Support Lodge](https://bashframe.gumroad.com/l/lodge).
+Write to [bashframes@gmail.com](mailto:bashframes@gmail.com). If Lodge has been useful, [Support Lodge](https://bashframe.gumroad.com/l/lodge). Pay what you want.
 
 **Coming in the next update.** **Help > Contact Support…** and **Support Lodge…** are in the Help menu. After a few offloads, Lodge shows a quiet tip once. You can dismiss it.
 
