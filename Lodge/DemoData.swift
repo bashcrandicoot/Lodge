@@ -281,7 +281,7 @@ enum DemoData {
                 phase: .running,
                 progress: OffloadProgress(filesDone: current, filesTotal: plan.count,
                                           currentFile: plan[current].originalName, currentID: plan[current].id,
-                                          bytesDone: total * 2 / 5, bytesTotal: total,
+                                          bytesDone: Int64(Double(total) * demoProgress), bytesTotal: total,
                                           currentFileBytes: plan[current].size * 3 / 5),
                 startedAt: Date().addingTimeInterval(-140),
                 summary: nil,
@@ -310,7 +310,49 @@ enum DemoData {
                                           ignored: ignoredItems)
         }
         model.installDemo(card: card, session: session, inventory: cardInventory)
+        if state == .running && UserDefaults.standard.bool(forKey: "LodgeDemoWagonDrive") {
+            driveToTheLodge(session: session, plan: plan, current: current, total: total)
+        }
         return model
+    }
+
+    /// How far the "copying" demo has got: `-LodgeDemoProgress 0.62` (default 0.4).
+    static var demoProgress: Double {
+        let value = UserDefaults.standard.double(forKey: "LodgeDemoProgress")
+        return value > 0 ? min(1, value) : 0.4
+    }
+
+    /// `-LodgeDemoWagonDrive YES`: after a second, the "copying" demo runs on to 100 % along the
+    /// wagon's slow-down curve and finishes, so the whole arrival plays (for recordings).
+    private static func driveToTheLodge(session: OffloadSession, plan: [PlannedFile], current: Int, total: Int64) {
+        let start = demoProgress
+        Task { @MainActor in
+            try? await Task.sleep(for: .seconds(1))
+            let began = Date()
+            while true {
+                let t = Date().timeIntervalSince(began) / SlowdownCurve.duration
+                let k = min(1, t)
+                let fraction = start + (1 - start) * (1 - pow(1 - k, 2.2))
+                let index = min(plan.count - 1, current + Int(Double(plan.count - current) * k))
+                session.applyDemo(
+                    phase: .running,
+                    progress: OffloadProgress(filesDone: index, filesTotal: plan.count,
+                                              currentFile: plan[index].originalName, currentID: plan[index].id,
+                                              bytesDone: Int64(Double(total) * fraction), bytesTotal: total,
+                                              currentFileBytes: plan[index].size / 2, isVerifying: k > 0.9),
+                    startedAt: began.addingTimeInterval(-140), summary: nil, plan: plan,
+                    verifiedIDs: Set(plan.prefix(index).map(\.id)))
+                if k >= 1 { break }
+                try? await Task.sleep(for: .milliseconds(100))
+            }
+            try? await Task.sleep(for: .seconds(0.6))
+            session.applyDemo(
+                phase: .finished,
+                progress: OffloadProgress(filesDone: plan.count, filesTotal: plan.count, bytesDone: total, bytesTotal: total),
+                startedAt: began.addingTimeInterval(-420),
+                summary: OffloadSummary(copied: plan.count, skipped: session.alreadyOffloadedCount, failed: 0),
+                plan: plan, verifiedIDs: Set(plan.map(\.id)))
+        }
     }
 }
 

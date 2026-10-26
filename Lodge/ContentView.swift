@@ -28,8 +28,6 @@ struct ContentView: View {
             Divider()
 
             OffloadBar()
-                .padding(.horizontal, 20)
-                .padding(.vertical, 12)
                 .background(.bar)
         }
         .background(ThemeBackground())
