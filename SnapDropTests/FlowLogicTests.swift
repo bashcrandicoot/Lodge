@@ -10,68 +10,95 @@ final class FlowLogicTests: XCTestCase {
                     size: size, creationDate: date, modificationDate: date)
     }
 
-    // MARK: Name preview
+    // MARK: Name preview (planner)
+
+    private func preview(_ clips: [Clip], shoot: String, existing: [String: [String]] = [:]) -> [PlannedFile] {
+        OffloadPlanner.plan(files: clips, naming: .standard, context: NamingContext(shoot: shoot),
+                            existingNames: { existing[$0] ?? [] })
+    }
 
     func testPreviewNumbersInShootOrder() {
         let clips = [clip("C0002.MOV", minutesAfter: 5), clip("C0001.MP4", minutesAfter: 0)]
-        let items = NamePreview.preview(clips: clips, shootName: "BeachShoot")
+        let items = preview(clips, shoot: "BeachShoot")
         XCTAssertEqual(items.map(\.originalName), ["C0001.MP4", "C0002.MOV"])
-        XCTAssertEqual(items.map(\.newName), ["2026-10-25_BeachShoot_0001.mp4", "2026-10-25_BeachShoot_0002.mov"])
+        XCTAssertEqual(items.map(\.fileName), ["2026-10-25_BeachShoot_0001.mp4", "2026-10-25_BeachShoot_0002.mov"])
         XCTAssertEqual(items.map(\.folder), ["2026-10-25/BeachShoot", "2026-10-25/BeachShoot"])
     }
 
     func testPreviewContinuesAfterExistingAndSplitsByDate() {
         let clips = [clip("A.MP4", minutesAfter: 0, day: 25), clip("B.MP4", minutesAfter: 0, day: 26)]
-        let items = NamePreview.preview(clips: clips, shootName: "Trip", highestExisting: ["2026-10-25/Trip": 9])
-        XCTAssertEqual(items.map(\.newName), ["2026-10-25_Trip_0010.mp4", "2026-10-26_Trip_0001.mp4"])
-        XCTAssertEqual(NamePreview.folders(for: items), ["2026-10-25/Trip", "2026-10-26/Trip"])
+        let items = preview(clips, shoot: "Trip", existing: ["2026-10-25/Trip": ["2026-10-25_Trip_0009.mov"]])
+        XCTAssertEqual(items.map(\.fileName), ["2026-10-25_Trip_0010.mp4", "2026-10-26_Trip_0001.mp4"])
+        XCTAssertEqual(PlanLayout.folders(items), ["2026-10-25/Trip", "2026-10-26/Trip"])
     }
 
     func testPreviewMatchesRealOffloadOrder() {
         let clips = [clip("Z.MP4", minutesAfter: 0), clip("A.MP4", minutesAfter: 0), clip("M.MP4", minutesAfter: -3)]
-        let previewOrder = NamePreview.preview(clips: clips, shootName: "X").map(\.originalName)
+        let previewOrder = preview(clips, shoot: "X").map(\.originalName)
         XCTAssertEqual(previewOrder, Offloader.order(clips).map { $0.url.lastPathComponent })
         XCTAssertEqual(previewOrder, ["M.MP4", "A.MP4", "Z.MP4"])
     }
 
-    func testHighestExistingReadsDestination() throws {
+    func testDiskListerReadsDestination() throws {
         let destination = FileManager.default.temporaryDirectory.appendingPathComponent("snapdrop-preview-\(UUID().uuidString)")
         defer { try? FileManager.default.removeItem(at: destination) }
         let clips = [clip("A.MP4", minutesAfter: 0)]
         let date = Renamer.dateString(for: clips[0].captureDate)
-        let folder = Renamer.folderURL(destination: destination, dateString: date, shootName: "Trip")
+        let folder = destination.appendingPathComponent("\(date)/Trip")
         try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
         FileManager.default.createFile(atPath: folder.appendingPathComponent("\(date)_Trip_0004.mp4").path, contents: Data())
-        XCTAssertEqual(NamePreview.highestExisting(destination: destination, clips: clips, shootName: "Trip"), ["\(date)/Trip": 4])
-        XCTAssertEqual(NamePreview.highestExisting(destination: nil, clips: clips, shootName: "Trip"), [:])
+        let onDisk = OffloadPlanner.plan(files: clips, naming: .standard, context: NamingContext(shoot: "Trip"),
+                                         existingNames: OffloadPlanner.diskLister(root: destination))
+        XCTAssertEqual(onDisk.map(\.fileName), ["\(date)_Trip_0005.mp4"])
+        let noDestination = OffloadPlanner.plan(files: clips, naming: .standard, context: NamingContext(shoot: "Trip"),
+                                                existingNames: OffloadPlanner.diskLister(root: nil))
+        XCTAssertEqual(noDestination.map(\.fileName), ["\(date)_Trip_0001.mp4"])
     }
 
     // MARK: Readiness
 
     func testBlockerReasons() {
-        func blocker(card: Bool = true, scanning: Bool = false, clips: Int = 3, name: String = "Shoot",
-                     destination: Bool = true, required: Int64 = 10, available: Int64? = 100) -> String? {
-            OffloadReadiness.blocker(hasCard: card, isScanning: scanning, newClipCount: clips, shootName: name,
+        func blocker(card: Bool = true, scanning: Bool = false, files: Int = 3, valid: Bool = true,
+                     needs: NamingNeeds = NamingNeeds(shoot: true), project: String = "", name: String = "Shoot",
+                     camera: Bool = false, destination: Bool = true,
+                     required: Int64 = 10, available: Int64? = 100) -> String? {
+            OffloadReadiness.blocker(hasCard: card, isScanning: scanning, newFileCount: files, namingIsValid: valid,
+                                     needs: needs, project: project, shootName: name, hasCamera: camera,
                                      hasDestination: destination, requiredBytes: required, availableBytes: available)
         }
         XCTAssertNil(blocker())
         XCTAssertNil(blocker(available: nil))
         XCTAssertEqual(blocker(card: false), "Insert a card to begin")
         XCTAssertEqual(blocker(scanning: true), "Scanning card…")
-        XCTAssertEqual(blocker(clips: 0), "All clips on this card are already offloaded")
+        XCTAssertEqual(blocker(files: 0), "Everything on this card is already offloaded")
+        XCTAssertEqual(blocker(valid: false), "Fix the naming template in Settings")
         XCTAssertEqual(blocker(name: ""), "Enter a shoot name")
         XCTAssertEqual(blocker(destination: false), "Choose a destination folder")
         XCTAssertTrue(blocker(required: 500, available: 100)?.hasPrefix("Not enough space") == true)
+        // Fields are only required when the templates use them.
+        XCTAssertNil(blocker(needs: NamingNeeds(), name: ""))
+        XCTAssertEqual(blocker(needs: NamingNeeds(project: true, shoot: true), name: ""), "Enter a project name")
+        XCTAssertNil(blocker(needs: NamingNeeds(project: true), project: "Doc", name: ""))
+        XCTAssertEqual(blocker(needs: NamingNeeds(camera: true)), "Choose a camera")
+        XCTAssertNil(blocker(needs: NamingNeeds(camera: true), camera: true))
+    }
+
+    func testNamingNeedsFollowTemplates() {
+        XCTAssertEqual(NamingNeeds(.standard), NamingNeeds(shoot: true))
+        XCTAssertEqual(NamingNeeds(NamingTemplates(folder: "{project}/{date}/{camera}", file: "{date}_{project}_{camera}_{seq}")),
+                       NamingNeeds(project: true, camera: true))
+        XCTAssertEqual(NamingNeeds(NamingTemplates(folder: "", file: "{original}")), NamingNeeds())
+        XCTAssertEqual(NamingNeeds(nil), NamingNeeds(shoot: true), "Invalid templates fall back to the default")
     }
 
     // MARK: Formatting
 
-    func testClipCountAndButtonTitle() {
-        XCTAssertEqual(OffloadFormatting.clipCount(1), "1 Clip")
-        XCTAssertEqual(OffloadFormatting.clipCount(12), "12 Clips")
-        XCTAssertEqual(OffloadFormatting.offloadButtonTitle(clipCount: 0), "Offload Clips")
-        XCTAssertEqual(OffloadFormatting.offloadButtonTitle(clipCount: 1), "Offload 1 Clip")
-        XCTAssertEqual(OffloadFormatting.offloadButtonTitle(clipCount: 18), "Offload 18 Clips")
+    func testFileCountAndButtonTitle() {
+        XCTAssertEqual(OffloadFormatting.fileCount(1), "1 File")
+        XCTAssertEqual(OffloadFormatting.fileCount(12), "12 Files")
+        XCTAssertEqual(OffloadFormatting.offloadButtonTitle(fileCount: 0), "Offload Files")
+        XCTAssertEqual(OffloadFormatting.offloadButtonTitle(fileCount: 1), "Offload 1 File")
+        XCTAssertEqual(OffloadFormatting.offloadButtonTitle(fileCount: 18), "Offload 18 Files")
     }
 
     func testByteFormatting() {

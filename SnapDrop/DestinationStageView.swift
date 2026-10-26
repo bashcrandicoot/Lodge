@@ -52,10 +52,7 @@ struct DestinationStageView: View {
 
             SpaceInfo(url: url, required: model.session?.newBytes)
 
-            FolderLayout(
-                root: url.lastPathComponent,
-                folders: plannedFolders,
-                example: exampleFileName)
+            FolderLayout(root: url.lastPathComponent, plan: plan)
 
             Spacer(minLength: 0)
 
@@ -73,23 +70,15 @@ struct DestinationStageView: View {
         }
     }
 
-    private var shootName: String {
-        let name = model.session?.shootName ?? ""
-        return name.isEmpty ? NamePreview.placeholderShootName : name
-    }
-
-    private var previewItems: [NamePreviewItem] {
-        guard let session = model.session else { return [] }
-        return NamePreview.preview(clips: session.newClips, shootName: shootName)
-    }
-
-    private var plannedFolders: [String] {
-        let folders = NamePreview.folders(for: previewItems)
-        return folders.isEmpty ? ["YYYY-MM-DD/\(shootName)"] : folders
-    }
-
-    private var exampleFileName: String {
-        previewItems.first?.newName ?? "YYYY-MM-DD_\(shootName)_0001.mp4"
+    /// The planned names (with placeholders), or a sample file when there's no card.
+    private var plan: [PlannedFile] {
+        if let session = model.session, !session.newClips.isEmpty {
+            return model.previewPlan(for: session)
+        }
+        let sample = Clip(url: URL(fileURLWithPath: "/Volumes/Card/DCIM/C0001.MP4"), relativePath: "DCIM/C0001.MP4",
+                          size: 0, creationDate: Date(), modificationDate: Date())
+        return OffloadPlanner.plan(files: [sample], naming: settings.naming ?? .standard,
+                                   context: NamingContext().fillingBlanks(), existingNames: { _ in [] })
     }
 }
 
@@ -115,7 +104,7 @@ private struct SpaceInfo: View {
                 Spacer()
                 if let required, required > 0 {
                     Text("needs \(OffloadFormatting.bytes(required))")
-                        .foregroundStyle(available.map(isShort) == true ? .red : .secondary)
+                        .foregroundStyle(available.map(isShort) == true ? Color.red : Color.secondary)
                 }
             }
             .font(.caption)
@@ -129,30 +118,36 @@ private struct SpaceInfo: View {
     }
 }
 
-/// A tiny tree showing how files are laid out at the destination.
+/// A tiny tree showing how files are laid out at the destination, following the templates.
 private struct FolderLayout: View {
     let root: String
-    let folders: [String]
-    let example: String
+    let plan: [PlannedFile]
 
     var body: some View {
+        let first = plan.first
+        let levels = first.map { $0.folder.split(separator: "/").map(String.init) } ?? []
+        let otherFolders = max(0, PlanLayout.folders(plan).count - 1)
         VStack(alignment: .leading, spacing: 3) {
             Text("Layout")
                 .font(.subheadline.weight(.semibold))
                 .padding(.bottom, 2)
             row(root, symbol: "folder.fill", indent: 0)
-            ForEach(folders.prefix(3), id: \.self) { folder in
-                let parts = folder.split(separator: "/").map(String.init)
-                if parts.count == 2 {
-                    row(parts[0], symbol: "folder", indent: 1)
-                    row(parts[1], symbol: "folder", indent: 2)
-                }
+            ForEach(Array(levels.enumerated()), id: \.offset) { index, level in
+                row(level, symbol: "folder", indent: index + 1)
             }
-            row(example, symbol: "film", indent: 3)
+            if let first {
+                row(first.fileName, symbol: first.category.symbol, indent: levels.count + 1)
+            }
+            if otherFolders > 0 {
+                Text("+ \(otherFolders) more \(otherFolders == 1 ? "folder" : "folders")")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .padding(.leading, CGFloat(levels.count) * 12 + 20)
+            }
         }
         .font(.system(.caption, design: .monospaced))
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Files are saved as \(root), then date folder, then shoot folder, for example \(example)")
+        .accessibilityLabel("Files are saved like \(([root] + levels + [first?.fileName ?? ""]).joined(separator: ", then "))")
     }
 
     private func row(_ text: String, symbol: String, indent: Int) -> some View {
@@ -161,7 +156,7 @@ private struct FolderLayout: View {
         } icon: {
             Image(systemName: symbol).foregroundStyle(.tint)
         }
-        .padding(.leading, CGFloat(indent) * 14)
+        .padding(.leading, CGFloat(indent) * 12)
     }
 }
 

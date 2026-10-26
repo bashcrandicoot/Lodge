@@ -56,8 +56,11 @@ enum DemoData {
         }
 
         let session = OffloadSession(card: card, clips: all, knownKeys: ledger.knownKeys)
+        session.projectInput = "Coastline"
         session.shootNameInput = "Beach Shoot"
         let total = session.newBytes
+        let plan = OffloadPlanner.plan(files: session.newClips, naming: settings.naming ?? .standard,
+                                       context: model.namingContext(for: session), existingNames: { _ in [] })
         switch state {
         case .running:
             session.applyDemo(
@@ -65,14 +68,18 @@ enum DemoData {
                 progress: OffloadProgress(filesDone: 7, filesTotal: session.newClips.count,
                                           currentFile: "C0014.MP4", bytesDone: total * 2 / 5, bytesTotal: total),
                 startedAt: Date().addingTimeInterval(-140),
-                summary: nil)
+                summary: nil,
+                plan: plan,
+                verifiedIDs: Set(plan.prefix(7).map(\.id)))
         case .finished:
             session.applyDemo(
                 phase: .finished,
                 progress: OffloadProgress(filesDone: session.newClips.count, filesTotal: session.newClips.count,
                                           bytesDone: total, bytesTotal: total),
                 startedAt: Date().addingTimeInterval(-420),
-                summary: OffloadSummary(copied: session.newClips.count, skipped: 6, failed: 0))
+                summary: OffloadSummary(copied: session.newClips.count, skipped: 6, failed: 0),
+                plan: plan,
+                verifiedIDs: Set(plan.map(\.id)))
         default:
             break
         }

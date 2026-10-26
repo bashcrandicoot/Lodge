@@ -2,62 +2,21 @@ import Foundation
 
 // Pure helpers that drive the main window. No UI code in here, so it's easy to unit test.
 
-/// One row of the live "name preview": what a clip is called now, and what it will be called.
-struct NamePreviewItem: Identifiable, Equatable, Sendable {
-    let id: String            // the clip's path on the card
-    let originalName: String  // "C0001.MP4"
-    let folder: String        // "2026-10-25/BeachShoot"
-    let newName: String       // "2026-10-25_BeachShoot_0001.mp4"
-    let size: Int64
-}
+/// Which fields the current templates need filled in.
+struct NamingNeeds: Equatable, Sendable {
+    var project = false
+    var shoot = false
+    var camera = false
 
-enum NamePreview {
-    /// Shown in the preview while the shoot-name field is still empty.
-    static let placeholderShootName = "ShootName"
-
-    /// Works out the final names for `clips`, exactly the way the offload will
-    /// (same order, same numbering).
-    /// - Parameter highestExisting: highest sequence number already used in each
-    ///   "date/shoot" folder at the destination, so the preview continues after it.
-    static func preview(clips: [Clip], shootName: String, highestExisting: [String: Int] = [:]) -> [NamePreviewItem] {
-        var next: [String: Int] = [:]
-        return Offloader.order(clips).map { clip in
-            let date = Renamer.dateString(for: clip.captureDate)
-            let folder = "\(date)/\(shootName)"
-            let number = next[folder] ?? ((highestExisting[folder] ?? 0) + 1)
-            next[folder] = number + 1
-            let name = Renamer.fileName(
-                prefix: Renamer.prefix(dateString: date, shootName: shootName),
-                sequence: number,
-                fileExtension: clip.url.pathExtension)
-            return NamePreviewItem(
-                id: clip.relativePath,
-                originalName: clip.url.lastPathComponent,
-                folder: folder,
-                newName: name,
-                size: clip.size)
-        }
+    init(project: Bool = false, shoot: Bool = false, camera: Bool = false) {
+        self.project = project
+        self.shoot = shoot
+        self.camera = camera
     }
 
-    /// The distinct "date/shoot" folders the clips will go into, in order.
-    static func folders(for items: [NamePreviewItem]) -> [String] {
-        var seen = Set<String>()
-        return items.compactMap { seen.insert($0.folder).inserted ? $0.folder : nil }
-    }
-
-    /// Looks at the destination on disk to find the highest number already used in
-    /// each folder the clips will go into. (Reads the disk, so not "pure".)
-    static func highestExisting(destination: URL?, clips: [Clip], shootName: String) -> [String: Int] {
-        guard let destination, !shootName.isEmpty else { return [:] }
-        var result: [String: Int] = [:]
-        let dates = Set(clips.map { Renamer.dateString(for: $0.captureDate) })
-        for date in dates {
-            let folder = Renamer.folderURL(destination: destination, dateString: date, shootName: shootName)
-            let names = (try? FileManager.default.contentsOfDirectory(atPath: folder.path)) ?? []
-            let highest = Renamer.highestSequence(in: names, prefix: Renamer.prefix(dateString: date, shootName: shootName))
-            if highest > 0 { result["\(date)/\(shootName)"] = highest }
-        }
-        return result
+    init(_ naming: NamingTemplates?) {
+        let naming = naming ?? .standard
+        self.init(project: naming.uses(.project), shoot: naming.uses(.shoot), camera: naming.uses(.camera))
     }
 }
 
@@ -66,21 +25,37 @@ enum OffloadReadiness {
     static func blocker(
         hasCard: Bool,
         isScanning: Bool,
-        newClipCount: Int,
+        newFileCount: Int,
+        namingIsValid: Bool = true,
+        needs: NamingNeeds = NamingNeeds(shoot: true),
+        project: String = "",
         shootName: String,
+        hasCamera: Bool = false,
         hasDestination: Bool,
         requiredBytes: Int64,
         availableBytes: Int64?
     ) -> String? {
         if !hasCard { return "Insert a card to begin" }
         if isScanning { return "Scanning card…" }
-        if newClipCount == 0 { return "All clips on this card are already offloaded" }
-        if shootName.isEmpty { return "Enter a shoot name" }
+        if newFileCount == 0 { return "Everything on this card is already offloaded" }
+        if !namingIsValid { return "Fix the naming template in Settings" }
+        if needs.project && project.isEmpty { return "Enter a project name" }
+        if needs.shoot && shootName.isEmpty { return "Enter a shoot name" }
+        if needs.camera && !hasCamera { return "Choose a camera" }
         if !hasDestination { return "Choose a destination folder" }
         if let available = availableBytes, available < requiredBytes {
             return "Not enough space: needs \(OffloadFormatting.bytes(requiredBytes)), \(OffloadFormatting.bytes(available)) free"
         }
         return nil
+    }
+}
+
+/// Helpers for showing a plan as a folder tree.
+enum PlanLayout {
+    /// The distinct destination folders, in the order files go into them.
+    static func folders(_ plan: [PlannedFile]) -> [String] {
+        var seen = Set<String>()
+        return plan.compactMap { seen.insert($0.folder).inserted ? $0.folder : nil }
     }
 }
 
@@ -95,14 +70,14 @@ enum OffloadFormatting {
         "\(bytes(done)) of \(bytes(total))"
     }
 
-    /// "1 Clip" / "12 Clips"
-    static func clipCount(_ count: Int) -> String {
-        count == 1 ? "1 Clip" : "\(count) Clips"
+    /// "1 File" / "12 Files"
+    static func fileCount(_ count: Int) -> String {
+        count == 1 ? "1 File" : "\(count) Files"
     }
 
-    /// "Offload 12 Clips"
-    static func offloadButtonTitle(clipCount count: Int) -> String {
-        count == 0 ? "Offload Clips" : "Offload \(clipCount(count))"
+    /// "Offload 12 Files"
+    static func offloadButtonTitle(fileCount count: Int) -> String {
+        count == 0 ? "Offload Files" : "Offload \(fileCount(count))"
     }
 
     /// Seconds left, based on the average speed so far. `nil` until there's enough data.

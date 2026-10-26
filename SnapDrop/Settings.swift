@@ -1,38 +1,101 @@
 import Foundation
 import AppKit
 
-/// User preferences: the destination folder and whether to eject cards when done.
+/// User preferences: destination folder, naming templates, eject after offload…
 ///
 /// Stored in `UserDefaults` (a small built-in key/value store). A plain folder path is
 /// fine because SnapDrop is not sandboxed.
 @MainActor
 final class AppSettings: ObservableObject {
-    private static let destinationKey = "destinationPath"
-    private static let ejectKey = "ejectAfterOffload"
+    private enum Key {
+        static let destination = "destinationPath"
+        static let eject = "ejectAfterOffload"
+        static let folderTemplate = "folderTemplate"
+        static let fileTemplate = "fileTemplate"
+        static let lastProject = "lastProject"
+        static let recentProjects = "recentProjects"
+    }
+
+    static let maxRecentProjects = 6
 
     /// Where settings are saved. `nil` = don't save (used for previews and demo mode).
     private let defaults: UserDefaults?
 
-    /// Absolute path of the folder clips are offloaded into, or `nil` if not chosen yet.
+    /// Absolute path of the folder files are offloaded into, or `nil` if not chosen yet.
     @Published var destinationPath: String? {
-        didSet { defaults?.set(destinationPath, forKey: Self.destinationKey) }
+        didSet { defaults?.set(destinationPath, forKey: Key.destination) }
     }
 
-    /// Eject the card automatically after an offload where every clip verified. Off by default.
+    /// Eject the card automatically after an offload where every file verified. Off by default.
     @Published var ejectAfterOffload: Bool {
-        didSet { defaults?.set(ejectAfterOffload, forKey: Self.ejectKey) }
+        didSet { defaults?.set(ejectAfterOffload, forKey: Key.eject) }
+    }
+
+    /// Folder structure template, e.g. "{date}/{shoot}" ("/" separates levels).
+    @Published var folderTemplate: String {
+        didSet { defaults?.set(folderTemplate, forKey: Key.folderTemplate) }
+    }
+
+    /// File name template, e.g. "{date}_{shoot}_{seq}" (the extension is added automatically).
+    @Published var fileTemplate: String {
+        didSet { defaults?.set(fileTemplate, forKey: Key.fileTemplate) }
+    }
+
+    /// The project used last time (pre-filled for the next card).
+    @Published private(set) var lastProject: String {
+        didSet { defaults?.set(lastProject, forKey: Key.lastProject) }
+    }
+
+    /// Recently used projects, newest first.
+    @Published private(set) var recentProjects: [String] {
+        didSet { defaults?.set(recentProjects, forKey: Key.recentProjects) }
     }
 
     init(defaults: UserDefaults? = .standard) {
         self.defaults = defaults
-        destinationPath = defaults?.string(forKey: Self.destinationKey)
-        ejectAfterOffload = defaults?.bool(forKey: Self.ejectKey) ?? false
+        destinationPath = defaults?.string(forKey: Key.destination)
+        ejectAfterOffload = defaults?.bool(forKey: Key.eject) ?? false
+        folderTemplate = defaults?.string(forKey: Key.folderTemplate) ?? NamingTemplates.defaultFolder
+        fileTemplate = defaults?.string(forKey: Key.fileTemplate) ?? NamingTemplates.defaultFile
+        lastProject = defaults?.string(forKey: Key.lastProject) ?? ""
+        recentProjects = defaults?.stringArray(forKey: Key.recentProjects) ?? []
     }
 
     /// The destination as a URL (handier for file operations).
     var destinationURL: URL? {
         destinationPath.map { URL(fileURLWithPath: $0, isDirectory: true) }
     }
+
+    // MARK: Naming
+
+    /// The parsed templates, or `nil` while either has an error.
+    var naming: NamingTemplates? {
+        NamingTemplates(folder: folderTemplate, file: fileTemplate)
+    }
+
+    var folderIssues: [TemplateIssue] { NamingTemplate.parse(folderTemplate, kind: .folder).issues }
+    var fileIssues: [TemplateIssue] { NamingTemplate.parse(fileTemplate, kind: .file).issues }
+
+    func apply(_ preset: NamingPreset) {
+        folderTemplate = preset.folder
+        fileTemplate = preset.file
+    }
+
+    /// Remembers a project for next time and puts it at the top of the recent list.
+    func rememberProject(_ project: String) {
+        let name = project.trimmingCharacters(in: .whitespaces)
+        guard !name.isEmpty else { return }
+        lastProject = name
+        var list = recentProjects.filter { $0.caseInsensitiveCompare(name) != .orderedSame }
+        list.insert(name, at: 0)
+        recentProjects = Array(list.prefix(Self.maxRecentProjects))
+    }
+
+    func clearRecentProjects() {
+        recentProjects = []
+    }
+
+    // MARK: Destination
 
     /// Shows the standard macOS "choose a folder" panel.
     func chooseDestination() {
@@ -42,7 +105,7 @@ final class AppSettings: ObservableObject {
         panel.canCreateDirectories = true
         panel.allowsMultipleSelection = false
         panel.prompt = "Choose"
-        panel.message = "Choose the folder SnapDrop should copy your clips into."
+        panel.message = "Choose the folder SnapDrop should copy your media into."
         if let current = destinationURL {
             panel.directoryURL = current
         }

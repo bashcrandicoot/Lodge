@@ -11,8 +11,8 @@ struct OffloadBar: View {
             if let session = model.session {
                 OffloadBarContent(session: session)
             } else {
-                ReadyRow(title: OffloadFormatting.offloadButtonTitle(clipCount: 0),
-                         blocker: model.isScanning ? "Scanning card…" : "Insert a card to begin",
+                ReadyRow(title: OffloadFormatting.offloadButtonTitle(fileCount: 0),
+                         blocker: model.offloadBlocker,
                          start: {})
             }
         }
@@ -31,7 +31,7 @@ private struct OffloadBarContent: View {
             switch session.phase {
             case .ready:
                 ReadyRow(
-                    title: OffloadFormatting.offloadButtonTitle(clipCount: session.newClips.count),
+                    title: OffloadFormatting.offloadButtonTitle(fileCount: session.newClips.count),
                     blocker: blocker,
                     start: model.startOffload)
                     .transition(transition)
@@ -50,16 +50,7 @@ private struct OffloadBarContent: View {
         reduceMotion ? .opacity : .move(edge: .bottom).combined(with: .opacity)
     }
 
-    private var blocker: String? {
-        OffloadReadiness.blocker(
-            hasCard: true,
-            isScanning: model.isScanning,
-            newClipCount: session.newClips.count,
-            shootName: session.shootName,
-            hasDestination: settings.destinationURL != nil,
-            requiredBytes: session.newBytes,
-            availableBytes: settings.destinationURL.flatMap(VolumeInfo.availableBytes(at:)))
-    }
+    private var blocker: String? { model.offloadBlocker }
 }
 
 // MARK: - Ready
@@ -75,7 +66,7 @@ private struct ReadyRow: View {
                 Label(blocker, systemImage: "info.circle")
                     .foregroundStyle(.secondary)
             } else {
-                Label("Ready. Every clip is verified with SHA-256 after copying.", systemImage: "checkmark.shield")
+                Label("Ready. Every file is verified with SHA-256 after copying.", systemImage: "checkmark.shield")
                     .foregroundStyle(.secondary)
             }
             Spacer()
@@ -88,7 +79,7 @@ private struct ReadyRow: View {
             .controlSize(.large)
             .keyboardShortcut(.defaultAction)
             .disabled(blocker != nil)
-            .help(blocker ?? "Copy and verify the new clips")
+            .help(blocker ?? "Copy and verify the new files")
             .accessibilityHint(blocker ?? "")
         }
     }

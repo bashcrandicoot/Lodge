@@ -16,6 +16,9 @@ struct Clip: Identifiable, Hashable, Sendable {
     /// The date used for naming: creation date, falling back to modification date.
     var captureDate: Date { creationDate ?? modificationDate ?? Date() }
 
+    /// Video, photo, audio or other — from the file extension.
+    var category: MediaCategory { MediaCategory.classify(fileName: url.lastPathComponent) }
+
     /// The key that identifies this exact clip in the ledger.
     func ledgerKey(volumeIdentity: String) -> String {
         LedgerKey.make(

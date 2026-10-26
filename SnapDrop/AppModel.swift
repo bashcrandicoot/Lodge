@@ -117,6 +117,7 @@ final class AppModel: ObservableObject {
                 self.ejectCard(newSession.card)
             }
         }
+        newSession.projectInput = settings.lastProject
         session = newSession
     }
 
@@ -129,9 +130,73 @@ final class AppModel: ObservableObject {
 
     // MARK: Offloading
 
+    /// Why the Offload button is disabled right now (`nil` = ready to go).
+    var offloadBlocker: String? {
+        guard let session else {
+            return isScanning ? "Scanning card…" : "Insert a card to begin"
+        }
+        let naming = settings.naming
+        return OffloadReadiness.blocker(
+            hasCard: true,
+            isScanning: isScanning,
+            newFileCount: session.newClips.count,
+            namingIsValid: naming != nil,
+            needs: NamingNeeds(naming),
+            project: session.project,
+            shootName: session.shootName,
+            hasCamera: !cameraTokenValue(for: session).isEmpty,
+            hasDestination: settings.destinationURL != nil,
+            requiredBytes: session.newBytes,
+            availableBytes: settings.destinationURL.flatMap(VolumeInfo.availableBytes(at:)))
+    }
+
     func startOffload() {
-        guard let session, let destination = settings.destinationURL else { return }
-        session.start(destination: destination, ledger: ledger)
+        guard let session, session.phase == .ready, offloadBlocker == nil,
+              let destination = settings.destinationURL, let naming = settings.naming else { return }
+        let plan = OffloadPlanner.plan(
+            files: session.newClips,
+            naming: naming,
+            context: namingContext(for: session),
+            existingNames: OffloadPlanner.diskLister(root: destination))
+        settings.rememberProject(session.projectInput)
+        session.start(plan: plan, destination: destination, ledger: ledger)
+    }
+
+    // MARK: Naming
+
+    /// The values for the template tokens (empty fields stay empty).
+    func namingContext(for session: OffloadSession) -> NamingContext {
+        let card = NamingContext.clean(session.card.name)
+        return NamingContext(
+            project: session.project,
+            shoot: session.shootName,
+            camera: cameraTokenValue(for: session),
+            card: card.isEmpty ? "Card" : card)
+    }
+
+    /// The `{camera}` value for the session's selected camera ("" if none).
+    func cameraTokenValue(for session: OffloadSession) -> String {
+        ""
+    }
+
+    /// What the preview shows: the frozen plan once copying started, otherwise a fresh
+    /// plan with placeholders for fields that are still empty.
+    func previewPlan(for session: OffloadSession) -> [PlannedFile] {
+        if let plan = session.plan { return plan }
+        return OffloadPlanner.plan(
+            files: session.newClips,
+            naming: settings.naming ?? .standard,
+            context: namingContext(for: session).fillingBlanks(),
+            existingNames: OffloadPlanner.diskLister(root: settings.destinationURL))
+    }
+
+    /// True when the preview contains placeholder values for fields the templates need.
+    func previewHasPlaceholders(for session: OffloadSession) -> Bool {
+        guard session.plan == nil else { return false }
+        let needs = NamingNeeds(settings.naming)
+        return (needs.project && session.project.isEmpty)
+            || (needs.shoot && session.shootName.isEmpty)
+            || (needs.camera && cameraTokenValue(for: session).isEmpty)
     }
 
     // MARK: Ejecting

@@ -130,6 +130,8 @@ struct OffloadProgress: Sendable, Equatable {
     var filesDone = 0
     var filesTotal = 0
     var currentFile = ""
+    /// Path on the card of the file being copied (matches `PlannedFile.id`).
+    var currentID = ""
     var bytesDone: Int64 = 0
     var bytesTotal: Int64 = 0
     /// True while the just-copied file is being re-read and checked.
@@ -152,12 +154,32 @@ struct OffloadSummary: Sendable, Equatable {
 /// Everything needed to offload one card.
 struct OffloadJob: Sendable {
     let card: CardVolume
-    /// Only the clips that haven't been offloaded before.
-    let clips: [Clip]
-    let shootName: String
+    /// Where every new file goes, in copy order (see `OffloadPlanner`).
+    let plan: [PlannedFile]
     let destination: URL
-    /// How many clips were skipped because the ledger already has them.
+    /// How many files were skipped because the ledger already has them.
     let alreadyOffloaded: Int
+
+    init(card: CardVolume, plan: [PlannedFile], destination: URL, alreadyOffloaded: Int) {
+        self.card = card
+        self.plan = plan
+        self.destination = destination
+        self.alreadyOffloaded = alreadyOffloaded
+    }
+
+    /// Plans the names now (reading the destination) and builds the job.
+    init(card: CardVolume, clips: [Clip], naming: NamingTemplates, context: NamingContext,
+         destination: URL, alreadyOffloaded: Int) {
+        let plan = OffloadPlanner.plan(files: clips, naming: naming, context: context,
+                                       existingNames: OffloadPlanner.diskLister(root: destination))
+        self.init(card: card, plan: plan, destination: destination, alreadyOffloaded: alreadyOffloaded)
+    }
+
+    /// The original layout: Destination/YYYY-MM-DD/ShootName/YYYY-MM-DD_ShootName_####.ext
+    init(card: CardVolume, clips: [Clip], shootName: String, destination: URL, alreadyOffloaded: Int) {
+        self.init(card: card, clips: clips, naming: .standard, context: NamingContext(shoot: shootName),
+                  destination: destination, alreadyOffloaded: alreadyOffloaded)
+    }
 }
 
 /// Runs a whole offload: names, copies and verifies each clip in order.
@@ -177,21 +199,19 @@ enum Offloader {
     ) async -> OffloadSummary {
         var summary = OffloadSummary(skipped: job.alreadyOffloaded)
 
-        // Oldest first, so numbering follows the order clips were shot.
-        let ordered = order(job.clips)
-
         var state = OffloadProgress(
-            filesTotal: ordered.count,
-            bytesTotal: ordered.reduce(Int64(0)) { $0 + $1.size }
+            filesTotal: job.plan.count,
+            bytesTotal: job.plan.reduce(Int64(0)) { $0 + $1.size }
         )
-        var allocator = SequenceAllocator()
 
-        for clip in ordered {
+        for item in job.plan {
+            let clip = item.clip
             if Task.isCancelled {
                 summary.cancelled = true
                 break
             }
             state.currentFile = clip.url.lastPathComponent
+            state.currentID = clip.relativePath
             state.isVerifying = false
             await progress(state)
             let bytesBefore = state.bytesDone
@@ -203,11 +223,12 @@ enum Offloader {
             let verifying = verifyingState
 
             do {
-                let date = Renamer.dateString(for: clip.captureDate)
-                let folder = Renamer.folderURL(destination: job.destination, dateString: date, shootName: job.shootName)
+                let folder = item.folder.isEmpty
+                    ? job.destination
+                    : job.destination.appendingPathComponent(item.folder, isDirectory: true)
                 try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-                let prefix = Renamer.prefix(dateString: date, shootName: job.shootName)
-                let finalURL = allocator.nextFileURL(folder: folder, prefix: prefix, fileExtension: clip.url.pathExtension)
+                // The plan already avoids existing names; this catches files that appeared since.
+                let finalURL = OffloadPlanner.freeURL(for: folder.appendingPathComponent(item.fileName))
 
                 let hash = try await Copier.copyAndVerify(
                     source: clip.url,

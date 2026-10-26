@@ -18,6 +18,11 @@ final class OffloadSession: ObservableObject, Identifiable {
     let alreadyOffloadedCount: Int
 
     @Published var shootNameInput = ""
+    @Published var projectInput = ""
+    /// The final names, fixed when the offload starts (the preview shows these while copying).
+    @Published private(set) var plan: [PlannedFile]?
+    /// Card paths of files that were copied and verified in this offload.
+    @Published private(set) var verifiedIDs: Set<String> = []
     @Published private(set) var phase: Phase = .ready
     @Published private(set) var progress = OffloadProgress()
     @Published private(set) var summary: OffloadSummary?
@@ -40,22 +45,26 @@ final class OffloadSession: ObservableObject, Identifiable {
     }
 
     /// The cleaned-up shoot name ("Beach Shoot" -> "BeachShoot").
-    var shootName: String { Renamer.sanitizeShootName(shootNameInput) }
+    var shootName: String { NamingContext.clean(shootNameInput) }
+
+    /// The cleaned-up project name.
+    var project: String { NamingContext.clean(projectInput) }
 
     /// Total size of the new clips, in bytes.
     var newBytes: Int64 { newClips.reduce(0) { $0 + $1.size } }
 
     /// Starts copying in the background.
-    func start(destination: URL, ledger: Ledger) {
-        guard phase == .ready, !shootName.isEmpty, !newClips.isEmpty else { return }
+    /// `plan` comes from `OffloadPlanner` (see `AppModel.startOffload`).
+    func start(plan: [PlannedFile], destination: URL, ledger: Ledger) {
+        guard phase == .ready, !plan.isEmpty else { return }
+        self.plan = plan
         phase = .running
         startedAt = Date()
-        progress = OffloadProgress(filesTotal: newClips.count, bytesTotal: newBytes)
+        progress = OffloadProgress(filesTotal: plan.count, bytesTotal: plan.reduce(0) { $0 + $1.size })
 
         let job = OffloadJob(
             card: card,
-            clips: newClips,
-            shootName: shootName,
+            plan: plan,
             destination: destination,
             alreadyOffloaded: alreadyOffloadedCount)
 
@@ -69,7 +78,10 @@ final class OffloadSession: ObservableObject, Identifiable {
                 },
                 record: { entry in
                     await ledger.add(entry)
-                    await MainActor.run { self.copiedPaths.append(entry.destinationPath) }
+                    await MainActor.run {
+                        self.copiedPaths.append(entry.destinationPath)
+                        self.verifiedIDs.insert(entry.sourceRelativePath)
+                    }
                 })
             await MainActor.run {
                 self.summary = result
@@ -86,7 +98,10 @@ final class OffloadSession: ObservableObject, Identifiable {
 
     #if DEBUG
     /// Puts the session into a given state for previews and screenshots.
-    func applyDemo(phase: Phase, progress: OffloadProgress, startedAt: Date?, summary: OffloadSummary?) {
+    func applyDemo(phase: Phase, progress: OffloadProgress, startedAt: Date?, summary: OffloadSummary?,
+                   plan: [PlannedFile]? = nil, verifiedIDs: Set<String> = []) {
+        self.plan = plan
+        self.verifiedIDs = verifiedIDs
         self.phase = phase
         self.progress = progress
         self.startedAt = startedAt

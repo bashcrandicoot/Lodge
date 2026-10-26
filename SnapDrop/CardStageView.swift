@@ -42,7 +42,7 @@ struct CardStageView: View {
         guard card.id == model.selectedCardID else { return nil }
         if model.isScanning { return "Scanning…" }
         guard let session = model.session else { return nil }
-        return "\(OffloadFormatting.clipCount(session.newClips.count)) new"
+        return "\(OffloadFormatting.fileCount(session.newClips.count)) new"
     }
 }
 
