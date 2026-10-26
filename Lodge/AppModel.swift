@@ -1,6 +1,7 @@
 import Foundation
 import AppKit
 import Combine
+import os
 
 /// The app's central object. It owns the settings, the card watcher, the ledger,
 /// which card is selected, and that card's offload session.
@@ -216,15 +217,20 @@ final class AppModel: ObservableObject {
             return
         }
         guard isNewMount else {
+            Logger.importPrompt.info("Card already there at launch: \(card.url.path, privacy: .public) (selected, no prompt)")
             // Already there at launch: the window opens with it (nothing to bring forward).
             guard !isBusy, !formatState.isFormatting else { return }
             select(card)
             return
         }
         let userIsLookingAtLodge = MainWindow.isFrontmost
+        Logger.importPrompt.info("Card inserted: \(card.url.path, privacy: .public), new mount \(isNewMount, privacy: .public), Lodge frontmost \(userIsLookingAtLodge, privacy: .public), app active \(NSApp.isActive, privacy: .public), window open \(MainWindow.isOpen, privacy: .public), askToImport \(self.settings.askToImport, privacy: .public), style \(self.settings.importPromptStyle.rawValue, privacy: .public), menu bar mode \(self.settings.keepRunningInMenuBar, privacy: .public), paused \(self.importPrompter.isPaused, privacy: .public), busy \(self.isBusy, privacy: .public)")
         if !isBusy, !formatState.isFormatting { select(card) }
         // Already in front: the card is right there in the Card stage.
-        if userIsLookingAtLodge || importPrompter.isPaused { return }
+        if userIsLookingAtLodge || importPrompter.isPaused {
+            Logger.importPrompt.info("No prompt: \(userIsLookingAtLodge ? "Lodge is in front, the card is selected" : "detection is paused", privacy: .public)")
+            return
+        }
         if settings.askToImport {
             importPrompter.cardMounted(card)   // queued until an offload or format finishes
         } else if MainWindow.isOpen, !isBusy, !formatState.isFormatting {

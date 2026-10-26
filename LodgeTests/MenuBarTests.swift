@@ -101,6 +101,36 @@ final class ImportPrompterTests: XCTestCase {
         XCTAssertEqual(shown, ["A7SIII"])
     }
 
+    func testForcedPromptSkipsTheDebounce() {
+        let model = model()
+        let card = CardVolume(url: URL(fileURLWithPath: "/Volumes/A7SIII"), name: "A7SIII", uuid: "1")
+        model.watcher.injectDemoCards([card])
+        var shown = 0
+        model.importPrompter.presentOverride = { _ in shown += 1 }
+        XCTAssertTrue(model.importPrompter.promptIfAllowed(card, verdict: .prompt))
+        XCTAssertTrue(model.importPrompter.promptIfAllowed(card, verdict: .prompt, force: true))
+        XCTAssertEqual(shown, 2)
+    }
+
+    func testTestImportPromptExplainsWhyNothingShows() {
+        let model = model()
+        var problems: [String?] = []
+        model.importPrompter.testPrompt { problems.append($0) }
+        XCTAssertEqual(problems, ["No cards or drives are connected."])
+
+        let folder = FileManager.default.temporaryDirectory   // not a card: never qualifies
+        model.watcher.injectDemoCards([CardVolume(url: folder, name: "Temp", uuid: nil)])
+        model.settings.askToImport = false
+        model.importPrompter.testPrompt { problems.append($0) }
+        XCTAssertEqual(problems.last, "“Ask to import” is off in Settings ▸ General ▸ Menu Bar.")
+
+        model.settings.askToImport = true
+        let done = expectation(description: "checked the card")
+        model.importPrompter.testPrompt { problems.append($0); done.fulfill() }
+        wait(for: [done], timeout: 5)
+        XCTAssertTrue(problems.last??.hasPrefix("None of the connected cards") == true)
+    }
+
     func testDontAskAddsTheCardToTheList() {
         let model = model()
         let card = CardVolume(url: URL(fileURLWithPath: "/Volumes/A7SIII"), name: "A7SIII", uuid: "1")

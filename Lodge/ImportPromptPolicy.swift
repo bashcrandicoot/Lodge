@@ -16,6 +16,11 @@ struct VolumeTraits: Equatable, Sendable {
     var isDiskImage = false
     /// A Time Machine (or other backup) volume.
     var isBackup = false
+
+    var logDescription: String {
+        "removable \(isRemovable), ejectable \(isEjectable), internal \(isInternal.map(String.init) ?? "unknown"), "
+            + "local \(isLocal), root \(isRootFileSystem), disk image \(isDiskImage), backup \(isBackup)"
+    }
 }
 
 /// A card the user said "Don't ask for this card" about (Settings ▸ General ▸ Menu Bar lists them).

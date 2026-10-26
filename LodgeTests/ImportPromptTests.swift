@@ -177,6 +177,8 @@ final class MenuBarSettingsTests: XCTestCase {
         settings.keepRunningInMenuBar = true
         settings.askToImport = false
         settings.showMenuBarIcon = false
+        XCTAssertEqual(settings.importPromptStyle, .notification)
+        settings.importPromptStyle = .panel
         let card = CardVolume(url: URL(fileURLWithPath: "/Volumes/A7SIII"), name: "A7SIII", uuid: "UUID-1")
         settings.ignoreImports(from: card)
         settings.ignoreImports(from: card)   // no duplicates
@@ -185,6 +187,7 @@ final class MenuBarSettingsTests: XCTestCase {
         XCTAssertTrue(reloaded.keepRunningInMenuBar)
         XCTAssertFalse(reloaded.askToImport)
         XCTAssertFalse(reloaded.showMenuBarIcon)
+        XCTAssertEqual(reloaded.importPromptStyle, .panel)
         XCTAssertEqual(reloaded.ignoredImportCards, [IgnoredImportCard(identity: "UUID-1", name: "A7SIII")])
         reloaded.stopIgnoringImports("UUID-1")
         XCTAssertTrue(AppSettings(defaults: defaults).ignoredImportCards.isEmpty)

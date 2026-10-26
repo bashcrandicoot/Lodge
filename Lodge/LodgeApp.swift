@@ -1,5 +1,6 @@
 import SwiftUI
 import AppKit
+import os
 
 /// The entry point of the app. `@main` tells Swift to start here.
 @main
@@ -85,6 +86,16 @@ struct LodgeApp: App {
         model.importPrompter.registerWithNotificationCenter()
         AppDelegate.model = model
         StatusItemController.start(for: model)
+        #if DEBUG
+        // `-LodgeDebugTestImportPrompt YES`: Test Import Prompt a moment after launch.
+        if UserDefaults.standard.bool(forKey: "LodgeDebugTestImportPrompt") {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                model.importPrompter.testPrompt { problem in
+                    if let problem { Logger.importPrompt.info("Test Import Prompt: \(problem, privacy: .public)") }
+                }
+            }
+        }
+        #endif
         return model
     }
 }

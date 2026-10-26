@@ -28,6 +28,7 @@ final class AppSettings: ObservableObject {
         static let menuBarMode = "keepRunningInMenuBar"
         static let askToImport = "askToImportOnMount"
         static let showMenuBarIcon = "showMenuBarIcon"
+        static let importPromptStyle = "importPromptStyle"
         static let ignoredImportCards = "ignoredImportCards"
     }
 
@@ -165,6 +166,12 @@ final class AppSettings: ObservableObject {
         didSet { defaults?.set(askToImport, forKey: Key.askToImport) }
     }
 
+    /// How "Import with Lodge?" shows up. A notification by default; macOS holds notifications
+    /// back while a Focus (Do Not Disturb, Work…) is on, and the floating panel shows anyway.
+    @Published var importPromptStyle: ImportPromptStyle {
+        didSet { defaults?.set(importPromptStyle.rawValue, forKey: Key.importPromptStyle) }
+    }
+
     /// The menu bar icon (only shown with `keepRunningInMenuBar`). On by default.
     @Published var showMenuBarIcon: Bool {
         didSet { defaults?.set(showMenuBarIcon, forKey: Key.showMenuBarIcon) }
@@ -218,6 +225,8 @@ final class AppSettings: ObservableObject {
         keepRunningInMenuBar = defaults?.bool(forKey: Key.menuBarMode) ?? false
         askToImport = defaults?.object(forKey: Key.askToImport) as? Bool ?? true
         showMenuBarIcon = defaults?.object(forKey: Key.showMenuBarIcon) as? Bool ?? true
+        importPromptStyle = defaults?.string(forKey: Key.importPromptStyle).flatMap(ImportPromptStyle.init(rawValue:))
+            ?? .notification
         ignoredImportCards = defaults?.data(forKey: Key.ignoredImportCards)
             .flatMap { try? JSONDecoder().decode([IgnoredImportCard].self, from: $0) } ?? []
         fileRules = defaults?.data(forKey: Key.fileRules).flatMap { try? JSONDecoder().decode(FileRules.self, from: $0) }
@@ -315,5 +324,19 @@ final class AppSettings: ObservableObject {
             panel.directoryURL = start
         }
         return panel.runModal() == .OK ? panel.url : nil
+    }
+}
+
+/// Settings ▸ Menu Bar ▸ "Ask with": a notification, or Lodge's own floating panel.
+enum ImportPromptStyle: String, CaseIterable, Identifiable, Sendable {
+    case notification
+    case panel
+
+    var id: String { rawValue }
+    var title: String {
+        switch self {
+        case .notification: "Notification"
+        case .panel: "Floating panel"
+        }
     }
 }

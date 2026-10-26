@@ -111,6 +111,8 @@ struct MenuBarSettingsSection: View {
     @ObservedObject var loginItem: LoginItem
     @EnvironmentObject private var settings: AppSettings
 
+    static let promptStyleHint = "While a Focus such as Do Not Disturb is on, macOS keeps notifications in Notification Center without showing them. The floating panel always shows. To get notifications during a Focus, allow Lodge in System Settings ▸ Focus."
+
     static let hiddenIconHint = "With the icon hidden, Lodge keeps running in the background and still asks to import. Open Lodge from Finder, the Dock or Spotlight to show its window, and quit it from there with ⌘Q."
 
     var body: some View {
@@ -129,6 +131,16 @@ struct MenuBarSettingsSection: View {
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
+            VStack(alignment: .leading, spacing: 4) {
+                Picker("Ask with", selection: $settings.importPromptStyle) {
+                    ForEach(ImportPromptStyle.allCases) { Text($0.title).tag($0) }
+                }
+                Text(Self.promptStyleHint)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .disabled(!settings.askToImport)
             Toggle(isOn: $settings.showMenuBarIcon) {
                 HStack(spacing: 4) {
                     Text("Show menu bar icon")

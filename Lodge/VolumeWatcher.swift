@@ -1,5 +1,6 @@
 import Foundation
 import AppKit
+import os
 
 /// A memory card (or other removable drive) that is mounted under /Volumes.
 struct CardVolume: Identifiable, Hashable, Sendable {
@@ -74,6 +75,7 @@ final class VolumeWatcher: ObservableObject {
             forName: NSWorkspace.didMountNotification, object: nil, queue: .main
         ) { [weak self] note in
             guard let url = note.userInfo?[NSWorkspace.volumeURLUserInfoKey] as? URL else { return }
+            Logger.importPrompt.info("Mounted: \(url.path, privacy: .public)")
             // We asked for the main queue above, so we really are on the main thread.
             MainActor.assumeIsolated { self?.volumeMounted(at: url, isNewMount: true) }
         })
@@ -115,8 +117,14 @@ final class VolumeWatcher: ObservableObject {
     }
 
     private func volumeMounted(at url: URL, isNewMount: Bool) {
-        guard let card = makeCard(from: url) else { return }
-        guard !cards.contains(where: { $0.id == card.id }) else { return }
+        guard let card = makeCard(from: url) else {
+            if isNewMount { Logger.importPrompt.info("Not a card or drive: \(url.path, privacy: .public)") }
+            return
+        }
+        guard !cards.contains(where: { $0.id == card.id }) else {
+            Logger.importPrompt.info("Already listed: \(url.path, privacy: .public)")
+            return
+        }
         cards.append(card)
         onCardInserted?(card, isNewMount)
     }

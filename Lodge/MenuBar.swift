@@ -170,7 +170,25 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         let items = MenuBarItem.items(cards: model.watcher.cards, isPaused: model.importPrompter.isPaused,
                                       isBusy: model.isBusy)
         for item in items { menu.addItem(menuItem(for: item)) }
+        #if DEBUG
+        // Debug builds: run the whole "Import with Lodge?" path on a connected card, no re-inserting.
+        menu.insertItem(.separator(), at: max(menu.numberOfItems - 1, 0))
+        menu.insertItem(action("Test Import Prompt", #selector(testImportPrompt)), at: max(menu.numberOfItems - 1, 0))
+        #endif
     }
+
+    #if DEBUG
+    @objc private func testImportPrompt() {
+        model?.importPrompter.testPrompt { problem in
+            guard let problem else { return }
+            let alert = NSAlert()
+            alert.messageText = "Test Import Prompt"
+            alert.informativeText = problem
+            NSApp.activate()
+            alert.runModal()
+        }
+    }
+    #endif
 
     private func menuItem(for item: MenuBarItem) -> NSMenuItem {
         switch item {
