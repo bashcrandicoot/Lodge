@@ -52,11 +52,11 @@ The next time Lodge opens, it selects the default favorite when that drive is co
 2. If more than one card is mounted, click the one you want in the Card column.
 3. In Media, enter a **Project** name when the template uses `{project}`. The default template does. “Beach Shoot” is saved as `BeachShoot`. Choose a **Camera** when the template uses `{camera}`.
 4. Read the live names in the list. They are the names Lodge will write.
-5. Click **Offload N Files**.
+5. Click **Offload N Files**, or press Return in the Project field. Return starts the offload when that button is enabled.
 
 While it runs, the bar shows the current file, how many are done, the bytes copied, the time left, and a **Verifying** state. **Cancel** stops the rest. Each finished file is checked with SHA-256 before it keeps its final name.
 
-When the offload succeeds, Lodge can play the Glass sound (on by default). Then you can **Show in Finder**, **Eject Card**, or **Done**. If every file on the card has a verified copy that is still in the destination, **Format Card…** is there too, and the card shows **Ready to format**.
+When the offload succeeds, the bar reads **Offload Complete**. Lodge can play the Glass sound (on by default). Then you can **Show in Finder**, **Eject Card**, or **Done**. **Format Card…** is there when the card is ready, including when the only files left are short clips you skipped. If every file has a verified copy, the card shows **Ready to format**. If short clips were skipped, it says how many are not offloaded, such as **2 short clips not offloaded**.
 
 The card’s own line reads **54 new files · 5 ignored** before and during the copy, and **57 copied · 5 ignored** once it has finished. The numbers follow the card. Ignored files are system junk and your ignore list. They are not copied.
 

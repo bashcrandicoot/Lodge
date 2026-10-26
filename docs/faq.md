@@ -24,7 +24,7 @@ The ledger has the file, and the copy is gone or its size has changed. Lodge wil
 
 ## When can I format the card?
 
-When every file has a verified copy that is still at the destination, at the same size, the card shows **Ready to format**. Skipped short clips are called out separately: the button reads **Format and Discard N Short Clips**, so it is clear those takes have no copy. Ignored system files do not block the badge. Cancel is the default in the confirmation.
+A clean finish reads **Offload Complete**, and **Format Card…** is the button that erases the card. When every file has a verified copy that is still at the destination, at the same size, the card shows **Ready to format**. If short clips were skipped, the card says how many are not offloaded, such as **2 short clips not offloaded**, and the confirmation button reads **Format and Discard N Short Clips**. Ignored system files do not block the badge. Cancel is the default in the confirmation.
 
 Lodge formats exFAT, FAT32, and FAT16, and keeps the card’s name. Other formats are left for the camera. It also refuses the startup disk, a drive that is part of the Mac, and the drive your destination folder is on.
 

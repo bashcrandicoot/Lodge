@@ -4,7 +4,7 @@ Home base for your media. Lodge is a universal app for Apple silicon and Intel M
 
 The main window reads left to right: **Card**, **Media**, **Destination**, with the offload bar along the bottom. The preset menu sits at the top right, just left of **Recent Offloads** and **Settings**, and the window title is hidden. The card’s name is in the Card column. Closing the window quits Lodge, unless [menu bar mode](#menu-bar-mode) is on. Lodge 1.0.1 has a new app icon.
 
-![Lodge in Dark mode, ready to offload. The preset menu is at the top right. Offload 54 Files sits along the bottom.](assets/screenshots/ready-dark.png)
+<img src="assets/screenshots/ready-dark.png" width="2704" height="1824" alt="Lodge in Dark mode, ready to offload. The preset menu is at the top right. Offload 29 Files sits along the bottom." style="max-width:100%;height:auto">
 
 ## First-launch setup
 
@@ -35,13 +35,13 @@ Chips across the top count what is on the card, for example **18 video · 9 phot
 
 The size of the new files counts up when the card is scanned.
 
-**Project** and **Camera** appear when the template uses them. Only those fields are required. “Beach Shoot” becomes `BeachShoot`: letters, digits, and hyphens, each word capitalized, at most 60 characters. Up to six recent projects stay in the menu, and **Clear Recent Projects** empties that list. The camera menu remembers which camera you used with this card. **Edit Cameras…** opens Settings > Cameras.
+**Project** and **Camera** appear when the template uses them. Only those fields are required. “Beach Shoot” becomes `BeachShoot`: letters, digits, and hyphens, each word capitalized, at most 60 characters. Up to six recent projects stay in the menu, and **Clear Recent Projects** empties that list. The camera menu remembers which camera you used with this card. **Edit Cameras…** opens Settings > Cameras. Pressing Return in the Project field starts the offload when **Offload N Files** is enabled. That button is the default button.
 
 **Quick dump** sits under the camera field, with an ⓘ beside it. See [Quick dump](#quick-dump).
 
 The list previews the finished name of every file before anything is copied. The filter is **All**, **Video**, **Photo**, **Audio**, and **Other**. Sidecars are shown with their clip. The switch above the list (list or grid) is remembered. **Settings > Appearance > Show thumbnails in the list** adds a small thumbnail to each row.
 
-![The Media panel as a thumbnail grid while a copy is running. The offload bar shows the file in progress and the wagon.](assets/screenshots/grid-dark.png)
+<img src="assets/screenshots/grid-dark.png" width="2704" height="1824" alt="The Media panel as a thumbnail grid while a copy is running. The offload bar shows the file in progress and the wagon." style="max-width:100%;height:auto">
 
 In the grid, each tile shows a thumbnail, the new name, the length, the type, and a paperclip count for sidecars that travel with it. The file being copied shows a progress ring. A verified file gets a green tick. Files offloaded earlier are dimmed. A missing copy is marked. A skipped short clip is marked, with **Include Anyway** in its menu.
 
@@ -55,7 +55,7 @@ When the new files are already offloaded, Media says **All Caught Up**. If copie
 
 ## Copying
 
-**Offload N Files** starts the copy. With one file it reads **Offload 1 File**. With nothing ready it reads **Offload Files** and the caption says why. See [Why Offload is waiting](#why-offload-is-waiting).
+**Offload N Files** starts the copy. Return in the Project field does the same thing when the button is enabled. With one file it reads **Offload 1 File**. With nothing ready it reads **Offload Files** and the caption says why. See [Why Offload is waiting](#why-offload-is-waiting).
 
 When everything is ready, the offload bar says **Ready. Every file is verified with SHA-256 after copying.** beside the button.
 
@@ -63,7 +63,7 @@ Each file is written as `<name>.lodge-partial`. Lodge reads that file back and h
 
 While it runs you see the current file, how far through the batch you are, the bytes copied, the time left, a **Verifying** state, and **Cancel**. A wagon drives across the bar and parks when the copy is verified. The list follows the file being copied.
 
-![Lodge copying files. The offload bar shows the file, how far through the batch the copy is, Cancel, and the wagon.](assets/screenshots/running-dark.png)
+<img src="assets/screenshots/running-dark.png" width="2704" height="1824" alt="Lodge copying files. The offload bar shows the file, how far through the batch the copy is, Cancel, and the wagon." style="max-width:100%;height:auto">
 
 The wagon clip, at half size. [The same clip as video](assets/motion/lodge-wagon-progress@2x.mp4).
 
@@ -73,7 +73,7 @@ Time left appears after a couple of seconds of copying: **Estimating time…**, 
 
 When it finishes, the summary reads like **57 copied · 0 skipped · 0 failed**. The copied count counts up. On a clean finish the checkmark draws itself, and Lodge plays the Glass sound if **Play a sound when an offload finishes** is on (it is, by default). Then: **Show in Finder**, **Eject Card**, **Done**, and **Format Card…** when the card is ready.
 
-![A finished offload. The bar reads Offload Complete and offers Show in Finder, Format Card…, Eject Card, and Done, with the wagon parked along the bar.](assets/screenshots/finished-dark.png)
+<img src="assets/screenshots/finished-dark.png" width="2704" height="1824" alt="A finished offload. The bar reads Offload Complete and offers Show in Finder, Format Card…, Eject Card, and Done. The card says 2 short clips not offloaded. The wagon is parked along the bar." style="max-width:100%;height:auto">
 
 **Eject card after offload** is off by default. It ejects only when every file copied and verified. The same switch ejects the card after a successful format.
 
@@ -143,7 +143,7 @@ Click a token to insert it into the field you were editing. Mistakes are explain
 
 **Reset to Default** in the **Examples** menu restores `{date}/{project}` and `{date}_{project}_{seq}`.
 
-![Lodge 1.0.0. Settings > Naming](assets/screenshots/settings-naming.png)
+<img src="assets/screenshots/settings-naming.png" width="1424" height="1640" alt="Settings > Naming" style="max-width:100%;height:auto">
 
 ### Tokens
 
@@ -185,7 +185,7 @@ The same folder structure is the **Layout** tree in Destination once a card is s
 
 In the Layout tree, a level that quick dump removes is struck through and tagged **Quick dump**.
 
-![Quick dump on, so the project name is left out. This picture still shows the Lodge 1.0.0 checkbox, Quick dump: skip project name.](assets/screenshots/ready-quickdump-dark.png)
+<img src="assets/screenshots/ready-quickdump-dark.png" width="2704" height="1824" alt="Quick dump on, so the project name is left out. The checkbox reads Quick dump." style="max-width:100%;height:auto">
 
 ## Short clips
 
@@ -197,17 +197,17 @@ Clips whose length cannot be read, including BRAW and R3D, are always offloaded.
 
 A card whose only remaining files are skipped short clips can still be formatted. The button then reads **Format and Discard 1 Short Clip** or **Format and Discard N Short Clips**.
 
-![Lodge 1.0.0. Settings > General, including the short-clip slider](assets/screenshots/settings-general.png)
+<img src="assets/screenshots/settings-general.png" width="1344" height="1600" alt="Settings > General, including the short-clip slider" style="max-width:100%;height:auto">
 
 ## Presets
 
-A preset saves the destination, the folder and file templates, the camera, the short-clip setting, quick dump, and the file rules. The preset menu sits at the top right of the window, just left of **Recent Offloads** and **Settings**. The window title is hidden. When a card is inserted, Lodge selects the camera you last used with that card, identified by the card’s volume UUID, or by its name when it has no UUID. The offload starts when you click **Offload**.
+A preset saves the destination, the folder and file templates, the camera, the short-clip setting, quick dump, and the file rules. The preset menu sits at the top right of the window, just left of **Recent Offloads** and **Settings**. The window title is hidden. When a card is inserted, Lodge selects the camera you last used with that card, identified by the card’s volume UUID, or by its name when it has no UUID. The offload starts when you click **Offload N Files**, or press Return in the Project field.
 
 **Save Current Setup as Preset…** saves what the window is using now. Change any of that afterwards and the menu shows **Edited**, and offers **Update “Name”** for the preset in use. **Manage Presets…** opens Settings > Presets. With no preset selected the menu says **No Preset**.
 
 In Settings > Presets you can add, rename, duplicate, edit, and remove presets. The one in use is marked **In use**, or **In use · edited** when the window has drifted from it. Editing the preset that is in use, while it still matches, updates the window too.
 
-![Lodge 1.0.0. Settings > Presets](assets/screenshots/settings-presets.png)
+<img src="assets/screenshots/settings-presets.png" width="1504" height="1480" alt="Settings > Presets" style="max-width:100%;height:auto">
 
 Presets are stored in `~/Library/Application Support/Lodge/presets.json`.
 
@@ -219,7 +219,7 @@ A favorite on a drive that is unplugged says **Not connected** and cannot be sel
 
 **Settings > Destinations** adds, removes, renames (click the name), reorders by dragging, **Change Folder…**, and **Make Default**.
 
-![Settings > Destinations](assets/screenshots/settings-destinations.png)
+<img src="assets/screenshots/settings-destinations.png" width="1344" height="1280" alt="Settings > Destinations" style="max-width:100%;height:auto">
 
 The list is `~/Library/Application Support/Lodge/destinations.json`. Each favorite keeps a bookmark, so Lodge can still open the folder after you rename or move it.
 
@@ -239,7 +239,7 @@ The header says **Drag to rearrange** while nothing is copying. **Expand All** a
 
 Settings > Files decides which extensions are proxies, which are sidecars, and which names are ignored.
 
-![Lodge 1.0.0. Settings > Files](assets/screenshots/settings-files.png)
+<img src="assets/screenshots/settings-files.png" width="1344" height="1600" alt="Settings > Files" style="max-width:100%;height:auto">
 
 **Proxies** (default `lrv` and `lrf`) are low-resolution copies, such as a GoPro `.LRV` or a DJI `.LRF`. They go in a `Proxies` folder inside the shoot folder and take their clip’s new name. They are never treated as the footage, and they are not skipped as short clips on their own. They follow the clip.
 
@@ -315,13 +315,13 @@ After five offloads where every file was copied and verified, and at least three
 
 ## Ready to format
 
-When every file on the card has a verified copy that is still at the destination, at the same size, the card shows a green **Ready to format** badge. The badge glows, and the seal bounces, when it appears. Otherwise the card says what is left: **3 files not yet offloaded**, **1 copy missing at the destination**, or **4 short clips not offloaded**.
+When the offload finishes with no failures, the bar reads **Offload Complete**. When every file on the card has a verified copy that is still at the destination, at the same size, the card shows a green **Ready to format** badge, and the same badge sits beside that title. The badge glows, and the seal bounces, when it appears. Otherwise the card says what is left: **3 files not yet offloaded**, **1 copy missing at the destination**, or **2 short clips not offloaded**.
 
 **Format Card…** is in the card’s **…** menu, its right-click menu, and the bar after an offload. It is enabled only when the card is ready, or ready apart from short clips you chose to skip.
 
 The confirmation is titled **Format “Card Name”?** Cancel is the default button, and it is the one Return presses. The other button reads **Format**, or **Format and Discard N Short Clips** when skipped clips would be lost. The message says what was copied and verified, calls out ignored items that were not copied, and says that formatting erases everything on the card. It also notes that formatting in the camera is usually best, because the camera sets the card up the way it expects.
 
-![The format confirmation](assets/screenshots/format-confirm.png)
+<img src="assets/screenshots/format-confirm.png" width="2480" height="1600" alt="The format confirmation. The title is Format “A7IV CARD”? The buttons are Format and Discard 2 Short Clips, and Cancel." style="max-width:100%;height:auto">
 
 Lodge keeps the card’s file system when that system is exFAT, FAT32, or FAT16, and it keeps the card’s name (shortened to what that format allows). It uses `diskutil eraseVolume`. Anything else, such as APFS, is refused, with a note to format it in the camera.
 
@@ -341,11 +341,11 @@ Lodge opens in **Dark** mode with the **Default** theme. Default is neutral blac
 
 **Light**, **Dark**, and **System** are the appearance choices. Dark is the one Lodge starts with.
 
-![Settings > Appearance](assets/screenshots/settings-appearance.png)
+<img src="assets/screenshots/settings-appearance.png" width="1344" height="1410" alt="Settings > Appearance" style="max-width:100%;height:auto">
 
-![The same card in Light mode.](assets/screenshots/ready-light.png)
+<img src="assets/screenshots/ready-light.png" width="2704" height="1824" alt="The same card in Light mode." style="max-width:100%;height:auto">
 
-![The Ember theme in Dark mode, ready to offload. The preset menu is at the top right.](assets/screenshots/ready-ember-dark.png)
+<img src="assets/screenshots/ready-ember-dark.png" width="2704" height="1824" alt="The Ember theme in Dark mode, ready to offload. The preset menu is at the top right. Offload 29 Files sits along the bottom." style="max-width:100%;height:auto">
 
 With **Increase Contrast** or **Reduce Transparency** on, every theme uses solid colours instead of gradients. The Appearance footer says so while either setting is on.
 
@@ -370,7 +370,7 @@ These run with Reduce Motion off:
 
 Settings > Cameras is a list of cameras. Each has a name, such as “Sony FX3”, and an optional short code, such as “A”, which is what `{camera}` writes. Add, rename, drag to reorder, and delete. Lodge remembers the camera you used with each card and selects it again next time. The list is `~/Library/Application Support/Lodge/cameras.json`.
 
-![Settings > Cameras](assets/screenshots/settings-cameras.png)
+<img src="assets/screenshots/settings-cameras.png" width="1344" height="1280" alt="Settings > Cameras" style="max-width:100%;height:auto">
 
 ## File types
 

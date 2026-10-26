@@ -48,7 +48,7 @@ The first time Lodge reads a card, macOS asks for access to files on a removable
 - Filters the list, and previews every finished name before anything is copied.
 - Names files from templates, with a folder for each file type. **Flat** skips the shoot folders.
 - Saves a setup as a preset, and switches presets from the menu at the top right.
-- Checks every copy with SHA-256, then shows **Ready to format** when the card is ready to format.
+- Checks every copy with SHA-256. A clean finish reads **Offload Complete**, and **Format Card…** is there when the card can be erased. When every file has a verified copy, the card shows **Ready to format**.
 - Reads the card only. A copy never overwrites a file already at the destination.
 - Remembers what was offloaded, so the same card again copies only what is new.
 - Shows a wagon crossing the copy bar, and checks for updates once a day.
