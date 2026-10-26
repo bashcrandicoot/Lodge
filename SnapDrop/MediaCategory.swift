@@ -6,8 +6,9 @@ enum MediaCategory: String, CaseIterable, Codable, Identifiable, Sendable {
 
     var id: String { rawValue }
 
+    /// GoPro's ".lrv" isn't here on purpose: it's a low-res proxy, not footage (see `FileRules`).
     static let videoExtensions: Set<String> = [
-        "mp4", "mov", "mxf", "braw", "r3d", "crm", "mts", "m2ts", "avi", "mkv", "insv", "lrv", "360",
+        "mp4", "mov", "mxf", "braw", "r3d", "crm", "mts", "m2ts", "avi", "mkv", "insv", "360",
     ]
     static let photoExtensions: Set<String> = [
         "jpg", "jpeg", "heic", "heif", "png", "tif", "tiff", "dng", "arw", "cr2", "cr3",
@@ -47,7 +48,7 @@ enum MediaCategory: String, CaseIterable, Codable, Identifiable, Sendable {
         case .video: return "Video (MP4, MOV, MXF, BRAW, R3D…)"
         case .photo: return "Photos (JPG, HEIC, RAW, DNG…)"
         case .audio: return "Audio (WAV, MP3, M4A…)"
-        case .other: return "Other files (XML, LRF, metadata…)"
+        case .other: return "Other files (proxies, XML, metadata…)"
         }
     }
 

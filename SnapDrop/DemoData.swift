@@ -14,7 +14,7 @@ enum DemoData {
         return State(rawValue: UserDefaults.standard.string(forKey: "SnapDropDemoState") ?? "") ?? .ready
     }
 
-    /// Set by launching with `-SnapDropDemoSettingsTab <general|appearance|destinations|naming|cameras>`.
+    /// Set by launching with `-SnapDropDemoSettingsTab <general|appearance|destinations|naming|presets|files|cameras>`.
     static var launchSettingsTab: SettingsTab? {
         UserDefaults.standard.string(forKey: "SnapDropDemoSettingsTab").flatMap(SettingsTab.init(rawValue:))
     }
@@ -77,6 +77,32 @@ enum DemoData {
         return store
     }
 
+    /// Four presets; "Sony Shoot" is in use. `-SnapDropDemoQuickDump YES` switches to "Quick Dump".
+    @MainActor
+    static func presetStore(cameras: CameraStore) -> PresetStore {
+        let home = FileManager.default.homeDirectoryForCurrentUser.path
+        let sony = OffloadPreset(name: "Sony Shoot", destinationPath: home + "/Movies",
+                                 folderTemplate: NamingPreset.all[1].folder, fileTemplate: NamingPreset.all[1].file,
+                                 cameraID: cameras.cameras[1].id)
+        let store = PresetStore(fileURL: nil, presets: [
+            sony,
+            OffloadPreset(name: "Drone Day", destinationPath: "/Volumes/Footage SSD/Projects",
+                          folderTemplate: "{date}/{camera}", fileTemplate: "{date}_{camera}_{seq}",
+                          cameraID: cameras.cameras[2].id, shortClipSeconds: 3),
+            OffloadPreset(name: "Quick Dump", destinationPath: home + "/Movies",
+                          folderTemplate: NamingPreset.all[1].folder, fileTemplate: NamingPreset.all[1].file,
+                          skipShortClips: false, quickDump: true),
+            OffloadPreset(name: "Client B-Roll", folderTemplate: "Clients/{project}/{date}",
+                          fileTemplate: "{project}_{date}_{seq}", shortClipSeconds: 8),
+        ])
+        store.markActive(sony.id)
+        return store
+    }
+
+    /// Items a real card would have that SnapDrop ignores (system files, AppleDouble files).
+    static let ignoredItems = [".DS_Store", ".Spotlight-V100", ".Trashes", ".fseventsd",
+                               "PRIVATE/M4ROOT/CLIP/._C0007.MP4"]
+
     @MainActor
     static func cameraStore() -> CameraStore {
         CameraStore(fileURL: nil, cameras: [
@@ -90,7 +116,8 @@ enum DemoData {
     static let card = CardVolume(url: URL(fileURLWithPath: "/Volumes/A7SIII"), name: "A7S III", uuid: "DEMO-CARD")
 
     /// A mixed card: 24 clips (each with a Sony M01.XML sidecar), RAW photos, a few
-    /// WAVs from an audio recorder and the camera's own database file.
+    /// WAVs from an audio recorder, the camera's own database file, and three drone clips
+    /// with their DJI proxies (.LRF) and telemetry (.SRT).
     static func clips() -> [Clip] {
         var components = DateComponents()
         components.year = 2026; components.month = 10; components.day = 25; components.hour = 9
@@ -113,6 +140,13 @@ enum DemoData {
             add(String(format: "ZOOM/ZOOM%04d.WAV", index), size: 310_000_000, at: start.addingTimeInterval(Double(index) * 2_400))
         }
         add("PRIVATE/M4ROOT/MEDIAPRO.XML", size: 18_000, at: start.addingTimeInterval(24 * 420 + 60))
+        for index in 1...3 {
+            let date = start.addingTimeInterval(24 * 420 + 600 + Double(index) * 300)
+            let name = String(format: "DCIM/DJI_001/DJI_%04d", index)
+            add(name + ".MP4", size: Int64(1_400_000_000 + index * 210_000_000), at: date)
+            add(name + ".LRF", size: Int64(90_000_000 + index * 12_000_000), at: date)
+            add(name + ".SRT", size: 64_000, at: date)
+        }
         return files
     }
 
@@ -129,6 +163,9 @@ enum DemoData {
             }
             result["PRIVATE/M4ROOT/CLIP/\(name).MP4"] = seconds
         }
+        for index in 1...3 {
+            result[String(format: "DCIM/DJI_001/DJI_%04d.MP4", index)] = Double(40 + index * 23)
+        }
         return result
     }
 
@@ -140,8 +177,9 @@ enum DemoData {
         let ledger = Ledger(fileURL: ledgerURL)
         let cameras = cameraStore()
         // The demo never runs diskutil: every command "fails", so Format can't erase anything.
+        let presets = presetStore(cameras: cameras)
         let model = AppModel(settings: settings, ledger: ledger, cameras: cameras, destinations: destinationStore(),
-                             formatter: CardFormatter(runner: DemoCommandRunner()), startWatching: false)
+                             presets: presets, formatter: CardFormatter(runner: DemoCommandRunner()), startWatching: false)
         settings.destinationPath = FileManager.default.urls(for: .moviesDirectory, in: .userDomainMask).first?.path
         if let theme = launchTheme { settings.themeID = theme }
         if let layout = launchLayout { settings.mediaLayout = layout }
@@ -149,7 +187,12 @@ enum DemoData {
         model.thumbnails.usesPlaceholders = true
         guard state != .empty else { return model }
 
-        settings.apply(NamingPreset.all[1])   // Project / Date / Camera
+        settings.apply(NamingPreset.all[1])   // Project / Date / Camera ("Sony Shoot")
+        if UserDefaults.standard.bool(forKey: "SnapDropDemoQuickDump"),
+           let quick = presets.presets.first(where: { $0.quickDump }) {
+            settings.apply(quick)
+            presets.markActive(quick.id)
+        }
         let all = clips()
         let alreadyDone = all.prefix(15)      // the first six clips (with sidecars) and three photos
         for clip in alreadyDone {
@@ -170,15 +213,19 @@ enum DemoData {
         let inventory = CardInventory.classify(
             files: all, volumeIdentity: card.identity, entries: entries,
             fileSize: { path in missingNames.contains((path as NSString).lastPathComponent) ? nil : sizes[path] })
-        let session = OffloadSession(card: card, inventory: inventory, durations: durations())
+        var inventoryWithIgnored = inventory
+        inventoryWithIgnored.ignored = ignoredItems
+        let session = OffloadSession(card: card, inventory: inventoryWithIgnored, durations: durations())
         session.shortRule = settings.shortClipRule
+        session.fileRules = settings.fileRules
         // While copying and when finished, the missing copies are being re-offloaded too.
         if state != .ready { session.reoffloadMode = .missing }
         session.projectInput = "Coastline"
         session.cameraID = cameras.cameras[1].id
         let total = session.newBytes
-        let plan = OffloadPlanner.plan(files: session.newClips, naming: settings.naming ?? .standard,
-                                       context: model.namingContext(for: session), existingNames: { _ in [] })
+        let plan = OffloadPlanner.plan(files: session.newClips, naming: settings.effectiveNaming ?? .standard,
+                                       context: model.namingContext(for: session), rules: settings.fileRules,
+                                       existingNames: { _ in [] })
         // While "copying", the current file is a clip partway down the list.
         let current = plan.indices.first { $0 >= 9 && plan[$0].category == .video } ?? min(9, plan.count - 1)
         switch state {
@@ -206,13 +253,14 @@ enum DemoData {
             break
         }
         // Ready to format once everything is offloaded; otherwise "N files not yet offloaded".
-        var cardInventory = inventory
+        var cardInventory = inventoryWithIgnored
         if state == .finished {
             // Everything but the two skipped short clips (and their sidecars).
             let skipped = session.skippedShort.ids
             cardInventory = CardInventory(new: all.filter { skipped.contains($0.relativePath) },
                                           offloaded: all.filter { !skipped.contains($0.relativePath) },
-                                          copiesFolder: (settings.destinationPath ?? "") + "/Coastline")
+                                          copiesFolder: (settings.destinationPath ?? "") + "/Coastline",
+                                          ignored: ignoredItems)
         }
         model.installDemo(card: card, session: session, inventory: cardInventory)
         return model

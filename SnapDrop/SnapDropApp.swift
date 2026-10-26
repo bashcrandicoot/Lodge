@@ -40,7 +40,7 @@ struct SnapDropApp: App {
             let ledger = FileManager.default.temporaryDirectory.appendingPathComponent("snapdrop-test-host-ledger.json")
             return AppModel(settings: AppSettings(defaults: nil), ledger: Ledger(fileURL: ledger),
                             cameras: CameraStore(fileURL: nil), destinations: DestinationStore(fileURL: nil),
-                            startWatching: false)
+                            presets: PresetStore(fileURL: nil), startWatching: false)
         }
         return AppModel()
     }
@@ -49,6 +49,13 @@ struct SnapDropApp: App {
 /// Classic AppKit delegate. We only use it to quit the app when its window is closed,
 /// so it never sits invisibly in the background.
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationWillFinishLaunching(_ notification: Notification) {
+        // As the unit tests' host, stay out of the way: no Dock icon, no windows, never frontmost.
+        if AppModel.isRunningUnitTests {
+            NSApp.setActivationPolicy(.prohibited)
+        }
+    }
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         #if DEBUG
         switch UserDefaults.standard.string(forKey: "SnapDropDemoAppearance") {

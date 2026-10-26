@@ -14,6 +14,7 @@ final class AppModel: ObservableObject {
     let ledger: Ledger
     let cameras: CameraStore
     let destinations: DestinationStore
+    let presets: PresetStore
 
     /// The card shown in the funnel (its mount path).
     @Published private(set) var selectedCardID: String?
@@ -64,24 +65,31 @@ final class AppModel: ObservableObject {
     private var categoriesObserver: AnyCancellable?
     private var appearanceObserver: AnyCancellable?
     private var shortRuleObserver: AnyCancellable?
+    private var fileRulesObserver: AnyCancellable?
+    private var presetsObserver: AnyCancellable?
     /// Video lengths by ledger key (`nil` = couldn't be read), so rescans don't read them again.
     private var durationCache: [String: Double?] = [:]
     /// Reads video lengths for "Skip short videos" (tests swap in a fake).
     var durationReader: DurationReading = AVDurationReader()
 
     init(settings: AppSettings? = nil, ledger: Ledger? = nil, cameras: CameraStore? = nil,
-         destinations: DestinationStore? = nil, formatter: CardFormatter = CardFormatter(),
-         startWatching: Bool = true) {
+         destinations: DestinationStore? = nil, presets: PresetStore? = nil,
+         formatter: CardFormatter = CardFormatter(), startWatching: Bool = true) {
         self.formatter = formatter
         self.settings = settings ?? AppSettings()
         self.ledger = ledger ?? Ledger()
         self.cameras = cameras ?? CameraStore()
         self.destinations = destinations ?? DestinationStore()
+        // (As the unit tests' host, never touch the user's saved presets.)
+        self.presets = presets ?? (AppModel.isRunningUnitTests ? PresetStore(fileURL: nil) : PresetStore())
         self.watcher = VolumeWatcher()
 
-        // The single destination from before favorites becomes the first favorite, once.
-        // Then start in the last favorite used (or the default, if that one isn't connected).
-        self.destinations.migrate(legacyPath: self.settings.destinationPath)
+        // The old Settings ▸ General ▸ Destination folder joins the favorites, once: favorites are
+        // now the only place destinations are set. Then start in the default favorite.
+        if !self.settings.destinationMigrated {
+            self.destinations.adoptLegacyDestination(self.settings.destinationPath)
+            self.settings.destinationMigrated = true
+        }
         let launchPath = self.destinations.launchDestination(currentPath: self.settings.destinationPath)
         if launchPath != self.settings.destinationPath {
             self.settings.destinationPath = launchPath
@@ -89,6 +97,21 @@ final class AppModel: ObservableObject {
         // "Not connected" and the Offload button follow drives coming and going.
         destinationsObserver = self.destinations.objectWillChange.sink { [weak self] _ in
             self?.objectWillChange.send()
+        }
+
+        presetsObserver = self.presets.objectWillChange.sink { [weak self] _ in
+            self?.objectWillChange.send()
+        }
+
+        // Settings ▸ Files: new proxy/sidecar extensions re-plan right away; a changed ignore
+        // list rescans the card (ignored files aren't part of the card's file list at all).
+        fileRulesObserver = self.settings.$fileRules.removeDuplicates().dropFirst().sink { [weak self] rules in
+            guard let self, let session = self.session else { return }
+            let ignoreChanged = session.fileRules.ignorePatterns != rules.ignorePatterns
+            session.fileRules = rules
+            if ignoreChanged, session.phase == .ready, !self.isScanning, self.watcher.cards.contains(session.card) {
+                self.select(session.card, keepFormatState: true)
+            }
         }
 
         // The Offload button depends on the camera list (e.g. the chosen camera was deleted).
@@ -187,12 +210,14 @@ final class AppModel: ObservableObject {
         let entries = ledger.entriesByKey()
         let cache = durationCache
         let reader = durationReader
+        let rules = settings.fileRules
         Task {
             let (inventory, durations) = await Task.detached(priority: .userInitiated) {
-                let clips = ClipScanner.scan(volumeURL: card.url)
+                let scan = ClipScanner.scanReport(volumeURL: card.url, rules: rules)
                 // Checks each offloaded file's copy is still at the destination ("Missing copy").
-                let inventory = CardInventory.classify(files: clips, volumeIdentity: card.identity, entries: entries,
-                                                       fileSize: FormatReadiness.diskFileSize)
+                var inventory = CardInventory.classify(files: scan.files, volumeIdentity: card.identity,
+                                                       entries: entries, fileSize: FormatReadiness.diskFileSize)
+                inventory.ignored = scan.ignored
                 // Video lengths for "Skip short videos" and the list (only files that may be copied).
                 let durations = await DurationScanner.read(inventory.new + inventory.missing,
                                                            volumeIdentity: card.identity, cache: cache, reader: reader)
@@ -211,11 +236,14 @@ final class AppModel: ObservableObject {
     private func refreshInventory(for session: OffloadSession) {
         let card = session.card
         let files = session.inventory.all
+        let ignored = session.inventory.ignored
         let entries = ledger.entriesByKey()
         Task {
             let inventory = await Task.detached(priority: .userInitiated) {
-                CardInventory.classify(files: files, volumeIdentity: card.identity, entries: entries,
-                                       fileSize: FormatReadiness.diskFileSize)
+                var inventory = CardInventory.classify(files: files, volumeIdentity: card.identity, entries: entries,
+                                                       fileSize: FormatReadiness.diskFileSize)
+                inventory.ignored = ignored
+                return inventory
             }.value
             guard self.session === session else { return }
             self.cardInventory = inventory
@@ -255,6 +283,7 @@ final class AppModel: ObservableObject {
         }
         newSession.includedCategories = settings.includedCategories
         newSession.shortRule = settings.shortClipRule
+        newSession.fileRules = settings.fileRules
         if newSession.projectInput.isEmpty { newSession.projectInput = settings.lastProject }
         newSession.cameraID = cameras.suggestedCamera(forCard: newSession.card.identity) ?? newSession.cameraID
         session = newSession
@@ -274,7 +303,7 @@ final class AppModel: ObservableObject {
         guard let session else {
             return isScanning ? "Scanning card…" : "Insert a card to begin"
         }
-        let naming = settings.naming
+        let naming = settings.effectiveNaming
         return OffloadReadiness.blocker(
             hasCard: true,
             isScanning: isScanning,
@@ -294,13 +323,15 @@ final class AppModel: ObservableObject {
 
     func startOffload() {
         guard let session, session.phase == .ready, offloadBlocker == nil,
-              let destination = settings.destinationURL, let naming = settings.naming else { return }
+              let destination = settings.destinationURL, let naming = settings.effectiveNaming else { return }
         let plan = OffloadPlanner.plan(
             files: session.newClips,
             naming: naming,
             context: namingContext(for: session),
+            rules: settings.fileRules,
             existingNames: OffloadPlanner.diskLister(root: destination))
-        settings.rememberProject(session.projectInput)
+        // A quick dump doesn't use the project, so it doesn't replace the remembered one.
+        if !settings.quickDump { settings.rememberProject(session.projectInput) }
         cameras.remember(session.cameraID, forCard: session.card.identity)
         session.start(plan: plan, destination: destination, ledger: ledger)
     }
@@ -311,7 +342,7 @@ final class AppModel: ObservableObject {
     func namingContext(for session: OffloadSession) -> NamingContext {
         let card = NamingContext.clean(session.card.name)
         return NamingContext(
-            project: session.project,
+            project: settings.quickDump ? "" : session.project,
             camera: cameraTokenValue(for: session),
             card: card.isEmpty ? "Card" : card)
     }
@@ -334,15 +365,16 @@ final class AppModel: ObservableObject {
         if let plan = session.plan { return plan }
         return OffloadPlanner.plan(
             files: session.newClips,
-            naming: settings.naming ?? .standard,
+            naming: settings.effectiveNaming ?? .standard,
             context: namingContext(for: session).fillingBlanks(),
+            rules: settings.fileRules,
             existingNames: OffloadPlanner.diskLister(root: settings.destinationURL))
     }
 
     /// True when the preview contains placeholder values for fields the templates need.
     func previewHasPlaceholders(for session: OffloadSession) -> Bool {
         guard session.plan == nil else { return false }
-        let needs = NamingNeeds(settings.naming)
+        let needs = NamingNeeds(settings.effectiveNaming)
         return (needs.project && session.project.isEmpty)
             || (needs.camera && cameraTokenValue(for: session).isEmpty)
     }
@@ -451,11 +483,89 @@ final class AppModel: ObservableObject {
         watcher.refresh()
     }
 
+    /// A folder dropped from Finder onto the Destination stage: its favorite if it is one,
+    /// otherwise used like "Choose Other Folder…". Returns false if it isn't a folder.
+    @discardableResult
+    func useDroppedFolder(_ url: URL) -> Bool {
+        guard !isBusy, DestinationStore.isFolder(url.path) else { return false }
+        if let favorite = destinations.favorite(forPath: url.path) {
+            useFavorite(favorite)
+        } else {
+            settings.destinationPath = DestinationStore.normalized(url.path)
+            destinations.markUsed(nil)
+            watcher.refresh()
+        }
+        return true
+    }
+
     /// Saves the current destination folder as a favorite and remembers it as last used.
     func addCurrentDestinationToFavorites() {
         guard let path = settings.destinationPath else { return }
         let favorite = destinations.add(path: path)
         destinations.markUsed(favorite.id)
+    }
+
+    // MARK: Presets
+
+    /// Switches to a preset: templates, short clips, quick dump and file rules at once, plus its
+    /// destination (if connected) and camera (for the card on screen). The tree updates live.
+    func applyPreset(_ preset: OffloadPreset) {
+        guard !isBusy else { return }
+        settings.apply(preset)
+        if let path = preset.destinationPath, DestinationStore.isFolder(path) {
+            if let favorite = destinations.favorite(forPath: path) {
+                useFavorite(favorite)
+            } else {
+                settings.destinationPath = path
+                destinations.markUsed(nil)
+                watcher.refresh()
+            }
+        }
+        if let camera = cameras.camera(id: preset.cameraID), let session, session.phase == .ready {
+            selectCamera(camera.id)
+        }
+        presets.markActive(preset.id)
+    }
+
+    /// The current setup (destination and camera as shown in the main window).
+    func currentSetupAsPreset(name: String) -> OffloadPreset {
+        settings.makePreset(name: name, destinationPath: settings.destinationPath,
+                            cameraID: session?.cameraID ?? presets.activePreset?.cameraID)
+    }
+
+    /// "Save Current Setup as Preset…": adds it and makes it the active one.
+    @discardableResult
+    func saveCurrentSetupAsPreset(named name: String) -> OffloadPreset {
+        let trimmed = name.trimmingCharacters(in: .whitespaces)
+        let preset = presets.add(currentSetupAsPreset(name: trimmed.isEmpty ? "New Preset" : trimmed))
+        presets.markActive(preset.id)
+        return preset
+    }
+
+    /// "Update “Drone Day”": the active preset takes over the current setup.
+    func updateActivePresetFromCurrentSetup() {
+        guard let active = presets.activePreset else { return }
+        var updated = currentSetupAsPreset(name: active.name)
+        updated.id = active.id
+        presets.update(updated)
+    }
+
+    /// True when a setting changed after the active preset was picked (the switcher says "Edited").
+    var activePresetIsEdited: Bool {
+        guard let active = presets.activePreset else { return false }
+        return Self.preset(active, differsFrom: settings, destinationPath: settings.destinationPath)
+    }
+
+    /// Compares the parts a preset sets (a preset without a destination doesn't care where files go).
+    static func preset(_ preset: OffloadPreset, differsFrom settings: AppSettings, destinationPath: String?) -> Bool {
+        if preset.folderTemplate != settings.folderTemplate || preset.fileTemplate != settings.fileTemplate
+            || preset.skipShortClips != settings.skipShortClips || preset.quickDump != settings.quickDump
+            || preset.fileRules != settings.fileRules { return true }
+        if preset.skipShortClips && preset.shortClipSeconds != settings.shortClipSeconds { return true }
+        if let path = preset.destinationPath {
+            return DestinationStore.normalized(path) != destinationPath.map(DestinationStore.normalized)
+        }
+        return false
     }
 
     // MARK: Formatting
@@ -490,6 +600,7 @@ final class AppModel: ObservableObject {
         let formatter = self.formatter
         // Skipped short clips the user agreed to discard (by ledger key: a changed file blocks formatting).
         let skippedIDs = session?.skippedShort.ids ?? []
+        let rules = settings.fileRules
         let discarding = Set((cardInventory?.new ?? [])
             .filter { skippedIDs.contains($0.relativePath) }
             .map { $0.ledgerKey(volumeIdentity: card.identity) })
@@ -497,7 +608,8 @@ final class AppModel: ObservableObject {
             let outcome = await formatter.format(
                 card: card, destinationPath: destinationPath, destinationVolume: destinationVolume,
                 stillReady: {
-                    let files = ClipScanner.scan(volumeURL: card.url)
+                    // Same ignore list as the scan the user saw: ignored files never block formatting.
+                    let files = ClipScanner.scan(volumeURL: card.url, rules: rules)
                     let inventory = CardInventory.classify(files: files, volumeIdentity: card.identity,
                                                            entries: entries, fileSize: FormatReadiness.diskFileSize)
                     return FormatReadiness.stillReady(inventory: inventory, volumeIdentity: card.identity,

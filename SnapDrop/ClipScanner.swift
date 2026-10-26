@@ -52,9 +52,24 @@ enum ClipScanner {
         !isJunk(name) && MediaCategory.classify(fileName: name) == .video
     }
 
+    /// What a scan found: the files to work with, and what it skipped on purpose.
+    struct Result: Equatable, Sendable {
+        var files: [Clip] = []
+        /// Card paths of ignored files and folders (a skipped folder counts once). Sorted.
+        var ignored: [String] = []
+    }
+
     /// Lists every real file on the card at `volumeURL` (the whole card, recursively),
     /// keeping only the chosen categories. Sorted by path on the card.
-    static func scan(volumeURL: URL, categories: Set<MediaCategory> = Set(MediaCategory.allCases)) -> [Clip] {
+    static func scan(volumeURL: URL, categories: Set<MediaCategory> = Set(MediaCategory.allCases),
+                     rules: FileRules = .standard) -> [Clip] {
+        scanReport(volumeURL: volumeURL, categories: categories, rules: rules).files
+    }
+
+    /// `scan`, plus what was ignored: system junk (always) and anything on the ignore list in
+    /// `rules` (".DS_Store", "._*"…). Ignored folders are skipped with everything inside them.
+    static func scanReport(volumeURL: URL, categories: Set<MediaCategory> = Set(MediaCategory.allCases),
+                           rules: FileRules = .standard) -> Result {
         let keys: [URLResourceKey] = [.isRegularFileKey, .isDirectoryKey, .isSymbolicLinkKey,
                                       .fileSizeKey, .creationDateKey, .contentModificationDateKey]
         guard let enumerator = FileManager.default.enumerator(
@@ -62,26 +77,29 @@ enum ClipScanner {
             includingPropertiesForKeys: keys,
             options: [],
             errorHandler: { _, _ in true }   // keep going past folders we can't read
-        ) else { return [] }
+        ) else { return Result() }
 
-        var result: [Clip] = []
+        var result = Result()
         for case let url as URL in enumerator {
             let name = url.lastPathComponent
             let values = try? url.resourceValues(forKeys: Set(keys))
-            if isJunk(name) {
+            if isJunk(name) || rules.isIgnored(name) {
                 if values?.isDirectory == true { enumerator.skipDescendants() }
+                result.ignored.append(relativePath(of: url, in: volumeURL))
                 continue
             }
             guard values?.isRegularFile == true, values?.isSymbolicLink != true else { continue }
             guard categories.contains(MediaCategory.classify(fileName: name)) else { continue }
-            result.append(Clip(
+            result.files.append(Clip(
                 url: url,
                 relativePath: relativePath(of: url, in: volumeURL),
                 size: Int64(values?.fileSize ?? 0),
                 creationDate: values?.creationDate,
                 modificationDate: values?.contentModificationDate))
         }
-        return result.sorted { $0.relativePath < $1.relativePath }
+        result.files.sort { $0.relativePath < $1.relativePath }
+        result.ignored.sort()
+        return result
     }
 
     /// The path of `file` relative to `root` ("DCIM/100/C0001.MP4").

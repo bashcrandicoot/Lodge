@@ -24,7 +24,7 @@ final class MediaTests: XCTestCase {
     // MARK: Categories
 
     func testCategoryClassification() {
-        for ext in ["mp4", "mov", "mxf", "braw", "r3d", "crm", "mts", "m2ts", "avi", "mkv", "insv", "lrv", "360"] {
+        for ext in ["mp4", "mov", "mxf", "braw", "r3d", "crm", "mts", "m2ts", "avi", "mkv", "insv", "360"] {
             XCTAssertEqual(MediaCategory.classify(fileName: "A." + ext), .video, ext)
             XCTAssertEqual(MediaCategory.classify(fileName: "A." + ext.uppercased()), .video, ext)
         }
@@ -35,7 +35,7 @@ final class MediaTests: XCTestCase {
         for ext in ["wav", "mp3", "aac", "m4a", "bwf"] {
             XCTAssertEqual(MediaCategory.classify(fileName: "A." + ext), .audio, ext)
         }
-        for name in ["C0001M01.XML", "MEDIAPRO.XML", "README", "clip.lrf", "archive.tar.gz", "STATUS.BIN"] {
+        for name in ["C0001M01.XML", "MEDIAPRO.XML", "README", "clip.lrf", "GL010001.LRV", "archive.tar.gz", "STATUS.BIN"] {
             XCTAssertEqual(MediaCategory.classify(fileName: name), .other, name)
         }
         XCTAssertEqual(MediaCategory.classify(fileName: "Mixed.MoV"), .video)
@@ -88,6 +88,7 @@ final class MediaTests: XCTestCase {
         XCTAssertNil(SidecarMatcher.sonySuffix(of: "C0001"))
     }
 
+    /// With `.keepTogether` (no Proxies/ or Sidecars/ folders), as before file rules existed.
     func testSidecarsShareNameAndDoNotUseSequenceNumbers() {
         let files = [
             file("CLIP/C0001.MP4"), file("CLIP/C0001M01.XML"),
@@ -97,7 +98,7 @@ final class MediaTests: XCTestCase {
             file("CLIP/C0003.MP4", minutesAfter: 6),
         ]
         let plan = OffloadPlanner.plan(files: files, naming: .standard, context: NamingContext(project: "S"),
-                                       existingNames: { _ in [] })
+                                       rules: .keepTogether, existingNames: { _ in [] })
         XCTAssertEqual(plan.map(\.fileName), [
             "2026-10-25_S_0001.mp4", "2026-10-25_S_0001M01.xml",
             "2026-10-25_S_0002.mp4", "2026-10-25_S_0002.wav", "2026-10-25_S_0002M01.xml",
@@ -111,9 +112,13 @@ final class MediaTests: XCTestCase {
     func testSidecarFollowsTypeFolderOfItsClipAndAvoidsCollisions() {
         let naming = NamingTemplates(folder: "{type}", file: "{original}")!
         let files = [file("CLIP/C0001.MP4"), file("CLIP/C0001M01.XML")]
-        let plan = OffloadPlanner.plan(files: files, naming: naming, context: NamingContext(),
+        let plan = OffloadPlanner.plan(files: files, naming: naming, context: NamingContext(), rules: .keepTogether,
                                        existingNames: { $0 == "Video" ? ["C0001M01.xml"] : [] })
         XCTAssertEqual(plan.map(\.relativePath), ["Video/C0001.mp4", "Video/C0001M01_2.xml"])
+        // With the standard rules the XML goes into the clip folder's Sidecars/ subfolder instead.
+        let routed = OffloadPlanner.plan(files: files, naming: naming, context: NamingContext(),
+                                         existingNames: { $0 == "Video/Sidecars" ? ["C0001M01.xml"] : [] })
+        XCTAssertEqual(routed.map(\.relativePath), ["Video/C0001.mp4", "Video/Sidecars/C0001M01_2.xml"])
     }
 
     // MARK: Session
@@ -198,7 +203,7 @@ final class MediaTests: XCTestCase {
         try FileManager.default.createDirectory(at: destination, withIntermediateDirectories: true)
         let naming = NamingTemplates(folder: "{type}", file: "{date}_{project}_{seq}")!
         let plan = OffloadPlanner.plan(files: files, naming: naming, context: NamingContext(project: "Beach"),
-                                       existingNames: OffloadPlanner.diskLister(root: destination))
+                                       rules: .keepTogether, existingNames: OffloadPlanner.diskLister(root: destination))
         let date = Renamer.dateString(for: files[0].captureDate)
         XCTAssertEqual(plan.map(\.relativePath), [
             "Video/\(date)_Beach_0001.mp4",

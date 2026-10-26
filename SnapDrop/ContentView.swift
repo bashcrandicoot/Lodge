@@ -90,6 +90,7 @@ extension View {
             .environmentObject(model.ledger)
             .environmentObject(model.cameras)
             .environmentObject(model.destinations)
+            .environmentObject(model.presets)
     }
 }
 

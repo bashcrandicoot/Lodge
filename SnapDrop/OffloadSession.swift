@@ -38,6 +38,10 @@ final class OffloadSession: ObservableObject, Identifiable {
     @Published var shortRule: ShortClipRule = .off {
         didSet { refreshFiles() }
     }
+    /// Proxy and sidecar extensions (Settings ▸ Files): proxies follow their clip when it's skipped.
+    @Published var fileRules: FileRules = .standard {
+        didSet { if fileRules != oldValue { refreshFiles() } }
+    }
     /// Short clips the user chose to offload anyway (card paths).
     @Published var includedShortIDs: Set<String> = [] {
         didSet { refreshFiles() }
@@ -99,7 +103,8 @@ final class OffloadSession: ObservableObject, Identifiable {
         let selection = OffloadSelection.make(inventory: inventory, categories: includedCategories,
                                               reoffload: reoffloadMode, reoffloadIDs: reoffloadIDs,
                                               shortRule: shortRule, durations: durations,
-                                              includedShortIDs: includedShortIDs, includeAllShort: includeAllShort)
+                                              includedShortIDs: includedShortIDs, includeAllShort: includeAllShort,
+                                              rules: fileRules)
         newClips = selection.toCopy
         skippedShort = selection.skippedShort
         reoffloadingIDs = selection.reoffloading
@@ -131,7 +136,8 @@ final class OffloadSession: ObservableObject, Identifiable {
 
     /// Is this a short clip (by the current rule), skipped or included anyway?
     func isShortClip(_ clip: Clip) -> Bool {
-        clip.category == .video && offloadedStatus(of: clip) == nil && shortRule.isShort(durations[clip.relativePath])
+        clip.category == .video && fileRules.role(of: clip.url.lastPathComponent) == .main
+            && offloadedStatus(of: clip) == nil && shortRule.isShort(durations[clip.relativePath])
     }
 
     /// "Include Anyway" for one short clip (its sidecars come along), or skip it again.

@@ -10,6 +10,8 @@ struct PlannedFile: Identifiable, Equatable, Sendable {
     let fileName: String
     /// For sidecars (e.g. C0001M01.XML): the original name of the clip it belongs to.
     let sidecarOf: String?
+    /// Proxies and sidecars go into their own subfolder of the shoot folder.
+    var role: FileRole = .main
 
     var id: String { clip.relativePath }
     var originalName: String { clip.url.lastPathComponent }
@@ -29,6 +31,7 @@ enum OffloadPlanner {
         files: [Clip],
         naming: NamingTemplates,
         context: NamingContext,
+        rules: FileRules = .standard,
         existingNames: @escaping ExistingNames
     ) -> [PlannedFile] {
         var names = NameBook(existingNames: existingNames)
@@ -36,11 +39,24 @@ enum OffloadPlanner {
         var result: [PlannedFile] = []
 
         let ordered = Offloader.order(files)
-        let sidecars = SidecarMatcher.match(ordered)
+        let sidecars = SidecarMatcher.match(ordered, rules: rules)
 
         for file in ordered where sidecars.primary[file.relativePath] == nil {
             let folder = TemplateRenderer.folderPath(naming.folder, file: file, context: context)
             let ext = file.url.pathExtension.lowercased()
+            let role = rules.role(of: file.url.lastPathComponent)
+
+            // A proxy or sidecar without its clip (MEDIAPRO.XML, a lone .LRV…) keeps its own name
+            // in the subfolder, so it doesn't use up a sequence number.
+            if let subfolder = role.folderName {
+                let target = subfolderPath(folder, subfolder)
+                let original = (file.url.lastPathComponent as NSString).deletingPathExtension
+                let name = names.unique(stem: NameRules.safeComponent(original), ext: ext, in: target)
+                names.reserve(name, in: target)
+                result.append(PlannedFile(clip: file, folder: target, fileName: name, sidecarOf: nil, role: role))
+                continue
+            }
+
             let stem = TemplateRenderer.fileStem(naming.file, file: file, context: context)
             let fileName: String
 
@@ -67,14 +83,16 @@ enum OffloadPlanner {
             names.reserve(fileName, in: folder)
             result.append(PlannedFile(clip: file, folder: folder, fileName: fileName, sidecarOf: nil))
 
-            // Sidecars (C0001M01.XML, C0001.WAV…) follow their clip with the same new name.
+            // Sidecars (C0001M01.XML, GL010001.LRV, C0001.WAV…) follow their clip with the same new
+            // name: next to it, or in its Proxies/ or Sidecars/ subfolder.
             let newStem = ext.isEmpty ? fileName : String(fileName.dropLast(ext.count + 1))
             for sidecar in sidecars.byPrimary[file.relativePath] ?? [] {
                 let sidecarExt = sidecar.file.url.pathExtension.lowercased()
-                let sidecarName = names.unique(stem: newStem + sidecar.suffix, ext: sidecarExt, in: folder)
-                names.reserve(sidecarName, in: folder)
-                result.append(PlannedFile(clip: sidecar.file, folder: folder, fileName: sidecarName,
-                                          sidecarOf: file.url.lastPathComponent))
+                let target = sidecar.role.folderName.map { subfolderPath(folder, $0) } ?? folder
+                let sidecarName = names.unique(stem: newStem + sidecar.suffix, ext: sidecarExt, in: target)
+                names.reserve(sidecarName, in: target)
+                result.append(PlannedFile(clip: sidecar.file, folder: target, fileName: sidecarName,
+                                          sidecarOf: file.url.lastPathComponent, role: sidecar.role))
             }
         }
         return result
@@ -108,6 +126,11 @@ enum OffloadPlanner {
     /// "name.ext" (or just "name" for files without an extension).
     static func join(_ stem: String, _ ext: String) -> String {
         ext.isEmpty ? stem : stem + "." + ext
+    }
+
+    /// "2026-10-25/Coastline" + "Proxies" (or just "Proxies" at the destination itself).
+    static func subfolderPath(_ folder: String, _ subfolder: String) -> String {
+        folder.isEmpty ? subfolder : folder + "/" + subfolder
     }
 
     /// A folder lister that reads the real destination (each folder read once).
@@ -147,14 +170,17 @@ enum OffloadPlanner {
     }
 }
 
-/// Finds sidecar files: "other" or audio files that belong to a photo or video because they
-/// share its name in the same card folder — exactly ("C0001.XML") or with Sony's
-/// metadata suffix ("C0001M01.XML").
+/// Finds sidecar files: "other" or audio files (and anything listed as a proxy or sidecar in
+/// `FileRules`) that belong to a photo or video because they share its name in the same card
+/// folder — exactly ("C0001.XML", "DJI_0001.LRF"), with Sony's metadata suffix ("C0001M01.XML"),
+/// or as a GoPro low-res proxy ("GL010001.LRV" for "GX010001.MP4").
 enum SidecarMatcher {
     struct Sidecar: Equatable {
         let file: Clip
         /// Extra text kept after the new name, e.g. "M01" ("" for an exact match).
         let suffix: String
+        /// `.proxy` and `.sidecar` go into their own subfolder; `.main` stays next to the clip.
+        var role: FileRole = .main
     }
 
     struct Result {
@@ -165,16 +191,17 @@ enum SidecarMatcher {
     }
 
     /// `files` must already be in offload order; the first matching photo/video wins.
-    static func match(_ files: [Clip]) -> Result {
+    static func match(_ files: [Clip], rules: FileRules = .standard) -> Result {
         var primaries: [String: String] = [:]   // "folder|stem" (lowercased) → card path
-        for file in files where file.category.isPrimaryMedia {
+        for file in files where file.category.isPrimaryMedia && rules.role(of: file.url.lastPathComponent) == .main {
             let key = Self.key(folder: folder(of: file), stem: stem(of: file))
             if primaries[key] == nil { primaries[key] = file.relativePath }
         }
 
         var result = Result()
         let candidates = files
-            .filter { $0.category == .other || $0.category == .audio }
+            .filter { $0.category == .other || $0.category == .audio
+                || rules.role(of: $0.url.lastPathComponent) != .main }
             .sorted { $0.relativePath < $1.relativePath }
         for file in candidates {
             let folder = folder(of: file)
@@ -185,9 +212,14 @@ enum SidecarMatcher {
             } else if let suffix = sonySuffix(of: stem),
                       let primary = primaries[key(folder: folder, stem: String(stem.dropLast(suffix.count)))] {
                 match = (primary, suffix)
+            } else if let primary = goProStems(forProxy: stem).lazy
+                        .compactMap({ primaries[key(folder: folder, stem: $0)] }).first {
+                match = (primary, "")
             }
-            guard let match else { continue }
-            result.byPrimary[match.primary, default: []].append(Sidecar(file: file, suffix: match.suffix))
+            guard let match, match.primary != file.relativePath else { continue }
+            let role = rules.role(of: file.url.lastPathComponent)
+            result.byPrimary[match.primary, default: []].append(
+                Sidecar(file: file, suffix: match.suffix, role: role))
             result.primary[file.relativePath] = match.primary
         }
         return result
@@ -201,6 +233,15 @@ enum SidecarMatcher {
         guard let m = tail.first, m == "M" || m == "m",
               tail.dropFirst().allSatisfy({ $0.isASCII && $0.isNumber }) else { return nil }
         return String(tail)
+    }
+
+    /// GoPro names its low-res proxy "GL010001.LRV" for the clip "GX010001.MP4" (or "GH…" on
+    /// older cameras). Returns the clip names to look for, or nothing if it isn't a "GL" name.
+    static func goProStems(forProxy stem: String) -> [String] {
+        guard stem.count > 2, stem.uppercased().hasPrefix("GL") else { return [] }
+        let rest = stem.dropFirst(2)
+        let upper = stem.hasPrefix("GL")
+        return upper ? ["GX" + rest, "GH" + rest] : ["gx" + rest, "gh" + rest]
     }
 
     private static func folder(of file: Clip) -> String {

@@ -31,18 +31,21 @@ struct ShortClipSkip: Equatable, Sendable {
     /// `candidates` are the files that would otherwise be copied; `files` is everything on the card
     /// (for matching sidecars). Videos in `included` ("Include Anyway") are kept.
     static func find(candidates: [Clip], files: [Clip], durations: [String: Double],
-                     rule: ShortClipRule, included: Set<String>, includeAll: Bool) -> ShortClipSkip {
+                     rule: ShortClipRule, included: Set<String>, includeAll: Bool,
+                     rules: FileRules = .standard) -> ShortClipSkip {
         guard rule.isEnabled, !includeAll else { return ShortClipSkip() }
         var result = ShortClipSkip()
-        for clip in candidates where clip.category == .video && !included.contains(clip.relativePath)
+        // Only real footage: proxies (.LRV, .LRF) are never skipped on their own; they go with their clip.
+        for clip in candidates where clip.category == .video && rules.role(of: clip.url.lastPathComponent) == .main
+            && !included.contains(clip.relativePath)
             && rule.isShort(durations[clip.relativePath]) {
             result.clips.append(clip)
             result.ids.insert(clip.relativePath)
         }
         guard !result.ids.isEmpty else { return result }
-        // A skipped clip's sidecars (C0001M01.XML) stay behind with it.
+        // A skipped clip's sidecars and proxies (C0001M01.XML, GL010001.LRV) stay behind with it.
         let candidateIDs = Set(candidates.map(\.relativePath))
-        let sidecars = SidecarMatcher.match(Offloader.order(files))
+        let sidecars = SidecarMatcher.match(Offloader.order(files), rules: rules)
         for id in Array(result.ids) {
             for sidecar in sidecars.byPrimary[id] ?? [] where candidateIDs.contains(sidecar.file.relativePath) {
                 result.ids.insert(sidecar.file.relativePath)

@@ -90,7 +90,7 @@ final class DestinationStoreTests: XCTestCase {
         XCTAssertFalse(DestinationStore.isFolder(folder.appendingPathComponent("missing").path))
     }
 
-    func testLaunchUsesLastFavoriteThenDefaultThenAnyConnected() {
+    func testLaunchUsesDefaultFavoriteThenLastUsedThenAnyConnected() {
         var connected: Set<String> = ["/Movies", "/Volumes/SSD", "/Pictures"]
         let make = { (connected: Set<String>) -> DestinationStore in
             DestinationStore(fileURL: self.fileURL, folderExists: { connected.contains($0) })
@@ -99,25 +99,82 @@ final class DestinationStoreTests: XCTestCase {
         let movies = setup.add(path: "/Movies")
         let ssd = setup.add(path: "/Volumes/SSD")
         setup.add(path: "/Pictures")
-        setup.markUsed(ssd.id)
+        setup.setDefault(ssd.id)
+        setup.markUsed(movies.id)
 
-        XCTAssertEqual(make(connected).launchDestination(currentPath: "/Volumes/SSD"), "/Volumes/SSD")
+        XCTAssertEqual(make(connected).launchDestination(currentPath: "/Movies"), "/Volumes/SSD",
+                       "The default favorite is the one source of truth")
         connected.remove("/Volumes/SSD")
         XCTAssertEqual(make(connected).launchDestination(currentPath: "/Volumes/SSD"), "/Movies",
-                       "The default is used when the last favorite isn't plugged in")
+                       "The last favorite used fills in when the default isn't plugged in")
         connected.remove("/Movies")
         XCTAssertEqual(make(connected).launchDestination(currentPath: "/Volumes/SSD"), "/Pictures")
-        XCTAssertEqual(make([]).launchDestination(currentPath: "/Volumes/SSD"), "/Volumes/SSD",
-                       "With nothing connected the old choice stays (and the Offload button explains)")
-        XCTAssertEqual(movies.id, make([]).defaultID)
+        XCTAssertEqual(make([]).launchDestination(currentPath: "/Elsewhere"), "/Volumes/SSD",
+                       "With nothing connected the default stays (and the Offload button explains)")
+        XCTAssertEqual(ssd.id, make([]).defaultID)
     }
 
-    func testLaunchKeepsAnOtherFolderThatWasPickedLast() {
+    func testAnOtherFolderOnlyLastsUntilRelaunch() {
         let store = store(connected: ["/Movies", "/Elsewhere"])
         store.add(path: "/Movies")
         store.markUsed(nil)
-        XCTAssertEqual(store.launchDestination(currentPath: "/Elsewhere"), "/Elsewhere")
+        XCTAssertEqual(store.launchDestination(currentPath: "/Elsewhere"), "/Movies")
         XCTAssertEqual(store.launchDestination(currentPath: "/Gone"), "/Movies")
+        let empty = self.store(connected: ["/Elsewhere"])
+        XCTAssertEqual(empty.launchDestination(currentPath: "/Elsewhere"), "/Elsewhere",
+                       "Without favorites the folder in use stays")
+    }
+
+    // MARK: Moving the General ▸ Destination setting into favorites
+
+    func testLegacyDestinationJoinsExistingFavorites() {
+        let store = store(connected: ["/Movies", "/Volumes/Old"], file: fileURL)
+        let movies = store.add(path: "/Movies")
+        let reloaded = self.store(connected: ["/Movies", "/Volumes/Old"], file: fileURL)
+        XCTAssertFalse(reloaded.migrate(legacyPath: "/Volumes/Old"), "The first-run migration doesn't apply any more")
+        XCTAssertTrue(reloaded.adoptLegacyDestination("/Volumes/Old"))
+        XCTAssertEqual(reloaded.favorites.map(\.path), ["/Movies", "/Volumes/Old"])
+        XCTAssertEqual(reloaded.defaultID, movies.id, "An existing default is kept")
+        XCTAssertFalse(reloaded.adoptLegacyDestination("/Volumes/Old/"), "Already a favorite")
+        XCTAssertFalse(reloaded.adoptLegacyDestination(nil))
+        XCTAssertFalse(reloaded.adoptLegacyDestination(""))
+        let again = self.store(connected: [], file: fileURL)
+        XCTAssertEqual(again.favorites.map(\.path), ["/Movies", "/Volumes/Old"], "Saved")
+    }
+
+    func testLegacyDestinationBecomesTheDefaultWhenThereAreNoFavorites() {
+        let store = store(connected: ["/Movies"])
+        XCTAssertTrue(store.adoptLegacyDestination("/Movies"))
+        XCTAssertEqual(store.defaultFavorite?.path, "/Movies")
+        XCTAssertEqual(store.lastUsedID, store.defaultID)
+    }
+
+    func testModelMovesTheOldDestinationIntoFavoritesOnce() throws {
+        let suite = "SnapDropTests-\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let old = folder.appendingPathComponent("Old", isDirectory: true)
+        let movies = folder.appendingPathComponent("Movies", isDirectory: true)
+        try FileManager.default.createDirectory(at: old, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: movies, withIntermediateDirectories: true)
+        let settings = AppSettings(defaults: defaults)
+        settings.destinationPath = old.path
+        let destinations = DestinationStore(fileURL: fileURL)
+        destinations.add(path: movies.path)
+        let ledger = Ledger(fileURL: folder.appendingPathComponent("ledger.json"))
+        _ = AppModel(settings: settings, ledger: ledger, cameras: CameraStore(fileURL: nil),
+                     destinations: destinations, presets: PresetStore(fileURL: nil), startWatching: false)
+        XCTAssertEqual(destinations.favorites.map(\.path), [movies.path, old.path])
+        XCTAssertEqual(settings.destinationPath, movies.path, "SnapDrop starts in the default favorite")
+        XCTAssertTrue(settings.destinationMigrated)
+
+        // Removing it again doesn't bring it back on the next launch.
+        destinations.delete([try XCTUnwrap(destinations.favorite(forPath: old.path)).id])
+        let next = AppSettings(defaults: defaults)
+        next.destinationPath = old.path
+        _ = AppModel(settings: next, ledger: ledger, cameras: CameraStore(fileURL: nil),
+                     destinations: destinations, presets: PresetStore(fileURL: nil), startWatching: false)
+        XCTAssertEqual(destinations.favorites.map(\.path), [movies.path])
     }
 
     func testRemovingTheDefaultPicksANewOne() {

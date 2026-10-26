@@ -13,6 +13,9 @@ struct CardInventory: Equatable, Sendable {
     var missing: [Clip] = []
     /// The deepest folder that holds all the existing copies.
     var copiesFolder: String?
+    /// Card paths the scan skipped because of the ignore list or system junk (".DS_Store", ".Trashes"…).
+    /// Never offloaded and never counted against "Ready to format".
+    var ignored: [String] = []
 
     var all: [Clip] { new + offloaded + missing }
     var fileCount: Int { new.count + offloaded.count + missing.count }
@@ -81,14 +84,15 @@ struct OffloadSelection: Equatable, Sendable {
     static func make(inventory: CardInventory, categories: Set<MediaCategory>,
                      reoffload: ReoffloadMode, reoffloadIDs: Set<String>,
                      shortRule: ShortClipRule = .off, durations: [String: Double] = [:],
-                     includedShortIDs: Set<String> = [], includeAllShort: Bool = false) -> OffloadSelection {
+                     includedShortIDs: Set<String> = [], includeAllShort: Bool = false,
+                     rules: FileRules = .standard) -> OffloadSelection {
         var result = OffloadSelection()
         let included = { (clip: Clip) in categories.contains(clip.category) }
-        let picked = withSidecars(reoffloadIDs, files: inventory.all)
+        let picked = withSidecars(reoffloadIDs, files: inventory.all, rules: rules)
         let newFiles = inventory.new.filter(included)
         result.skippedShort = ShortClipSkip.find(candidates: newFiles, files: inventory.all, durations: durations,
                                                  rule: shortRule, included: includedShortIDs,
-                                                 includeAll: includeAllShort)
+                                                 includeAll: includeAllShort, rules: rules)
         result.toCopy = newFiles.filter { !result.skippedShort.ids.contains($0.relativePath) }
         for clip in inventory.missing where included(clip) {
             if reoffload != .off || picked.contains(clip.relativePath) {
@@ -109,10 +113,10 @@ struct OffloadSelection: Equatable, Sendable {
         return result
     }
 
-    /// Re-offloading a clip brings its sidecars (e.g. C0001M01.XML) along.
-    static func withSidecars(_ ids: Set<String>, files: [Clip]) -> Set<String> {
+    /// Re-offloading a clip brings its sidecars and proxies (e.g. C0001M01.XML, GL010001.LRV) along.
+    static func withSidecars(_ ids: Set<String>, files: [Clip], rules: FileRules = .standard) -> Set<String> {
         guard !ids.isEmpty else { return ids }
-        let sidecars = SidecarMatcher.match(Offloader.order(files))
+        let sidecars = SidecarMatcher.match(Offloader.order(files), rules: rules)
         var result = ids
         for id in ids {
             for sidecar in sidecars.byPrimary[id] ?? [] { result.insert(sidecar.file.relativePath) }

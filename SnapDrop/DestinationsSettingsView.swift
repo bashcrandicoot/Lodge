@@ -33,7 +33,7 @@ struct DestinationsSettingsView: View {
                     .font(.caption)
                     .foregroundStyle(.orange)
             } else {
-                Text("SnapDrop starts in the favorite you used last. If it isn’t connected, it uses the default.")
+                Text("SnapDrop starts in the default favorite. If its drive isn’t connected, it uses the one you used last.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)

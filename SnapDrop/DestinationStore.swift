@@ -118,17 +118,15 @@ final class DestinationStore: ObservableObject {
         folderExists(favorite.path)
     }
 
-    /// The folder to use when SnapDrop starts: the last favorite used, else the folder that was
-    /// in use if it wasn't a favorite, else the default, else any connected favorite.
+    /// The folder to use when SnapDrop starts. The default favorite is the one source of truth
+    /// (Settings ▸ Destinations); if its drive isn't connected, the favorite used last, then any
+    /// connected favorite. A folder picked with "Choose Other Folder…" only lasts until then.
     func launchDestination(currentPath: String?) -> String? {
-        if let last = favorite(id: lastUsedID) {
-            if isConnected(last) { return last.path }
-        } else if let currentPath, folderExists(currentPath) {
-            return currentPath
-        }
         if let preferred = defaultFavorite, isConnected(preferred) { return preferred.path }
+        if let last = favorite(id: lastUsedID), isConnected(last) { return last.path }
         if let any = favorites.first(where: isConnected) { return any.path }
-        return currentPath
+        if favorites.isEmpty, let currentPath, folderExists(currentPath) { return currentPath }
+        return defaultFavorite?.path ?? currentPath
     }
 
     // MARK: Migration
@@ -143,6 +141,19 @@ final class DestinationStore: ObservableObject {
         defaultID = favorite.id
         lastUsedID = favorite.id
         save()
+        return true
+    }
+
+    /// The old Settings ▸ General ▸ Destination folder joins the favorites (once; the app keeps a
+    /// flag). The first favorite becomes the default; otherwise the default is left alone.
+    /// Returns true if a favorite was added.
+    @discardableResult
+    func adoptLegacyDestination(_ path: String?) -> Bool {
+        guard let path, !path.isEmpty, favorite(forPath: path) == nil else { return false }
+        if migrate(legacyPath: path) { return true }
+        let wasEmpty = favorites.isEmpty
+        let favorite = add(path: path)
+        if wasEmpty { lastUsedID = favorite.id; save() }
         return true
     }
 

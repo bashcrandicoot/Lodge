@@ -22,6 +22,9 @@ struct FormatReadiness: Equatable, Sendable {
     var shortSkippedFiles = 0
     /// How many of those are the short videos themselves.
     var shortSkippedClips = 0
+    /// Items the scan ignored (ignore list and system junk). They never block formatting,
+    /// but Format erases them too, so the confirmation mentions them.
+    var ignoredItems = 0
 
     /// Nothing pending, and there's something on the card.
     var isReady: Bool { fileCount > 0 && pending == 0 && shortSkippedFiles == 0 }
@@ -54,7 +57,9 @@ struct FormatReadiness: Equatable, Sendable {
     }
 
     init(fileCount: Int = 0, totalBytes: Int64 = 0, notOffloaded: Int = 0, missingCopies: Int = 0,
-         copiesFolder: String? = nil, shortSkippedFiles: Int = 0, shortSkippedClips: Int = 0) {
+         copiesFolder: String? = nil, shortSkippedFiles: Int = 0, shortSkippedClips: Int = 0,
+         ignoredItems: Int = 0) {
+        self.ignoredItems = ignoredItems
         self.fileCount = fileCount
         self.totalBytes = totalBytes
         self.notOffloaded = notOffloaded
@@ -74,7 +79,8 @@ struct FormatReadiness: Equatable, Sendable {
                   missingCopies: inventory.missing.count,
                   copiesFolder: inventory.copiesFolder,
                   shortSkippedFiles: skippedNew.count,
-                  shortSkippedClips: skippedNew.filter { skippedClips.contains($0.relativePath) }.count)
+                  shortSkippedClips: skippedNew.filter { skippedClips.contains($0.relativePath) }.count,
+                  ignoredItems: inventory.ignored.count)
     }
 
     /// The format safety re-check: the card holds nothing new except the files the user agreed to

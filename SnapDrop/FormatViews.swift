@@ -21,6 +21,10 @@ enum FormatAlert {
             let clips = readiness.shortSkippedClips == 1 ? "1 short clip" : "\(readiness.shortSkippedClips) short clips"
             copied += ".\n\n\(clips) (skipped by “Skip short videos”) \(readiness.shortSkippedClips == 1 ? "has" : "have") no copy and will be lost"
         }
+        if readiness.ignoredItems > 0 {
+            let items = readiness.ignoredItems == 1 ? "1 ignored item" : "\(readiness.ignoredItems) ignored items"
+            copied += ".\n\n\(items) (system files and your ignore list) weren’t copied and will be erased too"
+        }
         let message = copied + ".\n\nFormatting erases everything on “\(cardName)”. This can’t be undone."
             + "\n\nTip: formatting in your camera is usually best, because it sets the card up exactly the way the camera expects."
         return ("Format “\(cardName)”?", message)

@@ -22,6 +22,9 @@ final class AppSettings: ObservableObject {
         static let appearance = "appearance"
         static let mediaLayout = "mediaLayout"
         static let listThumbnails = "listThumbnails"
+        static let quickDump = "quickDump"
+        static let fileRules = "fileRules"
+        static let destinationMigrated = "destinationMovedToFavorites"
     }
 
     static let maxRecentProjects = 6
@@ -91,6 +94,41 @@ final class AppSettings: ObservableObject {
         ShortClipRule(isEnabled: skipShortClips, threshold: Double(shortClipSeconds))
     }
 
+    /// The "Skip videos shorter than" slider: 0 = off, otherwise the threshold in seconds.
+    var shortClipSliderSeconds: Int {
+        get { skipShortClips ? shortClipSeconds : 0 }
+        set {
+            if newValue <= 0 {
+                skipShortClips = false
+            } else {
+                shortClipSeconds = newValue
+                skipShortClips = true
+            }
+        }
+    }
+
+    /// "Quick dump: skip project name" (main window): `{project}` is left out of the names.
+    @Published var quickDump: Bool {
+        didSet { defaults?.set(quickDump, forKey: Key.quickDump) }
+    }
+
+    /// Proxy and sidecar extensions, and the ignore list (Settings ▸ Files).
+    @Published var fileRules: FileRules {
+        didSet {
+            guard fileRules != oldValue else { return }
+            defaults?.set(try? JSONEncoder().encode(fileRules), forKey: Key.fileRules)
+        }
+    }
+
+    /// True once the old single "Destination" setting was added to the favorites.
+    var destinationMigrated: Bool {
+        get { defaults?.bool(forKey: Key.destinationMigrated) ?? migratedInMemory }
+        set {
+            if let defaults { defaults.set(newValue, forKey: Key.destinationMigrated) } else { migratedInMemory = newValue }
+        }
+    }
+    private var migratedInMemory = false
+
     /// The colour theme (Settings ▸ Appearance). Default (neutral black) unless chosen.
     @Published var themeID: ThemePalette.ID {
         didSet { defaults?.set(themeID.rawValue, forKey: Key.theme) }
@@ -136,6 +174,9 @@ final class AppSettings: ObservableObject {
         appearance = defaults?.string(forKey: Key.appearance).flatMap(AppAppearance.init(rawValue:)) ?? .dark
         mediaLayout = defaults?.string(forKey: Key.mediaLayout).flatMap(MediaLayout.init(rawValue:)) ?? .list
         showListThumbnails = defaults?.bool(forKey: Key.listThumbnails) ?? false
+        quickDump = defaults?.bool(forKey: Key.quickDump) ?? false
+        fileRules = defaults?.data(forKey: Key.fileRules).flatMap { try? JSONDecoder().decode(FileRules.self, from: $0) }
+            ?? .standard
         // `didSet` doesn't run inside `init`, so save migrated templates explicitly.
         if let savedFolder, savedFolder != folderTemplate { defaults?.set(folderTemplate, forKey: Key.folderTemplate) }
         if let savedFile, savedFile != fileTemplate { defaults?.set(fileTemplate, forKey: Key.fileTemplate) }
@@ -160,9 +201,36 @@ final class AppSettings: ObservableObject {
     var folderIssues: [TemplateIssue] { NamingTemplate.parse(folderTemplate, kind: .folder).issues }
     var fileIssues: [TemplateIssue] { NamingTemplate.parse(fileTemplate, kind: .file).issues }
 
+    /// The templates actually used: with quick dump on, `{project}` is taken out cleanly.
+    var effectiveNaming: NamingTemplates? {
+        guard quickDump else { return naming }
+        let stripped = QuickDump.templates(folder: folderTemplate, file: fileTemplate)
+        return NamingTemplates(folder: stripped.folder, file: stripped.file)
+    }
+
     func apply(_ preset: NamingPreset) {
         folderTemplate = preset.folder
         fileTemplate = preset.file
+    }
+
+    // MARK: Presets
+
+    /// The current setup as a preset (destination and camera come from the main window).
+    func makePreset(name: String, destinationPath: String?, cameraID: UUID?) -> OffloadPreset {
+        OffloadPreset(name: name, destinationPath: destinationPath, folderTemplate: folderTemplate,
+                      fileTemplate: fileTemplate, cameraID: cameraID, skipShortClips: skipShortClips,
+                      shortClipSeconds: shortClipSeconds, quickDump: quickDump, fileRules: fileRules)
+    }
+
+    /// Takes over a preset's templates, short-clip rule, quick dump and file rules
+    /// (the destination and camera are applied by `AppModel.applyPreset`).
+    func apply(_ preset: OffloadPreset) {
+        folderTemplate = preset.folderTemplate
+        fileTemplate = preset.fileTemplate
+        shortClipSeconds = preset.shortClipSeconds
+        skipShortClips = preset.skipShortClips
+        quickDump = preset.quickDump
+        fileRules = preset.fileRules
     }
 
     /// Remembers a project for next time and puts it at the top of the recent list.
