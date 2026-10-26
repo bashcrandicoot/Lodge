@@ -39,6 +39,11 @@ struct ContentView: View {
             ToolbarItem(placement: .automatic) {
                 Spacer()
             }
+            // Presets: one click changes where files go and how they're named. Kept at the
+            // right, out of the way, just before Recent Offloads and Settings.
+            ToolbarItem(placement: .automatic) {
+                PresetSwitcher()
+            }
             ToolbarItem(placement: .automatic) {
                 Button {
                     model.showingRecent.toggle()

@@ -69,20 +69,11 @@ private struct ReadyRow: View {
             } else if let blocker {
                 Label(blocker, systemImage: "info.circle")
                     .foregroundStyle(.secondary)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-                    .help(blocker)
             } else {
                 Label("Ready. Every file is verified with SHA-256 after copying.", systemImage: "checkmark.shield")
                     .foregroundStyle(.secondary)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-                    .help("Ready. Every file is verified with SHA-256 after copying.")
             }
-            Spacer(minLength: 8)
-            // Presets: one click changes where files go and how they're named.
-            PresetSwitcher()
-                .layoutPriority(1)
+            Spacer()
             Button(action: start) {
                 Label {
                     Text(title).contentTransition(.numericText())
@@ -97,8 +88,6 @@ private struct ReadyRow: View {
             .disabled(blocker != nil)
             .help(blocker ?? "Copy and verify the new files")
             .accessibilityHint(blocker ?? "")
-            .fixedSize()
-            .layoutPriority(1)
         }
     }
 
