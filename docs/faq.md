@@ -26,7 +26,11 @@ Lodge formats exFAT, FAT32, and FAT16, and keeps the card’s name. Other format
 
 ## What is the difference between a preset and Examples?
 
-**Examples**, in Settings > Naming, fills in a folder template and a file template. A **preset**, in the toolbar, saves the whole setup: destination, templates, camera, short clips, quick dump, and file rules. After you change that setup, the menu says **Edited**.
+**Examples**, in Settings > Naming, fills in a folder template and a file template. A **preset**, on the offload bar just to the left of **Offload**, saves the whole setup: destination, templates, camera, short clips, quick dump, and file rules. After you change that setup, the menu says **Edited**.
+
+## How do I change the folders in Layout?
+
+Once a card is scanned, **Layout** in Destination shows the folders Lodge will make, including **Proxies** and **Sidecars** when those files are in the plan. Click a triangle to open a folder, or use **Expand All**. Drag a level between folders to move it. Drop a token on the left or right side of a name to put tokens side by side, such as `{project}_{date}`. The separator can be an underscore, a hyphen, a space, or nothing. A level quick dump removes stays in the tree, struck through.
 
 ## What is quick dump?
 

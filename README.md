@@ -50,14 +50,27 @@ The card’s line reads **54 new files · 5 ignored** before and during an offlo
 - **A ledger of what was copied.** Lodge remembers each verified file in `~/Library/Application Support/Lodge/ledger.json`. The same card again copies only what is new. If a copy is missing or its size has changed, the Media panel warns you, in orange, and offers **Re-offload**.
 - **Ready to format.** When every file has a verified copy that is still at the destination, the card shows a green **Ready to format** badge, and **Format Card…** is available. Cancel is the default. Lodge keeps exFAT, FAT32, or FAT16, and the card’s name.
 - **Short clips.** **Skip videos shorter than** runs from **Off** to **30 s**. The default is **5 s**. A stepper beside the slider goes up to 60 seconds. Skipped clips stay on the card with their sidecars until you choose **Include Anyway** or **Include All**.
-- **Presets.** The toolbar menu saves a whole setup: destination, templates, camera, short clips, quick dump, and file rules. After you change something, the menu says **Edited** and offers to update that preset. Manage them in Settings > Presets.
+- **Presets.** The menu on the offload bar, just to the left of **Offload**, saves a whole setup: destination, templates, camera, short clips, quick dump, and file rules. After you change something, the menu says **Edited** and offers to update that preset. Manage them in Settings > Presets.
 - **Quick dump.** **Quick dump: skip project name** takes `{project}` out of the templates, so there is nothing to type. Numbering carries on from the files already in the folder.
-- **Drag and drop.** Drop a Finder folder on Destination, or on the Layout tree, to copy there. In the tree, drag a folder level to move it, or drag a token on to add one. A drop that Lodge accepts gives a light click on a Force Touch trackpad.
+- **The Layout tree.** Once a card is scanned, Destination shows every folder the offload will make, including **Proxies** and **Sidecars**. Open a folder with its triangle, Option-click to open or close everything inside it, or use **Expand All** and **Collapse All**. Drop a Finder folder on Destination, or on the tree, to copy there.
 - **File rules.** Proxy extensions (default `lrv`, `lrf`) go in a **Proxies** folder. Sidecar extensions (default `thm`, `xml`, `srt`) go in a **Sidecars** folder. Both keep the clip’s new name. The ignore list is never copied.
 - **Themes.** Lodge opens in Dark mode with the **Default** theme: a neutral black window and system-blue controls. **Aurora**, **Ocean**, **Twilight**, **Ember**, and **Forest** are optional colour themes in Settings > Appearance.
 - **Motion.** A finished offload draws its checkmark and counts the copied files up. Inserting a card glows the card panel. Rows and thumbnail tiles lift under the pointer. The **Ready to format** badge glows when it appears. Turn on Reduce Motion in System Settings and Lodge keeps still.
 
-The full tour is in the [user guide](docs/user-guide.md). Questions are in the [FAQ](docs/faq.md). This release is [1.0.0](docs/changelog.md).
+## The Layout tree
+
+**Layout** lists the folders Lodge will create, per type, with **Proxies** and **Sidecars** when those files are in the plan. A folder still to be made is outlined. One that is already there is filled. When the destination already has folders, the legend reads **New** and **Already there**. Other folders already at the destination are dimmed. **Expand All** also opens those existing folders, three levels in. A folder’s files start as one line, the first name with **+ N more** under it, and that line opens into the list. Long names wrap after `_`, `-`, `.`, or a space. A long tree scrolls.
+
+While nothing is copying, the header says **Drag to rearrange**:
+
+- Drag a level, or a token from **Add a level**, between two folders to make a new level. Click a token to add it at the end.
+- Drop a level or a token on the left or right side of a folder’s name to put the tokens side by side, such as `{project}_{date}`.
+- Drag a piece of a combined name between folders to give it its own level again, or along the name to reorder it. Right-click a piece to remove it.
+- Hover a combined level for its separator: **Underscore**, **Hyphen**, **Space**, or **None**.
+
+A combined level is ordinary template text, so a saved template or preset keeps it. A level that quick dump removes stays visible, struck through, and tagged **Quick dump**. A drop Lodge accepts gives a light click on a Force Touch trackpad.
+
+The full tour is in the [user guide](docs/user-guide.md). Questions are in the [FAQ](docs/faq.md). The download is [1.0.0](docs/changelog.md). Expand All and combined folder names are not in that download yet.
 
 | Ready | Copying | Finished |
 | --- | --- | --- |
