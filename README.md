@@ -139,8 +139,10 @@ Every view also has `#Preview`s you can open in Xcode's canvas.
 | `Copier.swift` | Copy + SHA-256 verify of one file, and the whole-card offload loop |
 | `Ledger.swift` | The JSON record of everything offloaded |
 | `Settings.swift` | Preferences: destination folder, eject after offload |
-| `Assets.xcassets/AppIcon` | App icon sizes, generated from `Design/icon-1024.png` |
-| `Design/icon-1024.png`, `Design/icon.svg` | Master app icon (PNG + vector source) |
+| `Assets.xcassets/AppIcon` | App icon sizes: the hand-made "Comet A" set from `Design/comet-a/` |
+| `Design/comet-a/` | "Comet A" icon set by Yuwie, one PNG per icon slot |
+| `Design/icon-1024.png` | Master app icon (Comet A, 1024×1024) |
+| `Design/icon-legacy-blue.png`, `.svg` | The previous blue icon, kept for reference |
 | `Design/screenshots/` | Screenshots of the app (taken from demo mode) |
 | `SnapDropTests/` | Unit tests for naming, filtering, ledger, copy/verify, name preview and ETA/byte text |
 
@@ -149,12 +151,25 @@ The project uses Xcode's folder-synced groups: any `.swift` file you add to the
 
 ## Updating the icon
 
-Replace `Design/icon-1024.png` (1024×1024, already macOS-shaped), then regenerate the sizes:
+The icon is the "Comet A" set from Yuwie's Figma file:
+<https://www.figma.com/design/6ToCClZ7GdsUFwWitX4MgP>
+
+Each size is drawn by hand. The 16×16, 16×16@2x and 32×32 versions are simplified so
+they stay readable in the menu bar and Finder lists, so **don't generate the sizes by
+scaling one image with `sips`**. To update it:
+
+1. Export the set from Figma into `Design/comet-a/` with these names:
+   `icon_16x16.png`, `icon_16x16@2x.png`, `icon_32x32.png`, `icon_32x32@2x.png`,
+   `icon_128x128.png`, `icon_128x128@2x.png`, `icon_256x256.png`, `icon_256x256@2x.png`,
+   `icon_512x512.png`, `icon_512x512@2x.png`, plus `snapdrop-icon-1024.png`.
+2. Copy them into the asset catalog and refresh the master copy:
 
 ```sh
-cd SnapDrop/Assets.xcassets/AppIcon.appiconset
-for s in 16 32 64 128 256 512 1024; do sips -z $s $s ../../../Design/icon-1024.png --out icon_$s.png; done
+cp Design/comet-a/icon_*.png SnapDrop/Assets.xcassets/AppIcon.appiconset/
+cp Design/comet-a/snapdrop-icon-1024.png Design/icon-1024.png
 ```
+
+`Contents.json` already points each slot at the file with the same name.
 
 ## License
 
