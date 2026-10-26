@@ -125,7 +125,10 @@ final class AppModel: ObservableObject {
     private func install(_ newSession: OffloadSession) {
         newSession.onFinished = { [weak self, weak newSession] summary in
             guard let self, let newSession else { return }
-            let allGood = !summary.cancelled && summary.failed == 0 && summary.copied > 0
+            let allGood = OffloadFeedback.isCleanSuccess(summary)
+            if OffloadFeedback.shouldPlaySuccessSound(summary, enabled: self.settings.playSuccessSound) {
+                NSSound(named: "Glass")?.play()
+            }
             if self.settings.ejectAfterOffload && allGood && !newSession.cardRemoved {
                 self.ejectCard(newSession.card)
             }

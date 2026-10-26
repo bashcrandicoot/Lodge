@@ -8,6 +8,7 @@ struct ClipsStageView: View {
     var body: some View {
         if let session = model.session {
             ClipsStageContent(session: session)
+                .id(ObjectIdentifier(session))   // a new card starts fresh (filter, row animation)
         } else {
             StagePanel(number: 2, title: "Media", state: .pending) {
                 VStack {
@@ -33,6 +34,9 @@ private struct ClipsStageContent: View {
     @FocusState private var nameFocused: Bool
     /// The preview's category filter (`nil` = everything).
     @State private var filter: MediaCategory?
+    /// Turns true right after the list first appears, so its rows can fade in one by one.
+    @State private var revealed = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var needs: NamingNeeds { NamingNeeds(settings.naming) }
 
@@ -165,12 +169,25 @@ private struct ClipsStageContent: View {
                     .controlSize(.small)
                     .accessibilityLabel("Show file type")
                 }
-                ScrollView {
-                    LazyVStack(spacing: 0) {
-                        ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
-                            PreviewRow(item: item, isPlaceholder: placeholder)
-                                .background(index.isMultiple(of: 2) ? Color.clear : Color.primary.opacity(0.035))
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        LazyVStack(spacing: 0) {
+                            ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
+                                PreviewRow(item: item, isPlaceholder: placeholder,
+                                           isActive: isRunning && item.id == session.progress.currentID,
+                                           isVerified: session.verifiedIDs.contains(item.id))
+                                    .background(index.isMultiple(of: 2) ? Color.clear : Color.primary.opacity(0.035))
+                                    .staggeredReveal(index: index, revealed: revealed, reduceMotion: reduceMotion)
+                                    .id(item.id)
+                            }
                         }
+                    }
+                    .onAppear {
+                        revealed = true
+                        scrollToCurrent(proxy, animated: false)
+                    }
+                    .onChange(of: session.progress.currentID) { _, _ in
+                        scrollToCurrent(proxy, animated: !reduceMotion)
                     }
                 }
                 .background(Color(nsColor: .textBackgroundColor).opacity(0.6),
@@ -180,6 +197,17 @@ private struct ClipsStageContent: View {
                         .strokeBorder(Color(nsColor: .separatorColor))
                 }
             }
+        }
+    }
+
+    private var isRunning: Bool { session.phase == .running }
+
+    /// Keeps the file being copied in view.
+    private func scrollToCurrent(_ proxy: ScrollViewProxy, animated: Bool) {
+        let current = session.progress.currentID
+        guard isRunning, !current.isEmpty else { return }
+        withAnimation(animated ? .easeInOut(duration: 0.35) : nil) {
+            proxy.scrollTo(current, anchor: .center)
         }
     }
 
@@ -194,10 +222,16 @@ private struct ClipsStageContent: View {
 private struct PreviewRow: View {
     let item: PlannedFile
     let isPlaceholder: Bool
+    /// The file being copied right now.
+    var isActive = false
+    /// Copied and checked against the card.
+    var isVerified = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var accessibilityText: String {
         var text = "\(item.category.title), \(item.originalName) will be saved as \(item.relativePath)"
         if let primary = item.sidecarOf { text += ", alongside \(primary)" }
+        if isVerified { text += ", copied and verified" } else if isActive { text += ", copying now" }
         return text
     }
 
@@ -231,13 +265,45 @@ private struct PreviewRow: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
             }
+            Spacer(minLength: 0)
+            status
+                .frame(width: 18)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.leading, item.sidecarOf == nil ? 10 : 22)
         .padding(.trailing, 10)
         .padding(.vertical, 6)
+        .background {
+            if isActive {
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .fill(Color.accentColor.opacity(0.13))
+                    .overlay(alignment: .leading) {
+                        Capsule().fill(Color.accentColor).frame(width: 3).padding(.vertical, 5)
+                    }
+                    .padding(.horizontal, 3)
+                    .transition(.opacity)
+            }
+        }
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: isActive)
+        .animation(reduceMotion ? nil : .spring(duration: 0.4, bounce: 0.55), value: isVerified)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilityText)
+    }
+}
+
+extension PreviewRow {
+    /// Trailing status: a spinner while copying, then a green check that pops in.
+    @ViewBuilder
+    fileprivate var status: some View {
+        if isVerified {
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundStyle(.green)
+                .transition(reduceMotion ? .opacity : .scale(scale: 0.2).combined(with: .opacity))
+        } else if isActive {
+            ProgressView()
+                .controlSize(.mini)
+                .transition(.opacity)
+        }
     }
 }
 

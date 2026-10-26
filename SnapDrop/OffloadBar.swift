@@ -59,6 +59,7 @@ private struct ReadyRow: View {
     let title: String
     let blocker: String?
     let start: () -> Void
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         HStack(spacing: 12) {
@@ -71,9 +72,14 @@ private struct ReadyRow: View {
             }
             Spacer()
             Button(action: start) {
-                Label(title, systemImage: "arrow.down.circle.fill")
-                    .font(.body.weight(.semibold))
-                    .padding(.horizontal, 6)
+                Label {
+                    Text(title).contentTransition(.numericText())
+                } icon: {
+                    Image(systemName: "arrow.down.circle.fill")
+                }
+                .font(.body.weight(.semibold))
+                .padding(.horizontal, 6)
+                .animation(reduceMotion ? nil : .snappy, value: title)
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
@@ -111,17 +117,21 @@ private struct ProgressRow: View {
                     Text("\(min(progress.filesDone + 1, max(progress.filesTotal, 1))) of \(progress.filesTotal)")
                         .font(.callout.monospacedDigit())
                         .foregroundStyle(.secondary)
+                        .contentTransition(.numericText(value: Double(progress.filesDone)))
+                        .animation(reduceMotion ? nil : .snappy, value: progress.filesDone)
                 }
 
-                ProgressView(value: progress.fraction)
-                    .progressViewStyle(.linear)
-                    .animation(reduceMotion ? nil : .easeOut(duration: 0.4), value: progress.fraction)
+                ShimmerProgressBar(fraction: progress.fraction)
+                    .accessibilityElement(children: .ignore)
                     .accessibilityLabel("Offload progress")
                     .accessibilityValue("\(Int(progress.fraction * 100)) percent. \(eta)")
+                    .accessibilityAddTraits(.updatesFrequently)
 
                 HStack {
                     Text(OffloadFormatting.bytesProgress(done: progress.bytesDone, total: progress.bytesTotal))
                         .monospacedDigit()
+                        .contentTransition(.numericText())
+                        .animation(reduceMotion ? nil : .snappy, value: progress.bytesDone)
                     Text("·").foregroundStyle(.tertiary)
                     Text(eta)
                     Spacer()
@@ -155,15 +165,34 @@ private struct CompletionRow: View {
     @ObservedObject var session: OffloadSession
     @EnvironmentObject private var model: AppModel
     @EnvironmentObject private var settings: AppSettings
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var showingFailures = false
+    /// Bumped once on appear to bounce the result symbol.
+    @State private var bounces = 0
+    @State private var glowing = false
 
     var body: some View {
         let summary = session.summary ?? OffloadSummary()
+        let success = OffloadFeedback.isCleanSuccess(summary)
         HStack(spacing: 14) {
-            Image(systemName: symbol(summary))
-                .font(.system(size: 30))
-                .foregroundStyle(color(summary))
-                .accessibilityHidden(true)
+            ZStack {
+                if success {
+                    // A soft green glow behind the checkmark.
+                    Circle()
+                        .fill(Color.green.opacity(glowing ? 0.35 : 0))
+                        .frame(width: 54, height: 54)
+                        .blur(radius: 14)
+                }
+                if success && !reduceMotion {
+                    CompletionBurst(color: .green)
+                }
+                Image(systemName: symbol(summary))
+                    .font(.system(size: 30))
+                    .foregroundStyle(color(summary))
+                    .symbolEffect(.bounce, value: bounces)
+                    .shadow(color: success ? Color.green.opacity(glowing ? 0.55 : 0) : .clear, radius: 10)
+            }
+            .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 Text(title(summary))
                     .font(.headline)
@@ -192,6 +221,14 @@ private struct CompletionRow: View {
                 .keyboardShortcut(.defaultAction)
         }
         .controlSize(.large)
+        .onAppear {
+            guard !reduceMotion else { glowing = true; return }
+            withAnimation(.easeOut(duration: 0.6)) { glowing = true }
+            Task { @MainActor in
+                try? await Task.sleep(for: .milliseconds(150))
+                bounces += 1
+            }
+        }
     }
 
     private func showInFinder() {
@@ -205,7 +242,7 @@ private struct CompletionRow: View {
 
     private func symbol(_ s: OffloadSummary) -> String {
         if s.cancelled { return "xmark.octagon.fill" }
-        return s.failed == 0 ? "checkmark.seal.fill" : "exclamationmark.triangle.fill"
+        return s.failed == 0 ? "checkmark.circle.fill" : "exclamationmark.triangle.fill"
     }
 
     private func color(_ s: OffloadSummary) -> Color {

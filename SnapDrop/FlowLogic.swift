@@ -120,3 +120,16 @@ enum VolumeInfo {
         return values?.volumeTotalCapacity.map(Int64.init)
     }
 }
+
+/// How the app reacts when an offload ends.
+enum OffloadFeedback {
+    /// Every file copied and verified, nothing cancelled.
+    static func isCleanSuccess(_ summary: OffloadSummary) -> Bool {
+        !summary.cancelled && summary.failed == 0 && summary.copied > 0
+    }
+
+    /// The "Glass" sound plays only after a clean success, and only if it's turned on in Settings.
+    static func shouldPlaySuccessSound(_ summary: OffloadSummary, enabled: Bool) -> Bool {
+        enabled && isCleanSuccess(summary)
+    }
+}

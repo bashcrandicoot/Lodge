@@ -1,4 +1,5 @@
 import XCTest
+import AppKit
 @testable import SnapDrop
 
 final class FlowLogicTests: XCTestCase {
@@ -128,5 +129,16 @@ final class FlowLogicTests: XCTestCase {
     func testSummaryLine() {
         XCTAssertEqual(OffloadFormatting.summaryLine(OffloadSummary(copied: 3, skipped: 1, failed: 0)),
                        "3 copied · 1 skipped · 0 failed")
+    }
+
+    func testSuccessFeedbackOnlyAfterCleanOffload() {
+        let clean = OffloadSummary(copied: 5, skipped: 2, failed: 0)
+        XCTAssertTrue(OffloadFeedback.isCleanSuccess(clean))
+        XCTAssertTrue(OffloadFeedback.shouldPlaySuccessSound(clean, enabled: true))
+        XCTAssertFalse(OffloadFeedback.shouldPlaySuccessSound(clean, enabled: false))
+        XCTAssertFalse(OffloadFeedback.shouldPlaySuccessSound(OffloadSummary(copied: 4, failed: 1), enabled: true))
+        XCTAssertFalse(OffloadFeedback.shouldPlaySuccessSound(OffloadSummary(copied: 2, cancelled: true), enabled: true))
+        XCTAssertFalse(OffloadFeedback.shouldPlaySuccessSound(OffloadSummary(copied: 0), enabled: true))
+        XCTAssertNotNil(NSSound(named: "Glass"), "The system sound used on success exists")
     }
 }

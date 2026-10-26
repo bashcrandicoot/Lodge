@@ -14,10 +14,10 @@ struct ContentView: View {
             HStack(spacing: 0) {
                 CardStageView()
                     .frame(width: 230)
-                FunnelArrow(lit: model.session != nil)
+                FunnelArrow(lit: model.session != nil, flowing: model.isBusy)
                 ClipsStageView()
                     .frame(minWidth: 0, maxWidth: .infinity)
-                FunnelArrow(lit: model.session != nil && settings.destinationURL != nil)
+                FunnelArrow(lit: model.session != nil && settings.destinationURL != nil, flowing: model.isBusy)
                 DestinationStageView()
                     .frame(width: 270)
             }

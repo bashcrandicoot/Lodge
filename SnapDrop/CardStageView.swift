@@ -78,6 +78,9 @@ private struct CardRow: View {
     let isRemoved: Bool
     let detail: String?
     let action: () -> Void
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    /// Bumped when the card shows up or gets selected, to bounce its icon.
+    @State private var bounces = 0
 
     var body: some View {
         Button(action: action) {
@@ -85,6 +88,8 @@ private struct CardRow: View {
                 Image(systemName: isRemoved ? "eject.circle" : "sdcard.fill")
                     .font(.system(size: 22))
                     .foregroundStyle(isSelected ? AnyShapeStyle(.tint) : AnyShapeStyle(.secondary))
+                    .symbolEffect(.bounce, value: bounces)
+                    .contentTransition(.symbolEffect(.replace))
                     .frame(width: 28)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(card.name)
@@ -106,6 +111,13 @@ private struct CardRow: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: isSelected)
+        .onAppear {
+            if !reduceMotion { bounces += 1 }
+        }
+        .onChange(of: isSelected) { _, selected in
+            if selected && !reduceMotion { bounces += 1 }
+        }
         .accessibilityLabel("\(card.name), \(subtitle)")
         .accessibilityAddTraits(isSelected ? [.isSelected] : [])
     }
