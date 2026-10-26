@@ -62,6 +62,19 @@ The main window reads left to right, like a funnel:
 - **Destination** — the folder and its free space. Click the folder to switch between
   your [favorite destinations](#favorite-destinations). Once a card is scanned it also
   shows how much space the offload needs and the folder layout files will land in.
+  The **Layout** tree shows every folder the offload makes, per-type, *Proxies* and
+  *Sidecars* folders included. Click a triangle to open a folder (Option-click opens or
+  closes everything inside it), or use **Expand All** / **Collapse All** next to the title.
+  Folders that are already there have a filled icon; ones still to be made are outlined;
+  other folders already at the destination are listed dimmed. A folder's files are folded
+  into one line ("C0001.MP4 + 11 more") that opens to list them. Long trees scroll.
+  To change the folder template here: drag a level, or a token from **Add a level**,
+  *between* two folders to make a new level, or onto the *left or right side* of a
+  folder's name to put it side by side in that level — e.g. `{project}_{date}`. Drag a
+  piece of a combined name between folders to give it its own level again, or along the
+  name to reorder it. Hover a combined level for its separator menu (`_`, `-`, space or
+  none); right-click a piece to remove it. Combined levels are plain template text, so
+  every saved template and preset keeps working.
 - **Offload bar** — the big **Offload N Files** button. When it's disabled it tells you
   why ("Enter a project name", "Choose a camera", "Not enough space…"). While copying it
   shows the current file, *X of N*, bytes copied, time left and a *Verifying* state, plus
@@ -342,6 +355,8 @@ tab, `-LodgeDemoTheme ember` (or `default`, `aurora`, `ocean`, `twilight`, `fore
 theme, `-LodgeDemoLayout grid` for the thumbnail grid (`-LodgeDemoListThumbnails YES`
 for list thumbnails), `-LodgeDemoScope skipped|offloaded` to show the skipped short clips
 or the files offloaded before, `-LodgeDemoQuickLook C0008.MP4` to open Quick Look on a file,
+`-LodgeDemoFolderTemplate '{project}_{date}/{camera}/{type}'` to use another folder template,
+`-LodgeDemoExpandTree YES` (or `files`) to open the whole Layout tree (and its file lists),
 `-LodgeDemoWindowSize 1060x700` to size the window (centred on the sharpest screen), `-LodgeDemoShowFormatAlert YES` to show the Format confirmation, or
 `-LodgeDemoPlainTheme YES` to see the solid colours used with Increase contrast. Demo windows
 are drawn as if they were active, so screenshots taken with the app in the background still
@@ -366,7 +381,10 @@ Every view also has `#Preview`s you can open in Xcode's canvas.
 | `MediaGridViews.swift` | Grid tiles, thumbnails, status badges, progress ring, list/grid switch |
 | `MediaPreview.swift` | Selection, Quick Look order and panel, sidecar folding for the grid |
 | `Thumbnails.swift` | Quick Look thumbnail loading: cache, concurrency limit, cancellation, supported types |
-| `DestinationStageView.swift` | ③ Destination panel: favorites picker, free space, layout |
+| `DestinationStageView.swift` | ③ Destination panel: favorites picker, free space |
+| `FolderTreeView.swift` | The expandable Layout tree, drag-and-drop levels and side-by-side tokens |
+| `FolderTree.swift` | The planned folders as a tree, and the folders already on disk |
+| `InlineLevel.swift` | Tokens side by side in one folder level (`{project}_{date}`) and their edits |
 | `FormatViews.swift` | Format confirmation, Ready to format badge, format status and buttons |
 | `OffloadBar.swift` | Bottom bar: Offload button, progress/ETA/Cancel, completion actions |
 | `RecentOffloadsView.swift` | Recent Offloads popover |
