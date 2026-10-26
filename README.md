@@ -223,13 +223,41 @@ off a card. `{project}` is taken out of both templates cleanly — `{date}/{proj
 `{date}_{project}_{seq}` become `{date}` + `{date}_{seq}` — so there's no project to type.
 Numbering carries on from what's already in the folder.
 
+## Menu bar mode
+
+Turn on **Settings → General → Menu Bar → Keep Lodge running in the menu bar** (off by
+default) and closing the window no longer quits Lodge: it leaves the Dock and ⌘-Tab, keeps a
+small icon in the menu bar and keeps watching for cards. Open Lodge from the icon, Finder, the
+Dock or Spotlight and the window (and the Dock icon) come back.
+
+- **Ask to import when a card or drive is plugged in** (on by default) — when a camera card
+  or an external drive with camera media mounts, Lodge asks *"A7S III card connected —
+  Import with Lodge?"* as a notification with **Import**, **Ignore** and **Don't ask for this
+  card**. If notifications are off for Lodge it shows a small floating panel instead (it never
+  takes focus). **Import** only opens Lodge with the card selected — nothing is copied until
+  you click Offload. Lodge doesn't ask while you're looking at it, while detection is paused,
+  more than once per card in 20 seconds, or for disk images, network volumes, Time Machine
+  disks, the startup disk, your destination drives or drives with no camera folders/media.
+  A card that mounts during an offload is asked about when the offload finishes. Cards you
+  said *Don't ask* for are listed under the switch with **Ask Again**.
+- **Show menu bar icon** (on by default) — turn it off (or ⌘-drag the icon out of the menu
+  bar) to run hidden; Lodge still asks to import. To get back in, open Lodge from Finder or
+  Spotlight.
+- **Open at login** — starts Lodge in the menu bar when you log in, without a window. macOS
+  may need you to allow it in System Settings → General → Login Items; Settings shows a link
+  when it does. Turning menu bar mode off also turns this off.
+
+The icon's menu has **Open Lodge**, **Import from <card>…** for each connected card,
+**Pause Detection** (until Lodge quits), **Settings…** and **Quit Lodge**.
+
 ## Settings (⌘,)
 
 **General** — which [file types](#file-types) to offload (all on by default);
 [*Skip videos shorter than*](#skipping-short-clips); *Eject card after
 offload* (off by default, and only when every file copied and verified); *Play a sound when
 an offload finishes* (on by default); *Automatically check for updates* (on) and
-*Automatically download and install updates* (off), see [Updates](#updates).
+*Automatically download and install updates* (off), see [Updates](#updates); and the
+[Menu Bar](#menu-bar-mode) switches.
 
 **Appearance** — see [Themes and appearance](#themes-and-appearance).
 
@@ -360,7 +388,9 @@ folder you pick.
 - If you copy the built `Lodge.app` somewhere and open it outside Xcode, Gatekeeper may
   block it because it isn't notarized. Right-click the app → **Open** → **Open**
   (or System Settings → Privacy & Security → *Open Anyway*).
-- Closing the window quits Lodge. Keep it open while you work so it can catch cards.
+- Closing the window quits Lodge unless [menu bar mode](#menu-bar-mode) is on.
+- The first time a prompt setting is on, macOS asks whether Lodge may send notifications.
+  Click **Allow** for the Import prompt as a notification (otherwise Lodge uses its own panel).
 
 ## Build from the command line
 
@@ -396,7 +426,10 @@ or the files offloaded before, `-LodgeDemoQuickLook C0008.MP4` to open Quick Loo
 Support Lodge card,
 `-LodgeDemoExpandTree YES` (or `files`) to open the whole Layout tree (and its file lists),
 `-LodgeDemoWindowSize 1060x700` to size the window (centred on the sharpest screen), `-LodgeDemoShowFormatAlert YES` to show the Format confirmation, or
-`-LodgeDemoPlainTheme YES` to see the solid colours used with Increase contrast. Demo windows
+`-LodgeDemoPlainTheme YES` to see the solid colours used with Increase contrast.
+`-LodgeDemoMenuBar YES` turns menu bar mode on (with one "Don't ask" card),
+`-LodgeDemoMount YES` simulates a card being plugged in (the import prompt) and
+`-LodgeDemoMenuPreview YES` draws the menu bar icon's menu in a window. Demo windows
 are drawn as if they were active, so screenshots taken with the app in the background still
 show the accent colour on switches and segments.
 Formatting can never run in demo mode.
@@ -408,7 +441,7 @@ Every view also has `#Preview`s you can open in Xcode's canvas.
 
 | File | What's in it |
 | --- | --- |
-| `LodgeApp.swift` | App entry point: main window, Settings scene and Check for Updates… |
+| `LodgeApp.swift` | App entry point: main window, Settings scene, Check for Updates…, and the menu bar mode's window/Dock handling |
 | `Support.swift` | BashFrames, the support email and tip page (one place to change them), About credits, Settings footer |
 | `SupportPrompt.swift` | The Support Lodge card and its timing rules |
 | `Updates.swift` | Sparkle updater, the Check for Updates… menu item and the update settings |
@@ -447,6 +480,10 @@ Every view also has `#Preview`s you can open in Xcode's canvas.
 | `DemoData.swift` | Sample data for previews and demo mode (Debug only) |
 | `OffloadSession.swift` | State for one card's offload; runs the copy in the background |
 | `VolumeWatcher.swift` | Detects cards being inserted/removed |
+| `MenuBar.swift` | Menu bar mode: the menu bar icon and its menu, opening the main window again, Open at login |
+| `ImportPromptPolicy.swift` | Which mounted volumes get an import prompt (camera media, not disk images/network/Time Machine/destinations) |
+| `ImportPrompter.swift` | The "card connected · Import with Lodge?" notification, its queue and debounce |
+| `ImportPromptPanel.swift` | The floating, non-activating fallback prompt when notifications are off |
 | `ClipScanner.swift` | Finds media on a card, skipping system junk |
 | `Renamer.swift` | Project-name cleanup and date formatting |
 | `Copier.swift` | Copy + SHA-256 verify of one file, and the whole-card offload loop |
@@ -465,7 +502,7 @@ Every view also has `#Preview`s you can open in Xcode's canvas.
 | `Design/comet-a-v1/`, `Design/comet-a-v2/` | Earlier Comet A drafts, kept for reference |
 | `Design/icon-legacy-blue.png`, `.svg` | The previous blue icon, kept for reference |
 | `Design/screenshots/` | Screenshots of the app (taken from demo mode) |
-| `LodgeTests/` | Unit tests: templates, planner, sidecars, file types, junk skipping, cameras, ledger, copy/verify, end-to-end fake cards, format readiness and safety checks (with a fake `diskutil`), favorite destinations, themes and their migration, re-offload, short clips, thumbnails and Quick Look order |
+| `LodgeTests/` | Unit tests: templates, planner, sidecars, file types, junk skipping, cameras, ledger, copy/verify, end-to-end fake cards, format readiness and safety checks (with a fake `diskutil`), favorite destinations, themes and their migration, re-offload, short clips, thumbnails and Quick Look order, the import prompt rules and the menu bar menu |
 
 The project uses Xcode's folder-synced groups: any `.swift` file you add to the
 `Lodge/` folder is automatically part of the app (except `Lodge/Info.plist`, which holds
