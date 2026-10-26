@@ -1,0 +1,60 @@
+name: Bug report
+description: Something in Lodge did not work the way the guide describes.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting this. The [user guide](https://github.com/bashcrandicoot/Lodge/blob/main/docs/user-guide.md) and the [FAQ](https://github.com/bashcrandicoot/Lodge/blob/main/docs/faq.md) cover a lot of intended behavior, including why Offload waits and when Format Card… is offered.
+
+        For a security issue, use a [private advisory](https://github.com/bashcrandicoot/Lodge/security/advisories/new) instead of this form.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What did you expect, and what did Lodge do?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps
+      description: What you clicked, and what the card and the destination were.
+      placeholder: |
+        1. Insert a card
+        2. …
+    validations:
+      required: true
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version
+      placeholder: "15.1"
+    validations:
+      required: true
+  - type: input
+    id: lodge
+    attributes:
+      label: Lodge version
+      placeholder: "1.0.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where it happened
+      options:
+        - Opening the app
+        - Offloading or verification
+        - Naming
+        - Destinations or drag and drop
+        - Presets or quick dump
+        - Short clips
+        - Format Card
+        - Appearance
+        - Something else
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else
+      description: Card format (exFAT, FAT32, …), the Offload button’s caption, or a screenshot. Leave out footage you do not want public.
