@@ -115,7 +115,7 @@ Palettes live in `Theme.swift`. Each theme is tuned separately for Light and Dar
 
 User-facing pages live in `README.md` and `docs/`. The site is `docs/index.html`, ready for GitHub Pages from the `/docs` folder on `main`. `docs/.nojekyll` keeps Pages from running Jekyll.
 
-The README hero is a `<picture>` pointing at `docs/assets/lodge-header-dark.png` and `docs/assets/lodge-header-light.png` (1600×500). Open Graph uses `docs/assets/lodge-social-preview.png` (1280×640). Replace those files in place when a new banner or social image arrives. The headline is “From card to calm.” The slogan, on the page title, the meta description, and the image alt text, is “Home base for your media.”
+The README hero is a `<picture>` pointing at `docs/assets/lodge-header-dark.png` and `docs/assets/lodge-header-light.png` (1600×500). The art already includes the Lodge wordmark and “Home base for your media.”, so the README does not repeat that line under the picture. The landing page uses the dark banner, then the headline “From card to calm.” Open Graph uses `docs/assets/lodge-social-preview.png` (1280×640); `lodge-social-preview-light.png` is the light companion. The site icon is `docs/assets/app-icon/`. `docs/assets/favicon.ico`, `favicon.png`, and `apple-touch-icon.png` are resized from `icon_1024.png`. Replace those files in place when a new set arrives. The short description in the README intro and the page meta is “Lodge gets your footage off camera cards safely, checked and neatly named.”
 
 ## License
 

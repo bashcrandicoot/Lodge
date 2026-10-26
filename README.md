@@ -1,17 +1,15 @@
-<h1 align="center">From card to calm.</h1>
-
-<p align="center">Home base for your media.</p>
-
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: light)" srcset="docs/assets/lodge-header-light.png">
     <source media="(prefers-color-scheme: dark)" srcset="docs/assets/lodge-header-dark.png">
-    <img alt="Lodge. Home base for your media." src="docs/assets/lodge-header-dark.png" width="960">
+    <img alt="Lodge. Home base for your media. A log cabin at night, with pines and mountains." src="docs/assets/lodge-header-dark.png" width="960">
   </picture>
 </p>
 
+<h1 align="center">From card to calm.</h1>
+
 <p align="center">
-  Lodge is a native Mac app for people who shoot and come home with cards to empty. It copies video, photos, audio, and the small files that belong with them, checks every copy, and names the files from a template you set.
+  Lodge gets your footage off camera cards safely, checked and neatly named.
 </p>
 
 <p align="center">
