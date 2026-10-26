@@ -108,7 +108,12 @@ final class ImportPrompter: NSObject, ObservableObject {
 
     // MARK: Showing
 
-    nonisolated static func title(for card: CardVolume, kind: String = "card") -> String { "\(card.name) \(kind) connected" }
+    /// "A7S III card connected", or "SD Card connected" when the name already says what it is.
+    nonisolated static func title(for card: CardVolume, kind: String = "card") -> String {
+        let name = card.name.trimmingCharacters(in: .whitespaces)
+        let saysKind = ["card", "drive", "ssd", "disk"].contains { name.lowercased().hasSuffix(" " + $0) || name.lowercased() == $0 }
+        return saysKind ? "\(name) connected" : "\(name) \(kind) connected"
+    }
     func title(for card: CardVolume) -> String { Self.title(for: card, kind: kinds[card.id] ?? "card") }
     nonisolated static let message = "Import with Lodge?"
 
@@ -139,7 +144,7 @@ final class ImportPrompter: NSObject, ObservableObject {
         content.body = Self.message
         content.categoryIdentifier = Self.categoryID
         content.userInfo = [Self.cardPathKey: card.id]
-        content.sound = nil
+        content.sound = .default
         let request = UNNotificationRequest(identifier: card.id, content: content, trigger: nil)
         do {
             try await UNUserNotificationCenter.current().add(request)
@@ -197,6 +202,7 @@ extension ImportPrompter: UNUserNotificationCenterDelegate {
 
     nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification,
                                             withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler([.banner, .list])
+        // Show the banner (with its sound) even while Lodge is the active app.
+        completionHandler([.banner, .list, .sound])
     }
 }

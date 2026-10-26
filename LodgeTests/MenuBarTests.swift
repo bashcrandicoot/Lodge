@@ -31,6 +31,11 @@ final class MenuBarItemTests: XCTestCase {
     func testPromptTitle() {
         XCTAssertEqual(ImportPrompter.title(for: a7), "A7SIII card connected")
         XCTAssertEqual(ImportPrompter.title(for: t7, kind: "drive"), "T7 drive connected")
+        // Don't say "card" twice.
+        let sd = CardVolume(url: URL(fileURLWithPath: "/Volumes/SD Card"), name: "SD Card", uuid: nil)
+        XCTAssertEqual(ImportPrompter.title(for: sd), "SD Card connected")
+        let ssd = CardVolume(url: URL(fileURLWithPath: "/Volumes/Samsung SSD"), name: "Samsung SSD", uuid: nil)
+        XCTAssertEqual(ImportPrompter.title(for: ssd, kind: "drive"), "Samsung SSD connected")
     }
 }
 
