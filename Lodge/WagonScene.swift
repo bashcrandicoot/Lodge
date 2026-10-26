@@ -304,3 +304,34 @@ final class WagonDriver {
         lastLodgeOffset = nil
     }
 }
+
+/// When the wagon strip is on screen. It rises in when an offload starts and, after Done,
+/// slides away before the ready row comes back (the bar keeps the finished summary meanwhile).
+struct WagonStripPresence: Equatable {
+    /// Seconds for the strip to rise in or sink away (ease-out).
+    static let duration = 0.4
+    /// How far the strip rises as it fades in (and sinks as it fades out), in points.
+    static let rise = 24.0
+    /// Under Reduce Motion: a plain, short crossfade instead.
+    static let reducedMotionDuration = 0.2
+
+    /// Done was pressed and the strip is on its way out.
+    private(set) var dismissing = false
+
+    func isVisible(in phase: OffloadSession.Phase) -> Bool {
+        phase != .ready && !dismissing
+    }
+
+    /// Done: starts the strip's exit. Returns false (do nothing) unless the offload is
+    /// finished and the strip isn't already leaving, so a double click finishes only once.
+    mutating func beginDismissal(in phase: OffloadSession.Phase) -> Bool {
+        guard phase == .finished, !dismissing else { return false }
+        dismissing = true
+        return true
+    }
+
+    /// Any phase but finished (the next card's ready row, or a new offload) resets it.
+    mutating func phaseChanged(to phase: OffloadSession.Phase) {
+        if phase != .finished { dismissing = false }
+    }
+}

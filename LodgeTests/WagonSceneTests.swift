@@ -214,3 +214,48 @@ final class WagonSceneTests: XCTestCase {
         XCTAssertEqual(fly.y, 81, accuracy: accuracy)
     }
 }
+
+/// When the wagon strip shows: in on Offload, out on Done before the ready row returns.
+@MainActor
+final class WagonStripPresenceTests: XCTestCase {
+    func testStripShowsWhileRunningAndFinished() {
+        let strip = WagonStripPresence()
+        XCTAssertFalse(strip.isVisible(in: .ready))
+        XCTAssertTrue(strip.isVisible(in: .running))
+        XCTAssertTrue(strip.isVisible(in: .finished))
+    }
+
+    func testDoneHidesTheStripWhileTheSummaryStays() {
+        var strip = WagonStripPresence()
+        XCTAssertTrue(strip.beginDismissal(in: .finished))
+        XCTAssertFalse(strip.isVisible(in: .finished))
+        // A second click (or Return) while it's leaving does nothing.
+        XCTAssertFalse(strip.beginDismissal(in: .finished))
+    }
+
+    func testDoneOnlyWorksOnceTheOffloadHasFinished() {
+        var strip = WagonStripPresence()
+        XCTAssertFalse(strip.beginDismissal(in: .running))
+        XCTAssertFalse(strip.beginDismissal(in: .ready))
+        XCTAssertTrue(strip.isVisible(in: .running))
+    }
+
+    func testTheNextOffloadShowsTheStripAgain() {
+        var strip = WagonStripPresence()
+        _ = strip.beginDismissal(in: .finished)
+        strip.phaseChanged(to: .finished)
+        XCTAssertFalse(strip.isVisible(in: .finished))
+        strip.phaseChanged(to: .ready)
+        XCTAssertFalse(strip.isVisible(in: .ready))
+        strip.phaseChanged(to: .running)
+        XCTAssertTrue(strip.isVisible(in: .running))
+        XCTAssertEqual(strip, WagonStripPresence())
+    }
+
+    func testTimingMatchesTheBrief() {
+        XCTAssertGreaterThanOrEqual(WagonStripPresence.duration, 0.35)
+        XCTAssertLessThanOrEqual(WagonStripPresence.duration, 0.45)
+        XCTAssertEqual(WagonStripPresence.rise, 24)
+        XCTAssertLessThan(WagonStripPresence.reducedMotionDuration, WagonStripPresence.duration)
+    }
+}

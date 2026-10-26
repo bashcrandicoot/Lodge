@@ -33,6 +33,7 @@ private struct OffloadBarContent: View {
     @EnvironmentObject private var model: AppModel
     @EnvironmentObject private var settings: AppSettings
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var strip = WagonStripPresence()
 
     var body: some View {
         VStack(spacing: 0) {
@@ -42,28 +43,61 @@ private struct OffloadBarContent: View {
                     ReadyRow(
                         title: OffloadFormatting.offloadButtonTitle(fileCount: session.newClips.count),
                         blocker: blocker,
-                        start: model.startOffload)
+                        start: start)
                         .modifier(OffloadBarRowPadding())
                         .transition(transition)
                 case .running:
                     ProgressRow(session: session)
                         .transition(transition)
                 case .finished:
-                    CompletionRow(session: session)
+                    CompletionRow(session: session, done: done)
                         .modifier(OffloadBarRowPadding())
                         .transition(transition)
                 }
             }
             // The wagon drives to the lodge while the files copy and verify, and stays parked
-            // (lodge lit) under the summary once they're done.
-            if session.phase != .ready {
+            // (lodge lit) under the summary once they're done. It rises in when the offload
+            // starts and sinks away after Done.
+            if strip.isVisible(in: session.phase) {
                 WagonStrip(progress: session.progress.fraction,
                            arrived: arrived,
                            stopped: session.phase == .finished && !arrived)
-                    .transition(reduceMotion ? .opacity : .move(edge: .bottom).combined(with: .opacity))
+                    .transition(stripTransition)
             }
         }
-        .animation(reduceMotion ? nil : .spring(duration: 0.35), value: session.phase)
+        .animation(barAnimation, value: session.phase)
+        .animation(barAnimation, value: strip)
+        .onChange(of: session.phase) { _, phase in
+            strip.phaseChanged(to: phase)
+        }
+    }
+
+    /// Offload: start it inside the bar's animation, so the window's panels ease up with
+    /// the bar as the strip rises in instead of jumping.
+    private func start() {
+        withAnimation(barAnimation) { model.startOffload() }
+    }
+
+    /// Done: the strip sinks away first, then the ready row comes back.
+    private func done() {
+        var leaving = strip
+        guard leaving.beginDismissal(in: session.phase) else { return }
+        withAnimation(barAnimation) {
+            strip = leaving
+        } completion: {
+            model.finishSession()
+        }
+    }
+
+    /// Ease-out rise and fall (a short crossfade under Reduce Motion).
+    private var barAnimation: Animation {
+        reduceMotion
+            ? .easeInOut(duration: WagonStripPresence.reducedMotionDuration)
+            : .easeOut(duration: WagonStripPresence.duration)
+    }
+
+    private var stripTransition: AnyTransition {
+        reduceMotion ? .opacity : .opacity.combined(with: .offset(y: WagonStripPresence.rise))
     }
 
     private var arrived: Bool {
@@ -210,6 +244,8 @@ private struct ProgressRow: View {
 
 private struct CompletionRow: View {
     @ObservedObject var session: OffloadSession
+    /// Done: the bar lets the wagon strip leave before the ready row returns.
+    let done: () -> Void
     @EnvironmentObject private var model: AppModel
     @EnvironmentObject private var settings: AppSettings
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -286,7 +322,7 @@ private struct CompletionRow: View {
                 Label(session.cardRemoved ? "Ejected" : "Eject Card", systemImage: "eject.fill")
             }
             .disabled(session.cardRemoved || model.isEjecting)
-            Button("Done", action: model.finishSession)
+            Button("Done", action: done)
                 .buttonStyle(.themeProminent)
                 .keyboardShortcut(.defaultAction)
         }
