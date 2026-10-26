@@ -178,6 +178,8 @@ private struct CardActions: View {
     var body: some View {
         Button("Format Card…") { model.confirmFormatSelectedCard() }
             .disabled(!model.canFormatSelectedCard)
+        Button("Forget This Card’s History…") { model.confirmForgetSelectedCardHistory() }
+            .disabled(model.selectedCardHistoryCount == 0 || model.isBusy || model.formatState.isFormatting)
         Divider()
         Button("Eject Card") { model.ejectSelectedCard() }
             .disabled(model.isBusy || model.isEjecting || model.formatState.isFormatting)

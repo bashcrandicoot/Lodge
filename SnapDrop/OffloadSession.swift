@@ -12,18 +12,34 @@ final class OffloadSession: ObservableObject, Identifiable {
 
     let id = UUID()
     let card: CardVolume
+    /// Every file on the card, sorted by what the ledger knows (all categories).
+    let inventory: CardInventory
+    private let missingIDs: Set<String>
+    private let offloadedIDs: Set<String>
     /// Every file on the card that hasn't been offloaded before (all categories).
-    let allNewFiles: [Clip]
-    /// Files the ledger says were already offloaded (all categories).
-    let allOffloadedFiles: [Clip]
+    var allNewFiles: [Clip] { inventory.new }
+    /// Files the ledger says were already offloaded, copy present or not (all categories).
+    var allOffloadedFiles: [Clip] { inventory.offloaded + inventory.missing }
     /// Which kinds of files to offload (from Settings ▸ General).
     @Published var includedCategories: Set<MediaCategory> = Set(MediaCategory.allCases) {
         didSet { refreshFiles() }
     }
-    /// New files in the included categories: what the Offload button copies.
+    /// Copy already-offloaded files again ("Re-offload…" menu). Off unless the user asks.
+    @Published var reoffloadMode: ReoffloadMode = .off {
+        didSet { refreshFiles() }
+    }
+    /// Single files picked with "Re-offload This File" (card paths).
+    @Published var reoffloadIDs: Set<String> = [] {
+        didSet { refreshFiles() }
+    }
+    /// What the Offload button copies: new files in the included categories, plus re-offloads.
     @Published private(set) var newClips: [Clip] = []
-    /// Already-offloaded files in the included categories.
+    /// Card paths in `newClips` that were offloaded before.
+    @Published private(set) var reoffloadingIDs: Set<String> = []
+    /// Already-offloaded files (copy present) in the included categories that won't be copied.
     @Published private(set) var alreadyOffloadedCount = 0
+    /// Files whose copy is missing at the destination, in the included categories, not being copied.
+    @Published private(set) var missingCopyCount = 0
 
     /// What the user typed in the Project field (fills `{project}`).
     @Published var projectInput = ""
@@ -47,26 +63,54 @@ final class OffloadSession: ObservableObject, Identifiable {
 
     private var task: Task<Void, Never>?
 
-    init(card: CardVolume, clips: [Clip], knownKeys: Set<String>) {
+    init(card: CardVolume, inventory: CardInventory) {
         self.card = card
-        var fresh: [Clip] = []
-        var known: [Clip] = []
-        for clip in clips {
-            if knownKeys.contains(clip.ledgerKey(volumeIdentity: card.identity)) {
-                known.append(clip)
-            } else {
-                fresh.append(clip)
-            }
-        }
-        self.allNewFiles = fresh
-        self.allOffloadedFiles = known
+        self.inventory = inventory
+        self.missingIDs = Set(inventory.missing.map(\.relativePath))
+        self.offloadedIDs = Set(inventory.offloaded.map(\.relativePath))
         refreshFiles()
+    }
+
+    /// Without destination checks: files the ledger knows count as offloaded.
+    convenience init(card: CardVolume, clips: [Clip], knownKeys: Set<String>) {
+        self.init(card: card, inventory: CardInventory.classify(files: clips, volumeIdentity: card.identity,
+                                                                knownKeys: knownKeys))
     }
 
     private func refreshFiles() {
         guard phase == .ready else { return }   // never change the list mid-offload
-        newClips = allNewFiles.filter { includedCategories.contains($0.category) }
-        alreadyOffloadedCount = allOffloadedFiles.filter { includedCategories.contains($0.category) }.count
+        let selection = OffloadSelection.make(inventory: inventory, categories: includedCategories,
+                                              reoffload: reoffloadMode, reoffloadIDs: reoffloadIDs)
+        newClips = selection.toCopy
+        reoffloadingIDs = selection.reoffloading
+        alreadyOffloadedCount = selection.offloadedKept
+        missingCopyCount = selection.missingKept
+    }
+
+    /// Offloaded files in the included categories with a missing copy (re-offloaded or not).
+    var missingCopiesInView: Int {
+        inventory.missing.filter { includedCategories.contains($0.category) }.count
+    }
+
+    /// Offloaded files (copy present or missing) in the included categories.
+    var offloadedInView: Int {
+        allOffloadedFiles.filter { includedCategories.contains($0.category) }.count
+    }
+
+    /// "Re-offload This File" for one file (and its sidecars), or undo it.
+    func toggleReoffload(_ clip: Clip) {
+        if reoffloadIDs.contains(clip.relativePath) {
+            reoffloadIDs.remove(clip.relativePath)
+        } else {
+            reoffloadIDs.insert(clip.relativePath)
+        }
+    }
+
+    /// Was this file offloaded before? (`nil` = never; `true` = copy missing.)
+    func offloadedStatus(of clip: Clip) -> Bool? {
+        if missingIDs.contains(clip.relativePath) { return true }
+        if offloadedIDs.contains(clip.relativePath) { return false }
+        return nil
     }
 
     /// New files per category, e.g. [.video: 42, .photo: 120].
@@ -93,7 +137,7 @@ final class OffloadSession: ObservableObject, Identifiable {
             card: card,
             plan: plan,
             destination: destination,
-            alreadyOffloaded: alreadyOffloadedCount)
+            alreadyOffloaded: alreadyOffloadedCount + missingCopyCount)
 
         // `Task.detached` runs the copy on a background thread so the UI stays responsive.
         // Every UI update hops back to the main thread with `MainActor.run`.

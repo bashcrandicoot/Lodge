@@ -99,7 +99,16 @@ enum DemoData {
                 offloadedAt: Date().addingTimeInterval(-86_400)))
         }
 
-        let session = OffloadSession(card: card, clips: all, knownKeys: ledger.knownKeys)
+        // Three of those copies have gone missing from the destination ("3 missing at destination").
+        let entries = ledger.entriesByKey()
+        let missingNames: Set<String> = ["C0004.MP4", "C0004M01.XML", "DSC00002.ARW"]
+        let sizes = Dictionary(entries.values.map { ($0.destinationPath, $0.size) }, uniquingKeysWith: { a, _ in a })
+        let inventory = CardInventory.classify(
+            files: all, volumeIdentity: card.identity, entries: entries,
+            fileSize: { path in missingNames.contains((path as NSString).lastPathComponent) ? nil : sizes[path] })
+        let session = OffloadSession(card: card, inventory: inventory)
+        // While copying and when finished, the missing copies are being re-offloaded too.
+        if state != .ready { session.reoffloadMode = .missing }
         session.projectInput = "Coastline"
         session.cameraID = cameras.cameras[1].id
         let total = session.newBytes
@@ -131,15 +140,11 @@ enum DemoData {
             break
         }
         // Ready to format once everything is offloaded; otherwise "N files not yet offloaded".
-        let readiness: FormatReadiness
+        var cardInventory = inventory
         if state == .finished {
-            readiness = FormatReadiness(fileCount: all.count, totalBytes: all.reduce(0) { $0 + $1.size },
-                                        copiesFolder: (settings.destinationPath ?? "") + "/Coastline")
-        } else {
-            readiness = FormatReadiness.compute(files: all, volumeIdentity: card.identity,
-                                                entries: ledger.entriesByKey(), fileSize: { _ in nil })
+            cardInventory = CardInventory(offloaded: all, copiesFolder: (settings.destinationPath ?? "") + "/Coastline")
         }
-        model.installDemo(card: card, session: session, readiness: readiness)
+        model.installDemo(card: card, session: session, inventory: cardInventory)
         return model
     }
 }

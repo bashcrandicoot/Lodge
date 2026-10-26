@@ -25,8 +25,13 @@ final class AppModel: ObservableObject {
     @Published var showingRecent = false
     @Published private(set) var isEjecting = false
     @Published var ejectError: String?
+    /// The selected card's files sorted by what the ledger knows. `nil` while scanning / no card.
+    /// Re-checked after each offload (the session keeps the list it started with).
+    @Published private(set) var cardInventory: CardInventory?
     /// Is the selected card safe to format? `nil` while scanning / no card.
-    @Published private(set) var formatReadiness: FormatReadiness?
+    var formatReadiness: FormatReadiness? {
+        cardInventory.map { FormatReadiness(inventory: $0) }
+    }
     @Published private(set) var formatState: FormatState = .idle
 
     enum FormatState: Equatable {
@@ -136,7 +141,7 @@ final class AppModel: ObservableObject {
         guard !isBusy, !formatState.isFormatting else { return }
         selectedCardID = card.id
         session = nil
-        formatReadiness = nil
+        cardInventory = nil
         if !keepFormatState {
             formatState = .idle
             pendingFormattedMount = nil
@@ -144,32 +149,32 @@ final class AppModel: ObservableObject {
         isScanning = true
         let entries = ledger.entriesByKey()
         Task {
-            let (clips, readiness) = await Task.detached(priority: .userInitiated) {
+            let inventory = await Task.detached(priority: .userInitiated) {
                 let clips = ClipScanner.scan(volumeURL: card.url)
-                let readiness = FormatReadiness.compute(files: clips, volumeIdentity: card.identity, entries: entries,
-                                                        fileSize: FormatReadiness.diskFileSize)
-                return (clips, readiness)
+                // Checks each offloaded file's copy is still at the destination ("Missing copy").
+                return CardInventory.classify(files: clips, volumeIdentity: card.identity, entries: entries,
+                                              fileSize: FormatReadiness.diskFileSize)
             }.value
             // The user may have picked a different card while we were scanning.
             guard self.selectedCardID == card.id else { return }
             self.isScanning = false
-            self.formatReadiness = readiness
-            self.install(OffloadSession(card: card, clips: clips, knownKeys: self.ledger.knownKeys))
+            self.cardInventory = inventory
+            self.install(OffloadSession(card: card, inventory: inventory))
         }
     }
 
-    /// Re-checks "Ready to format" for the current session's files (after an offload).
-    private func refreshFormatReadiness(for session: OffloadSession) {
+    /// Re-checks the ledger and destination copies for the current session's files (after an offload).
+    private func refreshInventory(for session: OffloadSession) {
         let card = session.card
-        let files = session.allNewFiles + session.allOffloadedFiles
+        let files = session.inventory.all
         let entries = ledger.entriesByKey()
         Task {
-            let readiness = await Task.detached(priority: .userInitiated) {
-                FormatReadiness.compute(files: files, volumeIdentity: card.identity, entries: entries,
-                                        fileSize: FormatReadiness.diskFileSize)
+            let inventory = await Task.detached(priority: .userInitiated) {
+                CardInventory.classify(files: files, volumeIdentity: card.identity, entries: entries,
+                                       fileSize: FormatReadiness.diskFileSize)
             }.value
             guard self.session === session else { return }
-            self.formatReadiness = readiness
+            self.cardInventory = inventory
         }
     }
 
@@ -195,7 +200,7 @@ final class AppModel: ObservableObject {
     private func install(_ newSession: OffloadSession) {
         newSession.onFinished = { [weak self, weak newSession] summary in
             guard let self, let newSession else { return }
-            self.refreshFormatReadiness(for: newSession)
+            self.refreshInventory(for: newSession)
             let allGood = OffloadFeedback.isCleanSuccess(summary)
             if OffloadFeedback.shouldPlaySuccessSound(summary, enabled: self.settings.playSuccessSound) {
                 NSSound(named: "Glass")?.play()
@@ -229,7 +234,8 @@ final class AppModel: ObservableObject {
             hasCard: true,
             isScanning: isScanning,
             newFileCount: session.newClips.count,
-            cardIsEmpty: session.allNewFiles.isEmpty && session.allOffloadedFiles.isEmpty,
+            missingCopies: session.missingCopyCount,
+            cardIsEmpty: session.inventory.fileCount == 0,
             namingIsValid: naming != nil,
             needs: NamingNeeds(naming),
             project: session.project,
@@ -293,6 +299,65 @@ final class AppModel: ObservableObject {
         let needs = NamingNeeds(settings.naming)
         return (needs.project && session.project.isEmpty)
             || (needs.camera && cameraTokenValue(for: session).isEmpty)
+    }
+
+    // MARK: Re-offloading and forgetting
+
+    /// Chooses what gets copied again. "Everything" asks first, because it makes a second
+    /// set of copies of the whole card.
+    func setReoffloadMode(_ mode: ReoffloadMode) {
+        guard let session, session.phase == .ready else { return }
+        guard mode == .everything else {
+            session.reoffloadMode = mode
+            return
+        }
+        let count = session.inventory.all.filter { session.includedCategories.contains($0.category) }.count
+        let alert = ReoffloadAlert.makeEverything(cardName: session.card.name, fileCount: count)
+        presentSheet(alert) { [weak session] response in
+            guard response == .alertFirstButtonReturn, let session, session.phase == .ready else { return }
+            session.reoffloadMode = .everything
+        }
+    }
+
+    /// How many ledger entries the selected card has (for "Forget This Card's History…").
+    var selectedCardHistoryCount: Int {
+        guard let card = selectedCard else { return 0 }
+        return ledger.entryCount(forVolume: card.identity)
+    }
+
+    /// Asks, then removes every ledger entry for the selected card and rescans it:
+    /// its files show as new again. Copies at the destination are left alone.
+    func confirmForgetSelectedCardHistory() {
+        guard !isBusy, !formatState.isFormatting, let card = selectedCard else { return }
+        let count = ledger.entryCount(forVolume: card.identity)
+        guard count > 0 else { return }
+        let alert = ReoffloadAlert.makeForget(cardName: card.name, entryCount: count)
+        presentSheet(alert) { [weak self] response in
+            guard response == ReoffloadAlert.forgetResponse, let self, !self.isBusy else { return }
+            self.ledger.forget(volumeIdentity: card.identity)
+            if self.selectedCardID == card.id, self.watcher.cards.contains(card) { self.select(card) }
+        }
+    }
+
+    /// Removes one entry from the history (Recent Offloads ▸ Forget).
+    func forgetLedgerEntry(_ entry: LedgerEntry) {
+        ledger.forget(entry)
+        // The selected card may now have new files.
+        if let card = selectedCard, session?.phase == .ready, entry.sourceKey.hasPrefix(card.identity + "|"),
+           watcher.cards.contains(card) {
+            select(card)
+        }
+    }
+
+    /// Shows an alert as a sheet on the main window (or as a dialog if there's none).
+    private func presentSheet(_ alert: NSAlert, handler: @escaping (NSApplication.ModalResponse) -> Void) {
+        let window = NSApp.windows.first { $0.identifier?.rawValue.hasPrefix("main") == true && $0.isVisible }
+            ?? NSApp.keyWindow
+        if let window {
+            alert.beginSheetModal(for: window, completionHandler: handler)
+        } else {
+            handler(alert.runModal())
+        }
     }
 
     // MARK: Ejecting
@@ -360,16 +425,9 @@ final class AppModel: ObservableObject {
     func confirmFormatSelectedCard() {
         guard canFormatSelectedCard, let card = selectedCard, let readiness = formatReadiness else { return }
         let alert = FormatAlert.make(cardName: card.name, readiness: readiness)
-        let window = NSApp.windows.first { $0.identifier?.rawValue.hasPrefix("main") == true && $0.isVisible }
-            ?? NSApp.keyWindow
-        let handler: (NSApplication.ModalResponse) -> Void = { [weak self] response in
+        presentSheet(alert) { [weak self] response in
             guard response == FormatAlert.formatResponse else { return }
             self?.formatSelectedCard()
-        }
-        if let window {
-            alert.beginSheetModal(for: window, completionHandler: handler)
-        } else {
-            handler(alert.runModal())
         }
     }
 
@@ -402,7 +460,7 @@ final class AppModel: ObservableObject {
             formatState = .failed(message)
         case .formatted(let name, let mountPoint):
             formatState = .formatted(cardName: name)
-            formatReadiness = FormatReadiness()   // empty: nothing pending, nothing to format
+            cardInventory = CardInventory()   // empty: nothing pending, nothing to format
             let mount = mountPoint ?? card.url.path
             if settings.ejectAfterOffload {
                 // Keep the finished offload on screen; the unmount marks its card as removed.
@@ -428,11 +486,11 @@ final class AppModel: ObservableObject {
 
     #if DEBUG
     /// Used by previews and demo mode to show a card without real hardware.
-    func installDemo(card: CardVolume, session demoSession: OffloadSession, readiness: FormatReadiness? = nil) {
+    func installDemo(card: CardVolume, session demoSession: OffloadSession, inventory: CardInventory? = nil) {
         watcher.injectDemoCards([card])
         selectedCardID = card.id
         isScanning = false
-        formatReadiness = readiness
+        cardInventory = inventory ?? demoSession.inventory
         install(demoSession)
     }
     #endif

@@ -4,6 +4,7 @@ import AppKit
 /// The "Recent Offloads" popover opened from the toolbar.
 struct RecentOffloadsView: View {
     @EnvironmentObject private var ledger: Ledger
+    @EnvironmentObject private var model: AppModel
 
     var body: some View {
         let recent = ledger.recent(limit: 50)
@@ -33,6 +34,13 @@ struct RecentOffloadsView: View {
             } else {
                 List(recent) { entry in
                     RecentRow(entry: entry)
+                        .contextMenu {
+                            Button("Show in Finder") { RecentRow.reveal(entry) }
+                            Divider()
+                            Button("Forget") { model.forgetLedgerEntry(entry) }
+                                .disabled(model.isBusy)
+                                .help("Remove from the history. The copy itself isn’t touched; the file shows as new on its card again.")
+                        }
                 }
                 .listStyle(.plain)
             }
@@ -69,7 +77,7 @@ struct RecentRow: View {
                     .foregroundStyle(.secondary)
             }
             Button {
-                NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath: entry.destinationPath)])
+                RecentRow.reveal(entry)
             } label: {
                 Image(systemName: "magnifyingglass")
             }
@@ -78,6 +86,10 @@ struct RecentRow: View {
             .accessibilityLabel("Show \(URL(fileURLWithPath: entry.destinationPath).lastPathComponent) in Finder")
         }
         .padding(.vertical, 2)
+    }
+
+    static func reveal(_ entry: LedgerEntry) {
+        NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath: entry.destinationPath)])
     }
 }
 

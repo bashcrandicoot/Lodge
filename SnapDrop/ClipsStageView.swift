@@ -34,6 +34,8 @@ private struct ClipsStageContent: View {
     @FocusState private var nameFocused: Bool
     /// The preview's category filter (`nil` = everything).
     @State private var filter: MediaCategory?
+    /// Which list the preview shows.
+    @State private var scope: ListScope = .toCopy
     /// Turns true right after the list first appears, so its rows can fade in one by one.
     @State private var revealed = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -77,8 +79,18 @@ private struct ClipsStageContent: View {
                     CountPill(text: "\(session.alreadyOffloadedCount) already offloaded",
                               systemImage: "checkmark.circle", tint: .secondary)
                 }
+                if session.missingCopyCount > 0 {
+                    Button { scope = .offloaded } label: {
+                        CountPill(text: "\(session.missingCopyCount) missing at destination",
+                                  systemImage: "exclamationmark.triangle.fill", tint: .orange)
+                    }
+                    .buttonStyle(.plain)
+                    .help("These files were offloaded before, but their copies are gone or changed size. They aren’t copied again unless you choose Re-offload.")
+                }
+                if session.offloadedInView > 0 && session.phase == .ready {
+                    ReoffloadMenu(session: session)
+                }
             }
-            .accessibilityElement(children: .combine)
             Spacer(minLength: 0)
             Text(OffloadFormatting.bytes(session.newBytes))
                 .font(.callout.monospacedDigit())
@@ -122,22 +134,77 @@ private struct ClipsStageContent: View {
 
     @ViewBuilder
     private var preview: some View {
-        if session.allNewFiles.isEmpty && session.allOffloadedFiles.isEmpty {
+        if session.inventory.fileCount == 0 {
             ContentUnavailableView {
                 Label("Card Is Empty", systemImage: "sdcard")
             } description: {
                 Text("There's nothing on this card to offload.")
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-        } else if session.newClips.isEmpty {
-            ContentUnavailableView {
-                Label("All Caught Up", systemImage: "checkmark.seal")
-            } description: {
-                Text(session.allNewFiles.isEmpty
-                     ? "Everything on this card has already been offloaded."
-                     : "The new files on this card are types you turned off in Settings.")
+        } else {
+            let scopes = availableScopes
+            let shown = scopes.contains(scope) ? scope : .toCopy
+            VStack(alignment: .leading, spacing: 6) {
+                switch shown {
+                case .toCopy: toCopyList(scopes: scopes)
+                case .offloaded: offloadedList(scopes: scopes)
+                }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+
+    private var availableScopes: [ListScope] {
+        var scopes: [ListScope] = [.toCopy]
+        if session.offloadedInView > 0 && session.phase == .ready { scopes.append(.offloaded) }
+        return scopes
+    }
+
+    /// "Name Preview", or a pop-up to switch lists when there's more than one.
+    @ViewBuilder
+    private func listHeader(scopes: [ListScope], trailing: String) -> some View {
+        HStack {
+            if scopes.count > 1 {
+                Menu {
+                    Picker("Show", selection: $scope) {
+                        ForEach(scopes, id: \.self) { scope in
+                            Text(title(of: scope)).tag(scope)
+                        }
+                    }
+                    .pickerStyle(.inline)
+                    .labelsHidden()
+                } label: {
+                    Text(title(of: scopes.contains(scope) ? scope : .toCopy))
+                        .font(.subheadline.weight(.semibold))
+                }
+                .menuStyle(.borderlessButton)
+                .fixedSize()
+                .help("Switch between the files to copy and the files offloaded before")
+                .accessibilityLabel("Show list")
+            } else {
+                Text(title(of: .toCopy))
+                    .font(.subheadline.weight(.semibold))
+            }
+            Spacer()
+            Text(trailing)
+                .font(.caption.monospaced())
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .truncationMode(.middle)
+        }
+    }
+
+    private func title(of scope: ListScope) -> String {
+        switch scope {
+        case .toCopy: return "Name Preview"
+        case .offloaded: return "Already Offloaded (\(session.offloadedInView))"
+        }
+    }
+
+    @ViewBuilder
+    private func toCopyList(scopes: [ListScope]) -> some View {
+        if session.newClips.isEmpty {
+            listHeader(scopes: scopes, trailing: "")
+            nothingToCopy
         } else {
             let plan = model.previewPlan(for: session)
             let placeholder = model.previewHasPlaceholders(for: session)
@@ -145,55 +212,112 @@ private struct ClipsStageContent: View {
             let activeFilter = filter.flatMap { present.contains($0) ? $0 : nil }
             let items = activeFilter.map { category in plan.filter { $0.category == category } } ?? plan
 
-            VStack(alignment: .leading, spacing: 6) {
-                HStack {
-                    Text("Name Preview")
-                        .font(.subheadline.weight(.semibold))
-                    Spacer()
-                    Text(folderSummary(plan))
-                        .font(.caption.monospaced())
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                        .truncationMode(.middle)
+            listHeader(scopes: scopes, trailing: folderSummary(plan))
+            if present.count > 1 {
+                Picker("Show", selection: $filter) {
+                    Text("All").tag(MediaCategory?.none)
+                    ForEach(present) { category in
+                        Label(category.title, systemImage: category.symbol).tag(Optional(category))
+                    }
                 }
-                if present.count > 1 {
-                    Picker("Show", selection: $filter) {
-                        Text("All").tag(MediaCategory?.none)
-                        ForEach(present) { category in
-                            Label(category.title, systemImage: category.symbol).tag(Optional(category))
+                .pickerStyle(.segmented)
+                .labelsHidden()
+                .controlSize(.small)
+                .accessibilityLabel("Show file type")
+            }
+            ScrollViewReader { proxy in
+                ScrollView {
+                    LazyVStack(spacing: 0) {
+                        ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
+                            PreviewRow(item: item, isPlaceholder: placeholder,
+                                       isActive: isRunning && item.id == session.progress.currentID,
+                                       isVerified: session.verifiedIDs.contains(item.id),
+                                       isReoffload: session.reoffloadingIDs.contains(item.id))
+                                .background(index.isMultiple(of: 2) ? Color.clear : Color.primary.opacity(0.035))
+                                .staggeredReveal(index: index, revealed: revealed, reduceMotion: reduceMotion)
+                                .contextMenu { rowMenu(for: item.clip) }
+                                .id(item.id)
                         }
                     }
-                    .pickerStyle(.segmented)
-                    .labelsHidden()
-                    .controlSize(.small)
-                    .accessibilityLabel("Show file type")
                 }
-                ScrollViewReader { proxy in
-                    ScrollView {
-                        LazyVStack(spacing: 0) {
-                            ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
-                                PreviewRow(item: item, isPlaceholder: placeholder,
-                                           isActive: isRunning && item.id == session.progress.currentID,
-                                           isVerified: session.verifiedIDs.contains(item.id))
-                                    .background(index.isMultiple(of: 2) ? Color.clear : Color.primary.opacity(0.035))
-                                    .staggeredReveal(index: index, revealed: revealed, reduceMotion: reduceMotion)
-                                    .id(item.id)
-                            }
-                        }
-                    }
-                    .onAppear {
-                        revealed = true
-                        scrollToCurrent(proxy, animated: false)
-                    }
-                    .onChange(of: session.progress.currentID) { _, _ in
-                        scrollToCurrent(proxy, animated: !reduceMotion)
-                    }
+                .onAppear {
+                    revealed = true
+                    scrollToCurrent(proxy, animated: false)
                 }
-                .background(Color(nsColor: .textBackgroundColor).opacity(0.6),
-                            in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .strokeBorder(Color(nsColor: .separatorColor))
+                .onChange(of: session.progress.currentID) { _, _ in
+                    scrollToCurrent(proxy, animated: !reduceMotion)
+                }
+            }
+            .listBox()
+        }
+    }
+
+    /// Nothing will be copied: say why, and offer the way out.
+    private var nothingToCopy: some View {
+        ContentUnavailableView {
+            if session.missingCopyCount > 0 {
+                Label("Copies Missing", systemImage: "exclamationmark.triangle")
+            } else {
+                Label("All Caught Up", systemImage: "checkmark.seal")
+            }
+        } description: {
+            if session.missingCopyCount > 0 {
+                Text(session.missingCopyCount == 1
+                     ? "1 file was offloaded before, but its copy is no longer at the destination."
+                     : "\(session.missingCopyCount) files were offloaded before, but their copies are no longer at the destination.")
+            } else {
+                Text(session.allNewFiles.isEmpty
+                     ? "Everything on this card has already been offloaded."
+                     : "The new files on this card are types you turned off in Settings.")
+            }
+        } actions: {
+            if session.missingCopyCount > 0 && session.phase == .ready {
+                Button("Re-offload Missing Copies") { model.setReoffloadMode(.missing) }
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    /// Files offloaded before: where their copy is, or that it's missing.
+    @ViewBuilder
+    private func offloadedList(scopes: [ListScope]) -> some View {
+        let entries = model.ledger.entriesByKey()
+        let included = { (clip: Clip) in session.includedCategories.contains(clip.category) }
+        // Missing copies first: they're the ones that need attention.
+        let files = Offloader.order(session.inventory.missing.filter(included))
+            + Offloader.order(session.inventory.offloaded.filter(included))
+        listHeader(scopes: scopes, trailing: session.missingCopiesInView > 0
+                   ? "\(session.missingCopiesInView) missing" : "All copies present")
+        ScrollView {
+            LazyVStack(spacing: 0) {
+                ForEach(Array(files.enumerated()), id: \.element.id) { index, clip in
+                    OffloadedRow(clip: clip,
+                                 entry: entries[clip.ledgerKey(volumeIdentity: session.card.identity)],
+                                 isMissing: session.offloadedStatus(of: clip) == true,
+                                 isReoffload: session.reoffloadingIDs.contains(clip.id))
+                        .background(index.isMultiple(of: 2) ? Color.clear : Color.primary.opacity(0.035))
+                        .contextMenu { rowMenu(for: clip) }
+                }
+            }
+        }
+        .listBox()
+    }
+
+    /// Right-click on a file: re-offload just this one, or show its existing copy.
+    @ViewBuilder
+    private func rowMenu(for clip: Clip) -> some View {
+        if session.phase == .ready, let missing = session.offloadedStatus(of: clip) {
+            let picked = session.reoffloadIDs.contains(clip.relativePath)
+            let byMode = session.reoffloadMode == .everything || (session.reoffloadMode == .missing && missing)
+            if picked {
+                Button("Don’t Re-offload This File") { session.toggleReoffload(clip) }
+            } else if !byMode {
+                Button("Re-offload This File") { session.toggleReoffload(clip) }
+            }
+            if let entry = model.ledger.entriesByKey()[clip.ledgerKey(volumeIdentity: session.card.identity)],
+               !missing {
+                Button("Show Copy in Finder") {
+                    NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath: entry.destinationPath)])
                 }
             }
         }
@@ -225,11 +349,14 @@ private struct PreviewRow: View {
     var isActive = false
     /// Copied and checked against the card.
     var isVerified = false
+    /// Offloaded before and being copied again.
+    var isReoffload = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var accessibilityText: String {
         var text = "\(item.category.title), \(item.originalName) will be saved as \(item.relativePath)"
         if let primary = item.sidecarOf { text += ", alongside \(primary)" }
+        if isReoffload { text += ", re-offload: a new copy" }
         if isVerified { text += ", copied and verified" } else if isActive { text += ", copying now" }
         return text
     }
@@ -259,6 +386,13 @@ private struct PreviewRow: View {
                         Text("· goes with \(primary)")
                             .lineLimit(1)
                             .truncationMode(.middle)
+                    }
+                    if isReoffload {
+                        Label("re-offload", systemImage: "arrow.clockwise")
+                            .labelStyle(.titleAndIcon)
+                            .foregroundStyle(.tint)
+                            .lineLimit(1)
+                            .fixedSize()
                     }
                 }
                 .font(.caption)
@@ -303,6 +437,113 @@ extension PreviewRow {
                 .controlSize(.mini)
                 .transition(.opacity)
         }
+    }
+}
+
+/// A file offloaded before: where its copy is, or that it's missing.
+private struct OffloadedRow: View {
+    let clip: Clip
+    let entry: LedgerEntry?
+    let isMissing: Bool
+    let isReoffload: Bool
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
+            Image(systemName: clip.category.symbol)
+                .foregroundStyle(.secondary)
+                .frame(width: 16)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(clip.url.lastPathComponent)
+                    .font(.system(.callout, design: .monospaced))
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                Group {
+                    if isMissing {
+                        Label("Copy missing at the destination", systemImage: "exclamationmark.triangle.fill")
+                            .foregroundStyle(.orange)
+                    } else if let entry {
+                        Text("Copy: " + (entry.destinationPath as NSString).abbreviatingWithTildeInPath)
+                            .truncationMode(.middle)
+                    }
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+            }
+            Spacer(minLength: 0)
+            if isReoffload {
+                Image(systemName: "arrow.clockwise.circle.fill")
+                    .foregroundStyle(.tint)
+                    .help("Will be copied again as a new copy")
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(clip.url.lastPathComponent), "
+                            + (isMissing ? "copy missing at the destination" : "offloaded")
+                            + (isReoffload ? ", will be re-offloaded" : ""))
+    }
+}
+
+/// "Re-offload…": copy missing copies, or the whole card, again.
+private struct ReoffloadMenu: View {
+    @ObservedObject var session: OffloadSession
+    @EnvironmentObject private var model: AppModel
+
+    private var isActive: Bool { !session.reoffloadingIDs.isEmpty }
+
+    var body: some View {
+        Menu {
+            Toggle("Re-offload Missing Copies" + (session.missingCopiesInView > 0 ? " (\(session.missingCopiesInView))" : ""),
+                   isOn: modeBinding(.missing))
+                .disabled(session.missingCopiesInView == 0)
+            Toggle("Re-offload Everything on This Card…", isOn: modeBinding(.everything))
+            if isActive {
+                Divider()
+                Button("Don’t Re-offload") {
+                    session.reoffloadIDs = []
+                    model.setReoffloadMode(.off)
+                }
+            }
+        } label: {
+            Label(isActive ? "Re-offloading \(session.reoffloadingIDs.count)" : "Re-offload…",
+                  systemImage: "arrow.clockwise")
+                .font(.caption.weight(.medium))
+        }
+        .menuStyle(.borderlessButton)
+        .fixedSize()
+        .padding(.horizontal, 8)
+        .padding(.vertical, 2)
+        .background(Color.primary.opacity(isActive ? 0 : 0.06), in: Capsule())
+        .background(Color.accentColor.opacity(isActive ? 0.14 : 0), in: Capsule())
+        .help("Copy files again that were offloaded before. New copies never overwrite old ones.")
+        .accessibilityLabel(isActive ? "Re-offloading \(session.reoffloadingIDs.count) files" : "Re-offload")
+    }
+
+    /// On = this mode; turning "Everything" on asks first (see `AppModel.setReoffloadMode`).
+    private func modeBinding(_ mode: ReoffloadMode) -> Binding<Bool> {
+        Binding(get: { session.reoffloadMode == mode },
+                set: { model.setReoffloadMode($0 ? mode : .off) })
+    }
+}
+
+/// Which list the Media stage shows.
+private enum ListScope: Hashable {
+    case toCopy, offloaded
+}
+
+private extension View {
+    /// The rounded box around a file list.
+    func listBox() -> some View {
+        background(Color(nsColor: .textBackgroundColor).opacity(0.6),
+                   in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .strokeBorder(Color(nsColor: .separatorColor))
+            }
     }
 }
 

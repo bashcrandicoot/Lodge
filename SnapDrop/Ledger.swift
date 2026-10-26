@@ -14,7 +14,8 @@ struct LedgerEntry: Codable, Identifiable, Hashable, Sendable {
     /// When it was offloaded.
     let offloadedAt: Date
 
-    var id: String { sourceKey }
+    /// Unique per copy: the same clip can be offloaded again (a new copy, never overwritten).
+    var id: String { sourceKey + "\u{0}" + destinationPath }
 }
 
 /// Builds the identity key for a clip:
@@ -72,6 +73,38 @@ final class Ledger: ObservableObject {
         entries.append(entry)
         knownKeys.insert(entry.sourceKey)
         save()
+    }
+
+    /// Ledger keys start with the card's identity (see `LedgerKey`).
+    nonisolated static func belongs(_ entry: LedgerEntry, toVolume identity: String) -> Bool {
+        entry.sourceKey.hasPrefix(identity + "|")
+    }
+
+    func entryCount(forVolume identity: String) -> Int {
+        entries.filter { Ledger.belongs($0, toVolume: identity) }.count
+    }
+
+    /// Forgets one copy. If the clip was offloaded more than once, the older copies remain.
+    func forget(_ entry: LedgerEntry) {
+        remove { $0 == entry }
+    }
+
+    /// Forgets everything offloaded from one card: its files show as new again.
+    /// The copies at the destination are not touched.
+    @discardableResult
+    func forget(volumeIdentity identity: String) -> Int {
+        remove { Ledger.belongs($0, toVolume: identity) }
+    }
+
+    @discardableResult
+    private func remove(where shouldRemove: (LedgerEntry) -> Bool) -> Int {
+        let before = entries.count
+        entries.removeAll(where: shouldRemove)
+        let removed = before - entries.count
+        guard removed > 0 else { return 0 }
+        knownKeys = Set(entries.map(\.sourceKey))
+        save()
+        return removed
     }
 
     private func load() {

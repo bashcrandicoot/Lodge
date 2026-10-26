@@ -24,6 +24,7 @@ enum OffloadReadiness {
         hasCard: Bool,
         isScanning: Bool,
         newFileCount: Int,
+        missingCopies: Int = 0,
         cardIsEmpty: Bool = false,
         namingIsValid: Bool = true,
         needs: NamingNeeds = NamingNeeds(project: true),
@@ -37,6 +38,11 @@ enum OffloadReadiness {
         if !hasCard { return "Insert a card to begin" }
         if isScanning { return "Scanning card…" }
         if cardIsEmpty { return "This card is empty" }
+        if newFileCount == 0 && missingCopies > 0 {
+            return missingCopies == 1
+                ? "1 copy is missing at the destination — choose Re-offload"
+                : "\(missingCopies) copies are missing at the destination — choose Re-offload"
+        }
         if newFileCount == 0 { return "Everything on this card is already offloaded" }
         if !namingIsValid { return "Fix the naming template in Settings" }
         if needs.project && project.isEmpty { return "Enter a project name" }

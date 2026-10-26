@@ -37,23 +37,25 @@ struct FormatReadiness: Equatable, Sendable {
     /// path, or `nil` if there is none (cheap: no checksums are recomputed).
     static func compute(files: [Clip], volumeIdentity: String, entries: [String: LedgerEntry],
                         fileSize: (String) -> Int64?) -> FormatReadiness {
-        var result = FormatReadiness()
-        var folders: [String] = []
-        for file in files {
-            result.fileCount += 1
-            result.totalBytes += file.size
-            guard let entry = entries[file.ledgerKey(volumeIdentity: volumeIdentity)], entry.size == file.size else {
-                result.notOffloaded += 1
-                continue
-            }
-            if fileSize(entry.destinationPath) == entry.size {
-                folders.append((entry.destinationPath as NSString).deletingLastPathComponent)
-            } else {
-                result.missingCopies += 1
-            }
-        }
-        result.copiesFolder = commonFolder(folders)
-        return result
+        FormatReadiness(inventory: CardInventory.classify(files: files, volumeIdentity: volumeIdentity,
+                                                          entries: entries, fileSize: fileSize))
+    }
+
+    init(fileCount: Int = 0, totalBytes: Int64 = 0, notOffloaded: Int = 0, missingCopies: Int = 0,
+         copiesFolder: String? = nil) {
+        self.fileCount = fileCount
+        self.totalBytes = totalBytes
+        self.notOffloaded = notOffloaded
+        self.missingCopies = missingCopies
+        self.copiesFolder = copiesFolder
+    }
+
+    init(inventory: CardInventory) {
+        self.init(fileCount: inventory.fileCount,
+                  totalBytes: inventory.all.reduce(0) { $0 + $1.size },
+                  notOffloaded: inventory.new.count,
+                  missingCopies: inventory.missing.count,
+                  copiesFolder: inventory.copiesFolder)
     }
 
     /// The real file system: size of a regular file, `nil` if it's missing or a folder.
