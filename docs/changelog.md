@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.0.1
+
+**Coming from 1.0.0?** Lodge 1.0.0 can't check for updates, so download 1.0.1 by hand once: open the disk image and drag Lodge to Applications. From 1.0.1 on, Lodge updates itself.
+
+### New
+
+- **Menu bar mode.** Keep Lodge running in the menu bar after you close the window. It watches for camera cards and asks to import them, with a notification or a floating panel (Settings > General).
+- **First-launch setup.** A short guide walks you through your first preset: destination, folders, naming and safety.
+- **A folder for each file type.** Inside the last folder, files are sorted into one folder per extension (MP4, WAV, ARW…). JPG and JPEG share one folder.
+- **Check for Updates.** Lodge > Check for Updates…, plus automatic checks you can turn off in Settings > General.
+- **Support Lodge.** A tip link in the Lodge and Help menus, and a one-time note.
+- **Contact.** BashFrames contact details in About Lodge and the Help menu.
+- **Also new:** a new app icon, an expandable Layout tree, and a progress strip in the offload bar.
+
+### Fixes
+
+- The window title no longer reappears when the toolbar changes.
+- Other small fixes.
+
 ## 1.0.0
 
 First public release of Lodge, a native Mac app (macOS 14 or later) for offloading camera memory cards. [Download Lodge from Gumroad](https://bashframes.gumroad.com/l/lodge).

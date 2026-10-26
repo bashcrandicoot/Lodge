@@ -59,7 +59,7 @@ macOS 14 or later. Lodge is a universal app for Apple silicon and Intel Macs.
 
 ## Privacy
 
-No account, no analytics. Lodge 1.0.0 doesn’t use the network, and copying never uploads anything.
+No account, no analytics. Copying never uploads anything. The only thing Lodge fetches is its update feed, once a day (you can turn that off in Settings > General).
 
 ## Support
 

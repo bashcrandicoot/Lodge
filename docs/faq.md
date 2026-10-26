@@ -68,7 +68,7 @@ Write to [bashframes@gmail.com](mailto:bashframes@gmail.com). If Lodge has been 
 
 ## How do I update Lodge?
 
-Lodge 1.0.0 does not check for updates. [Download Lodge from Gumroad](https://bashframes.gumroad.com/l/lodge) when you want a newer copy.
+From 1.0.1, Lodge checks for updates once a day and offers new versions. Choose **Lodge > Check for Updates…** to check now, or turn the automatic check off in **Settings > General**. Lodge 1.0.0 can’t update itself: [download Lodge from Gumroad](https://bashframes.gumroad.com/l/lodge) once to get 1.0.1.
 
 ## How are files sorted into folders?
 
@@ -76,7 +76,7 @@ In Lodge 1.0.0, files land in the folder the template makes. With the default fi
 
 ## Does Lodge need a network?
 
-Lodge 1.0.0 does not. There is no account and no analytics. The ledger and your settings stay in your Library folder. Copying never uploads anything.
+Only for its once-a-day update check, which you can turn off in **Settings > General**. There is no account and no analytics. The ledger and your settings stay in your Library folder. Copying never uploads anything.
 
 ## Where do my settings live?
 

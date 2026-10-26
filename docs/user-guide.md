@@ -362,7 +362,7 @@ The type comes from the extension, in either case. Settings > General can turn e
 | Presets | `~/Library/Application Support/Lodge/presets.json` |
 | Templates, theme, appearance, file rules, short clips, and the other switches | Lodge’s preferences |
 
-Lodge 1.0.0 does not connect to the network. Copying, the ledger, and settings stay on your Mac. Copying never uploads anything.
+Lodge’s only network connection is the once-a-day update check (Settings > General). Copying, the ledger, and settings stay on your Mac. Copying never uploads anything.
 
 ## With no card
 
