@@ -63,7 +63,7 @@ First public release of Lodge, a native Mac app (macOS 14 or later) for offloadi
 
 ### Presets
 
-- The toolbar menu above the funnel switches presets. A preset stores the destination, the folder and file templates, the camera, the short-clip setting, quick dump, and the file rules.
+- The preset menu in the center of the toolbar switches presets. A preset stores the destination, the folder and file templates, the camera, the short-clip setting, quick dump, and the file rules.
 - **Save Current Setup as Preset…** saves what the window is using. Change something afterwards and the menu shows **Edited**, with **Update “Name”** for the preset in use. **Manage Presets…** opens Settings > Presets, where you can add, rename, edit, and remove them. An empty menu says **No Preset**.
 
 ### Quick dump
@@ -104,7 +104,7 @@ First public release of Lodge, a native Mac app (macOS 14 or later) for offloadi
 - Inserting a card plays a short accent glow on the card panel.
 - Card rows and grid tiles lift slightly under the pointer. Reduce Motion keeps the highlight and skips the lift.
 - The **Ready to format** badge glows, and the seal bounces, when it appears.
-- Dropping a folder onto Destination or the Layout tree, and dropping a level or token onto the tree, gives a light haptic on a Force Touch trackpad when the drop is accepted.
+- Dropping a folder onto Destination or the Layout tree, and dropping a level or token onto the tree, gives a light click on a Force Touch trackpad when the drop is accepted.
 - Animations follow **System Settings > Accessibility > Display > Reduce motion**.
 
 ### Also in this release

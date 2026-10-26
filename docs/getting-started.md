@@ -6,7 +6,9 @@ Home base for your media. Lodge is a universal app for Apple silicon and Intel M
 
 <a href="https://bashframes.gumroad.com/l/lodge"><img src="assets/download-button.png" alt="Download Lodge for Mac" width="320" height="72"></a>
 
-[Download Lodge from Gumroad](https://bashframes.gumroad.com/l/lodge). Open the disk image and drag Lodge to Applications.
+[Download Lodge from Gumroad](https://bashframes.gumroad.com/l/lodge). Open the disk image and drag Lodge to Applications. Pay what you want.
+
+No account, no analytics. Lodge 1.0.0 doesn’t use the network. Coming in the next update: a daily check for new versions (via Sparkle), which you can turn off with **Automatically check for updates** in Settings > General > Updates. Copying never uploads anything.
 
 ## Open Lodge the first time
 
@@ -72,3 +74,7 @@ The button’s caption is the reason. Common ones:
 ## Build from source
 
 The download above is the way to install Lodge. If you want to build it yourself, start with [CONTRIBUTING.md](../CONTRIBUTING.md).
+
+For help, write to [bashframes@gmail.com](mailto:bashframes@gmail.com).
+
+© 2026 BashFrames

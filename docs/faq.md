@@ -2,6 +2,10 @@
 
 Short answers. The [user guide](user-guide.md) has the detail, and [Getting started](getting-started.md) covers the download.
 
+## Which Mac do I need?
+
+macOS 14 Sonoma or later. Lodge is a universal app for Apple silicon and Intel Macs.
+
 ## Does Lodge change the card while it copies?
 
 The copy only reads the card. Each file is written on the destination, checked with SHA-256, and only then given its final name. **Format Card…** is the command that erases a card, and it asks first.
@@ -82,9 +86,9 @@ In Lodge 1.0.0, files land in the folder the template makes. With the default fi
 
 ## Does Lodge need a network?
 
-Lodge 1.0.0 does not. There is no account and no upload. The ledger and your settings stay in your Library folder.
+Lodge 1.0.0 does not. There is no account and no analytics. The ledger and your settings stay in your Library folder.
 
-**Coming in the next update**, the daily update check reads Lodge’s update feed. Copying still does not upload anything.
+**Coming in the next update**, a daily check for new versions uses Sparkle. You can turn it off with **Automatically check for updates** in Settings > General > Updates. Copying never uploads anything.
 
 ## Where do my settings live?
 
