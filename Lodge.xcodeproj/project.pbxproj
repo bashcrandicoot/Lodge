@@ -325,7 +325,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Lodge;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Sebastian Phillips. MIT License.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2026 Sebastian Phillips";
 				INFOPLIST_KEY_NSRemovableVolumesUsageDescription = "Lodge reads your memory cards so it can copy and verify your clips. It never changes or deletes anything on a card.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -360,7 +360,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Lodge;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Sebastian Phillips. MIT License.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2026 Sebastian Phillips";
 				INFOPLIST_KEY_NSRemovableVolumesUsageDescription = "Lodge reads your memory cards so it can copy and verify your clips. It never changes or deletes anything on a card.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

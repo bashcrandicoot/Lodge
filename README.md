@@ -116,8 +116,9 @@ Files Quick Look can't open show *No preview available for .braw*.
 ## Skipping short clips
 
 Accidental takes — a clip you started and stopped right away — don't need to be offloaded.
-With **Settings → General → Skip short videos** (on by default) videos shorter than
-**5 seconds** (adjustable from 1 to 60) stay on the card, together with their sidecars. The
+With **Settings → General → Skip videos shorter than** set to **5 s** (the default) those
+videos stay on the card, together with their sidecars. The slider goes from *Off* to 30 s
+and the stepper next to it up to 60 s. The
 Media panel shows *2 short clips skipped*; click it to see them and choose **Include
 Anyway** for one or **Include All** for every one. Clips whose length can't be read (BRAW,
 R3D) are always offloaded.
@@ -175,19 +176,40 @@ a drive that isn't plugged in shows *Not connected* and can't be picked until it
 
 Manage them in **Settings → Destinations**: add (+), remove (−), rename (click the name
 and type), **Change Folder…**, drag to reorder and **Make Default**. Lodge starts with the
-favorite you used last (or the default). Your existing destination becomes the first
-favorite the first time you open this version. The list is saved in
+favorite you used last (or the default). The list is saved in
 `~/Library/Application Support/Lodge/destinations.json`, with a bookmark for each
 folder so a folder that's renamed or moved is still found.
 
+## Presets
+
+A preset is a saved setup you switch to in one click from the toolbar menu above the
+funnel ("Drone Day", "Client B-Roll"): the destination, the folder and file templates, the
+camera, the short-clip setting, quick dump and the file rules. **Save Current Setup as
+Preset…** makes one from what the main window uses now; if you change something afterwards
+the menu says *Edited* and offers **Update “Name”**. Manage them in **Settings → Presets**.
+
+## Quick dump
+
+**Quick dump: skip project name** (under the Camera field) is for just getting the footage
+off a card. `{project}` is taken out of both templates cleanly — `{date}/{project}` +
+`{date}_{project}_{seq}` become `{date}` + `{date}_{seq}` — so there's no project to type.
+Numbering carries on from what's already in the folder.
+
 ## Settings (⌘,)
 
-**General** — the current destination folder; which [file types](#file-types) to offload (all on by
-default); [*Skip short videos*](#skipping-short-clips) and the length; *Eject card after
+**General** — which [file types](#file-types) to offload (all on by default);
+[*Skip videos shorter than*](#skipping-short-clips); *Eject card after
 offload* (off by default, and only when every file copied and verified); *Play a sound when
 an offload finishes* (on by default).
 
 **Appearance** — see [Themes and appearance](#themes-and-appearance).
+
+**Presets** — see [Presets](#presets).
+
+**Files** — which extensions are proxies (`lrv lrf`, copied into a *Proxies* folder) and
+sidecars (`thm xml srt`, into a *Sidecars* folder), and the ignore list of files that are
+never offloaded (`.DS_Store`, `._*`, `.Spotlight-V100`, …). Both folders sit next to the
+clips and their files keep their clip's new name.
 
 **Naming** — a folder template and a file template, presets, and a live example.
 Click a token chip to insert it where you were typing. Mistakes (an unclosed `{`, an
@@ -244,8 +266,8 @@ With **Increase contrast** or **Reduce transparency** turned on, every theme use
 colours instead of gradients. Every theme is tuned separately for Light and Dark and keeps
 button text readable (checked by `ThemeTests`). The palettes live in one place,
 `Theme.swift`; the asset catalog's `AccentColor` is system blue, used by AppKit controls when
-the system accent is Multicolor and as the fallback outside SwiftUI. Older versions had a "Comet" theme (and "Graphite"); a saved choice of either
-becomes Default.
+the system accent is Multicolor and as the fallback outside SwiftUI. A saved "Comet" or
+"Graphite" theme from an older version becomes Default.
 
 ![Settings → Appearance](Design/screenshots/settings-appearance.png)
 
@@ -315,13 +337,15 @@ open -n build/DerivedData/Build/Products/Debug/Lodge.app --args \
 ```
 
 States: `empty`, `ready`, `running`, `finished`. Appearance: `light` or `dark`.
-Add `-LodgeDemoSettingsTab general|appearance|destinations|naming|cameras` to open Settings on that
+Add `-LodgeDemoSettingsTab general|appearance|presets|destinations|naming|files|cameras` to open Settings on that
 tab, `-LodgeDemoTheme ember` (or `default`, `aurora`, `ocean`, `twilight`, `forest`) for a
 theme, `-LodgeDemoLayout grid` for the thumbnail grid (`-LodgeDemoListThumbnails YES`
 for list thumbnails), `-LodgeDemoScope skipped|offloaded` to show the skipped short clips
 or the files offloaded before, `-LodgeDemoQuickLook C0008.MP4` to open Quick Look on a file,
 `-LodgeDemoWindowSize 1060x700` to size the window (centred on the sharpest screen), `-LodgeDemoShowFormatAlert YES` to show the Format confirmation, or
-`-LodgeDemoPlainTheme YES` to see the solid colours used with Increase contrast.
+`-LodgeDemoPlainTheme YES` to see the solid colours used with Increase contrast. Demo windows
+are drawn as if they were active, so screenshots taken with the app in the background still
+show the accent colour on switches and segments.
 Formatting can never run in demo mode.
 The sample card has clips with Sony XML sidecars, RAW photos, WAVs, two short clips, a few
 missing copies and a few cameras; thumbnails are drawn placeholders in the theme's colours.
@@ -336,7 +360,7 @@ Every view also has `#Preview`s you can open in Xcode's canvas.
 | `Theme.swift` | Themes (Default and the colour gradients), window wash and prominent button style, with solid fallbacks |
 | `ContentView.swift` | Main window: the Card → Media → Destination funnel and toolbar |
 | `FunnelComponents.swift` | Shared pieces: stage panel, step badge, arrows, count pills |
-| `Motion.swift` | Animated pieces: arrow stream, shimmering progress bar, completion burst, row reveal |
+| `Motion.swift` | Animated pieces: arrow stream, shimmering progress bar, completion burst, drawn checkmark, count-up numbers, hover lift, row reveal, drop haptics |
 | `CardStageView.swift` | ① Card panel, Ready to format badge, card actions menu |
 | `ClipsStageView.swift` | ② Media panel: counts, project/camera, filterable list or grid, selection, re-offload and short-clip controls |
 | `MediaGridViews.swift` | Grid tiles, thumbnails, status badges, progress ring, list/grid switch |
@@ -351,6 +375,10 @@ Every view also has `#Preview`s you can open in Xcode's canvas.
 | `CamerasSettingsView.swift` | Cameras tab |
 | `DestinationsSettingsView.swift` | Destinations tab |
 | `NamingTemplate.swift` | Template tokens, parsing/validation, presets, rendering |
+| `FileRules.swift` | Proxy and sidecar extensions and the ignore list (Settings → Files) |
+| `QuickDump.swift` | Takes `{project}` out of the templates for a quick dump |
+| `OffloadPreset.swift` | Saved setups: destination, templates, camera, short clips, quick dump, file rules |
+| `PresetViews.swift` | The toolbar preset switcher, Settings → Presets and Files, the short-clip slider |
 | `OffloadPlanner.swift` | Turns files + templates into final paths; sequence numbers; sidecar matching |
 | `MediaCategory.swift` | Video / Photo / Audio / Other by extension |
 | `CameraStore.swift` | The camera list and per-card camera memory (`cameras.json`) |
