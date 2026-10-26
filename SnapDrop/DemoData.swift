@@ -14,9 +14,23 @@ enum DemoData {
         return State(rawValue: UserDefaults.standard.string(forKey: "SnapDropDemoState") ?? "") ?? .ready
     }
 
-    /// Set by launching with `-SnapDropDemoSettingsTab <general|naming|cameras>`.
+    /// Set by launching with `-SnapDropDemoSettingsTab <general|destinations|naming|cameras>`.
     static var launchSettingsTab: SettingsTab? {
         UserDefaults.standard.string(forKey: "SnapDropDemoSettingsTab").flatMap(SettingsTab.init(rawValue:))
+    }
+
+    /// Movies (default, in use), an external SSD that isn't plugged in, and Pictures.
+    @MainActor
+    static func destinationStore() -> DestinationStore {
+        let home = FileManager.default.homeDirectoryForCurrentUser.path
+        let movies = FavoriteDestination(name: "Movies", path: home + "/Movies")
+        let store = DestinationStore(fileURL: nil, favorites: [
+            movies,
+            FavoriteDestination(name: "Footage SSD", path: "/Volumes/Footage SSD/Projects"),
+            FavoriteDestination(name: "Stills Library", path: home + "/Pictures"),
+        ], defaultID: movies.id)
+        store.markUsed(movies.id)
+        return store
     }
 
     @MainActor
@@ -66,7 +80,7 @@ enum DemoData {
         let ledger = Ledger(fileURL: ledgerURL)
         let cameras = cameraStore()
         // The demo never runs diskutil: every command "fails", so Format can't erase anything.
-        let model = AppModel(settings: settings, ledger: ledger, cameras: cameras,
+        let model = AppModel(settings: settings, ledger: ledger, cameras: cameras, destinations: destinationStore(),
                              formatter: CardFormatter(runner: DemoCommandRunner()), startWatching: false)
         settings.destinationPath = FileManager.default.urls(for: .moviesDirectory, in: .userDomainMask).first?.path
         guard state != .empty else { return model }

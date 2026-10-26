@@ -13,6 +13,7 @@ final class AppModel: ObservableObject {
     let watcher: VolumeWatcher
     let ledger: Ledger
     let cameras: CameraStore
+    let destinations: DestinationStore
 
     /// The card shown in the funnel (its mount path).
     @Published private(set) var selectedCardID: String?
@@ -45,15 +46,30 @@ final class AppModel: ObservableObject {
 
     private var sessionObserver: AnyCancellable?
     private var camerasObserver: AnyCancellable?
+    private var destinationsObserver: AnyCancellable?
     private var categoriesObserver: AnyCancellable?
 
     init(settings: AppSettings? = nil, ledger: Ledger? = nil, cameras: CameraStore? = nil,
-         formatter: CardFormatter = CardFormatter(), startWatching: Bool = true) {
+         destinations: DestinationStore? = nil, formatter: CardFormatter = CardFormatter(),
+         startWatching: Bool = true) {
         self.formatter = formatter
         self.settings = settings ?? AppSettings()
         self.ledger = ledger ?? Ledger()
         self.cameras = cameras ?? CameraStore()
+        self.destinations = destinations ?? DestinationStore()
         self.watcher = VolumeWatcher()
+
+        // The single destination from before favorites becomes the first favorite, once.
+        // Then start in the last favorite used (or the default, if that one isn't connected).
+        self.destinations.migrate(legacyPath: self.settings.destinationPath)
+        let launchPath = self.destinations.launchDestination(currentPath: self.settings.destinationPath)
+        if launchPath != self.settings.destinationPath {
+            self.settings.destinationPath = launchPath
+        }
+        // "Not connected" and the Offload button follow drives coming and going.
+        destinationsObserver = self.destinations.objectWillChange.sink { [weak self] _ in
+            self?.objectWillChange.send()
+        }
 
         // The Offload button depends on the camera list (e.g. the chosen camera was deleted).
         camerasObserver = self.cameras.objectWillChange.sink { [weak self] _ in
@@ -72,6 +88,7 @@ final class AppModel: ObservableObject {
         // Don't watch for cards while unit tests run inside the app.
         if startWatching && !AppModel.isRunningUnitTests {
             watcher.start()
+            self.destinations.startWatchingDrives()
         }
     }
 
@@ -218,6 +235,7 @@ final class AppModel: ObservableObject {
             project: session.project,
             hasCamera: !cameraTokenValue(for: session).isEmpty,
             hasDestination: settings.destinationURL != nil,
+            destinationConnected: settings.destinationPath.map(DestinationStore.isFolder) ?? true,
             requiredBytes: session.newBytes,
             availableBytes: settings.destinationURL.flatMap(VolumeInfo.availableBytes(at:)))
     }
@@ -297,6 +315,36 @@ final class AppModel: ObservableObject {
             }
             self.isEjecting = false
         }
+    }
+
+    // MARK: Destinations
+
+    /// The favorite the current destination folder belongs to, if any.
+    var currentFavorite: FavoriteDestination? {
+        destinations.favorite(forPath: settings.destinationPath)
+    }
+
+    /// Switches to a favorite (not while copying, and only if its folder is there).
+    func useFavorite(_ favorite: FavoriteDestination) {
+        guard !isBusy, destinations.isConnected(favorite) else { return }
+        settings.destinationPath = favorite.path
+        destinations.markUsed(favorite.id)
+        watcher.refresh()
+    }
+
+    /// The standard folder panel, for a folder that isn't a favorite.
+    func chooseOtherDestination() {
+        guard !isBusy else { return }
+        settings.chooseDestination()
+        destinations.markUsed(currentFavorite?.id)
+        watcher.refresh()
+    }
+
+    /// Saves the current destination folder as a favorite and remembers it as last used.
+    func addCurrentDestinationToFavorites() {
+        guard let path = settings.destinationPath else { return }
+        let favorite = destinations.add(path: path)
+        destinations.markUsed(favorite.id)
     }
 
     // MARK: Formatting

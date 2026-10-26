@@ -35,6 +35,13 @@ struct SnapDropApp: App {
             return DemoData.model(state: state)
         }
         #endif
+        // As the unit tests' host, never read or write the user's settings, ledger or lists.
+        if AppModel.isRunningUnitTests {
+            let ledger = FileManager.default.temporaryDirectory.appendingPathComponent("snapdrop-test-host-ledger.json")
+            return AppModel(settings: AppSettings(defaults: nil), ledger: Ledger(fileURL: ledger),
+                            cameras: CameraStore(fileURL: nil), destinations: DestinationStore(fileURL: nil),
+                            startWatching: false)
+        }
         return AppModel()
     }
 }

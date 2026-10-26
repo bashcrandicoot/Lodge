@@ -79,7 +79,8 @@ final class CameraStoreTests: XCTestCase {
         settings.apply(NamingPreset.all[1])   // Project / Date / Camera
         let ledgerURL = FileManager.default.temporaryDirectory.appendingPathComponent("snapdrop-ledger-\(UUID().uuidString).json")
         defer { try? FileManager.default.removeItem(at: ledgerURL) }
-        let model = AppModel(settings: settings, ledger: Ledger(fileURL: ledgerURL), cameras: store, startWatching: false)
+        let model = AppModel(settings: settings, ledger: Ledger(fileURL: ledgerURL), cameras: store,
+                             destinations: DestinationStore(fileURL: nil), startWatching: false)
         let card = CardVolume(url: URL(fileURLWithPath: "/Volumes/X"), name: "X", uuid: "UUID-1")
         let clip = Clip(url: URL(fileURLWithPath: "/Volumes/X/DCIM/C0001.MP4"), relativePath: "DCIM/C0001.MP4",
                         size: 1, creationDate: Date(), modificationDate: Date())

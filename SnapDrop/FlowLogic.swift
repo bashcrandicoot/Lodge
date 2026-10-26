@@ -30,6 +30,7 @@ enum OffloadReadiness {
         project: String,
         hasCamera: Bool = false,
         hasDestination: Bool,
+        destinationConnected: Bool = true,
         requiredBytes: Int64,
         availableBytes: Int64?
     ) -> String? {
@@ -41,6 +42,7 @@ enum OffloadReadiness {
         if needs.project && project.isEmpty { return "Enter a project name" }
         if needs.camera && !hasCamera { return "Choose a camera" }
         if !hasDestination { return "Choose a destination folder" }
+        if !destinationConnected { return "The destination folder isn’t connected — choose another" }
         if let available = availableBytes, available < requiredBytes {
             return "Not enough space: needs \(OffloadFormatting.bytes(requiredBytes)), \(OffloadFormatting.bytes(available)) free"
         }

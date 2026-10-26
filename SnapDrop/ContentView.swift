@@ -80,6 +80,7 @@ extension View {
             .environmentObject(model.watcher)
             .environmentObject(model.ledger)
             .environmentObject(model.cameras)
+            .environmentObject(model.destinations)
     }
 }
 

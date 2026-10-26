@@ -11,6 +11,9 @@ struct SettingsView: View {
             GeneralSettingsView()
                 .tabItem { Label("General", systemImage: "gearshape") }
                 .tag(SettingsTab.general)
+            DestinationsSettingsView()
+                .tabItem { Label("Destinations", systemImage: "externaldrive") }
+                .tag(SettingsTab.destinations)
             NamingSettingsView()
                 .tabItem { Label("Naming", systemImage: "textformat") }
                 .tag(SettingsTab.naming)
@@ -22,14 +25,14 @@ struct SettingsView: View {
 }
 
 enum SettingsTab: String {
-    case general, naming, cameras
+    case general, destinations, naming, cameras
     static let storageKey = "settingsTab"
 }
 
 /// Destination and what happens after an offload.
 struct GeneralSettingsView: View {
     @EnvironmentObject private var settings: AppSettings
-    @EnvironmentObject private var watcher: VolumeWatcher
+    @EnvironmentObject private var model: AppModel
 
     var body: some View {
         Form {
@@ -41,12 +44,12 @@ struct GeneralSettingsView: View {
                             .lineLimit(1)
                             .truncationMode(.middle)
                         Button("Choose…") {
-                            settings.chooseDestination()
-                            watcher.refresh()
+                            model.chooseOtherDestination()
                         }
+                        .disabled(model.isBusy)
                     }
                 }
-                Text("Folder and file names are set in the Naming tab.")
+                Text("Save the folders you use often in the Destinations tab. Folder and file names are set in the Naming tab.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

@@ -5,7 +5,6 @@ import AppKit
 struct DestinationStageView: View {
     @EnvironmentObject private var model: AppModel
     @EnvironmentObject private var settings: AppSettings
-    @EnvironmentObject private var watcher: VolumeWatcher
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
@@ -27,29 +26,12 @@ struct DestinationStageView: View {
     }
 
     private func choose() {
-        settings.chooseDestination()
-        watcher.refresh()
+        model.chooseOtherDestination()
     }
 
     private func chosen(_ url: URL) -> some View {
         VStack(alignment: .leading, spacing: 14) {
-            HStack(spacing: 10) {
-                Image(nsImage: NSWorkspace.shared.icon(forFile: url.path))
-                    .resizable()
-                    .frame(width: 36, height: 36)
-                    .accessibilityHidden(true)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(url.lastPathComponent)
-                        .font(.body.weight(.semibold))
-                        .lineLimit(1)
-                    Text((url.path as NSString).abbreviatingWithTildeInPath)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(2)
-                        .truncationMode(.middle)
-                }
-            }
-            .accessibilityElement(children: .combine)
+            DestinationPicker(url: url)
 
             // Until a card is scanned there's nothing to lay out, so just show the folder.
             SpaceInfo(url: url, required: plan.isEmpty ? nil : model.session?.newBytes)
@@ -64,11 +46,13 @@ struct DestinationStageView: View {
             HStack {
                 Button("Change…", action: choose)
                     .disabled(model.isBusy)
+                    .help("Choose a folder that isn't one of your favorites")
                 Button {
                     NSWorkspace.shared.activateFileViewerSelecting([url])
                 } label: {
                     Label("Show", systemImage: "arrow.up.forward.app")
                 }
+                .disabled(!DestinationStore.isFolder(url.path))
                 .help("Show the destination folder in Finder")
             }
             .controlSize(.small)
@@ -80,6 +64,211 @@ struct DestinationStageView: View {
     private var plan: [PlannedFile] {
         guard let session = model.session, session.plan != nil || !session.newClips.isEmpty else { return [] }
         return model.previewPlan(for: session)
+    }
+}
+
+/// The current destination; click it for your favorites.
+private struct DestinationPicker: View {
+    let url: URL
+    @EnvironmentObject private var model: AppModel
+    @EnvironmentObject private var destinations: DestinationStore
+    @State private var showingList = false
+    @State private var hovering = false
+
+    var body: some View {
+        let favorite = model.currentFavorite
+        let connected = DestinationStore.isFolder(url.path)
+        let title = favorite?.displayName ?? url.lastPathComponent
+        Button { showingList.toggle() } label: {
+            HStack(spacing: 10) {
+                Group {
+                    if connected {
+                        Image(nsImage: NSWorkspace.shared.icon(forFile: url.path))
+                            .resizable()
+                    } else {
+                        Image(systemName: "externaldrive.badge.xmark")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundStyle(.secondary)
+                            .padding(4)
+                    }
+                }
+                .frame(width: 36, height: 36)
+                .accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.body.weight(.semibold))
+                        .lineLimit(1)
+                    Text(connected ? (url.path as NSString).abbreviatingWithTildeInPath : "Not connected")
+                        .font(.caption)
+                        .foregroundStyle(connected ? Color.secondary : Color.orange)
+                        .lineLimit(2)
+                        .truncationMode(.middle)
+                }
+                Spacer(minLength: 4)
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .accessibilityHidden(true)
+            }
+            .padding(6)
+            .background(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(Color.primary.opacity(hovering || showingList ? 0.06 : 0)))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .onHover { hovering = $0 }
+        .padding(-6)
+        .disabled(model.isBusy)
+        .popover(isPresented: $showingList, arrowEdge: .bottom) {
+            FavoritesList(close: { showingList = false })
+                .environmentObject(model)
+                .environmentObject(destinations)
+        }
+        .help("Choose where files are copied")
+        .accessibilityLabel("Destination, \(title)\(connected ? "" : ", not connected")")
+        .accessibilityHint("Shows your favorite destinations")
+    }
+}
+
+/// The popover: favorites (with free space), then "Choose Other Folder…" and "Edit Favorites…".
+private struct FavoritesList: View {
+    let close: () -> Void
+    @EnvironmentObject private var model: AppModel
+    @EnvironmentObject private var destinations: DestinationStore
+    @Environment(\.openSettings) private var openSettings
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text("Favorites")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 8)
+                .padding(.top, 4)
+            if destinations.favorites.isEmpty {
+                Text("Save folders you use often to switch between them here.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+            }
+            ForEach(destinations.favorites) { favorite in
+                FavoriteRow(favorite: favorite,
+                            isCurrent: favorite.id == model.currentFavorite?.id,
+                            isDefault: favorite.id == destinations.defaultFavorite?.id,
+                            isConnected: destinations.isConnected(favorite)) {
+                    model.useFavorite(favorite)
+                    close()
+                }
+            }
+            Divider().padding(.vertical, 4)
+            if model.currentFavorite == nil, let path = model.settings.destinationPath {
+                PopoverAction(title: "Add “\(URL(fileURLWithPath: path).lastPathComponent)” to Favorites",
+                              symbol: "star") {
+                    model.addCurrentDestinationToFavorites()
+                }
+            }
+            PopoverAction(title: "Choose Other Folder…", symbol: "folder") {
+                close()
+                model.chooseOtherDestination()
+            }
+            PopoverAction(title: "Edit Favorites…", symbol: "slider.horizontal.3") {
+                close()
+                UserDefaults.standard.set(SettingsTab.destinations.rawValue, forKey: SettingsTab.storageKey)
+                openSettings()
+            }
+        }
+        .padding(6)
+        .frame(width: 320)
+        // Re-read "Not connected" when a drive comes or goes while this is open.
+        .id(destinations.mountRevision)
+    }
+}
+
+private struct FavoriteRow: View {
+    let favorite: FavoriteDestination
+    let isCurrent: Bool
+    let isDefault: Bool
+    let isConnected: Bool
+    let action: () -> Void
+    @State private var hovering = false
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 10) {
+                Image(systemName: favorite.symbol)
+                    .foregroundStyle(isConnected ? AnyShapeStyle(.tint) : AnyShapeStyle(.tertiary))
+                    .frame(width: 20)
+                VStack(alignment: .leading, spacing: 1) {
+                    HStack(spacing: 6) {
+                        Text(favorite.displayName)
+                            .fontWeight(.medium)
+                            .lineLimit(1)
+                        if isDefault {
+                            Text("Default")
+                                .font(.caption2.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                                .padding(.horizontal, 5)
+                                .padding(.vertical, 1)
+                                .background(Color.secondary.opacity(0.15), in: Capsule())
+                        }
+                    }
+                    Text(isConnected ? favorite.abbreviatedPath : "Not connected")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                }
+                Spacer(minLength: 6)
+                if isConnected, let free = VolumeInfo.availableBytes(at: favorite.url) {
+                    Text("\(OffloadFormatting.bytes(free)) free")
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                }
+                Image(systemName: "checkmark")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.tint)
+                    .opacity(isCurrent ? 1 : 0)
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 5)
+            .background(
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .fill(Color.primary.opacity(hovering && isConnected ? 0.08 : 0)))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .disabled(!isConnected)
+        .opacity(isConnected ? 1 : 0.55)
+        .onHover { hovering = $0 }
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(isCurrent ? [.isSelected] : [])
+        .help(isConnected ? favorite.path : "\(favorite.path) isn’t connected")
+    }
+}
+
+private struct PopoverAction: View {
+    let title: String
+    let symbol: String
+    let action: () -> Void
+    @State private var hovering = false
+
+    var body: some View {
+        Button(action: action) {
+            Label(title, systemImage: symbol)
+                .lineLimit(1)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 5)
+                .background(
+                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                        .fill(Color.primary.opacity(hovering ? 0.08 : 0)))
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .onHover { hovering = $0 }
     }
 }
 

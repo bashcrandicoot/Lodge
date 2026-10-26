@@ -128,18 +128,24 @@ final class AppSettings: ObservableObject {
 
     /// Shows the standard macOS "choose a folder" panel.
     func chooseDestination() {
+        if let url = Self.pickFolder(startingAt: destinationURL) {
+            destinationPath = url.path
+        }
+    }
+
+    /// The standard folder panel. Returns the chosen folder, or `nil` if cancelled.
+    static func pickFolder(startingAt start: URL?,
+                           message: String = "Choose the folder SnapDrop should copy your media into.") -> URL? {
         let panel = NSOpenPanel()
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
         panel.canCreateDirectories = true
         panel.allowsMultipleSelection = false
         panel.prompt = "Choose"
-        panel.message = "Choose the folder SnapDrop should copy your media into."
-        if let current = destinationURL {
-            panel.directoryURL = current
+        panel.message = message
+        if let start {
+            panel.directoryURL = start
         }
-        if panel.runModal() == .OK, let url = panel.url {
-            destinationPath = url.path
-        }
+        return panel.runModal() == .OK ? panel.url : nil
     }
 }
