@@ -38,7 +38,18 @@ private struct ClipsStageContent: View {
     @State private var scope: ListScope = .toCopy
     /// Turns true right after the list first appears, so its rows can fade in one by one.
     @State private var revealed = false
+    /// Files picked for Quick Look (never changes what's offloaded).
+    @State private var selection = MediaSelection()
+    /// The file showing "No preview available".
+    @State private var noPreviewID: String?
+    /// The grid's width, for moving up and down a row with the arrow keys.
+    @State private var gridWidth: CGFloat = 0
+    @FocusState private var listFocused: Bool
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.theme) private var theme
+
+    private static let tileMinimum: CGFloat = 132
+    private static let tileSpacing: CGFloat = 8
 
     private var needs: NamingNeeds { NamingNeeds(settings.naming) }
 
@@ -50,6 +61,20 @@ private struct ClipsStageContent: View {
                 preview
             }
         }
+        .background { QuickLookHost().frame(width: 0, height: 0) }
+        .onChange(of: session.phase, initial: true) { _, phase in
+            // Thumbnails wait their turn while the card is busy copying.
+            model.thumbnails.isThrottled = phase == .running
+        }
+        .onChange(of: scope) { _, _ in
+            selection.clear()
+            QuickLookController.shared.close()
+        }
+        .task(id: noPreviewID) {
+            guard noPreviewID != nil else { return }
+            try? await Task.sleep(for: .seconds(3))
+            if !Task.isCancelled { noPreviewID = nil }
+        }
         .onAppear {
             if session.phase == .ready && !session.newClips.isEmpty { nameFocused = true }
             #if DEBUG
@@ -57,6 +82,16 @@ private struct ClipsStageContent: View {
             if DemoData.launchState != nil, let raw = UserDefaults.standard.string(forKey: "SnapDropDemoScope"),
                let demoScope = ListScope(rawValue: raw) {
                 scope = demoScope
+            }
+            // `-SnapDropDemoQuickLook <file name>` selects that file and opens Quick Look.
+            if DemoData.launchState != nil, let name = UserDefaults.standard.string(forKey: "SnapDropDemoQuickLook"),
+               let clip = session.inventory.all.first(where: { $0.url.lastPathComponent == name }) {
+                let order = demoPreviewOrder
+                selection.click(clip.id, modifier: .none, order: order)
+                Task {
+                    try? await Task.sleep(for: .seconds(1.5))
+                    showPreview(order: order, focus: clip.id)
+                }
             }
             #endif
         }
@@ -211,8 +246,11 @@ private struct ClipsStageContent: View {
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
                 .truncationMode(.middle)
+            MediaLayoutPicker(layout: $settings.mediaLayout)
         }
     }
+
+    private var layout: MediaLayout { settings.mediaLayout }
 
     private func title(of scope: ListScope) -> String {
         switch scope {
@@ -247,33 +285,101 @@ private struct ClipsStageContent: View {
                 .controlSize(.small)
                 .accessibilityLabel("Show file type")
             }
-            ScrollViewReader { proxy in
-                ScrollView {
-                    LazyVStack(spacing: 0) {
-                        ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
-                            PreviewRow(item: item, isPlaceholder: placeholder,
-                                       isActive: isRunning && item.id == session.progress.currentID,
-                                       isVerified: session.verifiedIDs.contains(item.id),
-                                       isReoffload: session.reoffloadingIDs.contains(item.id),
-                                       duration: session.duration(of: item.clip),
-                                       isIncludedShort: session.isIncludedShortClip(item.clip))
-                                .background(index.isMultiple(of: 2) ? Color.clear : Color.primary.opacity(0.035))
+            if layout == .grid {
+                toCopyGrid(items, placeholder: placeholder)
+            } else {
+                toCopyRows(items, placeholder: placeholder)
+            }
+        }
+    }
+
+    private func toCopyRows(_ items: [PlannedFile], placeholder: Bool) -> some View {
+        let order = items.map(\.id)
+        let thumbnails = settings.showListThumbnails ? model.thumbnails : nil
+        return ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(spacing: 0) {
+                    ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
+                        PreviewRow(item: item, isPlaceholder: placeholder,
+                                   isActive: isRunning && item.id == session.progress.currentID,
+                                   isVerified: session.verifiedIDs.contains(item.id),
+                                   isReoffload: session.reoffloadingIDs.contains(item.id),
+                                   duration: session.duration(of: item.clip),
+                                   isIncludedShort: session.isIncludedShortClip(item.clip),
+                                   thumbnails: thumbnails)
+                            .background(rowBackground(index: index, id: item.id))
+                            .staggeredReveal(index: index, revealed: revealed, reduceMotion: reduceMotion)
+                            .modifier(itemInteractions(item.clip, order: order))
+                            .id(item.id)
+                    }
+                }
+            }
+            .onAppear {
+                revealed = true
+                scrollToCurrent(proxy, animated: false)
+            }
+            .onChange(of: session.progress.currentID) { _, _ in
+                scrollToCurrent(proxy, animated: !reduceMotion)
+            }
+        }
+        .listBox()
+        .modifier(listKeys(order: order, columns: 1))
+    }
+
+    private func toCopyGrid(_ items: [PlannedFile], placeholder: Bool) -> some View {
+        let byID = Dictionary(items.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        let tiles = TileFolding.fold(items.map(\.id), primaryOf: SidecarMatcher.match(items.map(\.clip)).primary)
+        let order = tiles.map(\.id)
+        // While copying a sidecar, keep its clip's tile in view.
+        let tileOf = Dictionary(tiles.flatMap { tile in ([tile.id] + tile.sidecars).map { ($0, tile.id) } },
+                                uniquingKeysWith: { first, _ in first })
+        return ScrollViewReader { proxy in
+            ScrollView {
+                grid {
+                    ForEach(Array(tiles.enumerated()), id: \.element.id) { index, tile in
+                        if let item = byID[tile.id] {
+                            MediaTile(info: tileInfo(item, sidecars: tile.sidecars.compactMap { byID[$0] }, placeholder: placeholder),
+                                      provider: model.thumbnails,
+                                      isSelected: selection.contains(item.id))
                                 .staggeredReveal(index: index, revealed: revealed, reduceMotion: reduceMotion)
-                                .contextMenu { rowMenu(for: item.clip) }
+                                .modifier(itemInteractions(item.clip, order: order))
                                 .id(item.id)
                         }
                     }
                 }
-                .onAppear {
-                    revealed = true
-                    scrollToCurrent(proxy, animated: false)
-                }
-                .onChange(of: session.progress.currentID) { _, _ in
-                    scrollToCurrent(proxy, animated: !reduceMotion)
-                }
             }
-            .listBox()
+            .onAppear {
+                revealed = true
+                scrollToCurrent(proxy, animated: false, tileOf: tileOf)
+            }
+            .onChange(of: session.progress.currentID) { _, _ in
+                scrollToCurrent(proxy, animated: !reduceMotion, tileOf: tileOf)
+            }
         }
+        .listBox()
+        .modifier(listKeys(order: order, columns: gridColumns))
+    }
+
+    /// What a "to copy" tile shows: copying (with its sidecars), verified, re-offload…
+    private func tileInfo(_ item: PlannedFile, sidecars: [PlannedFile], placeholder: Bool) -> MediaTileInfo {
+        let group = [item] + sidecars
+        var info = MediaTileInfo(clip: item.clip, name: item.fileName,
+                                 detail: item.originalName + " · " + OffloadFormatting.bytes(group.reduce(0) { $0 + $1.size }),
+                                 duration: session.duration(of: item.clip),
+                                 sidecars: sidecars.count)
+        info.isPlaceholderName = placeholder
+        info.isReoffload = session.reoffloadingIDs.contains(item.id)
+        info.isIncludedShort = session.isIncludedShortClip(item.clip)
+        let current = session.progress.currentID
+        if group.allSatisfy({ session.verifiedIDs.contains($0.id) }) {
+            info.status = .verified
+        } else if isRunning, group.contains(where: { $0.id == current }) {
+            let total = group.reduce(Int64(0)) { $0 + $1.size }
+            let done = group.filter { session.verifiedIDs.contains($0.id) }.reduce(Int64(0)) { $0 + $1.size }
+                + session.progress.currentFileBytes
+            info.status = .copying(total > 0 ? min(1, Double(done) / Double(total)) : 0)
+        }
+        return info
     }
 
     /// Nothing will be copied: say why, and offer the way out.
@@ -321,19 +427,55 @@ private struct ClipsStageContent: View {
             + Offloader.order(session.inventory.offloaded.filter(included))
         listHeader(scopes: scopes, trailing: session.missingCopiesInView > 0
                    ? "\(session.missingCopiesInView) missing" : "All copies present")
-        ScrollView {
-            LazyVStack(spacing: 0) {
-                ForEach(Array(files.enumerated()), id: \.element.id) { index, clip in
-                    OffloadedRow(clip: clip,
-                                 entry: entries[clip.ledgerKey(volumeIdentity: session.card.identity)],
-                                 isMissing: session.offloadedStatus(of: clip) == true,
-                                 isReoffload: session.reoffloadingIDs.contains(clip.id))
-                        .background(index.isMultiple(of: 2) ? Color.clear : Color.primary.opacity(0.035))
-                        .contextMenu { rowMenu(for: clip) }
+        if layout == .grid {
+            let byID = Dictionary(files.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+            let tiles = TileFolding.fold(files.map(\.id), primaryOf: SidecarMatcher.match(Offloader.order(files)).primary)
+            let order = tiles.map(\.id)
+            ScrollView {
+                grid {
+                    ForEach(tiles, id: \.id) { tile in
+                        if let clip = byID[tile.id] {
+                            MediaTile(info: offloadedInfo(clip, entry: entries[clip.ledgerKey(volumeIdentity: session.card.identity)],
+                                                          sidecars: tile.sidecars.compactMap { byID[$0] }),
+                                      provider: model.thumbnails,
+                                      isSelected: selection.contains(clip.id))
+                                .modifier(itemInteractions(clip, order: order))
+                        }
+                    }
                 }
             }
+            .listBox()
+            .modifier(listKeys(order: order, columns: gridColumns))
+        } else {
+            let order = files.map(\.id)
+            let thumbnails = settings.showListThumbnails ? model.thumbnails : nil
+            ScrollView {
+                LazyVStack(spacing: 0) {
+                    ForEach(Array(files.enumerated()), id: \.element.id) { index, clip in
+                        OffloadedRow(clip: clip,
+                                     entry: entries[clip.ledgerKey(volumeIdentity: session.card.identity)],
+                                     isMissing: session.offloadedStatus(of: clip) == true,
+                                     isReoffload: session.reoffloadingIDs.contains(clip.id),
+                                     thumbnails: thumbnails)
+                            .background(rowBackground(index: index, id: clip.id))
+                            .modifier(itemInteractions(clip, order: order))
+                    }
+                }
+            }
+            .listBox()
+            .modifier(listKeys(order: order, columns: 1))
         }
-        .listBox()
+    }
+
+    private func offloadedInfo(_ clip: Clip, entry: LedgerEntry?, sidecars: [Clip]) -> MediaTileInfo {
+        let isMissing = session.offloadedStatus(of: clip) == true
+        let name = entry.map { ($0.destinationPath as NSString).lastPathComponent } ?? clip.url.lastPathComponent
+        var info = MediaTileInfo(clip: clip, name: name,
+                                 detail: isMissing ? "Copy missing" : clip.url.lastPathComponent,
+                                 duration: session.duration(of: clip), sidecars: sidecars.count)
+        info.status = isMissing || sidecars.contains(where: { session.offloadedStatus(of: $0) == true }) ? .missing : .offloaded
+        info.isReoffload = session.reoffloadingIDs.contains(clip.id)
+        return info
     }
 
     /// Short videos left on the card: include them one by one or all at once.
@@ -348,27 +490,179 @@ private struct ClipsStageContent: View {
             .controlSize(.small)
             .help("Offload every short clip on this card")
         }
-        ScrollView {
-            LazyVStack(spacing: 0) {
-                ForEach(Array(skipped.clips.enumerated()), id: \.element.id) { index, clip in
-                    SkippedRow(clip: clip, duration: session.duration(of: clip),
-                               sidecars: skipped.sidecarCounts[clip.relativePath, default: 0],
-                               include: { include(clip) })
-                        .background(index.isMultiple(of: 2) ? Color.clear : Color.primary.opacity(0.035))
-                        .contextMenu { rowMenu(for: clip) }
+        let order = skipped.clips.map(\.id)
+        if layout == .grid {
+            ScrollView {
+                grid {
+                    ForEach(skipped.clips) { clip in
+                        let sidecars = skipped.sidecarCounts[clip.relativePath, default: 0]
+                        MediaTile(info: MediaTileInfo(clip: clip, name: clip.url.lastPathComponent,
+                                                      detail: OffloadFormatting.bytes(clip.size),
+                                                      duration: session.duration(of: clip),
+                                                      sidecars: sidecars, status: .skipped),
+                                  provider: model.thumbnails,
+                                  isSelected: selection.contains(clip.id))
+                            .accessibilityAction(named: "Include Anyway") { include(clip) }
+                            .modifier(itemInteractions(clip, order: order))
+                    }
                 }
             }
+            .listBox()
+            .modifier(listKeys(order: order, columns: gridColumns))
+        } else {
+            let thumbnails = settings.showListThumbnails ? model.thumbnails : nil
+            ScrollView {
+                LazyVStack(spacing: 0) {
+                    ForEach(Array(skipped.clips.enumerated()), id: \.element.id) { index, clip in
+                        SkippedRow(clip: clip, duration: session.duration(of: clip),
+                                   sidecars: skipped.sidecarCounts[clip.relativePath, default: 0],
+                                   thumbnails: thumbnails,
+                                   include: { include(clip) })
+                            .background(rowBackground(index: index, id: clip.id))
+                            .modifier(itemInteractions(clip, order: order))
+                    }
+                }
+            }
+            .listBox()
+            .modifier(listKeys(order: order, columns: 1))
         }
-        .listBox()
     }
+
+    // MARK: Grid, selection and Quick Look
+
+    private func grid<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: Self.tileMinimum, maximum: 200), spacing: Self.tileSpacing)],
+                  spacing: Self.tileSpacing, content: content)
+            .padding(Self.tileSpacing)
+            .background {
+                GeometryReader { proxy in
+                    Color.clear
+                        .onAppear { gridWidth = proxy.size.width }
+                        .onChange(of: proxy.size.width) { _, width in gridWidth = width }
+                }
+            }
+    }
+
+    /// How many tiles fit across (for ↑/↓).
+    private var gridColumns: Int {
+        let usable = gridWidth - 2 * Self.tileSpacing + Self.tileSpacing
+        return max(1, Int(usable / (Self.tileMinimum + Self.tileSpacing)))
+    }
+
+    /// The zebra stripe, or the selection highlight.
+    @ViewBuilder
+    private func rowBackground(index: Int, id: String) -> some View {
+        if selection.contains(id) {
+            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                .fill(theme.accent.opacity(listFocused ? 0.2 : 0.1))
+                .padding(.horizontal, 3)
+        } else if !index.isMultiple(of: 2) {
+            Color.primary.opacity(0.035)
+        }
+    }
+
+    /// Click to select (⌘/⇧ for more), double-click for Quick Look, right-click for the menu.
+    private func itemInteractions(_ clip: Clip, order: [String]) -> ItemInteractions {
+        ItemInteractions(
+            fileName: clip.url.lastPathComponent,
+            showsNoPreview: Binding(get: { noPreviewID == clip.id },
+                                    set: { if !$0, noPreviewID == clip.id { noPreviewID = nil } }),
+            click: { click(clip.id, order: order) },
+            menu: { AnyView(rowMenu(for: clip, order: order)) })
+    }
+
+    private func click(_ id: String, order: [String]) {
+        let event = NSApp.currentEvent
+        let flags = event?.modifierFlags ?? []
+        let modifier: MediaSelection.Modifier = flags.contains(.command) ? .toggle : flags.contains(.shift) ? .extend : .none
+        selection.click(id, modifier: modifier, order: order)
+        listFocused = true
+        noPreviewID = nil
+        if modifier == .none && (event?.clickCount ?? 1) >= 2 {
+            showPreview(order: order, focus: id)
+        } else if QuickLookController.isVisible {
+            showPreview(order: order, focus: selection.focus)   // like Finder: the panel follows the selection
+        }
+    }
+
+    /// Space, arrows and Escape while the list or grid has keyboard focus.
+    private func listKeys(order: [String], columns: Int) -> ListKeys {
+        ListKeys(
+            focus: $listFocused,
+            order: order,
+            space: {
+                if QuickLookController.isVisible {
+                    QuickLookController.shared.close()
+                } else {
+                    showPreview(order: order, focus: selection.focus)
+                }
+            },
+            move: { offset in
+                selection.move(by: offset == .up ? -columns : offset == .down ? columns : offset == .left ? -1 : 1, order: order)
+                noPreviewID = nil
+                if QuickLookController.isVisible { showPreview(order: order, focus: selection.focus) }
+            },
+            escape: {
+                selection.clear()
+                noPreviewID = nil
+            },
+            orderChanged: { new in
+                selection.prune(to: new)
+                QuickLookController.shared.close()
+            })
+    }
+
+    private func showPreview(order: [String], focus: String?) {
+        let clips = Dictionary(session.inventory.all.map { ($0.relativePath, $0) }, uniquingKeysWith: { first, _ in first })
+        let outcome = PreviewQueue.make(order: order, selection: selection.selected, focus: focus) { id in
+            clips[id].map { MediaPreviewSupport.canPreview(fileName: $0.url.lastPathComponent) } ?? false
+        }
+        switch outcome {
+        case let .preview(ids, start):
+            noPreviewID = nil
+            let items = ids.compactMap { clips[$0].map(previewItem) }
+            QuickLookController.shared.show(items, start: start) { id in
+                selection.follow(id)
+            }
+        case .unsupported(let id):
+            QuickLookController.shared.close()
+            if !selection.contains(id) { selection.click(id, modifier: .none, order: order) }
+            noPreviewID = id
+        case .nothing:
+            NSSound.beep()
+        }
+    }
+
+    private func previewItem(for clip: Clip) -> MediaPreviewItem {
+        var url = clip.url
+        #if DEBUG
+        // Demo files don't exist: preview a picture drawn in the theme instead.
+        if model.thumbnails.usesPlaceholders, let image = DemoData.previewImage(for: clip, theme: theme) { url = image }
+        #endif
+        return MediaPreviewItem(id: clip.relativePath, url: url, title: clip.url.lastPathComponent)
+    }
+
+    #if DEBUG
+    /// The order the current list or grid shows (for the Quick Look screenshot).
+    private var demoPreviewOrder: [String] {
+        let items = model.previewPlan(for: session)
+        guard layout == .grid else { return items.map(\.id) }
+        return TileFolding.fold(items.map(\.id), primaryOf: SidecarMatcher.match(items.map(\.clip)).primary).map(\.id)
+    }
+    #endif
 
     private func include(_ clip: Clip) {
         withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.25)) { session.toggleIncludeShort(clip) }
     }
 
-    /// Right-click on a file: re-offload just this one, include or skip a short clip, or show its copy.
+    /// Right-click on a file: Quick Look, re-offload just this one, include or skip a short clip, or show its copy.
     @ViewBuilder
-    private func rowMenu(for clip: Clip) -> some View {
+    private func rowMenu(for clip: Clip, order: [String]) -> some View {
+        Button("Quick Look") {
+            if !selection.contains(clip.id) { selection.click(clip.id, modifier: .none, order: order) }
+            showPreview(order: order, focus: clip.id)
+        }
+        Divider()
         if session.phase == .ready && session.isShortClip(clip) {
             if session.skippedShort.ids.contains(clip.relativePath) {
                 Button("Include Anyway") { include(clip) }
@@ -397,11 +691,11 @@ private struct ClipsStageContent: View {
     private var isRunning: Bool { session.phase == .running }
 
     /// Keeps the file being copied in view.
-    private func scrollToCurrent(_ proxy: ScrollViewProxy, animated: Bool) {
+    private func scrollToCurrent(_ proxy: ScrollViewProxy, animated: Bool, tileOf: [String: String] = [:]) {
         let current = session.progress.currentID
         guard isRunning, !current.isEmpty else { return }
         withAnimation(animated ? .easeInOut(duration: 0.35) : nil) {
-            proxy.scrollTo(current, anchor: .center)
+            proxy.scrollTo(tileOf[current] ?? current, anchor: .center)
         }
     }
 
@@ -427,6 +721,8 @@ private struct PreviewRow: View {
     var duration: Double?
     /// A short clip the user chose to offload anyway.
     var isIncludedShort = false
+    /// Draws a small thumbnail instead of the file-type symbol (Settings ▸ Appearance).
+    var thumbnails: ThumbnailProvider?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var accessibilityText: String {
@@ -440,11 +736,8 @@ private struct PreviewRow: View {
     }
 
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 8) {
-            Image(systemName: item.category.symbol)
-                .foregroundStyle(item.sidecarOf == nil ? AnyShapeStyle(.tint) : AnyShapeStyle(.secondary))
-                .frame(width: 16)
-                .accessibilityHidden(true)
+        HStack(alignment: thumbnails == nil ? .firstTextBaseline : .center, spacing: 8) {
+            RowIcon(clip: item.clip, isSidecar: item.sidecarOf != nil, thumbnails: thumbnails, tinted: item.sidecarOf == nil)
             VStack(alignment: .leading, spacing: 2) {
                 Text(item.fileName)
                     .font(.system(.callout, design: .monospaced))
@@ -536,14 +829,13 @@ private struct SkippedRow: View {
     let clip: Clip
     let duration: Double?
     let sidecars: Int
+    var thumbnails: ThumbnailProvider?
     let include: () -> Void
 
     var body: some View {
         HStack(spacing: 8) {
-            Image(systemName: clip.category.symbol)
-                .foregroundStyle(.secondary)
-                .frame(width: 16)
-                .accessibilityHidden(true)
+            RowIcon(clip: clip, isSidecar: false, thumbnails: thumbnails, tinted: false)
+                .opacity(thumbnails == nil ? 1 : 0.55)
             VStack(alignment: .leading, spacing: 2) {
                 Text(clip.url.lastPathComponent)
                     .font(.system(.callout, design: .monospaced))
@@ -585,13 +877,12 @@ private struct OffloadedRow: View {
     let entry: LedgerEntry?
     let isMissing: Bool
     let isReoffload: Bool
+    var thumbnails: ThumbnailProvider?
 
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 8) {
-            Image(systemName: clip.category.symbol)
-                .foregroundStyle(.secondary)
-                .frame(width: 16)
-                .accessibilityHidden(true)
+        HStack(alignment: thumbnails == nil ? .firstTextBaseline : .center, spacing: 8) {
+            RowIcon(clip: clip, isSidecar: false, thumbnails: thumbnails, tinted: false)
+                .opacity(thumbnails == nil ? 1 : 0.55)
             VStack(alignment: .leading, spacing: 2) {
                 Text(clip.url.lastPathComponent)
                     .font(.system(.callout, design: .monospaced))
@@ -667,6 +958,78 @@ private struct ReoffloadMenu: View {
     private func modeBinding(_ mode: ReoffloadMode) -> Binding<Bool> {
         Binding(get: { session.reoffloadMode == mode },
                 set: { model.setReoffloadMode($0 ? mode : .off) })
+    }
+}
+
+/// A list row's leading picture: the file-type symbol, or a small thumbnail.
+private struct RowIcon: View {
+    let clip: Clip
+    let isSidecar: Bool
+    let thumbnails: ThumbnailProvider?
+    let tinted: Bool
+
+    var body: some View {
+        Group {
+            if let thumbnails, !isSidecar {
+                MediaThumbnail(clip: clip, provider: thumbnails, points: 44, compact: true)
+                    .frame(width: 40, height: 26)
+                    .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 4, style: .continuous)
+                            .strokeBorder(Color.primary.opacity(0.1))
+                    }
+            } else {
+                Image(systemName: clip.category.symbol)
+                    .foregroundStyle(tinted ? AnyShapeStyle(.tint) : AnyShapeStyle(.secondary))
+                    .frame(width: thumbnails == nil ? 16 : 40)
+            }
+        }
+        .accessibilityHidden(true)
+    }
+}
+
+/// Click, double-click, right-click and the "No preview" note for one file in the list or grid.
+private struct ItemInteractions: ViewModifier {
+    let fileName: String
+    let showsNoPreview: Binding<Bool>
+    let click: () -> Void
+    let menu: () -> AnyView
+
+    func body(content: Content) -> some View {
+        content
+            .contentShape(Rectangle())
+            .onTapGesture(perform: click)
+            .contextMenu { menu() }
+            .popover(isPresented: showsNoPreview, arrowEdge: .bottom) {
+                NoPreviewPopover(fileName: fileName)
+            }
+    }
+}
+
+/// Keyboard control of the list or grid: Space for Quick Look, arrows to move, Escape to deselect.
+private struct ListKeys: ViewModifier {
+    enum Direction { case up, down, left, right }
+
+    var focus: FocusState<Bool>.Binding
+    let order: [String]
+    let space: () -> Void
+    let move: (Direction) -> Void
+    let escape: () -> Void
+    let orderChanged: ([String]) -> Void
+
+    func body(content: Content) -> some View {
+        content
+            .focusable()
+            .focusEffectDisabled()
+            .focused(focus)
+            .onKeyPress(.space) { space(); return .handled }
+            .onKeyPress(.upArrow) { move(.up); return .handled }
+            .onKeyPress(.downArrow) { move(.down); return .handled }
+            .onKeyPress(.leftArrow) { move(.left); return .handled }
+            .onKeyPress(.rightArrow) { move(.right); return .handled }
+            .onKeyPress(.escape) { escape(); return .handled }
+            .onChange(of: order) { _, new in orderChanged(new) }
+            .accessibilityHint("Press Space to preview the selected file with Quick Look")
     }
 }
 

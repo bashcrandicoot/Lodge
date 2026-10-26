@@ -157,6 +157,22 @@ struct AppearanceSettingsView: View {
                 }
                 .pickerStyle(.segmented)
             }
+            Section {
+                Picker("Show files as", selection: $settings.mediaLayout) {
+                    ForEach(MediaLayout.allCases) { layout in
+                        Label(layout.title, systemImage: layout.symbol).tag(layout)
+                    }
+                }
+                Toggle("Show thumbnails in the list", isOn: $settings.showListThumbnails)
+                    .disabled(settings.mediaLayout == .grid)
+            } header: {
+                Text("Media")
+            } footer: {
+                Text("Select files and press Space to preview them with Quick Look. Thumbnails are only read from the card, never written to it.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }
         .formStyle(.grouped)
         .frame(width: 560)

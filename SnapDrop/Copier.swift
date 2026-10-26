@@ -134,6 +134,8 @@ struct OffloadProgress: Sendable, Equatable {
     var currentID = ""
     var bytesDone: Int64 = 0
     var bytesTotal: Int64 = 0
+    /// Bytes of the current file copied so far (for its progress ring in the grid).
+    var currentFileBytes: Int64 = 0
     /// True while the just-copied file is being re-read and checked.
     var isVerifying = false
 
@@ -213,12 +215,14 @@ enum Offloader {
             state.currentFile = clip.url.lastPathComponent
             state.currentID = clip.relativePath
             state.isVerifying = false
+            state.currentFileBytes = 0
             await progress(state)
             let bytesBefore = state.bytesDone
 
             // What the UI shows once this clip is copied and being verified.
             var verifyingState = state
             verifyingState.bytesDone = bytesBefore + clip.size
+            verifyingState.currentFileBytes = clip.size
             verifyingState.isVerifying = true
             let verifying = verifyingState
 
@@ -235,6 +239,7 @@ enum Offloader {
                     to: finalURL,
                     onBytes: { bytes in
                         state.bytesDone += bytes
+                        state.currentFileBytes += bytes
                         await progress(state)
                     },
                     onVerify: { await progress(verifying) })
@@ -258,6 +263,7 @@ enum Offloader {
             }
 
             state.bytesDone = bytesBefore + clip.size
+            state.currentFileBytes = 0
             state.filesDone += 1
             state.isVerifying = false
             await progress(state)

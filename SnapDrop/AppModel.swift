@@ -19,8 +19,17 @@ final class AppModel: ObservableObject {
     @Published private(set) var selectedCardID: String?
     /// The selected card's clips and offload state. `nil` while scanning / no card.
     @Published private(set) var session: OffloadSession? {
-        didSet { forwardChanges(from: session) }
+        didSet {
+            forwardChanges(from: session)
+            if session !== oldValue {
+                // A new card, a rescan or an eject: stop drawing thumbnails for the old files.
+                thumbnails.cancelAll()
+                QuickLookController.shared.close()
+            }
+        }
     }
+    /// Thumbnails for the Media grid (and list, if turned on).
+    let thumbnails = ThumbnailProvider()
     @Published private(set) var isScanning = false
     @Published var showingRecent = false
     @Published private(set) var isEjecting = false

@@ -24,6 +24,36 @@ enum DemoData {
         UserDefaults.standard.string(forKey: "SnapDropDemoTheme").flatMap(ThemePalette.ID.init(rawValue:))
     }
 
+    /// Set by launching with `-SnapDropDemoLayout grid` (and `-SnapDropDemoListThumbnails YES`).
+    static var launchLayout: MediaLayout? {
+        UserDefaults.standard.string(forKey: "SnapDropDemoLayout").flatMap(MediaLayout.init(rawValue:))
+    }
+
+    /// Quick Look in demo mode: the files don't exist, so preview a picture in the theme's colours
+    /// (drawn once into the temporary folder).
+    @MainActor
+    static func previewImage(for clip: Clip, theme: ResolvedTheme) -> URL? {
+        guard MediaPreviewSupport.hasThumbnail(fileName: clip.url.lastPathComponent) else { return nil }
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("SnapDropDemoPreviews", isDirectory: true)
+        let url = folder.appendingPathComponent("\(theme.palette.id.rawValue)-\(clip.url.deletingPathExtension().lastPathComponent).png")
+        if FileManager.default.fileExists(atPath: url.path) { return url }
+        try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        let t = Double(StableHash.of(clip.url.lastPathComponent) % 1000) / 1000
+        let picture = LinearGradient(colors: [theme.sweep(t), theme.sweep((t + 0.45).truncatingRemainder(dividingBy: 1))],
+                                     startPoint: .topLeading, endPoint: .bottomTrailing)
+            .overlay {
+                Image(systemName: clip.category.symbol)
+                    .font(.system(size: 220, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.85))
+            }
+            .frame(width: 1600, height: 1000)
+        let renderer = ImageRenderer(content: picture)
+        guard let image = renderer.nsImage, let tiff = image.tiffRepresentation,
+              let png = NSBitmapImageRep(data: tiff)?.representation(using: .png, properties: [:]) else { return nil }
+        try? png.write(to: url)
+        return url
+    }
+
     /// Movies (default, in use), an external SSD that isn't plugged in, and Pictures.
     @MainActor
     static func destinationStore() -> DestinationStore {
@@ -105,6 +135,9 @@ enum DemoData {
                              formatter: CardFormatter(runner: DemoCommandRunner()), startWatching: false)
         settings.destinationPath = FileManager.default.urls(for: .moviesDirectory, in: .userDomainMask).first?.path
         if let theme = launchTheme { settings.themeID = theme }
+        if let layout = launchLayout { settings.mediaLayout = layout }
+        settings.showListThumbnails = UserDefaults.standard.bool(forKey: "SnapDropDemoListThumbnails")
+        model.thumbnails.usesPlaceholders = true
         guard state != .empty else { return model }
 
         settings.apply(NamingPreset.all[1])   // Project / Date / Camera
@@ -145,7 +178,8 @@ enum DemoData {
                 phase: .running,
                 progress: OffloadProgress(filesDone: current, filesTotal: plan.count,
                                           currentFile: plan[current].originalName, currentID: plan[current].id,
-                                          bytesDone: total * 2 / 5, bytesTotal: total),
+                                          bytesDone: total * 2 / 5, bytesTotal: total,
+                                          currentFileBytes: plan[current].size * 3 / 5),
                 startedAt: Date().addingTimeInterval(-140),
                 summary: nil,
                 plan: plan,

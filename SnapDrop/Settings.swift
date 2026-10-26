@@ -20,6 +20,8 @@ final class AppSettings: ObservableObject {
         static let skipShort = "skipShortClips"
         static let shortSeconds = "shortClipSeconds"
         static let appearance = "appearance"
+        static let mediaLayout = "mediaLayout"
+        static let listThumbnails = "listThumbnails"
     }
 
     static let maxRecentProjects = 6
@@ -99,6 +101,16 @@ final class AppSettings: ObservableObject {
         didSet { defaults?.set(appearance.rawValue, forKey: Key.appearance) }
     }
 
+    /// The Media stage as a list or a thumbnail grid (the switch above the files).
+    @Published var mediaLayout: MediaLayout {
+        didSet { defaults?.set(mediaLayout.rawValue, forKey: Key.mediaLayout) }
+    }
+
+    /// Small thumbnails at the start of list rows. Off by default.
+    @Published var showListThumbnails: Bool {
+        didSet { defaults?.set(showListThumbnails, forKey: Key.listThumbnails) }
+    }
+
     func setCategory(_ category: MediaCategory, included: Bool) {
         if included { includedCategories.insert(category) } else { includedCategories.remove(category) }
     }
@@ -122,6 +134,8 @@ final class AppSettings: ObservableObject {
         shortClipSeconds = min(max(seconds, ShortClipRule.thresholdRange.lowerBound), ShortClipRule.thresholdRange.upperBound)
         themeID = defaults?.string(forKey: Key.theme).flatMap(ThemePalette.ID.init(rawValue:)) ?? .comet
         appearance = defaults?.string(forKey: Key.appearance).flatMap(AppAppearance.init(rawValue:)) ?? .system
+        mediaLayout = defaults?.string(forKey: Key.mediaLayout).flatMap(MediaLayout.init(rawValue:)) ?? .list
+        showListThumbnails = defaults?.bool(forKey: Key.listThumbnails) ?? false
         // `didSet` doesn't run inside `init`, so save migrated templates explicitly.
         if let savedFolder, savedFolder != folderTemplate { defaults?.set(folderTemplate, forKey: Key.folderTemplate) }
         if let savedFile, savedFile != fileTemplate { defaults?.set(fileTemplate, forKey: Key.fileTemplate) }
