@@ -8,7 +8,7 @@ Home base for your media. Lodge is a universal app for Apple silicon and Intel M
 
 [Download Lodge from Gumroad](https://bashframes.gumroad.com/l/lodge). Open the disk image and drag Lodge to Applications. Pay what you want.
 
-No account, no analytics. Lodge 1.0.0 doesn’t use the network. Coming in the next update: a daily check for new versions (via Sparkle), which you can turn off with **Automatically check for updates** in Settings > General > Updates. Copying never uploads anything.
+No account, no analytics. Lodge 1.0.0 doesn’t use the network. Copying never uploads anything.
 
 ## Open Lodge the first time
 

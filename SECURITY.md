@@ -10,7 +10,7 @@ Include the macOS version, the Lodge version, and what you observed. Give the ma
 
 ## What Lodge does on your Mac
 
-Lodge 1.0.0 does not connect to the network. Coming in the next update, a daily check for new versions uses Sparkle. You can turn it off with **Automatically check for updates** in Settings > General > Updates. Copying never uploads anything. Copying, the ledger, favorites, cameras, presets, and settings stay on the Mac, under `~/Library/Application Support/Lodge/` and in Lodge’s preferences.
+Lodge 1.0.0 does not connect to the network. Copying never uploads anything. Copying, the ledger, favorites, cameras, presets, and settings stay on the Mac, under `~/Library/Application Support/Lodge/` and in Lodge’s preferences.
 
 During an offload Lodge only reads the card. It writes on the destination you chose, to a `<name>.lodge-partial` file, and renames that file after the SHA-256 matches.
 

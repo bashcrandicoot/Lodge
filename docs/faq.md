@@ -32,19 +32,13 @@ Lodge formats exFAT, FAT32, and FAT16, and keeps the card’s name. Other format
 
 **Examples**, in Settings > Naming, fills in a folder template and a file template. A preset saves the whole setup: destination, templates, camera, short clips, quick dump, and file rules. After you change that setup, the menu says **Edited**. You choose the preset from the menu. When a card is inserted, Lodge selects the camera you last used with that card, by its volume UUID or its name.
 
-**Coming in the next update.** The preset menu sits at the top right of the window, and the window title is hidden. In Lodge 1.0.0 the preset menu is in the center of the toolbar, and the title reads Lodge.
-
 ## How do I change the folders in Layout?
 
 Once a card is scanned, **Layout** in Destination shows the folders Lodge will make, including **Proxies** and **Sidecars** when those files are in the plan. In Lodge 1.0.0, drag a level to move it, or drag or click a token from **Add a level**. The header says **Drag to rearrange**. One example file name is shown, and extra folders appear as a line such as **+ 2 more folders**. A level quick dump removes stays in the tree, struck through.
 
-**Coming in the next update.** **Expand All** and **Collapse All** open or close the tree, and Option-click a triangle does the same for everything inside that folder. Drop a token on the left or right side of a name to put tokens side by side, such as `{project}_{date}`. The separator can be an underscore, a hyphen, a space, or nothing. A folder’s files can fold into one line, the first name with **+ N more** under it. The tree also lists a folder for each extension. See [How are files sorted into folders?](#how-are-files-sorted-into-folders)
-
 ## What is quick dump?
 
 **Quick dump: skip project name** takes `{project}` out of the templates so there is nothing to type. `{date}/{project}` and `{date}_{project}_{seq}` become `{date}` and `{date}_{seq}`. Numbering carries on from the folder.
-
-**Coming in the next update.** The checkbox reads **Quick dump**, with an ⓘ beside it. The note says: Skips the project name and dumps all the footage straight into a dated folder.
 
 ## What does the short-clip slider do?
 
@@ -68,27 +62,17 @@ The first time Lodge reads a card, also allow access to files on a removable vol
 
 Write to [bashframes@gmail.com](mailto:bashframes@gmail.com). If Lodge has been useful, [Support Lodge](https://bashframes.gumroad.com/l/lodge). Pay what you want.
 
-**Coming in the next update.** **Help > Contact Support…** opens an email to that address, subject Lodge Support, with the Lodge and macOS versions under your message. **Help > Support Lodge…** and **Lodge > Support Lodge…** open the same page. **Lodge > About Lodge** says Made by BashFrames, with a link to the same email.
-
-After five offloads where every file was copied and verified, and at least three days after you first open that version, a small **Support Lodge** card appears when Lodge is idle. It never appears during a copy. **Maybe Later** asks once more, 30 days later. **Support Lodge** and **Don’t Ask Again** stop it. Lodge asks at most twice.
-
 ## How do I update Lodge?
 
 Lodge 1.0.0 does not check for updates. [Download Lodge from Gumroad](https://bashframes.gumroad.com/l/lodge) when you want a newer copy.
-
-**Coming in the next update.** **Lodge > Check for Updates…** looks now. The item is dimmed while a check is already running. In Settings > General, under **Updates**, **Automatically check for updates** is on, and **Automatically download and install updates** is off. The second switch is unavailable while automatic checks are off. Lodge checks once a day. The 1.0.0 download cannot do this. Download the next version from Gumroad once. That version is the first one that can look for a newer one.
 
 ## How are files sorted into folders?
 
 In Lodge 1.0.0, files land in the folder the template makes. With the default file rules, `lrv` and `lrf` go in **Proxies/**, and `thm`, `xml`, and `srt` go in **Sidecars/**, named after their clip. Audio recorded beside a clip, such as `C0001.WAV`, stays next to that clip and shares its new name.
 
-**Coming in the next update.** Each file also goes in a folder named for its extension, in capitals, inside the template’s folder: `MP4/`, `ARW/`, `WAV/`, and so on. `.mp4` and `.MP4` share `MP4/`. `.JPG`, `.JPEG`, and `.JPE` share `JPG/`. `.TIF` and `.TIFF` share `TIF/`. An unknown extension still gets a folder (`.xyz` goes in `XYZ/`). A file with no extension stays in the template folder. Proxies stay in **Proxies/** and sidecars stay in **Sidecars/**. Audio recorded with a clip goes in `WAV/` and keeps the clip’s name and number. A JPEG beside a RAW file is its own photo, in `JPG/`, with the next number. One sequence runs across the whole shoot folder, including every format folder, and continues after files already there. `{type}` still makes `Video/`, `Photo/`, `Audio/`, or `Other/`, and the extension folder sits inside that.
-
 ## Does Lodge need a network?
 
-Lodge 1.0.0 does not. There is no account and no analytics. The ledger and your settings stay in your Library folder.
-
-**Coming in the next update**, a daily check for new versions uses Sparkle. You can turn it off with **Automatically check for updates** in Settings > General > Updates. Copying never uploads anything.
+Lodge 1.0.0 does not. There is no account and no analytics. The ledger and your settings stay in your Library folder. Copying never uploads anything.
 
 ## Where do my settings live?
 
@@ -101,8 +85,6 @@ Yes. Settings > Appearance. Lodge starts in Dark mode with **Default**: a neutra
 ## What if two files would get the same name?
 
 Lodge does not overwrite. With `{seq}` in the template, numbering continues after the highest number already in the folder. Without `{seq}` or `{original}`, a repeated name gets `_2`, `_3`, and so on.
-
-**Coming in the next update**, that number runs across the whole shoot folder and every format folder under it, and it also continues after files an older offload left directly in the shoot folder.
 
 ## I turned a file type off. Will Format still wait for it?
 
