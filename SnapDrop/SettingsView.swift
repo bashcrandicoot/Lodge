@@ -50,9 +50,26 @@ struct GeneralSettingsView: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
+            Section {
+                ForEach(MediaCategory.allCases) { category in
+                    Toggle(isOn: Binding(
+                        get: { settings.includedCategories.contains(category) },
+                        set: { settings.setCategory(category, included: $0) })) {
+                        Label(category.settingsTitle, systemImage: category.symbol)
+                    }
+                }
+            } header: {
+                Text("Files to Offload")
+            } footer: {
+                Text("Sidecar files (like C0001M01.XML) get the same name as their clip when Other is on. System files such as .Spotlight-V100 and ._ files are never copied.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
             Section("After Offload") {
                 Toggle("Eject card after offload", isOn: $settings.ejectAfterOffload)
-                Text("Only happens when every file was copied and verified.")
+                Toggle("Play a sound when done", isOn: $settings.playSuccessSound)
+                Text("The card is only ejected when every file was copied and verified.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

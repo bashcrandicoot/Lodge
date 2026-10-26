@@ -35,8 +35,10 @@ final class OffloadTests: XCTestCase {
 
     func testScannerFindsOnlyClips() throws {
         let card = try makeFakeCard()
-        let clips = ClipScanner.scan(volumeURL: card)
+        let clips = ClipScanner.scan(volumeURL: card, categories: [.video])
         XCTAssertEqual(clips.map(\.relativePath), ["DCIM/100MEDIA/C0001.MP4", "DCIM/100MEDIA/C0002.mov"])
+        XCTAssertEqual(ClipScanner.scan(volumeURL: card).map(\.relativePath),
+                       ["DCIM/100MEDIA/C0001.MP4", "DCIM/100MEDIA/C0002.mov", "DCIM/100MEDIA/IMG_0001.JPG"])
     }
 
     func testScannerFallsBackToRecursiveSearch() throws {
@@ -54,7 +56,7 @@ final class OffloadTests: XCTestCase {
 
         let cardFolder = card.appendingPathComponent("DCIM/100MEDIA").path
         let cardBefore = try FileManager.default.contentsOfDirectory(atPath: cardFolder).sorted()
-        let clips = ClipScanner.scan(volumeURL: card)
+        let clips = ClipScanner.scan(volumeURL: card, categories: [.video])
         let date = Renamer.dateString(for: clips[0].captureDate)
         let folder = destination.appendingPathComponent(date).appendingPathComponent("BeachShoot")
 

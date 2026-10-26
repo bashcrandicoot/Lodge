@@ -12,10 +12,18 @@ final class OffloadSession: ObservableObject, Identifiable {
 
     let id = UUID()
     let card: CardVolume
-    /// Clips that have not been offloaded before.
-    let newClips: [Clip]
-    /// Clips the ledger says were already offloaded.
-    let alreadyOffloadedCount: Int
+    /// Every file on the card that hasn't been offloaded before (all categories).
+    let allNewFiles: [Clip]
+    /// Files the ledger says were already offloaded (all categories).
+    let allOffloadedFiles: [Clip]
+    /// Which kinds of files to offload (from Settings ▸ General).
+    @Published var includedCategories: Set<MediaCategory> = Set(MediaCategory.allCases) {
+        didSet { refreshFiles() }
+    }
+    /// New files in the included categories: what the Offload button copies.
+    @Published private(set) var newClips: [Clip] = []
+    /// Already-offloaded files in the included categories.
+    @Published private(set) var alreadyOffloadedCount = 0
 
     @Published var shootNameInput = ""
     @Published var projectInput = ""
@@ -41,9 +49,29 @@ final class OffloadSession: ObservableObject, Identifiable {
 
     init(card: CardVolume, clips: [Clip], knownKeys: Set<String>) {
         self.card = card
-        let fresh = clips.filter { !knownKeys.contains($0.ledgerKey(volumeIdentity: card.identity)) }
-        self.newClips = fresh
-        self.alreadyOffloadedCount = clips.count - fresh.count
+        var fresh: [Clip] = []
+        var known: [Clip] = []
+        for clip in clips {
+            if knownKeys.contains(clip.ledgerKey(volumeIdentity: card.identity)) {
+                known.append(clip)
+            } else {
+                fresh.append(clip)
+            }
+        }
+        self.allNewFiles = fresh
+        self.allOffloadedFiles = known
+        refreshFiles()
+    }
+
+    private func refreshFiles() {
+        guard phase == .ready else { return }   // never change the list mid-offload
+        newClips = allNewFiles.filter { includedCategories.contains($0.category) }
+        alreadyOffloadedCount = allOffloadedFiles.filter { includedCategories.contains($0.category) }.count
+    }
+
+    /// New files per category, e.g. [.video: 42, .photo: 120].
+    var categoryCounts: [MediaCategory: Int] {
+        newClips.reduce(into: [:]) { $0[$1.category, default: 0] += 1 }
     }
 
     /// The cleaned-up shoot name ("Beach Shoot" -> "BeachShoot").

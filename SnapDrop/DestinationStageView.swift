@@ -15,7 +15,7 @@ struct DestinationStageView: View {
                 ContentUnavailableView {
                     Label("No Destination", systemImage: "folder.badge.plus")
                 } description: {
-                    Text("Choose the folder your clips are copied into. You only need to do this once.")
+                    Text("Choose the folder your media is copied into. You only need to do this once.")
                 } actions: {
                     Button("Choose Folder…", action: choose)
                         .buttonStyle(.borderedProminent)

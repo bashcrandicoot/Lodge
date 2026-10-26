@@ -1,7 +1,7 @@
 import SwiftUI
 
-/// Stage 2: the clips on the selected card, the shoot name, and a live preview
-/// of the names they'll get.
+/// Stage 2 ("Media"): the files on the selected card, the name fields, and a live
+/// preview of the names they'll get.
 struct ClipsStageView: View {
     @EnvironmentObject private var model: AppModel
 
@@ -9,13 +9,13 @@ struct ClipsStageView: View {
         if let session = model.session {
             ClipsStageContent(session: session)
         } else {
-            StagePanel(number: 2, title: "Clips", state: .pending) {
+            StagePanel(number: 2, title: "Media", state: .pending) {
                 VStack {
                     Spacer()
                     if model.isScanning {
-                        ProgressView("Looking for clips…")
+                        ProgressView("Looking for media…")
                     } else {
-                        Label("Clips appear here once a card is inserted.", systemImage: "film.stack")
+                        Label("Media appears here once a card is inserted.", systemImage: "photo.on.rectangle.angled")
                             .foregroundStyle(.secondary)
                     }
                     Spacer()
@@ -31,11 +31,13 @@ private struct ClipsStageContent: View {
     @EnvironmentObject private var model: AppModel
     @EnvironmentObject private var settings: AppSettings
     @FocusState private var nameFocused: Bool
+    /// The preview's category filter (`nil` = everything).
+    @State private var filter: MediaCategory?
 
     private var needs: NamingNeeds { NamingNeeds(settings.naming) }
 
     var body: some View {
-        StagePanel(number: 2, title: "Clips", state: stageState) {
+        StagePanel(number: 2, title: "Media", state: stageState) {
             VStack(alignment: .leading, spacing: 14) {
                 counts
                 shootNameField
@@ -58,13 +60,22 @@ private struct ClipsStageContent: View {
     // MARK: Counts
 
     private var counts: some View {
-        HStack(spacing: 6) {
-            CountPill(text: "\(session.newClips.count) new", systemImage: "film.stack")
-            if session.alreadyOffloadedCount > 0 {
-                CountPill(text: "\(session.alreadyOffloadedCount) already offloaded",
-                          systemImage: "checkmark.circle", tint: .secondary)
+        let counts = session.categoryCounts
+        return HStack(alignment: .top, spacing: 6) {
+            FlowLayout(spacing: 6) {
+                ForEach(MediaCategory.allCases.filter { counts[$0, default: 0] > 0 }) { category in
+                    CountPill(text: category.countText(counts[category, default: 0]), systemImage: category.symbol)
+                }
+                if session.newClips.isEmpty {
+                    CountPill(text: "Nothing new", systemImage: "tray")
+                }
+                if session.alreadyOffloadedCount > 0 {
+                    CountPill(text: "\(session.alreadyOffloadedCount) already offloaded",
+                              systemImage: "checkmark.circle", tint: .secondary)
+                }
             }
-            Spacer()
+            .accessibilityElement(children: .combine)
+            Spacer(minLength: 0)
             Text(OffloadFormatting.bytes(session.newBytes))
                 .font(.callout.monospacedDigit())
                 .foregroundStyle(.secondary)
@@ -119,23 +130,40 @@ private struct ClipsStageContent: View {
             ContentUnavailableView {
                 Label("All Caught Up", systemImage: "checkmark.seal")
             } description: {
-                Text("Every clip on this card has already been offloaded.")
+                Text(session.allNewFiles.isEmpty
+                     ? "Everything on this card has already been offloaded."
+                     : "The new files on this card are types you turned off in Settings.")
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else {
-            let items = model.previewPlan(for: session)
+            let plan = model.previewPlan(for: session)
             let placeholder = model.previewHasPlaceholders(for: session)
+            let present = MediaCategory.allCases.filter { category in plan.contains { $0.category == category } }
+            let activeFilter = filter.flatMap { present.contains($0) ? $0 : nil }
+            let items = activeFilter.map { category in plan.filter { $0.category == category } } ?? plan
 
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
                     Text("Name Preview")
                         .font(.subheadline.weight(.semibold))
                     Spacer()
-                    Text(PlanLayout.folders(items).map { $0.isEmpty ? "/" : $0 + "/" }.joined(separator: ", "))
+                    Text(folderSummary(plan))
                         .font(.caption.monospaced())
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
                         .truncationMode(.middle)
+                }
+                if present.count > 1 {
+                    Picker("Show", selection: $filter) {
+                        Text("All").tag(MediaCategory?.none)
+                        ForEach(present) { category in
+                            Label(category.title, systemImage: category.symbol).tag(Optional(category))
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .labelsHidden()
+                    .controlSize(.small)
+                    .accessibilityLabel("Show file type")
                 }
                 ScrollView {
                     LazyVStack(spacing: 0) {
@@ -154,6 +182,12 @@ private struct ClipsStageContent: View {
             }
         }
     }
+
+    private func folderSummary(_ plan: [PlannedFile]) -> String {
+        let folders = PlanLayout.folders(plan)
+        if folders.count == 1 { return folders[0].isEmpty ? "Destination folder" : folders[0] + "/" }
+        return "\(folders.count) folders"
+    }
 }
 
 /// "C0001.MP4  →  2026-10-25_BeachShoot_0001.mp4"
@@ -161,31 +195,49 @@ private struct PreviewRow: View {
     let item: PlannedFile
     let isPlaceholder: Bool
 
+    private var accessibilityText: String {
+        var text = "\(item.category.title), \(item.originalName) will be saved as \(item.relativePath)"
+        if let primary = item.sidecarOf { text += ", alongside \(primary)" }
+        return text
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(item.fileName)
-                .font(.system(.callout, design: .monospaced))
-                .foregroundStyle(isPlaceholder ? .secondary : .primary)
-                .lineLimit(1)
-                .truncationMode(.middle)
-            HStack(spacing: 4) {
-                Image(systemName: "arrow.turn.down.right")
-                    .imageScale(.small)
-                Text(item.originalName)
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
+            Image(systemName: item.category.symbol)
+                .foregroundStyle(item.sidecarOf == nil ? AnyShapeStyle(.tint) : AnyShapeStyle(.secondary))
+                .frame(width: 16)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(item.fileName)
+                    .font(.system(.callout, design: .monospaced))
+                    .foregroundStyle(isPlaceholder ? .secondary : .primary)
                     .lineLimit(1)
                     .truncationMode(.middle)
-                Text("·")
-                Text(OffloadFormatting.bytes(item.size))
-                    .monospacedDigit()
+                HStack(spacing: 4) {
+                    Image(systemName: "arrow.turn.down.right")
+                        .imageScale(.small)
+                    Text(item.originalName)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                    Text("·")
+                    Text(OffloadFormatting.bytes(item.size))
+                        .monospacedDigit()
+                    if let primary = item.sidecarOf {
+                        Text("· goes with \(primary)")
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                    }
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
             }
-            .font(.caption)
-            .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 10)
+        .padding(.leading, item.sidecarOf == nil ? 10 : 22)
+        .padding(.trailing, 10)
         .padding(.vertical, 6)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(item.originalName) will be saved as \(item.relativePath)")
+        .accessibilityLabel(accessibilityText)
     }
 }
 

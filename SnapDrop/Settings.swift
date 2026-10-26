@@ -14,6 +14,8 @@ final class AppSettings: ObservableObject {
         static let fileTemplate = "fileTemplate"
         static let lastProject = "lastProject"
         static let recentProjects = "recentProjects"
+        static let excludedCategories = "excludedCategories"
+        static let successSound = "playSuccessSound"
     }
 
     static let maxRecentProjects = 6
@@ -51,6 +53,24 @@ final class AppSettings: ObservableObject {
         didSet { defaults?.set(recentProjects, forKey: Key.recentProjects) }
     }
 
+    /// Which kinds of files get offloaded (all of them by default).
+    @Published var includedCategories: Set<MediaCategory> {
+        didSet {
+            // Stored as the *excluded* list so categories added in the future default to on.
+            let excluded = MediaCategory.allCases.filter { !includedCategories.contains($0) }.map(\.rawValue)
+            defaults?.set(excluded, forKey: Key.excludedCategories)
+        }
+    }
+
+    /// Plays a soft sound when an offload finishes without problems.
+    @Published var playSuccessSound: Bool {
+        didSet { defaults?.set(playSuccessSound, forKey: Key.successSound) }
+    }
+
+    func setCategory(_ category: MediaCategory, included: Bool) {
+        if included { includedCategories.insert(category) } else { includedCategories.remove(category) }
+    }
+
     init(defaults: UserDefaults? = .standard) {
         self.defaults = defaults
         destinationPath = defaults?.string(forKey: Key.destination)
@@ -59,6 +79,9 @@ final class AppSettings: ObservableObject {
         fileTemplate = defaults?.string(forKey: Key.fileTemplate) ?? NamingTemplates.defaultFile
         lastProject = defaults?.string(forKey: Key.lastProject) ?? ""
         recentProjects = defaults?.stringArray(forKey: Key.recentProjects) ?? []
+        let excluded = Set(defaults?.stringArray(forKey: Key.excludedCategories) ?? [])
+        includedCategories = Set(MediaCategory.allCases.filter { !excluded.contains($0.rawValue) })
+        playSuccessSound = defaults?.object(forKey: Key.successSound) as? Bool ?? true
     }
 
     /// The destination as a URL (handier for file operations).

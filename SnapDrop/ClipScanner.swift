@@ -1,6 +1,6 @@
 import Foundation
 
-/// One video file found on a card.
+/// One file found on a card (video, photo, audio or anything else).
 struct Clip: Identifiable, Hashable, Sendable {
     /// Full location on the card.
     let url: URL
@@ -30,70 +30,58 @@ struct Clip: Identifiable, Hashable, Sendable {
     }
 }
 
-/// Finds video clips on a card. Read-only: it never changes anything on the card.
+/// Finds the files on a card. Read-only: it never changes anything on the card.
 enum ClipScanner {
     /// File extensions we treat as video clips (compared lowercased).
-    static let videoExtensions: Set<String> = ["mp4", "mov", "mxf", "braw"]
+    static var videoExtensions: Set<String> { MediaCategory.videoExtensions }
 
-    /// Where common cameras put their clips, relative to the card's root.
-    static let cameraFolders = [
-        "DCIM",                  // most cameras (searched recursively)
-        "PRIVATE/M4ROOT/CLIP",   // Sony
-        "CONTENTS/CLIPS",        // Panasonic
+    /// Folders and files that computers (not cameras) leave on cards. Compared lowercased.
+    /// Anything starting with "." (".Spotlight-V100", ".fseventsd", ".Trashes",
+    /// ".TemporaryItems", ".DS_Store", "._C0001.MP4"…) is skipped as well.
+    static let junkNames: Set<String> = [
+        "system volume information", "$recycle.bin", "recycler", "recycled", "thumbs.db", "desktop.ini",
     ]
 
-    /// True if a file name looks like a clip we should copy.
-    /// Hidden files (starting with ".") — including macOS "._" junk files — are skipped.
+    /// True for system junk that should never be copied.
+    static func isJunk(_ name: String) -> Bool {
+        name.hasPrefix(".") || junkNames.contains(name.lowercased())
+    }
+
+    /// True if a file name looks like a video clip.
     static func isClipFileName(_ name: String) -> Bool {
-        if name.hasPrefix(".") { return false }
-        let ext = (name as NSString).pathExtension.lowercased()
-        return videoExtensions.contains(ext)
+        !isJunk(name) && MediaCategory.classify(fileName: name) == .video
     }
 
-    /// Lists all clips on the card at `volumeURL`.
-    /// Looks in the known camera folders first; if none of those has clips,
-    /// it searches the whole card.
-    static func scan(volumeURL: URL) -> [Clip] {
-        let fm = FileManager.default
-        var found: [URL] = []
-        var seen = Set<String>()
-
-        for folder in cameraFolders {
-            let dir = volumeURL.appendingPathComponent(folder, isDirectory: true)
-            var isDirectory: ObjCBool = false
-            guard fm.fileExists(atPath: dir.path, isDirectory: &isDirectory), isDirectory.boolValue else { continue }
-            for url in clipFiles(in: dir) where seen.insert(url.standardizedFileURL.path).inserted {
-                found.append(url)
-            }
-        }
-
-        if found.isEmpty {
-            found = clipFiles(in: volumeURL)
-        }
-
-        return found
-            .compactMap { makeClip(at: $0, root: volumeURL) }
-            .sorted { $0.relativePath < $1.relativePath }
-    }
-
-    /// Recursively lists clip files inside `directory`.
-    static func clipFiles(in directory: URL) -> [URL] {
-        let keys: [URLResourceKey] = [.isRegularFileKey]
+    /// Lists every real file on the card at `volumeURL` (the whole card, recursively),
+    /// keeping only the chosen categories. Sorted by path on the card.
+    static func scan(volumeURL: URL, categories: Set<MediaCategory> = Set(MediaCategory.allCases)) -> [Clip] {
+        let keys: [URLResourceKey] = [.isRegularFileKey, .isDirectoryKey, .isSymbolicLinkKey,
+                                      .fileSizeKey, .creationDateKey, .contentModificationDateKey]
         guard let enumerator = FileManager.default.enumerator(
-            at: directory,
+            at: volumeURL,
             includingPropertiesForKeys: keys,
-            options: [.skipsHiddenFiles, .skipsPackageDescendants]
+            options: [],
+            errorHandler: { _, _ in true }   // keep going past folders we can't read
         ) else { return [] }
 
-        var result: [URL] = []
+        var result: [Clip] = []
         for case let url as URL in enumerator {
-            guard isClipFileName(url.lastPathComponent) else { continue }
+            let name = url.lastPathComponent
             let values = try? url.resourceValues(forKeys: Set(keys))
-            if values?.isRegularFile == true {
-                result.append(url)
+            if isJunk(name) {
+                if values?.isDirectory == true { enumerator.skipDescendants() }
+                continue
             }
+            guard values?.isRegularFile == true, values?.isSymbolicLink != true else { continue }
+            guard categories.contains(MediaCategory.classify(fileName: name)) else { continue }
+            result.append(Clip(
+                url: url,
+                relativePath: relativePath(of: url, in: volumeURL),
+                size: Int64(values?.fileSize ?? 0),
+                creationDate: values?.creationDate,
+                modificationDate: values?.contentModificationDate))
         }
-        return result
+        return result.sorted { $0.relativePath < $1.relativePath }
     }
 
     /// The path of `file` relative to `root` ("DCIM/100/C0001.MP4").
@@ -105,17 +93,5 @@ enum ClipScanner {
             return String(filePath.dropFirst(prefix.count))
         }
         return file.lastPathComponent
-    }
-
-    private static func makeClip(at url: URL, root: URL) -> Clip? {
-        let keys: Set<URLResourceKey> = [.fileSizeKey, .creationDateKey, .contentModificationDateKey]
-        guard let values = try? url.resourceValues(forKeys: keys) else { return nil }
-        return Clip(
-            url: url,
-            relativePath: relativePath(of: url, in: root),
-            size: Int64(values.fileSize ?? 0),
-            creationDate: values.creationDate,
-            modificationDate: values.contentModificationDate
-        )
     }
 }

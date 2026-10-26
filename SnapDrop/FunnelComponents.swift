@@ -114,7 +114,7 @@ struct CountPill: View {
     HStack {
         StagePanel(number: 1, title: "Card", state: .done) { Text("Done") }
         FunnelArrow(lit: true)
-        StagePanel(number: 2, title: "Clips", state: .active) { Text("Active") }
+        StagePanel(number: 2, title: "Media", state: .active) { Text("Active") }
         FunnelArrow(lit: false)
         StagePanel(number: 3, title: "Destination", state: .pending) { Text("Pending") }
     }

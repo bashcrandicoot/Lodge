@@ -27,7 +27,7 @@ struct RecentOffloadsView: View {
                 ContentUnavailableView {
                     Label("No Offloads Yet", systemImage: "clock")
                 } description: {
-                    Text("Clips you offload will be listed here.")
+                    Text("Files you offload will be listed here.")
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {

@@ -2,7 +2,7 @@ import SwiftUI
 import AppKit
 
 /// The bar along the bottom of the window. It changes with the offload:
-/// ready → the big "Offload N Clips" button, running → progress, finished → summary.
+/// ready → the big "Offload N Files" button, running → progress, finished → summary.
 struct OffloadBar: View {
     @EnvironmentObject private var model: AppModel
 

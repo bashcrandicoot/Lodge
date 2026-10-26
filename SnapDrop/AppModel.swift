@@ -27,6 +27,7 @@ final class AppModel: ObservableObject {
 
     private var sessionObserver: AnyCancellable?
     private var camerasObserver: AnyCancellable?
+    private var categoriesObserver: AnyCancellable?
 
     init(settings: AppSettings? = nil, ledger: Ledger? = nil, cameras: CameraStore? = nil, startWatching: Bool = true) {
         self.settings = settings ?? AppSettings()
@@ -37,6 +38,10 @@ final class AppModel: ObservableObject {
         // The Offload button depends on the camera list (e.g. the chosen camera was deleted).
         camerasObserver = self.cameras.objectWillChange.sink { [weak self] _ in
             self?.objectWillChange.send()
+        }
+        // Turning a file category on or off in Settings updates the current card right away.
+        categoriesObserver = self.settings.$includedCategories.sink { [weak self] categories in
+            self?.session?.includedCategories = categories
         }
 
         // The watcher must ignore the volume the destination folder lives on.
@@ -125,6 +130,7 @@ final class AppModel: ObservableObject {
                 self.ejectCard(newSession.card)
             }
         }
+        newSession.includedCategories = settings.includedCategories
         if newSession.projectInput.isEmpty { newSession.projectInput = settings.lastProject }
         newSession.cameraID = cameras.suggestedCamera(forCard: newSession.card.identity) ?? newSession.cameraID
         session = newSession

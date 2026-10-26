@@ -41,14 +41,19 @@ enum MediaCategory: String, CaseIterable, Codable, Identifiable, Sendable {
     /// Title used in Settings and the filter control.
     var title: String { tokenValue }
 
-    /// Lower-case plural for counts: "42 video", "3 photos"…
-    func countText(_ count: Int) -> String {
+    /// "Video (MP4, MOV, BRAW…)" for the Settings toggles.
+    var settingsTitle: String {
         switch self {
-        case .video: return "\(count) video"
-        case .photo: return count == 1 ? "1 photo" : "\(count) photos"
-        case .audio: return "\(count) audio"
-        case .other: return "\(count) other"
+        case .video: return "Video (MP4, MOV, MXF, BRAW, R3D…)"
+        case .photo: return "Photos (JPG, HEIC, RAW, DNG…)"
+        case .audio: return "Audio (WAV, MP3, M4A…)"
+        case .other: return "Other files (XML, LRF, metadata…)"
         }
+    }
+
+    /// Short count for chips: "42 video", "120 photo", "3 audio", "18 other".
+    func countText(_ count: Int) -> String {
+        "\(count) \(rawValue)"
     }
 
     var symbol: String {
