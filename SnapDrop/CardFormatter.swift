@@ -18,19 +18,31 @@ struct FormatReadiness: Equatable, Sendable {
     var missingCopies = 0
     /// The folder that holds all the verified copies (their deepest common folder).
     var copiesFolder: String?
+    /// Files left on the card by "Skip short videos" (the clips and their sidecars; not in `notOffloaded`).
+    var shortSkippedFiles = 0
+    /// How many of those are the short videos themselves.
+    var shortSkippedClips = 0
 
     /// Nothing pending, and there's something on the card.
-    var isReady: Bool { fileCount > 0 && pending == 0 }
+    var isReady: Bool { fileCount > 0 && pending == 0 && shortSkippedFiles == 0 }
+    /// Everything was offloaded except skipped short clips (Format offers to discard them).
+    var isReadyExceptShortClips: Bool { fileCount > 0 && pending == 0 && shortSkippedFiles > 0 }
     var isEmpty: Bool { fileCount == 0 }
     var pending: Int { notOffloaded + missingCopies }
+    /// Files with a verified copy.
+    var offloadedFiles: Int { fileCount - pending - shortSkippedFiles }
 
-    /// "3 files not yet offloaded" / "1 copy missing at the destination"; `nil` when ready or empty.
+    /// "3 files not yet offloaded" / "1 copy missing at the destination" / "4 short clips not offloaded";
+    /// `nil` when ready or empty.
     var pendingText: String? {
         guard !isReady, !isEmpty else { return nil }
         if notOffloaded > 0 {
             return notOffloaded == 1 ? "1 file not yet offloaded" : "\(notOffloaded) files not yet offloaded"
         }
-        return missingCopies == 1 ? "1 copy missing at the destination" : "\(missingCopies) copies missing at the destination"
+        if missingCopies > 0 {
+            return missingCopies == 1 ? "1 copy missing at the destination" : "\(missingCopies) copies missing at the destination"
+        }
+        return shortSkippedClips == 1 ? "1 short clip not offloaded" : "\(shortSkippedClips) short clips not offloaded"
     }
 
     /// Checks `files` against the ledger. `fileSize` returns the size of a regular file at a
@@ -42,20 +54,34 @@ struct FormatReadiness: Equatable, Sendable {
     }
 
     init(fileCount: Int = 0, totalBytes: Int64 = 0, notOffloaded: Int = 0, missingCopies: Int = 0,
-         copiesFolder: String? = nil) {
+         copiesFolder: String? = nil, shortSkippedFiles: Int = 0, shortSkippedClips: Int = 0) {
         self.fileCount = fileCount
         self.totalBytes = totalBytes
         self.notOffloaded = notOffloaded
         self.missingCopies = missingCopies
         self.copiesFolder = copiesFolder
+        self.shortSkippedFiles = shortSkippedFiles
+        self.shortSkippedClips = shortSkippedClips
     }
 
-    init(inventory: CardInventory) {
+    /// `skipped` = the session's skipped short clips; only never-offloaded files count as skipped.
+    init(inventory: CardInventory, skipped: ShortClipSkip = ShortClipSkip()) {
+        let skippedNew = inventory.new.filter { skipped.ids.contains($0.relativePath) }
+        let skippedClips = Set(skipped.clips.map(\.relativePath))
         self.init(fileCount: inventory.fileCount,
                   totalBytes: inventory.all.reduce(0) { $0 + $1.size },
-                  notOffloaded: inventory.new.count,
+                  notOffloaded: inventory.new.count - skippedNew.count,
                   missingCopies: inventory.missing.count,
-                  copiesFolder: inventory.copiesFolder)
+                  copiesFolder: inventory.copiesFolder,
+                  shortSkippedFiles: skippedNew.count,
+                  shortSkippedClips: skippedNew.filter { skippedClips.contains($0.relativePath) }.count)
+    }
+
+    /// The format safety re-check: the card holds nothing new except the files the user agreed to
+    /// discard (by ledger key, so a changed or added file blocks formatting).
+    static func stillReady(inventory: CardInventory, volumeIdentity: String, discarding: Set<String>) -> Bool {
+        inventory.fileCount > 0 && inventory.missing.isEmpty
+            && inventory.new.allSatisfy { discarding.contains($0.ledgerKey(volumeIdentity: volumeIdentity)) }
     }
 
     /// The real file system: size of a regular file, `nil` if it's missing or a folder.

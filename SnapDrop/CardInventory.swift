@@ -74,13 +74,22 @@ struct OffloadSelection: Equatable, Sendable {
     var offloadedKept = 0
     /// Files with a missing copy in the included types that aren't being copied again.
     var missingKept = 0
+    /// New short videos (and their sidecars) left on the card by "Skip short videos".
+    var skippedShort = ShortClipSkip()
 
+    /// Short clips are only skipped among new files: anything picked for re-offload is copied.
     static func make(inventory: CardInventory, categories: Set<MediaCategory>,
-                     reoffload: ReoffloadMode, reoffloadIDs: Set<String>) -> OffloadSelection {
+                     reoffload: ReoffloadMode, reoffloadIDs: Set<String>,
+                     shortRule: ShortClipRule = .off, durations: [String: Double] = [:],
+                     includedShortIDs: Set<String> = [], includeAllShort: Bool = false) -> OffloadSelection {
         var result = OffloadSelection()
         let included = { (clip: Clip) in categories.contains(clip.category) }
         let picked = withSidecars(reoffloadIDs, files: inventory.all)
-        result.toCopy = inventory.new.filter(included)
+        let newFiles = inventory.new.filter(included)
+        result.skippedShort = ShortClipSkip.find(candidates: newFiles, files: inventory.all, durations: durations,
+                                                 rule: shortRule, included: includedShortIDs,
+                                                 includeAll: includeAllShort)
+        result.toCopy = newFiles.filter { !result.skippedShort.ids.contains($0.relativePath) }
         for clip in inventory.missing where included(clip) {
             if reoffload != .off || picked.contains(clip.relativePath) {
                 result.toCopy.append(clip)

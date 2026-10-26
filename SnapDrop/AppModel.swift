@@ -30,7 +30,7 @@ final class AppModel: ObservableObject {
     @Published private(set) var cardInventory: CardInventory?
     /// Is the selected card safe to format? `nil` while scanning / no card.
     var formatReadiness: FormatReadiness? {
-        cardInventory.map { FormatReadiness(inventory: $0) }
+        cardInventory.map { FormatReadiness(inventory: $0, skipped: session?.skippedShort ?? ShortClipSkip()) }
     }
     @Published private(set) var formatState: FormatState = .idle
 
@@ -54,6 +54,11 @@ final class AppModel: ObservableObject {
     private var destinationsObserver: AnyCancellable?
     private var categoriesObserver: AnyCancellable?
     private var appearanceObserver: AnyCancellable?
+    private var shortRuleObserver: AnyCancellable?
+    /// Video lengths by ledger key (`nil` = couldn't be read), so rescans don't read them again.
+    private var durationCache: [String: Double?] = [:]
+    /// Reads video lengths for "Skip short videos" (tests swap in a fake).
+    var durationReader: DurationReading = AVDurationReader()
 
     init(settings: AppSettings? = nil, ledger: Ledger? = nil, cameras: CameraStore? = nil,
          destinations: DestinationStore? = nil, formatter: CardFormatter = CardFormatter(),
@@ -85,6 +90,12 @@ final class AppModel: ObservableObject {
         categoriesObserver = self.settings.$includedCategories.sink { [weak self] categories in
             self?.session?.includedCategories = categories
         }
+
+        shortRuleObserver = self.settings.$skipShortClips
+            .combineLatest(self.settings.$shortClipSeconds)
+            .sink { [weak self] enabled, seconds in
+                self?.session?.shortRule = ShortClipRule(isEnabled: enabled, threshold: Double(seconds))
+            }
 
         // Settings ▸ Appearance: Light / Dark / System for every window, alerts and menus included.
         if !AppModel.isRunningUnitTests && !AppModel.demoForcesAppearance {
@@ -165,18 +176,25 @@ final class AppModel: ObservableObject {
         }
         isScanning = true
         let entries = ledger.entriesByKey()
+        let cache = durationCache
+        let reader = durationReader
         Task {
-            let inventory = await Task.detached(priority: .userInitiated) {
+            let (inventory, durations) = await Task.detached(priority: .userInitiated) {
                 let clips = ClipScanner.scan(volumeURL: card.url)
                 // Checks each offloaded file's copy is still at the destination ("Missing copy").
-                return CardInventory.classify(files: clips, volumeIdentity: card.identity, entries: entries,
-                                              fileSize: FormatReadiness.diskFileSize)
+                let inventory = CardInventory.classify(files: clips, volumeIdentity: card.identity, entries: entries,
+                                                       fileSize: FormatReadiness.diskFileSize)
+                // Video lengths for "Skip short videos" and the list (only files that may be copied).
+                let durations = await DurationScanner.read(inventory.new + inventory.missing,
+                                                           volumeIdentity: card.identity, cache: cache, reader: reader)
+                return (inventory, durations)
             }.value
+            self.durationCache.merge(durations.fresh) { _, new in new }
             // The user may have picked a different card while we were scanning.
             guard self.selectedCardID == card.id else { return }
             self.isScanning = false
             self.cardInventory = inventory
-            self.install(OffloadSession(card: card, inventory: inventory))
+            self.install(OffloadSession(card: card, inventory: inventory, durations: durations.byPath))
         }
     }
 
@@ -227,6 +245,7 @@ final class AppModel: ObservableObject {
             }
         }
         newSession.includedCategories = settings.includedCategories
+        newSession.shortRule = settings.shortClipRule
         if newSession.projectInput.isEmpty { newSession.projectInput = settings.lastProject }
         newSession.cameraID = cameras.suggestedCamera(forCard: newSession.card.identity) ?? newSession.cameraID
         session = newSession
@@ -252,6 +271,7 @@ final class AppModel: ObservableObject {
             isScanning: isScanning,
             newFileCount: session.newClips.count,
             missingCopies: session.missingCopyCount,
+            shortClipsSkipped: session.skippedShort.clips.count,
             cardIsEmpty: session.inventory.fileCount == 0,
             namingIsValid: naming != nil,
             needs: NamingNeeds(naming),
@@ -433,7 +453,8 @@ final class AppModel: ObservableObject {
 
     /// Format Card… is offered only for a mounted, fully offloaded card while nothing else runs.
     var canFormatSelectedCard: Bool {
-        guard let card = selectedCard, watcher.cards.contains(card), formatReadiness?.isReady == true,
+        guard let card = selectedCard, watcher.cards.contains(card),
+              let readiness = formatReadiness, readiness.isReady || readiness.isReadyExceptShortClips,
               !isBusy, !isScanning, !isEjecting, !formatState.isFormatting, session?.cardRemoved != true else { return false }
         return true
     }
@@ -458,13 +479,20 @@ final class AppModel: ObservableObject {
         let destinationVolume = settings.destinationURL
             .flatMap { try? $0.resourceValues(forKeys: [.volumeURLKey]).volume }?.path
         let formatter = self.formatter
+        // Skipped short clips the user agreed to discard (by ledger key: a changed file blocks formatting).
+        let skippedIDs = session?.skippedShort.ids ?? []
+        let discarding = Set((cardInventory?.new ?? [])
+            .filter { skippedIDs.contains($0.relativePath) }
+            .map { $0.ledgerKey(volumeIdentity: card.identity) })
         Task {
             let outcome = await formatter.format(
                 card: card, destinationPath: destinationPath, destinationVolume: destinationVolume,
                 stillReady: {
                     let files = ClipScanner.scan(volumeURL: card.url)
-                    return FormatReadiness.compute(files: files, volumeIdentity: card.identity, entries: entries,
-                                                   fileSize: FormatReadiness.diskFileSize).isReady
+                    let inventory = CardInventory.classify(files: files, volumeIdentity: card.identity,
+                                                           entries: entries, fileSize: FormatReadiness.diskFileSize)
+                    return FormatReadiness.stillReady(inventory: inventory, volumeIdentity: card.identity,
+                                                      discarding: discarding)
                 })
             self.formatFinished(card: card, outcome: outcome)
         }

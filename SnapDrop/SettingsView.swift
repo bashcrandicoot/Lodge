@@ -72,6 +72,23 @@ struct GeneralSettingsView: View {
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
+            Section {
+                Toggle("Skip short videos", isOn: $settings.skipShortClips)
+                Stepper(value: $settings.shortClipSeconds, in: ShortClipRule.thresholdRange) {
+                    LabeledContent("Shorter than") {
+                        Text(DurationFormatting.threshold(Double(settings.shortClipSeconds)))
+                            .monospacedDigit()
+                    }
+                }
+                .disabled(!settings.skipShortClips)
+            } header: {
+                Text("Short Clips")
+            } footer: {
+                Text("Accidental takes stay on the card, with their sidecar files. Include them from the Media list any time. Clips whose length can’t be read (like BRAW or R3D) are always offloaded.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
             Section("After Offload") {
                 VStack(alignment: .leading, spacing: 4) {
                     Toggle("Eject card after offload", isOn: $settings.ejectAfterOffload)

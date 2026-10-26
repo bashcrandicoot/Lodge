@@ -52,6 +52,13 @@ private struct ClipsStageContent: View {
         }
         .onAppear {
             if session.phase == .ready && !session.newClips.isEmpty { nameFocused = true }
+            #if DEBUG
+            // Screenshots: `-SnapDropDemoScope skipped|offloaded` opens that list.
+            if DemoData.launchState != nil, let raw = UserDefaults.standard.string(forKey: "SnapDropDemoScope"),
+               let demoScope = ListScope(rawValue: raw) {
+                scope = demoScope
+            }
+            #endif
         }
     }
 
@@ -87,6 +94,13 @@ private struct ClipsStageContent: View {
                     .buttonStyle(.plain)
                     .help("These files were offloaded before, but their copies are gone or changed size. They aren’t copied again unless you choose Re-offload.")
                 }
+                if !session.skippedShort.isEmpty && session.phase == .ready {
+                    Button { scope = .skipped } label: {
+                        CountPill(text: shortChipText, systemImage: "timer", tint: .secondary)
+                    }
+                    .buttonStyle(.plain)
+                    .help("Videos shorter than \(DurationFormatting.threshold(session.shortRule.threshold)) stay on the card with their sidecars. Change this in Settings ▸ General.")
+                }
                 if session.offloadedInView > 0 && session.phase == .ready {
                     ReoffloadMenu(session: session)
                 }
@@ -97,6 +111,11 @@ private struct ClipsStageContent: View {
                 .foregroundStyle(.secondary)
                 .accessibilityLabel("Total size \(OffloadFormatting.bytes(session.newBytes))")
         }
+    }
+
+    private var shortChipText: String {
+        let count = session.skippedShort.clips.count
+        return count == 1 ? "1 short clip skipped" : "\(count) short clips skipped"
     }
 
     // MARK: Project + camera
@@ -111,8 +130,8 @@ private struct ClipsStageContent: View {
                     text: $session.projectInput,
                     isDisabled: isLocked,
                     recents: settings.recentProjects,
-                    clearRecents: settings.clearRecentProjects)
-                    .focused($nameFocused)
+                    clearRecents: settings.clearRecentProjects,
+                    focus: $nameFocused)
             }
             GridRow {
                 fieldLabel("Camera")
@@ -148,6 +167,7 @@ private struct ClipsStageContent: View {
                 switch shown {
                 case .toCopy: toCopyList(scopes: scopes)
                 case .offloaded: offloadedList(scopes: scopes)
+                case .skipped: skippedList(scopes: scopes)
                 }
             }
         }
@@ -156,6 +176,7 @@ private struct ClipsStageContent: View {
     private var availableScopes: [ListScope] {
         var scopes: [ListScope] = [.toCopy]
         if session.offloadedInView > 0 && session.phase == .ready { scopes.append(.offloaded) }
+        if !session.skippedShort.isEmpty && session.phase == .ready { scopes.append(.skipped) }
         return scopes
     }
 
@@ -178,7 +199,7 @@ private struct ClipsStageContent: View {
                 }
                 .menuStyle(.borderlessButton)
                 .fixedSize()
-                .help("Switch between the files to copy and the files offloaded before")
+                .help("Switch between the files to copy, files offloaded before and skipped short clips")
                 .accessibilityLabel("Show list")
             } else {
                 Text(title(of: .toCopy))
@@ -197,6 +218,7 @@ private struct ClipsStageContent: View {
         switch scope {
         case .toCopy: return "Name Preview"
         case .offloaded: return "Already Offloaded (\(session.offloadedInView))"
+        case .skipped: return "Short Clips Skipped (\(session.skippedShort.clips.count))"
         }
     }
 
@@ -232,7 +254,9 @@ private struct ClipsStageContent: View {
                             PreviewRow(item: item, isPlaceholder: placeholder,
                                        isActive: isRunning && item.id == session.progress.currentID,
                                        isVerified: session.verifiedIDs.contains(item.id),
-                                       isReoffload: session.reoffloadingIDs.contains(item.id))
+                                       isReoffload: session.reoffloadingIDs.contains(item.id),
+                                       duration: session.duration(of: item.clip),
+                                       isIncludedShort: session.isIncludedShortClip(item.clip))
                                 .background(index.isMultiple(of: 2) ? Color.clear : Color.primary.opacity(0.035))
                                 .staggeredReveal(index: index, revealed: revealed, reduceMotion: reduceMotion)
                                 .contextMenu { rowMenu(for: item.clip) }
@@ -255,13 +279,19 @@ private struct ClipsStageContent: View {
     /// Nothing will be copied: say why, and offer the way out.
     private var nothingToCopy: some View {
         ContentUnavailableView {
-            if session.missingCopyCount > 0 {
+            if session.missingCopyCount == 0 && !session.skippedShort.isEmpty {
+                Label("Only Short Clips", systemImage: "timer")
+            } else if session.missingCopyCount > 0 {
                 Label("Copies Missing", systemImage: "exclamationmark.triangle")
             } else {
                 Label("All Caught Up", systemImage: "checkmark.seal")
             }
         } description: {
-            if session.missingCopyCount > 0 {
+            if session.missingCopyCount == 0 && !session.skippedShort.isEmpty {
+                Text(session.skippedShort.clips.count == 1
+                     ? "The only new video is shorter than \(DurationFormatting.threshold(session.shortRule.threshold))."
+                     : "The \(session.skippedShort.clips.count) new videos are all shorter than \(DurationFormatting.threshold(session.shortRule.threshold)).")
+            } else if session.missingCopyCount > 0 {
                 Text(session.missingCopyCount == 1
                      ? "1 file was offloaded before, but its copy is no longer at the destination."
                      : "\(session.missingCopyCount) files were offloaded before, but their copies are no longer at the destination.")
@@ -273,6 +303,9 @@ private struct ClipsStageContent: View {
         } actions: {
             if session.missingCopyCount > 0 && session.phase == .ready {
                 Button("Re-offload Missing Copies") { model.setReoffloadMode(.missing) }
+            }
+            if !session.skippedShort.isEmpty && session.phase == .ready {
+                Button("Include All Short Clips") { session.includeAllShort = true }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -303,9 +336,47 @@ private struct ClipsStageContent: View {
         .listBox()
     }
 
-    /// Right-click on a file: re-offload just this one, or show its existing copy.
+    /// Short videos left on the card: include them one by one or all at once.
+    @ViewBuilder
+    private func skippedList(scopes: [ListScope]) -> some View {
+        let skipped = session.skippedShort
+        HStack {
+            listHeader(scopes: scopes, trailing: "")
+            Button("Include All") {
+                withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.25)) { session.includeAllShort = true }
+            }
+            .controlSize(.small)
+            .help("Offload every short clip on this card")
+        }
+        ScrollView {
+            LazyVStack(spacing: 0) {
+                ForEach(Array(skipped.clips.enumerated()), id: \.element.id) { index, clip in
+                    SkippedRow(clip: clip, duration: session.duration(of: clip),
+                               sidecars: skipped.sidecarCounts[clip.relativePath, default: 0],
+                               include: { include(clip) })
+                        .background(index.isMultiple(of: 2) ? Color.clear : Color.primary.opacity(0.035))
+                        .contextMenu { rowMenu(for: clip) }
+                }
+            }
+        }
+        .listBox()
+    }
+
+    private func include(_ clip: Clip) {
+        withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.25)) { session.toggleIncludeShort(clip) }
+    }
+
+    /// Right-click on a file: re-offload just this one, include or skip a short clip, or show its copy.
     @ViewBuilder
     private func rowMenu(for clip: Clip) -> some View {
+        if session.phase == .ready && session.isShortClip(clip) {
+            if session.skippedShort.ids.contains(clip.relativePath) {
+                Button("Include Anyway") { include(clip) }
+                Button("Include All Short Clips") { session.includeAllShort = true }
+            } else {
+                Button("Skip This Short Clip") { include(clip) }
+            }
+        }
         if session.phase == .ready, let missing = session.offloadedStatus(of: clip) {
             let picked = session.reoffloadIDs.contains(clip.relativePath)
             let byMode = session.reoffloadMode == .everything || (session.reoffloadMode == .missing && missing)
@@ -352,11 +423,17 @@ private struct PreviewRow: View {
     var isVerified = false
     /// Offloaded before and being copied again.
     var isReoffload = false
+    /// The video's length, if known.
+    var duration: Double?
+    /// A short clip the user chose to offload anyway.
+    var isIncludedShort = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var accessibilityText: String {
         var text = "\(item.category.title), \(item.originalName) will be saved as \(item.relativePath)"
         if let primary = item.sidecarOf { text += ", alongside \(primary)" }
+        if let duration { text += ", \(DurationFormatting.short(duration)) long" }
+        if isIncludedShort { text += ", short clip included anyway" }
         if isReoffload { text += ", re-offload: a new copy" }
         if isVerified { text += ", copied and verified" } else if isActive { text += ", copying now" }
         return text
@@ -383,6 +460,19 @@ private struct PreviewRow: View {
                     Text("·")
                     Text(OffloadFormatting.bytes(item.size))
                         .monospacedDigit()
+                    if let duration {
+                        Text("· " + DurationFormatting.short(duration))
+                            .monospacedDigit()
+                            .fixedSize()
+                    }
+                    if isIncludedShort {
+                        Label("short", systemImage: "timer")
+                            .labelStyle(.titleAndIcon)
+                            .foregroundStyle(.tint)
+                            .lineLimit(1)
+                            .fixedSize()
+                            .help("Shorter than the “Skip short videos” limit, included anyway")
+                    }
                     if let primary = item.sidecarOf {
                         Text("· goes with \(primary)")
                             .lineLimit(1)
@@ -441,6 +531,54 @@ extension PreviewRow {
     }
 }
 
+/// A short video left on the card, with an Include button.
+private struct SkippedRow: View {
+    let clip: Clip
+    let duration: Double?
+    let sidecars: Int
+    let include: () -> Void
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: clip.category.symbol)
+                .foregroundStyle(.secondary)
+                .frame(width: 16)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(clip.url.lastPathComponent)
+                    .font(.system(.callout, design: .monospaced))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                HStack(spacing: 4) {
+                    Image(systemName: "timer").imageScale(.small)
+                    Text(duration.map(DurationFormatting.short) ?? "Short")
+                        .monospacedDigit()
+                    Text("· " + OffloadFormatting.bytes(clip.size))
+                        .monospacedDigit()
+                    if sidecars > 0 {
+                        Text(sidecars == 1 ? "· 1 sidecar" : "· \(sidecars) sidecars")
+                    }
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+            }
+            Spacer(minLength: 0)
+            Button("Include", action: include)
+                .controlSize(.small)
+                .help("Offload this clip anyway")
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(clip.url.lastPathComponent), short clip"
+                            + (duration.map { ", \(DurationFormatting.short($0)) long" } ?? "") + ", skipped")
+        .accessibilityAction(named: "Include Anyway", include)
+    }
+}
+
 /// A file offloaded before: where its copy is, or that it's missing.
 private struct OffloadedRow: View {
     let clip: Clip
@@ -493,6 +631,7 @@ private struct OffloadedRow: View {
 private struct ReoffloadMenu: View {
     @ObservedObject var session: OffloadSession
     @EnvironmentObject private var model: AppModel
+    @Environment(\.theme) private var theme
 
     private var isActive: Bool { !session.reoffloadingIDs.isEmpty }
 
@@ -519,7 +658,7 @@ private struct ReoffloadMenu: View {
         .padding(.horizontal, 8)
         .padding(.vertical, 2)
         .background(Color.primary.opacity(isActive ? 0 : 0.06), in: Capsule())
-        .background(Color.accentColor.opacity(isActive ? 0.14 : 0), in: Capsule())
+        .background(theme.accent.opacity(isActive ? 0.14 : 0), in: Capsule())
         .help("Copy files again that were offloaded before. New copies never overwrite old ones.")
         .accessibilityLabel(isActive ? "Re-offloading \(session.reoffloadingIDs.count) files" : "Re-offload")
     }
@@ -532,8 +671,8 @@ private struct ReoffloadMenu: View {
 }
 
 /// Which list the Media stage shows.
-private enum ListScope: Hashable {
-    case toCopy, offloaded
+private enum ListScope: String, Hashable {
+    case toCopy, offloaded, skipped
 }
 
 private extension View {
@@ -556,16 +695,17 @@ private struct NameField: View {
     let isDisabled: Bool
     var recents: [String] = []
     var clearRecents: (() -> Void)?
+    var focus: FocusState<Bool>.Binding
 
     @Environment(\.theme) private var theme
-    @FocusState private var focused: Bool
+    private var focused: Bool { focus.wrappedValue }
 
     var body: some View {
         HStack(spacing: 6) {
             TextField(title, text: $text, prompt: Text(prompt))
                 .textFieldStyle(.roundedBorder)
                 .labelsHidden()
-                .focused($focused)
+                .focused(focus)
                 // The system focus ring always uses the accent colour asset; draw one in the theme instead.
                 .focusEffectDisabled()
                 .overlay {

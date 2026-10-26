@@ -17,6 +17,8 @@ final class AppSettings: ObservableObject {
         static let excludedCategories = "excludedCategories"
         static let successSound = "playSuccessSound"
         static let theme = "theme"
+        static let skipShort = "skipShortClips"
+        static let shortSeconds = "shortClipSeconds"
         static let appearance = "appearance"
     }
 
@@ -69,6 +71,24 @@ final class AppSettings: ObservableObject {
         didSet { defaults?.set(playSuccessSound, forKey: Key.successSound) }
     }
 
+    /// Leave accidental short videos on the card (Settings ▸ General). On by default.
+    @Published var skipShortClips: Bool {
+        didSet { defaults?.set(skipShortClips, forKey: Key.skipShort) }
+    }
+
+    /// "Shorter than N seconds", 1–60.
+    @Published var shortClipSeconds: Int {
+        didSet {
+            let clamped = min(max(shortClipSeconds, ShortClipRule.thresholdRange.lowerBound), ShortClipRule.thresholdRange.upperBound)
+            if clamped != shortClipSeconds { shortClipSeconds = clamped; return }
+            defaults?.set(shortClipSeconds, forKey: Key.shortSeconds)
+        }
+    }
+
+    var shortClipRule: ShortClipRule {
+        ShortClipRule(isEnabled: skipShortClips, threshold: Double(shortClipSeconds))
+    }
+
     /// The colour theme (Settings ▸ Appearance). Comet by default.
     @Published var themeID: ThemePalette.ID {
         didSet { defaults?.set(themeID.rawValue, forKey: Key.theme) }
@@ -97,6 +117,9 @@ final class AppSettings: ObservableObject {
         let excluded = Set(defaults?.stringArray(forKey: Key.excludedCategories) ?? [])
         includedCategories = Set(MediaCategory.allCases.filter { !excluded.contains($0.rawValue) })
         playSuccessSound = defaults?.object(forKey: Key.successSound) as? Bool ?? true
+        skipShortClips = defaults?.object(forKey: Key.skipShort) as? Bool ?? true
+        let seconds = defaults?.object(forKey: Key.shortSeconds) as? Int ?? 5
+        shortClipSeconds = min(max(seconds, ShortClipRule.thresholdRange.lowerBound), ShortClipRule.thresholdRange.upperBound)
         themeID = defaults?.string(forKey: Key.theme).flatMap(ThemePalette.ID.init(rawValue:)) ?? .comet
         appearance = defaults?.string(forKey: Key.appearance).flatMap(AppAppearance.init(rawValue:)) ?? .system
         // `didSet` doesn't run inside `init`, so save migrated templates explicitly.

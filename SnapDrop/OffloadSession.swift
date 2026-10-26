@@ -32,6 +32,22 @@ final class OffloadSession: ObservableObject, Identifiable {
     @Published var reoffloadIDs: Set<String> = [] {
         didSet { refreshFiles() }
     }
+    /// Video lengths in seconds, by card path (read during the scan; unknown lengths are missing).
+    let durations: [String: Double]
+    /// "Skip short videos" (from Settings ▸ General).
+    @Published var shortRule: ShortClipRule = .off {
+        didSet { refreshFiles() }
+    }
+    /// Short clips the user chose to offload anyway (card paths).
+    @Published var includedShortIDs: Set<String> = [] {
+        didSet { refreshFiles() }
+    }
+    /// "Include All Short Clips" for this card.
+    @Published var includeAllShort = false {
+        didSet { refreshFiles() }
+    }
+    /// New short videos (and their sidecars) that won't be copied. Fixed once the offload starts.
+    @Published private(set) var skippedShort = ShortClipSkip()
     /// What the Offload button copies: new files in the included categories, plus re-offloads.
     @Published private(set) var newClips: [Clip] = []
     /// Card paths in `newClips` that were offloaded before.
@@ -63,9 +79,10 @@ final class OffloadSession: ObservableObject, Identifiable {
 
     private var task: Task<Void, Never>?
 
-    init(card: CardVolume, inventory: CardInventory) {
+    init(card: CardVolume, inventory: CardInventory, durations: [String: Double] = [:]) {
         self.card = card
         self.inventory = inventory
+        self.durations = durations
         self.missingIDs = Set(inventory.missing.map(\.relativePath))
         self.offloadedIDs = Set(inventory.offloaded.map(\.relativePath))
         refreshFiles()
@@ -80,8 +97,11 @@ final class OffloadSession: ObservableObject, Identifiable {
     private func refreshFiles() {
         guard phase == .ready else { return }   // never change the list mid-offload
         let selection = OffloadSelection.make(inventory: inventory, categories: includedCategories,
-                                              reoffload: reoffloadMode, reoffloadIDs: reoffloadIDs)
+                                              reoffload: reoffloadMode, reoffloadIDs: reoffloadIDs,
+                                              shortRule: shortRule, durations: durations,
+                                              includedShortIDs: includedShortIDs, includeAllShort: includeAllShort)
         newClips = selection.toCopy
+        skippedShort = selection.skippedShort
         reoffloadingIDs = selection.reoffloading
         alreadyOffloadedCount = selection.offloadedKept
         missingCopyCount = selection.missingKept
@@ -104,6 +124,33 @@ final class OffloadSession: ObservableObject, Identifiable {
         } else {
             reoffloadIDs.insert(clip.relativePath)
         }
+    }
+
+    /// The video's length, if it could be read.
+    func duration(of clip: Clip) -> Double? { durations[clip.relativePath] }
+
+    /// Is this a short clip (by the current rule), skipped or included anyway?
+    func isShortClip(_ clip: Clip) -> Bool {
+        clip.category == .video && offloadedStatus(of: clip) == nil && shortRule.isShort(durations[clip.relativePath])
+    }
+
+    /// "Include Anyway" for one short clip (its sidecars come along), or skip it again.
+    func toggleIncludeShort(_ clip: Clip) {
+        if includeAllShort {
+            // Turning one off from "all" keeps the others included.
+            includedShortIDs = Set(inventory.new.filter(isShortClip).map(\.relativePath))
+            includeAllShort = false
+        }
+        if includedShortIDs.contains(clip.relativePath) {
+            includedShortIDs.remove(clip.relativePath)
+        } else {
+            includedShortIDs.insert(clip.relativePath)
+        }
+    }
+
+    /// Short clips that are being offloaded because the user included them.
+    func isIncludedShortClip(_ clip: Clip) -> Bool {
+        isShortClip(clip) && !skippedShort.ids.contains(clip.relativePath)
     }
 
     /// Was this file offloaded before? (`nil` = never; `true` = copy missing.)

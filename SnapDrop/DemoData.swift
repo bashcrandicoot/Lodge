@@ -77,6 +77,22 @@ enum DemoData {
         return files
     }
 
+    /// Clip lengths: mostly 0:12–1:40, plus two accidental 2–3 second takes (C0011, C0019).
+    static func durations() -> [String: Double] {
+        var result: [String: Double] = [:]
+        for index in 1...24 {
+            let name = String(format: "C%04d", index)
+            let seconds: Double
+            switch index {
+            case 11: seconds = 2.4
+            case 19: seconds = 3.1
+            default: seconds = Double(12 + (index * 37) % 88) + 0.5
+            }
+            result["PRIVATE/M4ROOT/CLIP/\(name).MP4"] = seconds
+        }
+        return result
+    }
+
     @MainActor
     static func model(state: State) -> AppModel {
         let settings = AppSettings(defaults: nil)
@@ -112,7 +128,8 @@ enum DemoData {
         let inventory = CardInventory.classify(
             files: all, volumeIdentity: card.identity, entries: entries,
             fileSize: { path in missingNames.contains((path as NSString).lastPathComponent) ? nil : sizes[path] })
-        let session = OffloadSession(card: card, inventory: inventory)
+        let session = OffloadSession(card: card, inventory: inventory, durations: durations())
+        session.shortRule = settings.shortClipRule
         // While copying and when finished, the missing copies are being re-offloaded too.
         if state != .ready { session.reoffloadMode = .missing }
         session.projectInput = "Coastline"
@@ -148,7 +165,11 @@ enum DemoData {
         // Ready to format once everything is offloaded; otherwise "N files not yet offloaded".
         var cardInventory = inventory
         if state == .finished {
-            cardInventory = CardInventory(offloaded: all, copiesFolder: (settings.destinationPath ?? "") + "/Coastline")
+            // Everything but the two skipped short clips (and their sidecars).
+            let skipped = session.skippedShort.ids
+            cardInventory = CardInventory(new: all.filter { skipped.contains($0.relativePath) },
+                                          offloaded: all.filter { !skipped.contains($0.relativePath) },
+                                          copiesFolder: (settings.destinationPath ?? "") + "/Coastline")
         }
         model.installDemo(card: card, session: session, inventory: cardInventory)
         return model

@@ -25,6 +25,7 @@ enum OffloadReadiness {
         isScanning: Bool,
         newFileCount: Int,
         missingCopies: Int = 0,
+        shortClipsSkipped: Int = 0,
         cardIsEmpty: Bool = false,
         namingIsValid: Bool = true,
         needs: NamingNeeds = NamingNeeds(project: true),
@@ -42,6 +43,11 @@ enum OffloadReadiness {
             return missingCopies == 1
                 ? "1 copy is missing at the destination — choose Re-offload"
                 : "\(missingCopies) copies are missing at the destination — choose Re-offload"
+        }
+        if newFileCount == 0 && shortClipsSkipped > 0 {
+            return shortClipsSkipped == 1
+                ? "Only a short clip is left — choose Include Anyway to offload it"
+                : "Only short clips are left — choose Include All Short Clips to offload them"
         }
         if newFileCount == 0 { return "Everything on this card is already offloaded" }
         if !namingIsValid { return "Fix the naming template in Settings" }
