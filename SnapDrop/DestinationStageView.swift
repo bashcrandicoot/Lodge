@@ -18,7 +18,7 @@ struct DestinationStageView: View {
                     Text("Choose the folder your media is copied into. You only need to do this once.")
                 } actions: {
                     Button("Choose Folder…", action: choose)
-                        .buttonStyle(.borderedProminent)
+                        .buttonStyle(.themeProminent)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
@@ -277,6 +277,13 @@ private struct SpaceInfo: View {
     let url: URL
     let required: Int64?
 
+    @Environment(\.themeIsPlain) private var plainTheme
+    @Environment(\.colorScheme) private var colorScheme
+
+    private var gaugeGradient: Gradient {
+        plainTheme ? Gradient(colors: [Theme.accent]) : Gradient(colors: Theme.gaugeColors(dark: colorScheme == .dark))
+    }
+
     var body: some View {
         let available = VolumeInfo.availableBytes(at: url)
         let total = VolumeInfo.totalBytes(at: url)
@@ -286,7 +293,7 @@ private struct SpaceInfo: View {
                     EmptyView()
                 }
                 .gaugeStyle(.accessoryLinearCapacity)
-                .tint(isShort(available) ? .red : .accentColor)
+                .tint(isShort(available) ? Gradient(colors: [.red]) : gaugeGradient)
                 .accessibilityLabel("Destination space used")
             }
             HStack {

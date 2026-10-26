@@ -129,8 +129,8 @@ private struct TokenChips: View {
                         .font(.system(.callout, design: .monospaced))
                         .padding(.horizontal, 8)
                         .padding(.vertical, 3)
-                        .background(Color.accentColor.opacity(0.12), in: Capsule())
-                        .foregroundStyle(Color.accentColor)
+                        .background(Theme.accent.opacity(0.12), in: Capsule())
+                        .foregroundStyle(Theme.accent)
                         .contentShape(Capsule())
                 }
                 .buttonStyle(.plain)

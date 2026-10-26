@@ -31,7 +31,7 @@ struct ContentView: View {
                 .padding(.vertical, 12)
                 .background(.bar)
         }
-        .background(Color(nsColor: .windowBackgroundColor))
+        .background(ThemeBackground())
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button {
@@ -72,7 +72,8 @@ struct ContentView: View {
 }
 
 extension View {
-    /// Supplies all of the app's shared objects to a view (used by the app and previews).
+    /// Supplies all of the app's shared objects (and the theme settings) to a view
+    /// (used by the app and previews).
     func appEnvironment(_ model: AppModel) -> some View {
         self
             .environmentObject(model)
@@ -81,6 +82,7 @@ extension View {
             .environmentObject(model.ledger)
             .environmentObject(model.cameras)
             .environmentObject(model.destinations)
+            .snapDropTheme()
     }
 }
 

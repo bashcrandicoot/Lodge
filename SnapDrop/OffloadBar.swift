@@ -80,11 +80,9 @@ private struct ReadyRow: View {
                 } icon: {
                     Image(systemName: "arrow.down.circle.fill")
                 }
-                .font(.body.weight(.semibold))
-                .padding(.horizontal, 6)
                 .animation(reduceMotion ? nil : .snappy, value: title)
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.themeProminent)
             .controlSize(.large)
             .keyboardShortcut(.defaultAction)
             .disabled(blocker != nil)
@@ -181,6 +179,7 @@ private struct CompletionRow: View {
     /// Bumped once on appear to bounce the result symbol.
     @State private var bounces = 0
     @State private var glowing = false
+    @Environment(\.themeIsPlain) private var plainTheme
 
     var body: some View {
         let summary = session.summary ?? OffloadSummary()
@@ -188,20 +187,31 @@ private struct CompletionRow: View {
         HStack(spacing: 14) {
             ZStack {
                 if success {
-                    // A soft green glow behind the checkmark.
+                    // A soft glow in the icon's colours behind the checkmark.
                     Circle()
-                        .fill(Color.green.opacity(glowing ? 0.35 : 0))
+                        .fill(plainTheme
+                              ? AnyShapeStyle(Theme.accent.opacity(glowing ? 0.25 : 0))
+                              : AnyShapeStyle(Theme.borderGradient.opacity(glowing ? 0.45 : 0)))
                         .frame(width: 54, height: 54)
                         .blur(radius: 14)
                 }
                 if success && !reduceMotion {
-                    CompletionBurst(color: .green)
+                    CompletionBurst(color: Theme.coral)
                 }
-                Image(systemName: symbol(summary))
-                    .font(.system(size: 30))
-                    .foregroundStyle(color(summary))
-                    .symbolEffect(.bounce, value: bounces)
-                    .shadow(color: success ? Color.green.opacity(glowing ? 0.55 : 0) : .clear, radius: 10)
+                Group {
+                    if success {
+                        Image(systemName: symbol(summary))
+                            .symbolRenderingMode(.palette)
+                            .foregroundStyle(Color.white,
+                                             plainTheme ? AnyShapeStyle(Theme.accent) : AnyShapeStyle(Theme.borderGradient))
+                    } else {
+                        Image(systemName: symbol(summary))
+                            .foregroundStyle(color(summary))
+                    }
+                }
+                .font(.system(size: 30))
+                .symbolEffect(.bounce, value: bounces)
+                .shadow(color: success && !plainTheme ? Theme.magenta.opacity(glowing ? 0.5 : 0) : .clear, radius: 10)
             }
             .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
@@ -236,7 +246,7 @@ private struct CompletionRow: View {
             }
             .disabled(session.cardRemoved || model.isEjecting)
             Button("Done", action: model.finishSession)
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.themeProminent)
                 .keyboardShortcut(.defaultAction)
         }
         .controlSize(.large)

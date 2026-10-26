@@ -275,9 +275,9 @@ private struct PreviewRow: View {
         .background {
             if isActive {
                 RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .fill(Color.accentColor.opacity(0.13))
+                    .fill(Theme.accent.opacity(0.13))
                     .overlay(alignment: .leading) {
-                        Capsule().fill(Color.accentColor).frame(width: 3).padding(.vertical, 5)
+                        Capsule().fill(Theme.accent).frame(width: 3).padding(.vertical, 5)
                     }
                     .padding(.horizontal, 3)
                     .transition(.opacity)

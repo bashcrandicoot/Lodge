@@ -94,7 +94,7 @@ private struct CardRow: View {
         }
         .background(
             RoundedRectangle(cornerRadius: 9, style: .continuous)
-                .fill(isSelected ? Color.accentColor.opacity(0.14) : Color.clear))
+                .fill(isSelected ? Theme.accent.opacity(0.14) : Color.clear))
         .contextMenu {
             if showsActions { CardActions() }
         }

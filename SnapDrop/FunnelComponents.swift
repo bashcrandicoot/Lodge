@@ -20,6 +20,7 @@ struct StagePanel<Content: View>: View {
     let state: StageState
     @ViewBuilder var content: Content
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.themeIsPlain) private var plainTheme
     /// Bumped each time the stage becomes active, to play a short "look here" pop.
     @State private var activations = 0
 
@@ -33,11 +34,18 @@ struct StagePanel<Content: View>: View {
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .strokeBorder(state == .active ? Color.accentColor.opacity(0.55) : Color(nsColor: .separatorColor),
-                              lineWidth: state == .active ? 1.5 : 1)
-                // A soft accent glow along the border of the stage that needs attention
-                // (on the border only, so the text inside stays sharp).
-                .shadow(color: Color.accentColor.opacity(state == .active ? 0.45 : 0), radius: 7)
+                .strokeBorder(Color(nsColor: .separatorColor), lineWidth: 1)
+                .opacity(state == .active ? 0 : 1)
+                .allowsHitTesting(false)
+        }
+        .overlay {
+            // The stage that needs attention gets the icon's gradient on its border and a soft
+            // glow (on the border only, so the text inside stays sharp).
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .strokeBorder(plainTheme ? AnyShapeStyle(Theme.accent) : AnyShapeStyle(Theme.borderGradient.opacity(0.8)),
+                              lineWidth: plainTheme ? 2 : 1.5)
+                .shadow(color: plainTheme ? .clear : Theme.magenta.opacity(0.4), radius: 7)
+                .opacity(state == .active ? 1 : 0)
                 .allowsHitTesting(false)
         }
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.35), value: state)
@@ -58,12 +66,16 @@ struct StageHeader: View {
     let number: Int
     let title: String
     let state: StageState
+    @Environment(\.themeIsPlain) private var plainTheme
 
     var body: some View {
         HStack(spacing: 8) {
             ZStack {
-                Circle()
-                    .fill(badgeColor.opacity(state == .pending ? 0.15 : 1))
+                if state == .active && !plainTheme {
+                    Circle().fill(Theme.borderGradient)
+                } else {
+                    Circle().fill(badgeColor.opacity(state == .pending ? 0.15 : 1))
+                }
                 if state == .done {
                     Image(systemName: "checkmark")
                         .font(.system(size: 11, weight: .bold))
@@ -90,7 +102,7 @@ struct StageHeader: View {
     private var badgeColor: Color {
         switch state {
         case .pending: return .secondary
-        case .active: return .accentColor
+        case .active: return Theme.accent
         case .done: return .green
         }
     }
@@ -129,7 +141,7 @@ struct FunnelArrow: View {
 struct CountPill: View {
     let text: String
     let systemImage: String
-    var tint: Color = .accentColor
+    var tint: Color = Theme.accent
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
