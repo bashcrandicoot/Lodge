@@ -87,10 +87,21 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
 | `Copier.swift` | Copy + SHA-256 verify of one file, and the whole-card offload loop |
 | `Ledger.swift` | The JSON record of everything offloaded |
 | `Settings.swift` | Destination folder preference |
+| `Assets.xcassets/AppIcon` | App icon sizes, generated from `Design/icon-1024.png` |
+| `Design/icon-1024.png` | Master 1024×1024 app icon |
 | `SnapDropTests/` | Unit tests for naming, filtering, ledger and copy/verify |
 
 The project uses Xcode's folder-synced groups: any `.swift` file you add to the
 `SnapDrop/` folder is automatically part of the app. No third-party dependencies.
+
+## Updating the icon
+
+Replace `Design/icon-1024.png` (1024×1024, already macOS-shaped), then regenerate the sizes:
+
+```sh
+cd SnapDrop/Assets.xcassets/AppIcon.appiconset
+for s in 16 32 64 128 256 512 1024; do sips -z $s $s ../../../Design/icon-1024.png --out icon_$s.png; done
+```
 
 ## License
 
