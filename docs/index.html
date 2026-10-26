@@ -246,6 +246,41 @@
       margin: var(--space-3) 0 0;
     }
 
+    .motion {
+      display: block;
+      margin: 0;
+      max-width: 100%;
+      min-width: 0;
+    }
+    .motion video,
+    .motion .motion-still {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      aspect-ratio: var(--motion-ratio);
+      object-fit: contain;
+      border-radius: 12px;
+    }
+    .motion .motion-still { display: none; }
+    .motion-wagon {
+      --motion-ratio: 2120 / 306;
+      width: min(1060px, 100%);
+      margin: var(--space-6) auto 0;
+    }
+    .motion-check {
+      --motion-ratio: 720 / 200;
+      width: min(360px, 100%);
+      margin-top: auto;
+      padding-top: var(--space-4);
+    }
+    .motion-glow {
+      --motion-ratio: 540 / 560;
+      width: min(270px, 100%);
+      margin-top: var(--space-5);
+      align-self: center;
+    }
+
     section { padding-block: var(--space-8); }
     h2 {
       font-size: var(--h2);
@@ -435,6 +470,8 @@
     }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
+      .motion video { display: none; }
+      .motion .motion-still { display: block; }
     }
   </style>
 </head>
@@ -479,6 +516,13 @@
     <div class="wrap">
       <img class="shot" src="assets/screenshots/ready-dark.png" width="1440" alt="Lodge in Dark mode, ready to offload. The preset control at the top right reads Sony Shoot, and the window title is hidden. Offload 54 Files sits along the bottom.">
       <p class="caption">Default theme, Dark mode. The card line shows how many files are new, and how many were ignored. <span class="soon">Coming in the next update</span> This picture’s preset menu is at the top right, and the title is hidden. Lodge 1.0.0 keeps that menu in the center of the toolbar, and the title reads Lodge.</p>
+      <figure class="motion motion-wagon">
+        <video autoplay muted loop playsinline preload="metadata" poster="assets/motion/lodge-wagon-progress@2x.png" width="1060" height="153" aria-label="A wagon crossing the copy progress bar.">
+          <source src="assets/motion/lodge-wagon-progress@2x.mp4" type="video/mp4">
+        </video>
+        <img class="motion-still" src="assets/motion/lodge-wagon-progress@2x.png" width="1060" height="153" alt="A wagon crossing the copy progress bar.">
+        <figcaption class="caption"><span class="soon">Coming in the next update</span> The copying bar, with the wagon on its way across.</figcaption>
+      </figure>
     </div>
 
     <section id="features">
@@ -510,6 +554,12 @@
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 7h6"/></svg>
             <h3>Ready to format</h3>
             <p>When every file has a verified copy that is still in the destination, the card shows a glowing green <strong>Ready to format</strong> badge. <strong>Format Card…</strong> asks first, with <strong>Cancel</strong> as the default, and keeps exFAT, FAT32, or FAT16.</p>
+            <figure class="motion motion-check">
+              <video autoplay muted loop playsinline preload="metadata" poster="assets/motion/lodge-complete-check@2x.png" width="360" height="100" aria-label="A green checkmark draws in beside Offload complete.">
+                <source src="assets/motion/lodge-complete-check@2x.mp4" type="video/mp4">
+              </video>
+              <img class="motion-still" src="assets/motion/lodge-complete-check@2x.png" width="360" height="100" alt="A green checkmark beside Offload complete. 57 copied, 128 GB.">
+            </figure>
           </article>
           <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h16M4 16h16"/><circle cx="9" cy="8" r="2" fill="var(--card)"/><circle cx="15" cy="16" r="2" fill="var(--card)"/></svg>
@@ -548,6 +598,12 @@
             <span class="num" aria-hidden="true">1</span>
             <h3>Insert</h3>
             <p>Any removable drive under <code>/Volumes</code> shows up in Card, including one that was already mounted. An empty card says <strong>Card Is Empty</strong>.</p>
+            <figure class="motion motion-glow">
+              <video autoplay muted loop playsinline preload="metadata" poster="assets/motion/lodge-card-glow@2x.png" width="270" height="280" aria-label="A memory card glowing as it is inserted.">
+                <source src="assets/motion/lodge-card-glow@2x.mp4" type="video/mp4">
+              </video>
+              <img class="motion-still" src="assets/motion/lodge-card-glow@2x.png" width="270" height="280" alt="A memory card glowing as it is inserted.">
+            </figure>
           </li>
           <li>
             <span class="num" aria-hidden="true">2</span>

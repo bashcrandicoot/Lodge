@@ -49,6 +49,10 @@ The first time Lodge reads a card, macOS asks for access to files on a removable
 - Reads the card only. A copy never overwrites a file already at the destination.
 - Remembers what was offloaded, so the same card again copies only what is new.
 
+<p align="center">
+  <img src="docs/assets/motion/lodge-complete-check@2x.gif" width="360" height="100" alt="A green checkmark draws in beside Offload complete. 57 copied, 128 GB.">
+</p>
+
 **Coming in the next update.** See the [changelog](docs/changelog.md).
 
 ## Requirements

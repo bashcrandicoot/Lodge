@@ -60,6 +60,10 @@ While it runs you see the current file, how far through the batch you are, the b
 
 ![Lodge copying files. The offload bar shows the file, how far through the batch the copy is, and Cancel, with a wagon scene along the bar. That scene is in the next update.](assets/screenshots/running-dark.png)
 
+The wagon on that bar is in the next update. This is the looping progress clip, at half size. [The same clip as video](assets/motion/lodge-wagon-progress@2x.mp4).
+
+<img src="assets/motion/lodge-wagon-progress@2x.png" width="1060" height="153" alt="A wagon crossing the copy progress bar. Coming in the next update.">
+
 Time left appears after a couple of seconds of copying: **Estimating time…**, **Less than a minute left**, **About 3 min left**, and so on.
 
 When it finishes, the summary reads like **57 copied · 0 skipped · 0 failed**. The copied count counts up. On a clean finish the checkmark draws itself, and Lodge plays the Glass sound if **Play a sound when an offload finishes** is on (it is, by default). Then: **Show in Finder**, **Eject Card**, **Done**, and **Format Card…** when the card is ready.
