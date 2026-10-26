@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lodge — Home base for your media.</title>
+  <meta name="description" content="Lodge gets your footage off camera cards safely, checked and neatly named.">
+  <meta name="author" content="BashFrames">
+  <meta name="theme-color" content="#100e18">
+  <meta name="color-scheme" content="dark">
+  <link rel="canonical" href="https://bashcrandicoot.github.io/Lodge/">
+  <link rel="icon" href="assets/favicon.ico" sizes="any">
+  <link rel="icon" href="assets/favicon.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Lodge">
+  <meta property="og:url" content="https://bashcrandicoot.github.io/Lodge/">
+  <meta property="og:title" content="Lodge — Home base for your media.">
+  <meta property="og:description" content="Lodge gets your footage off camera cards safely, checked and neatly named.">
+  <meta property="og:image" content="https://bashcrandicoot.github.io/Lodge/assets/lodge-social-preview.png">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="640">
+  <meta property="og:image:alt" content="Lodge. Home base for your media. A log cabin at night, with pines and mountains.">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Lodge — Home base for your media.">
+  <meta name="twitter:description" content="Lodge gets your footage off camera cards safely, checked and neatly named.">
+  <meta name="twitter:image" content="https://bashcrandicoot.github.io/Lodge/assets/lodge-social-preview.png">
+  <meta name="twitter:image:alt" content="Lodge. Home base for your media. A log cabin at night, with pines and mountains.">
+
+  <style>
+    :root {
+      --bg: #100e18;
+      --ink: #ffffff;
+      --muted: #b7b1c9;
+      --accent: #b7c6ff;
+      --button: #3d4fce;
+      --button-hover: #4d5ed6;
+      --card: #1b1830;
+      --line: rgba(230, 220, 255, 0.12);
+      --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Helvetica, Arial, sans-serif;
+      --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      --max: 1080px;
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 24px;
+      --space-6: 32px;
+      --space-7: 48px;
+      --space-8: 64px;
+      --h1: clamp(40px, 6vw, 56px);
+      --h2: clamp(28px, 4vw, 36px);
+      --h3: 18px;
+      --body: 17px;
+      --small: 15px;
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font);
+      font-size: var(--body);
+      line-height: 1.5;
+      text-rendering: optimizeLegibility;
+    }
+    img { max-width: 100%; height: auto; }
+    a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 0.16em; }
+    a:hover { color: #d7e0ff; }
+    :focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 3px;
+    }
+    h1, h2, h3, p, ul, ol { overflow-wrap: break-word; }
+
+    .skip {
+      position: absolute;
+      left: var(--space-4);
+      top: -48px;
+      background: var(--button);
+      color: #fff;
+      padding: var(--space-2) var(--space-3);
+      border-radius: 8px;
+      z-index: 5;
+    }
+    .skip:focus { top: var(--space-3); }
+
+    .wrap {
+      width: min(var(--max), 100%);
+      margin-inline: auto;
+      padding-inline: var(--space-5);
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 4;
+      background: rgba(16, 14, 24, 0.86);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: saturate(140%) blur(16px);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+      min-height: 64px;
+      padding-block: var(--space-3);
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      color: var(--ink);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      text-decoration: none;
+      flex: none;
+    }
+    .brand img { width: 28px; height: 28px; max-width: none; }
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: var(--space-2) var(--space-4);
+      align-items: center;
+      margin: 0;
+      padding: 0;
+    }
+    .nav-links a {
+      color: var(--ink);
+      text-decoration: none;
+      font-size: var(--small);
+      line-height: 1.2;
+    }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-links .download {
+      color: #fff;
+      background: var(--button);
+      border-radius: 980px;
+      padding: var(--space-2) var(--space-4);
+    }
+    .nav-links .download:hover { background: var(--button-hover); color: #fff; }
+
+    .hero {
+      position: relative;
+      padding-block: var(--space-7) var(--space-5);
+      text-align: center;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: var(--space-6);
+      width: min(820px, 100%);
+      height: 280px;
+      transform: translateX(-50%);
+      background: radial-gradient(ellipse at center, rgba(120, 100, 190, 0.22), rgba(120, 100, 190, 0) 70%);
+      pointer-events: none;
+    }
+    .hero-inner { position: relative; }
+    .hero img.header {
+      width: 100%;
+      display: block;
+      margin: 0 auto var(--space-5);
+      border-radius: var(--radius);
+    }
+    h1 {
+      margin: 0 0 var(--space-3);
+      font-size: var(--h1);
+      font-weight: 650;
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+    }
+    .lede {
+      max-width: 38rem;
+      margin: 0 auto var(--space-6);
+      color: var(--muted);
+      font-size: 19px;
+      line-height: 1.5;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+      justify-content: center;
+      align-items: center;
+      margin: 0 0 var(--space-3);
+    }
+    a.store { display: inline-block; line-height: 0; border-radius: var(--radius); }
+    a.store img { display: block; width: 320px; max-width: 100%; height: auto; }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--button);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      line-height: 1.2;
+      border-radius: 12px;
+      padding: var(--space-3) var(--space-4);
+      border: 1px solid transparent;
+    }
+    .button:hover { background: var(--button-hover); color: #fff; }
+    .button.secondary {
+      background: transparent;
+      color: var(--ink);
+      border-color: rgba(255, 255, 255, 0.28);
+    }
+    .button.secondary:hover { border-color: var(--accent); color: var(--ink); background: transparent; }
+    .pay {
+      margin: 0 0 var(--space-4);
+      color: var(--muted);
+      font-size: var(--small);
+      line-height: 1.5;
+    }
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+    }
+    .badges img { height: 20px; width: auto; max-width: none; }
+
+    .shot {
+      display: block;
+      width: 100%;
+      margin: var(--space-6) 0 0;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      box-shadow: 0 var(--space-5) 80px rgba(0, 0, 0, 0.45);
+    }
+    .caption {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+      text-align: center;
+      margin: var(--space-3) 0 0;
+    }
+
+    .motion {
+      display: block;
+      margin: 0;
+      max-width: 100%;
+      min-width: 0;
+    }
+    .motion video,
+    .motion .motion-still {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      aspect-ratio: var(--motion-ratio);
+      object-fit: contain;
+      border-radius: 12px;
+    }
+    .motion .motion-still { display: none; }
+    .motion-wagon {
+      --motion-ratio: 2120 / 306;
+      width: min(1060px, 100%);
+      margin: var(--space-6) auto 0;
+    }
+
+    section { padding-block: var(--space-8); }
+    h2 {
+      font-size: var(--h2);
+      font-weight: 650;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin: 0 0 var(--space-3);
+    }
+    .section-intro {
+      color: var(--muted);
+      max-width: 40rem;
+      margin: 0 0 var(--space-6);
+      line-height: 1.5;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-4);
+      align-items: stretch;
+      margin: 0;
+    }
+    .card {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      height: 100%;
+      margin: 0;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: var(--space-5);
+      min-width: 0;
+    }
+    .icon {
+      display: block;
+      width: 28px;
+      height: 28px;
+      margin: 0 0 var(--space-4);
+      flex: none;
+      color: var(--accent);
+    }
+    .features h3,
+    .steps h3,
+    .install-grid h3 {
+      margin: 0 0 var(--space-2);
+      font-size: var(--h3);
+      font-weight: 650;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+    }
+    .features h3 { min-height: 1.25em; }
+    .card p,
+    .steps p { margin: 0; color: var(--muted); font-size: var(--small); line-height: 1.5; }
+    .features > .card {
+      align-self: stretch;
+      height: 100%;
+    }
+    .card.lead {
+      border-color: rgba(183, 198, 255, 0.72);
+      background:
+        linear-gradient(180deg, rgba(183, 198, 255, 0.1), rgba(183, 198, 255, 0) 48%),
+        var(--card);
+      box-shadow: inset 0 0 0 1px rgba(183, 198, 255, 0.22);
+    }
+    .scheme {
+      display: block;
+      max-width: 100%;
+      margin-top: var(--space-3);
+      color: #d7e0ff;
+      font-size: 12px;
+      line-height: 1.45;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      overflow-wrap: normal;
+    }
+    .scheme + .scheme { margin-top: 2px; }
+    code {
+      font-family: var(--mono);
+      font-size: 0.92em;
+      color: #e5e5ea;
+      overflow-wrap: anywhere;
+    }
+
+    .steps {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-4);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .steps li {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      height: 100%;
+      margin: 0;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      padding: var(--space-5);
+      min-width: 0;
+      background-image:
+        linear-gradient(var(--card), var(--card)),
+        linear-gradient(110deg, rgba(183, 198, 255, 0.18), rgba(183, 198, 255, 0.85), rgba(142, 160, 239, 0.22), rgba(183, 198, 255, 0.18));
+      background-origin: border-box;
+      background-clip: padding-box, border-box;
+      background-size: 100% 100%, 220% 100%;
+      animation: step-shimmer 9s linear infinite;
+    }
+    .steps li.will-enter {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    .steps li.is-in {
+      animation: step-in 0.7s ease var(--stagger, 0ms) both, step-shimmer 9s linear infinite;
+    }
+    .steps li:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      top: 50%;
+      left: calc(100% + 3px);
+      width: 10px;
+      height: 2px;
+      transform: translateY(-50%);
+      pointer-events: none;
+      border-radius: 2px;
+      background: linear-gradient(90deg, rgba(94, 116, 230, 0.35), #ffffff 50%, rgba(183, 198, 255, 0.45));
+      box-shadow: 0 0 8px 1px rgba(143, 164, 255, 0.85);
+    }
+    .num {
+      position: relative;
+      z-index: 1;
+      display: inline-block;
+      margin: 0 0 var(--space-4);
+      font-weight: 650;
+      font-size: 64px;
+      letter-spacing: -0.04em;
+      line-height: 0.9;
+      flex: none;
+    }
+    .num span {
+      background-image: linear-gradient(180deg, #ffffff 0%, #d5defe 30%, #8ea2ff 68%, #3d4fce 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+      filter: drop-shadow(0 0 14px rgba(120, 146, 255, 0.95));
+    }
+
+    .pair {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      gap: var(--space-6);
+      align-items: center;
+    }
+    .pair img {
+      width: 100%;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+    }
+    .themes ul {
+      margin: var(--space-4) 0 0;
+      padding-left: 1.15em;
+      color: var(--muted);
+    }
+    .themes li { margin: var(--space-2) 0; line-height: 1.5; }
+    .themes li span { color: var(--ink); }
+
+    .install-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-4);
+      margin-top: var(--space-5);
+    }
+    .install-grid ol {
+      margin: 0;
+      padding-left: 1.25em;
+      color: var(--muted);
+      font-size: var(--small);
+      line-height: 1.5;
+    }
+    .install-grid li { margin: var(--space-2) 0; }
+    .install-grid .card p { margin-top: var(--space-3); }
+    .note {
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--muted);
+      margin: var(--space-4) 0 0;
+    }
+    .download-row { margin: 0; }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding-block: var(--space-6) var(--space-8);
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    footer .wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3) var(--space-5);
+      justify-content: space-between;
+      align-items: center;
+    }
+    footer p { margin: 0; }
+    footer nav { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); }
+    footer a { color: var(--muted); }
+    footer a.support {
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 980px;
+      padding: var(--space-1) var(--space-3);
+      text-decoration: none;
+    }
+    footer a.support:hover { color: var(--accent); border-color: var(--accent); }
+
+    @keyframes step-shimmer {
+      to { background-position: 0 0, 220% 0; }
+    }
+    @keyframes step-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: none; }
+    }
+    @media (max-width: 800px) {
+      .pair, .install-grid, .steps { grid-template-columns: 1fr; }
+      .steps li:not(:last-child)::after {
+        top: calc(100% + 3px);
+        left: 50%;
+        width: 2px;
+        height: 10px;
+        transform: translateX(-50%);
+        background: linear-gradient(180deg, rgba(94, 116, 230, 0.35), #ffffff 50%, rgba(183, 198, 255, 0.45));
+      }
+      .features { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .features h3 { min-height: 0; }
+      section { padding-block: var(--space-7); }
+      .hero { padding-block: var(--space-6) var(--space-4); }
+    }
+    @media (max-width: 480px) {
+      .wrap { padding-inline: var(--space-4); }
+      .features { grid-template-columns: 1fr; }
+      .nav-inner { flex-wrap: nowrap; min-height: 56px; }
+      .nav-links { flex-wrap: nowrap; }
+      .nav-links a:not(.download) { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .motion video { display: none; }
+      .motion .motion-still { display: block; }
+      .steps li,
+      .steps li.will-enter,
+      .steps li.is-in {
+        animation: none;
+        opacity: 1;
+        transform: none;
+      }
+      .steps li:not(:last-child)::after { box-shadow: none; }
+    }
+  </style>
+</head>
+<body id="top">
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="#top">
+        <img src="assets/app-icon/icon_128x128.png" width="128" height="128" alt="">
+        Lodge
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#features">Features</a>
+        <a href="#themes">Themes</a>
+        <a href="#install">Install</a>
+        <a href="https://github.com/bashcrandicoot/Lodge/blob/main/docs/user-guide.md">User guide</a>
+        <a class="download" href="https://bashframes.gumroad.com/l/lodge">Download</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="hero">
+      <div class="hero-inner wrap">
+        <img class="header" src="assets/lodge-header-dark.png" width="1600" height="500" alt="Lodge. Home base for your media. A log cabin at night, with pines and mountains.">
+        <h1>From card to calm.</h1>
+        <p class="lede">Lodge gets your footage off camera cards safely, checked and neatly named.</p>
+        <div class="actions">
+          <a class="store" href="https://bashframes.gumroad.com/l/lodge"><img src="assets/download-button.png" width="320" height="72" alt="Download Lodge for Mac"></a>
+          <a class="button secondary" href="https://github.com/bashcrandicoot/Lodge/blob/main/docs/getting-started.md">Getting started</a>
+        </div>
+        <p class="pay">Pay what you want.</p>
+        <p class="badges">
+          <img alt="macOS 14 or later" src="https://img.shields.io/badge/macOS-14%2B-3A3A3C?style=flat&logo=apple&logoColor=white">
+          <a href="https://www.swift.org"><img alt="Swift 5" src="https://img.shields.io/badge/Swift-5-F05138?style=flat&logo=swift&logoColor=white"></a>
+          <a href="https://github.com/bashcrandicoot/Lodge/blob/main/LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-0A84FF?style=flat"></a>
+          <img alt="Vibe coded" src="assets/badges/vibe-coded-gradient.svg" height="20">
+        </p>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <img class="shot" src="assets/screenshots/ready-dark.png" width="1440" alt="Lodge in Dark mode, ready to offload. Offload 54 Files sits along the bottom.">
+      <figure class="motion motion-wagon">
+        <video autoplay muted loop playsinline preload="metadata" poster="assets/motion/lodge-wagon-progress@2x.png" width="1060" height="153" aria-label="A wagon crossing the copy progress bar.">
+          <source src="assets/motion/lodge-wagon-progress@2x.mp4" type="video/mp4">
+        </video>
+        <img class="motion-still" src="assets/motion/lodge-wagon-progress@2x.png" width="1060" height="153" alt="A wagon crossing the copy progress bar.">
+        <figcaption class="caption">The copying bar, with the wagon on its way across.</figcaption>
+      </figure>
+    </div>
+
+    <section id="features">
+      <div class="wrap">
+        <h2>From the card to a folder you trust</h2>
+        <p class="section-intro">Lodge checks each copy, brings over only what is new, and builds the folders from your template.</p>
+        <div class="features">
+          <article class="card lead">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h6l2 2h8v9H4z"/><path d="M4 11h16"/></svg>
+            <h3>Custom folder schemes</h3>
+            <p>Build each level from date, project, or camera.</p>
+            <code class="scheme">2026-10-25/Coastline/</code>
+            <code class="scheme">2026-10-25_Coastline_0001.mp4</code>
+          </article>
+          <article class="card">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12.5l2.5 2.5L16 9"/></svg>
+            <h3>Checked with SHA-256</h3>
+            <p>Every copied file is checked against the card, so you know it arrived intact.</p>
+          </article>
+          <article class="card">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7h11v12H8z"/><path d="M5 5h11v2"/></svg>
+            <h3>Only what is new</h3>
+            <p>Lodge remembers what it already copied and brings over only new files.</p>
+          </article>
+          <article class="card">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h16M4 16h16"/><circle cx="9" cy="8" r="2" fill="var(--card)"/><circle cx="15" cy="16" r="2" fill="var(--card)"/></svg>
+            <h3>Short clips and presets</h3>
+            <p>Skip accidental short clips, and save your favorite setup as a preset.</p>
+          </article>
+          <article class="card">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h6l2 2h8v9H4z"/></svg>
+            <h3>Drop a folder</h3>
+            <p>Drag a folder onto Lodge to choose where your footage goes.</p>
+          </article>
+          <article class="card">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h7l4 4v12H7z"/><path d="M14 4v4h4"/></svg>
+            <h3>Proxies and sidecars</h3>
+            <p>Proxy files and sidecar files travel with their clip automatically.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="how" aria-labelledby="how-title">
+      <div class="wrap">
+        <h2 id="how-title">Three steps</h2>
+        <ol class="steps">
+          <li>
+            <span class="num" aria-hidden="true"><span>1</span></span>
+            <h3>Insert the card</h3>
+            <p>A mounted card shows up in Lodge.</p>
+          </li>
+          <li>
+            <span class="num" aria-hidden="true"><span>2</span></span>
+            <h3>Name the files</h3>
+            <p>Preview the names before you copy.</p>
+          </li>
+          <li>
+            <span class="num" aria-hidden="true"><span>3</span></span>
+            <h3>Offload the card</h3>
+            <p>Copy and check every file.</p>
+          </li>
+        </ol>
+        <div class="step-media"><!-- A step video will go here when it is ready. --></div>
+      </div>
+    </section>
+
+    <section id="themes">
+      <div class="wrap pair themes">
+        <img src="assets/screenshots/ready-ember-dark.png" width="1440" alt="Lodge in the Ember theme, Dark mode, ready to offload.">
+        <div>
+          <h2>Default is neutral black</h2>
+          <p class="section-intro">Lodge opens in Dark mode, with no colour wash.</p>
+          <ul>
+            <li><span>Aurora, Ocean, Twilight, Ember, and Forest</span> are optional colour themes.</li>
+            <li><span>Light, Dark, or System.</span> Dark is how Lodge starts.</li>
+            <li><span>Increase Contrast and Reduce Transparency</span> turn every theme solid.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="install">
+      <div class="wrap">
+        <h2>Install Lodge 1.0.0</h2>
+        <p class="section-intro">Lodge is a universal app for Apple silicon and Intel Macs. It requires macOS 14 or later. <a href="https://bashframes.gumroad.com/l/lodge">Download Lodge from Gumroad</a>, then open the disk image and drag Lodge to Applications.</p>
+        <p class="download-row"><a class="store" href="https://bashframes.gumroad.com/l/lodge"><img src="assets/download-button.png" width="320" height="72" alt="Download Lodge for Mac"></a></p>
+        <p class="note">Pay what you want.</p>
+        <p class="note">No account, no analytics. Lodge 1.0.0 doesn’t use the network. Copying never uploads anything.</p>
+        <div class="install-grid">
+          <article class="card">
+            <h3>macOS 15 Sequoia and later</h3>
+            <ol>
+              <li>Open Lodge.</li>
+              <li>Click <strong>Done</strong> on the warning.</li>
+              <li>Go to <strong>System Settings &gt; Privacy &amp; Security</strong>.</li>
+              <li>Click <strong>Open Anyway</strong> next to Lodge, and confirm.</li>
+            </ol>
+          </article>
+          <article class="card">
+            <h3>macOS 14 Sonoma</h3>
+            <ol>
+              <li>Right-click or Control-click Lodge.</li>
+              <li>Choose <strong>Open</strong>.</li>
+              <li>Choose <strong>Open</strong> again.</li>
+            </ol>
+            <p>Lodge is not notarized, which is why macOS asks.</p>
+          </article>
+        </div>
+        <p class="note">The first time Lodge reads a card, allow access to files on a removable volume. Building from source is in the <a href="https://github.com/bashcrandicoot/Lodge/blob/main/CONTRIBUTING.md">contribution guide</a>. The <a href="https://github.com/bashcrandicoot/Lodge/blob/main/docs/user-guide.md">user guide</a>, <a href="https://github.com/bashcrandicoot/Lodge/blob/main/docs/faq.md">FAQ</a>, and <a href="https://github.com/bashcrandicoot/Lodge/blob/main/docs/changelog.md">changelog</a> live in the repository.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>Lodge 1.0.0 · Home base for your media. · MIT License · © 2026 BashFrames</p>
+      <nav aria-label="Footer">
+        <a href="https://github.com/bashcrandicoot/Lodge">GitHub</a>
+        <a href="https://github.com/bashcrandicoot/Lodge/blob/main/docs/user-guide.md">User guide</a>
+        <a href="mailto:bashframes@gmail.com">bashframes@gmail.com</a>
+        <a class="support" href="https://bashframes.gumroad.com/l/lodge">Support Lodge</a>
+        <a href="https://github.com/bashcrandicoot/Lodge/blob/main/SECURITY.md">Security</a>
+        <a href="https://github.com/bashcrandicoot/Lodge/blob/main/LICENSE">License</a>
+      </nav>
+    </div>
+  </footer>
+  <script>
+    (function () {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      if (!("IntersectionObserver" in window)) return;
+      var items = document.querySelectorAll(".steps li");
+      if (!items.length) return;
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-in");
+          observer.unobserve(entry.target);
+        });
+      }, { threshold: 0.3 });
+      Array.prototype.forEach.call(items, function (item, index) {
+        item.style.setProperty("--stagger", (index * 80) + "ms");
+        item.classList.add("will-enter");
+        observer.observe(item);
+      });
+    })();
+  </script>
+</body>
+</html>
