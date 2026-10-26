@@ -306,8 +306,41 @@ enum TemplateRenderer {
     /// "2026-10-25/Coastline" (empty string = straight into the destination).
     static func folderPath(_ template: NamingTemplate, file: Clip, context: NamingContext, date: Date? = nil) -> String {
         template.components
-            .map { finish(render($0, file: file, context: context, sequence: nil, date: date)) }
+            .map { finish(renderLevel($0, file: file, context: context, date: date)) }
             .joined(separator: "/")
+    }
+
+    /// Characters that join tokens side by side in a folder level ("{project}_{date}").
+    static let joiners: Set<Character> = ["_", "-", " "]
+
+    /// One folder level. Tokens side by side keep their separators, except that a token
+    /// that comes out empty takes one separator next to it along, so "{camera}_{date}"
+    /// without a camera is "2026-10-25", not "_2026-10-25".
+    static func renderLevel(_ parts: [TemplatePart], file: Clip, context: NamingContext, date: Date? = nil) -> String {
+        var pieces: [(text: String, emptyToken: Bool, joiner: Bool)] = parts.map { part in
+            switch part {
+            case .literal(let text):
+                return (text, false, !text.isEmpty && text.allSatisfy { joiners.contains($0) })
+            case .token(let token, let padding):
+                let value = NameRules.safeComponent(value(of: token, padding: padding, file: file, context: context,
+                                                          sequence: nil, date: date))
+                return (value, value.isEmpty, false)
+            }
+        }
+        var dropped = Set<Int>()
+        for index in pieces.indices where pieces[index].emptyToken {
+            // The nearest piece before it that's still there, if it's a separator with text before it…
+            let before = pieces.indices.prefix(index).last { !dropped.contains($0) }
+            if let before, pieces[before].joiner,
+               pieces.indices.prefix(before).contains(where: { !dropped.contains($0) && !pieces[$0].text.isEmpty }) {
+                dropped.insert(before)
+            } else if index + 1 < pieces.count, pieces[index + 1].joiner {
+                // …otherwise the separator right after it.
+                dropped.insert(index + 1)
+            }
+        }
+        for index in dropped { pieces[index].text = "" }
+        return pieces.map(\.text).joined()
     }
 
     /// The file name split around `{seq}`: text before it, the padding, and text after.
