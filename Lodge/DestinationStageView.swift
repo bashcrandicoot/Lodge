@@ -65,7 +65,7 @@ struct DestinationStageView: View {
             HStack {
                 Button("Change…", action: choose)
                     .disabled(model.isBusy)
-                    .help("Choose a folder that isn't one of your favorites")
+                    .help("Choose a folder that isn’t one of your favorites")
                 Button {
                     NSWorkspace.shared.activateFileViewerSelecting([url])
                 } label: {

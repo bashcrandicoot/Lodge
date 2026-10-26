@@ -42,10 +42,10 @@ struct CardStageView: View {
         guard card.id == model.selectedCardID else { return nil }
         if model.isScanning { return "Scanning…" }
         guard let session = model.session else { return nil }
-        let new = "\(OffloadFormatting.fileCount(session.newClips.count)) new"
         // System files and the ignore list: never copied, never block formatting, just counted.
-        let ignored = session.inventory.ignored.count
-        return ignored > 0 ? "\(new) · \(ignored) ignored" : new
+        return OffloadFormatting.cardDetail(newFiles: session.newClips.count,
+                                            copied: session.phase == .finished ? session.summary?.copied : nil,
+                                            ignored: session.inventory.ignored.count)
     }
 }
 

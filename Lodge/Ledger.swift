@@ -116,7 +116,7 @@ final class Ledger: ObservableObject {
             entries = try decoder.decode([LedgerEntry].self, from: data)
             knownKeys = Set(entries.map(\.sourceKey))
         } catch {
-            lastError = "Couldn't read the ledger: \(error.localizedDescription)"
+            lastError = "Couldn’t read the ledger: \(error.localizedDescription)"
         }
     }
 
@@ -131,7 +131,7 @@ final class Ledger: ObservableObject {
             try data.write(to: fileURL, options: .atomic)
             lastError = nil
         } catch {
-            lastError = "Couldn't save the ledger: \(error.localizedDescription)"
+            lastError = "Couldn’t save the ledger: \(error.localizedDescription)"
         }
     }
 }

@@ -197,7 +197,7 @@ private struct ClipsStageContent: View {
             ContentUnavailableView {
                 Label("Card Is Empty", systemImage: "sdcard")
             } description: {
-                Text("There's nothing on this card to offload.")
+                Text("There’s nothing on this card to offload.")
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else {
@@ -1181,6 +1181,6 @@ private struct QuickDumpToggle: View {
             .disabled(isDisabled)
             .fixedSize()
         }
-        .help("Leaves {project} out of folder and file names, so you don't need to type one. Numbering carries on from what's already there.")
+        .help("Leaves {project} out of folder and file names, so you don’t need to type one. Numbering carries on from what’s already there.")
     }
 }

@@ -10,7 +10,7 @@ enum CopierError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .destinationExists(let name): return "\(name) already exists — not overwriting it."
-        case .couldNotCreate(let name): return "Couldn't create \(name) in the destination."
+        case .couldNotCreate(let name): return "Couldn’t create \(name) in the destination."
         case .checksumMismatch(let name): return "Checksum mismatch for \(name). The copy was deleted."
         }
     }

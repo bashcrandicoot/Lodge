@@ -143,7 +143,7 @@ struct FormatCardButton: View {
         if model.canFormatSelectedCard {
             return readiness?.isReadyExceptShortClips == true
                 ? "Erase this card. The skipped short clips weren’t offloaded and will be lost"
-                : "Erase this card so it's ready for new footage"
+                : "Erase this card so it’s ready for new footage"
         }
         if let readiness, readiness.shortSkippedFiles > 0, readiness.pending > 0 {
             return "Offload the other files first. Include or remove short clips first, or format and discard them"

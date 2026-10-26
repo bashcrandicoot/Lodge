@@ -87,6 +87,22 @@ enum OffloadFormatting {
         count == 1 ? "1 File" : "\(count) Files"
     }
 
+    /// The selected card's line: "54 new files · 5 ignored" before and during an offload,
+    /// "57 copied · 5 ignored" once it has finished.
+    static func cardDetail(newFiles: Int, copied: Int?, ignored: Int) -> String {
+        let main: String
+        if let copied {
+            main = "\(copied) copied"
+        } else {
+            switch newFiles {
+            case 0: main = "No new files"
+            case 1: main = "1 new file"
+            default: main = "\(newFiles) new files"
+            }
+        }
+        return ignored > 0 ? "\(main) · \(ignored) ignored" : main
+    }
+
     /// "Offload 12 Files"
     static func offloadButtonTitle(fileCount count: Int) -> String {
         count == 0 ? "Offload Files" : "Offload \(fileCount(count))"

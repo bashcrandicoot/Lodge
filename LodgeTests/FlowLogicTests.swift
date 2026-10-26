@@ -101,6 +101,14 @@ final class FlowLogicTests: XCTestCase {
         XCTAssertEqual(OffloadFormatting.offloadButtonTitle(fileCount: 18), "Offload 18 Files")
     }
 
+    func testCardDetail() {
+        XCTAssertEqual(OffloadFormatting.cardDetail(newFiles: 54, copied: nil, ignored: 5), "54 new files · 5 ignored")
+        XCTAssertEqual(OffloadFormatting.cardDetail(newFiles: 1, copied: nil, ignored: 0), "1 new file")
+        XCTAssertEqual(OffloadFormatting.cardDetail(newFiles: 0, copied: nil, ignored: 0), "No new files")
+        XCTAssertEqual(OffloadFormatting.cardDetail(newFiles: 57, copied: 57, ignored: 5), "57 copied · 5 ignored",
+                       "A finished card says what was copied, not how many files are new")
+    }
+
     func testByteFormatting() {
         let expected = ByteCountFormatter.string(fromByteCount: 1_500_000_000, countStyle: .file)
         XCTAssertEqual(OffloadFormatting.bytes(1_500_000_000), expected)

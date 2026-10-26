@@ -334,9 +334,6 @@ extension EnvironmentValues {
         get { self[ThemeKey.self] }
         set { self[ThemeKey.self] = newValue }
     }
-
-    /// Gradients are off (Increase Contrast or Reduce Transparency).
-    var themeIsPlain: Bool { self[ThemeKey.self].isPlain }
 }
 
 /// Resolves the chosen theme once, at the top of a window, and tints every control with it.

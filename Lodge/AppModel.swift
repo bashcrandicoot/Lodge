@@ -454,7 +454,7 @@ final class AppModel: ObservableObject {
                 try await FileManager.default.unmountVolume(at: card.url, options: [.allPartitionsAndEjectDisk])
                 // The unmount notification marks the session's card as removed.
             } catch {
-                self.ejectError = "Couldn't eject \(card.name): \(error.localizedDescription)"
+                self.ejectError = "Couldn’t eject \(card.name): \(error.localizedDescription)"
             }
             self.isEjecting = false
         }
