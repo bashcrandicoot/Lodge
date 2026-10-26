@@ -229,7 +229,10 @@ struct OnboardingShell: View {
     @ViewBuilder private var stepBody: some View {
         switch store.step {
         case .template: OnboardingTemplateStep(draft: store.draft)
-        case .destination: OnboardingDestinationStep(draft: $store.draft, drives: drives)
+        case .destination:
+            OnboardingDestinationStep(draft: $store.draft, drives: drives,
+                                      canChooseDefault: OnboardingApplier.canChooseDefault(
+                                          for: store.draft.destinationPath, in: model.destinations))
         case .folders: OnboardingFoldersStep(draft: $store.draft)
         case .naming: OnboardingNamingStep(draft: $store.draft)
         case .review: OnboardingReviewStep(store: store)

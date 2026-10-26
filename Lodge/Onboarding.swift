@@ -262,10 +262,13 @@ enum OnboardingApplier {
         settings.playSuccessSound = draft.playSuccessSound
         settings.askToImport = draft.askToImport
 
-        // The destination becomes a favorite (Settings ▸ Destinations).
+        // The destination becomes a favorite (Settings ▸ Destinations). With no other favorites it's
+        // the default whatever the toggle says (Lodge always has a default once a favorite exists);
+        // setup hides the toggle then.
         if let path = draft.destinationPath {
+            let canChoose = canChooseDefault(for: path, in: model.destinations)
             let favorite = model.destinations.favorite(forPath: path) ?? model.destinations.add(path: path)
-            if draft.makeDefaultDestination { model.destinations.setDefault(favorite.id) }
+            if draft.makeDefaultDestination || !canChoose { model.destinations.setDefault(favorite.id) }
         }
 
         let preset = model.presets.add(draft.makePreset(fileRules: settings.fileRules))
@@ -278,6 +281,16 @@ enum OnboardingApplier {
             model.presets.markActive(preset.id)
         }
         return preset
+    }
+}
+
+extension OnboardingApplier {
+    /// "Make it my default destination" is only a choice when another favorite could stay the
+    /// default. Lodge always has a default once there's a favorite (`DestinationStore` falls back
+    /// to the first one), so a first favorite is the default either way.
+    static func canChooseDefault(for path: String?, in destinations: DestinationStore) -> Bool {
+        let same = destinations.favorite(forPath: path)?.id
+        return destinations.favorites.contains { $0.id != same }
     }
 }
 

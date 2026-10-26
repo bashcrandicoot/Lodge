@@ -99,6 +99,8 @@ struct OnboardingDestinationStep: View {
     @Environment(\.colorScheme) private var scheme
     @Binding var draft: OnboardingDraft
     let drives: [OnboardingDrive]
+    /// False when this would be the first favorite: it's the default then (no toggle).
+    var canChooseDefault = true
 
     var body: some View {
         HStack(alignment: .top, spacing: 16) {
@@ -147,8 +149,14 @@ struct OnboardingDestinationStep: View {
                         }
                         Text("This folder joins your favorite destinations (Settings ▸ Destinations), so you can switch to it in one click.")
                             .font(.system(size: 12)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
-                        Toggle("Make it my default destination", isOn: $draft.makeDefaultDestination)
-                            .toggleStyle(.checkbox).padding(.top, 4)
+                        if canChooseDefault {
+                            Toggle("Make it my default destination", isOn: $draft.makeDefaultDestination)
+                                .toggleStyle(.checkbox).padding(.top, 4)
+                        } else {
+                            Text("As your first favorite, it’s also your default destination. Add more and pick another default in Settings ▸ Destinations.")
+                                .font(.system(size: 12)).foregroundStyle(.secondary)
+                                .fixedSize(horizontal: false, vertical: true).padding(.top, 4)
+                        }
                     }
                 }
                 OnboardingCard {

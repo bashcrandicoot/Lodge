@@ -249,6 +249,33 @@ final class OnboardingTests: XCTestCase {
         XCTAssertNotNil(model.destinations.favorite(forPath: path), "…but the folder is still a favorite")
     }
 
+    /// Lodge always has a default once a favorite exists, so "Make it my default destination" is
+    /// only offered when another favorite could stay the default.
+    func testTheDefaultToggleIsOnlyAChoiceWithOtherFavorites() throws {
+        let path = try destinationFolder()
+        let model = makeModel()
+        XCTAssertFalse(OnboardingApplier.canChooseDefault(for: path, in: model.destinations), "No favorites yet")
+
+        var draft = OnboardingDraft()
+        draft.destinationPath = path
+        draft.makeDefaultDestination = false
+        OnboardingApplier.apply(draft, to: model)
+        let favorite = try XCTUnwrap(model.destinations.favorite(forPath: path))
+        XCTAssertEqual(model.destinations.defaultID, favorite.id, "A first favorite is the default either way")
+        XCTAssertFalse(OnboardingApplier.canChooseDefault(for: path, in: model.destinations),
+                       "Still the only favorite")
+
+        let other = folder.appendingPathComponent("Other").path
+        XCTAssertTrue(OnboardingApplier.canChooseDefault(for: other, in: model.destinations))
+        try FileManager.default.createDirectory(atPath: other, withIntermediateDirectories: true)
+        draft.destinationPath = other
+        OnboardingApplier.apply(draft, to: model)
+        XCTAssertEqual(model.destinations.defaultID, favorite.id, "Unticked: the existing default stays")
+        draft.makeDefaultDestination = true
+        OnboardingApplier.apply(draft, to: model)
+        XCTAssertEqual(model.destinations.defaultID, model.destinations.favorite(forPath: other)?.id, "Ticked: it becomes the default")
+    }
+
     func testCantSaveWithoutADestination() {
         let model = makeModel()
         let store = OnboardingStore(defaults: nil)
