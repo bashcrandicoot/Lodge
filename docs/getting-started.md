@@ -8,7 +8,7 @@ Home base for your media. Lodge is a universal app for Apple silicon and Intel M
 
 [Download Lodge from Gumroad](https://bashframes.gumroad.com/l/lodge). Open the disk image and drag Lodge to Applications. Pay what you want.
 
-No account, no analytics. Copying never uploads anything. The only thing Lodge fetches is its update feed, once a day (you can turn that off in Settings > General).
+No account, no analytics, and copying never uploads anything. The only time Lodge goes online is a daily check for updates, which you can turn off in Settings > General.
 
 ## Open Lodge the first time
 
@@ -27,7 +27,7 @@ Lodge is not notarized, so macOS asks before it will launch.
 2. Choose **Open**.
 3. Choose **Open** again.
 
-Closing the window quits Lodge. Leave it open while you work so it can see cards as you insert them.
+**Keep Lodge running in the menu bar** is off by default. When it is on, closing the window leaves Lodge running. **Show menu bar icon** and **Open at login** are in Settings > General > Menu Bar. The first launch shows **Welcome to Lodge**, a short guide to your first preset. When a card is plugged in while you are in another app, Lodge can ask **Import with Lodge?**
 
 ## Allow access to the card
 
@@ -52,11 +52,11 @@ The next time Lodge opens, it selects the default favorite when that drive is co
 2. If more than one card is mounted, click the one you want in the Card column.
 3. In Media, enter a **Project** name when the template uses `{project}`. The default template does. “Beach Shoot” is saved as `BeachShoot`. Choose a **Camera** when the template uses `{camera}`.
 4. Read the live names in the list. They are the names Lodge will write.
-5. Click **Offload N Files**.
+5. Click **Offload N Files**, or press Return in the Project field. Return starts the offload when that button is enabled.
 
 While it runs, the bar shows the current file, how many are done, the bytes copied, the time left, and a **Verifying** state. **Cancel** stops the rest. Each finished file is checked with SHA-256 before it keeps its final name.
 
-When the offload succeeds, Lodge can play the Glass sound (on by default). Then you can **Show in Finder**, **Eject Card**, or **Done**. If every file on the card has a verified copy that is still in the destination, **Format Card…** is there too, and the card shows **Ready to format**.
+When the offload succeeds, the bar reads **Offload Complete**. Lodge can play the Glass sound (on by default). Then you can **Show in Finder**, **Eject Card**, or **Done**. **Format Card…** is there when the card is ready, including when the only files left are short clips you skipped. If every file has a verified copy, the card shows **Ready to format**. If short clips were skipped, it says how many are not offloaded, such as **2 short clips not offloaded**.
 
 The card’s own line reads **54 new files · 5 ignored** before and during the copy, and **57 copied · 5 ignored** once it has finished. The numbers follow the card. Ignored files are system junk and your ignore list. They are not copied.
 

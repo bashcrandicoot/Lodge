@@ -2,22 +2,18 @@
 
 ## 1.0.1
 
-**Coming from 1.0.0?** Lodge 1.0.0 can't check for updates, so download 1.0.1 by hand once: open the disk image and drag Lodge to Applications. From 1.0.1 on, Lodge updates itself.
+**Coming from 1.0.0?** Lodge 1.0.0 can’t update itself, so [download 1.0.1 from Gumroad](https://bashframes.gumroad.com/l/lodge) once. After that, Lodge updates itself.
 
 ### New
 
-- **Menu bar mode.** Keep Lodge running in the menu bar after you close the window. It watches for camera cards and asks to import them, with a notification or a floating panel (Settings > General).
-- **First-launch setup.** A short guide walks you through your first preset: destination, folders, naming and safety.
-- **A folder for each file type.** Inside the last folder, files are sorted into one folder per extension (MP4, WAV, ARW…). JPG and JPEG share one folder.
-- **Check for Updates.** Lodge > Check for Updates…, plus automatic checks you can turn off in Settings > General.
-- **Support Lodge.** A tip link in the Lodge and Help menus, and a one-time note.
-- **Contact.** BashFrames contact details in About Lodge and the Help menu.
-- **Also new:** a new app icon, an expandable Layout tree, and a progress strip in the offload bar.
-
-### Fixes
-
-- The window title no longer reappears when the toolbar changes.
-- Other small fixes.
+- **Menu bar mode.** **Keep Lodge running in the menu bar** is off by default. When it is on, closing the window leaves Lodge running, out of the Dock and Command-Tab, with **Show menu bar icon** (on by default) and **Open at login**.
+- **Ask to import.** When a card is plugged in while you are in another app, Lodge asks **Import with Lodge?** as a notification or a floating panel.
+- **First-launch setup.** **Welcome to Lodge** is a short guide to your first preset: destination, folders, naming and safety.
+- **A folder for each file type.** Inside the last folder, files are sorted into one folder per extension (`MP4/`, `WAV/`, `ARW/`). JPG and JPEG share `JPG/`. **Flat** skips the shoot folders and still sorts by type.
+- **Check for Updates.** **Lodge > Check for Updates…** looks now and is dimmed while a check is running. Settings > General: **Automatically check for updates** (on) and **Automatically download and install updates** (off, and unavailable while checks are off). Lodge checks once a day. Updates are EdDSA-signed through Sparkle.
+- **Support Lodge.** A tip link in the Lodge and Help menus and the Settings footer, and a short note that shows up at most twice. The note appears after five clean offloads and three days, when Lodge is idle. **Maybe Later** waits 30 days. **Support Lodge** and **Don’t Ask Again** stop it.
+- **Contact.** **About Lodge** says Made by BashFrames and links to bashframes@gmail.com. **Help > Contact Support…** opens that address.
+- **Also new:** a new app icon, the preset menu at the top right, an expandable Layout tree, and a wagon on the offload bar.
 
 ## 1.0.0
 

@@ -24,21 +24,21 @@ The ledger has the file, and the copy is gone or its size has changed. Lodge wil
 
 ## When can I format the card?
 
-When every file has a verified copy that is still at the destination, at the same size, the card shows **Ready to format**. Skipped short clips are called out separately: the button reads **Format and Discard N Short Clips**, so it is clear those takes have no copy. Ignored system files do not block the badge. Cancel is the default in the confirmation.
+A clean finish reads **Offload Complete**, and **Format Card…** is the button that erases the card. When every file has a verified copy that is still at the destination, at the same size, the card shows **Ready to format**. If short clips were skipped, the card says how many are not offloaded, such as **2 short clips not offloaded**, and the confirmation button reads **Format and Discard N Short Clips**. Ignored system files do not block the badge. Cancel is the default in the confirmation.
 
 Lodge formats exFAT, FAT32, and FAT16, and keeps the card’s name. Other formats are left for the camera. It also refuses the startup disk, a drive that is part of the Mac, and the drive your destination folder is on.
 
 ## What is the difference between a preset and Examples?
 
-**Examples**, in Settings > Naming, fills in a folder template and a file template. A preset saves the whole setup: destination, templates, camera, short clips, quick dump, and file rules. After you change that setup, the menu says **Edited**. You choose the preset from the menu. When a card is inserted, Lodge selects the camera you last used with that card, by its volume UUID or its name.
+**Examples**, in Settings > Naming, fills in a folder template and a file template. A preset saves the whole setup: destination, templates, camera, short clips, quick dump, and file rules. After you change that setup, the menu says **Edited**. The preset menu sits at the top right of the window, and the window title is hidden. When a card is inserted, Lodge selects the camera you last used with that card, by its volume UUID or its name.
 
 ## How do I change the folders in Layout?
 
-Once a card is scanned, **Layout** in Destination shows the folders Lodge will make, including **Proxies** and **Sidecars** when those files are in the plan. In Lodge 1.0.0, drag a level to move it, or drag or click a token from **Add a level**. The header says **Drag to rearrange**. One example file name is shown, and extra folders appear as a line such as **+ 2 more folders**. A level quick dump removes stays in the tree, struck through.
+Once a card is scanned, **Layout** in Destination shows the folders Lodge will make, including a folder for each extension, then **Proxies** and **Sidecars** when those files are in the plan. Drag a level to move it, or drag or click a token from **Add a level**. The header says **Drag to rearrange**. **Expand All** and **Collapse All** sit beside **Layout**. Expand All’s help reads **Expand All (or Option-click a triangle)**. Collapse All’s label is **Collapse all folders**. A level quick dump removes stays in the tree, struck through.
 
 ## What is quick dump?
 
-**Quick dump: skip project name** takes `{project}` out of the templates so there is nothing to type. `{date}/{project}` and `{date}_{project}_{seq}` become `{date}` and `{date}_{seq}`. Numbering carries on from the folder.
+**Quick dump** takes `{project}` out of the templates so there is nothing to type. An ⓘ beside the checkbox says: Skips the project name and dumps all the footage straight into a dated folder. `{date}/{project}` and `{date}_{project}_{seq}` become `{date}` and `{date}_{seq}`. Numbering carries on, and each file type still gets its own folder.
 
 ## What does the short-clip slider do?
 
@@ -66,17 +66,25 @@ The first time Lodge reads a card, also allow access to files on a removable vol
 
 Write to [bashframes@gmail.com](mailto:bashframes@gmail.com). If Lodge has been useful, [Support Lodge](https://bashframes.gumroad.com/l/lodge). Pay what you want.
 
+**Help > Contact Support…** opens an email to that address, subject Lodge Support, with the Lodge and macOS versions under your message. **Help > Support Lodge…** and **Lodge > Support Lodge…** open the same page in your browser. **Lodge > About Lodge** says Made by BashFrames, with a link to the same email. Settings > General ends with **Support** and **Support Lodge**.
+
+After five offloads where every file was copied and verified, and at least three days after you first open that version, a short **Support Lodge** note shows up at most twice, and only when Lodge is idle. It never appears during a copy. **Maybe Later** asks once more, 30 days later. **Support Lodge** and **Don’t Ask Again** stop it.
+
 ## How do I update Lodge?
 
-From 1.0.1, Lodge checks for updates once a day and offers new versions. Choose **Lodge > Check for Updates…** to check now, or turn the automatic check off in **Settings > General**. Lodge 1.0.0 can’t update itself: [download Lodge from Gumroad](https://bashframes.gumroad.com/l/lodge) once to get 1.0.1.
+**Lodge > Check for Updates…** looks now. The item is dimmed while a check is already running. In Settings > General, under **Updates**, **Automatically check for updates** is on, and **Automatically download and install updates** is off. The second switch is unavailable while automatic checks are off. Lodge checks once a day. Updates are EdDSA-signed through Sparkle.
+
+Lodge 1.0.0 can’t update itself. [Download Lodge from Gumroad](https://bashframes.gumroad.com/l/lodge) once to get 1.0.1. After that, Lodge updates itself.
 
 ## How are files sorted into folders?
 
-In Lodge 1.0.0, files land in the folder the template makes. With the default file rules, `lrv` and `lrf` go in **Proxies/**, and `thm`, `xml`, and `srt` go in **Sidecars/**, named after their clip. Audio recorded beside a clip, such as `C0001.WAV`, stays next to that clip and shares its new name.
+Files land in the folder the template makes, and then in a folder named for the extension, in capitals: `MP4/`, `ARW/`, `WAV/`, and so on. `.mp4` and `.MP4` share `MP4/`. `.JPG`, `.JPEG`, and `.JPE` share `JPG/`. `.TIF` and `.TIFF` share `TIF/`. An unknown extension still gets a folder. A file with no extension stays in the template folder. With the default file rules, `lrv` and `lrf` go in **Proxies/**, and `thm`, `xml`, and `srt` go in **Sidecars/**, named after their clip. Audio recorded beside a clip, such as `C0001.WAV`, goes in `WAV/` and shares the clip’s new name.
+
+**Flat**, in Settings > Naming, uses an empty folder template. It skips the shoot folders. Each file type still gets its own folder, straight in the destination.
 
 ## Does Lodge need a network?
 
-Only for its once-a-day update check, which you can turn off in **Settings > General**. There is no account and no analytics. The ledger and your settings stay in your Library folder. Copying never uploads anything.
+No account, no analytics, and copying never uploads anything. The only time Lodge goes online is a daily check for updates, which you can turn off in Settings > General. The ledger and your settings stay in your Library folder.
 
 ## Where do my settings live?
 
@@ -88,7 +96,11 @@ Yes. Settings > Appearance. Lodge starts in Dark mode with **Default**: a neutra
 
 ## What if two files would get the same name?
 
-Lodge does not overwrite. With `{seq}` in the template, numbering continues after the highest number already in the folder. Without `{seq}` or `{original}`, a repeated name gets `_2`, `_3`, and so on.
+Lodge does not overwrite. With `{seq}` in the template, numbering continues after the highest number already in the shoot folder and every format folder under it. Without `{seq}` or `{original}`, a repeated name gets `_2`, `_3`, and so on.
+
+## What happens the first time I open Lodge?
+
+**Welcome to Lodge** is a short guide to your first preset: destination, folders, naming and safety. It does not show if you already have presets, favorites, or offloads. **Keep Lodge running in the menu bar** is off by default. When it is on, closing the window leaves Lodge running. **Show menu bar icon** and **Open at login** are in Settings > General > Menu Bar. When a card is plugged in while you are in another app, Lodge can ask **Import with Lodge?** as a notification or a floating panel.
 
 ## I turned a file type off. Will Format still wait for it?
 

@@ -10,7 +10,7 @@ Include the macOS version, the Lodge version, and what you observed. Give the ma
 
 ## What Lodge does on your Mac
 
-Lodge’s only network connection is its update check: once a day (unless you turn it off in Settings > General) it reads the update feed on GitHub, and it installs an update only if it is signed with Lodge’s key. Copying never uploads anything. Copying, the ledger, favorites, cameras, presets, and settings stay on the Mac, under `~/Library/Application Support/Lodge/` and in Lodge’s preferences.
+No account, no analytics, and copying never uploads anything. The only time Lodge goes online is a daily check for updates, which you can turn off in Settings > General. Updates are EdDSA-signed through Sparkle. The support link opens Gumroad in your browser. Copying, the ledger, favorites, cameras, presets, and settings stay on the Mac, under `~/Library/Application Support/Lodge/` and in Lodge’s preferences.
 
 During an offload Lodge only reads the card. It writes on the destination you chose, to a `<name>.lodge-partial` file, and renames that file after the SHA-256 matches.
 
