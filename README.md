@@ -195,11 +195,11 @@ folder so a folder that's renamed or moved is still found.
 
 ## Presets
 
-A preset is a saved setup you switch to in one click from the toolbar menu above the
-funnel ("Drone Day", "Client B-Roll"): the destination, the folder and file templates, the
+A preset is a saved setup you switch to in one click from the preset menu in the bottom
+bar, just left of the Offload button ("Drone Day", "Client B-Roll"): the destination, the folder and file templates, the
 camera, the short-clip setting, quick dump and the file rules. **Save Current Setup as
 Preset…** makes one from what the main window uses now; if you change something afterwards
-the menu says *Edited* and offers **Update “Name”**. Manage them in **Settings → Presets**.
+a dot appears after its name and the menu offers **Update “Name”**. Manage them in **Settings → Presets**.
 
 ## Quick dump
 
@@ -396,7 +396,7 @@ Every view also has `#Preview`s you can open in Xcode's canvas.
 | `FileRules.swift` | Proxy and sidecar extensions and the ignore list (Settings → Files) |
 | `QuickDump.swift` | Takes `{project}` out of the templates for a quick dump |
 | `OffloadPreset.swift` | Saved setups: destination, templates, camera, short clips, quick dump, file rules |
-| `PresetViews.swift` | The toolbar preset switcher, Settings → Presets and Files, the short-clip slider |
+| `PresetViews.swift` | The preset menu in the offload bar, Settings → Presets and Files, the short-clip slider |
 | `OffloadPlanner.swift` | Turns files + templates into final paths; sequence numbers; sidecar matching |
 | `MediaCategory.swift` | Video / Photo / Audio / Other by extension |
 | `CameraStore.swift` | The camera list and per-card camera memory (`cameras.json`) |

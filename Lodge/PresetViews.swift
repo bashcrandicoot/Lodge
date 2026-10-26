@@ -46,8 +46,9 @@ struct ShortClipSlider: View {
 
 // MARK: - Main window switcher
 
-/// The preset switcher in the toolbar, above the funnel: pick a preset, save the current
-/// setup as one, update the active one, or manage them in Settings.
+/// The preset switcher in the offload bar, just left of the Offload button: pick a preset,
+/// save the current setup as one, update the active one, or manage them in Settings.
+/// A dot after the name means the setup has changed since the preset was picked.
 struct PresetSwitcher: View {
     @EnvironmentObject private var model: AppModel
     @EnvironmentObject private var presets: PresetStore
@@ -88,21 +89,25 @@ struct PresetSwitcher: View {
                 openSettings()
             }
         } label: {
-            HStack(spacing: 6) {
+            HStack(spacing: 5) {
                 Image(systemName: "square.stack.3d.up")
                 Text(active?.displayName ?? "No Preset")
-                    .fontWeight(.medium)
+                    .lineLimit(1)
                 if edited {
-                    Text("Edited")
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(.secondary)
+                    Circle()
+                        .fill(.tint)
+                        .frame(width: 6, height: 6)
+                        .accessibilityHidden(true)
                 }
             }
         }
+        .menuStyle(.button)
+        .buttonStyle(.bordered)
         .menuIndicator(.visible)
+        .controlSize(.large)
         .fixedSize()
         .disabled(model.isBusy)
-        .help(active.map { "Preset: \($0.summary)" } ?? "Save your destination, naming and file rules as a preset to switch in one click")
+        .help(active.map { "Preset: \($0.summary)\(edited ? " (edited since you picked it)" : "")" } ?? "Save your destination, naming and file rules as a preset to switch in one click")
         .accessibilityLabel("Preset, \(active?.displayName ?? "none")\(edited ? ", edited" : "")")
         .alert("Save Preset", isPresented: $naming) {
             TextField("Name", text: $newName)
@@ -126,7 +131,7 @@ struct PresetsSettingsView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Presets")
                     .font(.headline)
-                Text("A preset saves where files go, how they’re named, the camera, short-clip skipping, quick dump and the file rules. Switch presets from the main window’s toolbar.")
+                Text("A preset saves where files go, how they’re named, the camera, short-clip skipping, quick dump and the file rules. Switch presets from the menu next to the Offload button.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
