@@ -27,7 +27,8 @@ enum SupportPromptPolicy {
     static let requiredOffloads = 5
     static let minimumUse: TimeInterval = 3 * 24 * 60 * 60
     static let laterDelay: TimeInterval = 30 * 24 * 60 * 60
-    /// Once, plus once more after "Maybe Later".
+    /// At most twice: once, then once more 30 days later unless "Support Lodge" or
+    /// "Don't Ask Again" was clicked (after "Maybe Later" or being put away unanswered).
     static let maximumShows = 2
 
     static func isDue(_ state: SupportPromptState, now: Date) -> Bool {
