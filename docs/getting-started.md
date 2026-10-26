@@ -4,25 +4,25 @@ Lodge runs on macOS 14 or later. This is the path from the download to the first
 
 ## Download Lodge
 
-Get **Lodge 1.0.0** from the [latest release](https://github.com/bashcrandicoot/Lodge/releases/latest).
+Get **Lodge 1.0.0** from the [v1.0.0 release](https://github.com/bashcrandicoot/Lodge/releases/tag/v1.0.0).
 
-- `Lodge-1.0.0.dmg` — open the disk image and drag Lodge to Applications.
-- `Lodge-1.0.0.zip` — unzip it and move Lodge to Applications.
+- [Lodge-1.0.0.dmg](https://github.com/bashcrandicoot/Lodge/releases/download/v1.0.0/Lodge-1.0.0.dmg) — open the disk image and drag Lodge to Applications.
+- [Lodge-1.0.0.zip](https://github.com/bashcrandicoot/Lodge/releases/download/v1.0.0/Lodge-1.0.0.zip) — unzip it and move Lodge to Applications.
 
 ## Open Lodge the first time
 
 Lodge is not notarized, so macOS asks before it will launch.
 
-### macOS 15 and later
+### macOS 15 Sequoia and later
 
 1. Open Lodge.
 2. Click **Done** on the warning.
 3. Go to **System Settings > Privacy & Security**.
-4. Click **Open Anyway**.
+4. Click **Open Anyway** next to Lodge, and confirm.
 
-### macOS 14
+### macOS 14 Sonoma
 
-1. Right-click Lodge.
+1. Right-click or Control-click Lodge.
 2. Choose **Open**.
 3. Choose **Open** again.
 

@@ -15,14 +15,14 @@
 <p align="center">On its first launch, Lodge copies over SnapDrop’s data and settings. The originals stay where they are.</p>
 
 <p align="center">
-  <a href="https://github.com/bashcrandicoot/Lodge/releases/latest"><img alt="macOS 14 or later" src="https://img.shields.io/badge/macOS-14%2B-3A3A3C?style=flat&logo=apple&logoColor=white"></a>
+  <a href="https://github.com/bashcrandicoot/Lodge/releases/tag/v1.0.0"><img alt="macOS 14 or later" src="https://img.shields.io/badge/macOS-14%2B-3A3A3C?style=flat&logo=apple&logoColor=white"></a>
   <a href="https://www.swift.org"><img alt="Swift 5" src="https://img.shields.io/badge/Swift-5-F05138?style=flat&logo=swift&logoColor=white"></a>
   <a href="LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-0A84FF?style=flat"></a>
   <a href="https://github.com/bashcrandicoot/Lodge"><img alt="Vibe Coded" src="https://img.shields.io/badge/-Vibe%20Coded-0A84FF?style=flat"></a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/bashcrandicoot/Lodge/releases/latest"><strong>Download Lodge 1.0.0</strong></a>
+  <a href="https://github.com/bashcrandicoot/Lodge/releases/tag/v1.0.0"><strong>Download Lodge 1.0.0</strong></a>
   &nbsp;·&nbsp;
   <a href="docs/getting-started.md">Getting started</a>
   &nbsp;·&nbsp;
@@ -65,12 +65,12 @@ The full tour is in the [user guide](docs/user-guide.md). Questions are in the [
 
 ## Install
 
-Download **Lodge 1.0.0** from the [latest release](https://github.com/bashcrandicoot/Lodge/releases/latest). The release assets are `Lodge-1.0.0.dmg` and `Lodge-1.0.0.zip`.
+Download **Lodge 1.0.0** from the [v1.0.0 release](https://github.com/bashcrandicoot/Lodge/releases/tag/v1.0.0). The release assets are [Lodge-1.0.0.dmg](https://github.com/bashcrandicoot/Lodge/releases/download/v1.0.0/Lodge-1.0.0.dmg) and [Lodge-1.0.0.zip](https://github.com/bashcrandicoot/Lodge/releases/download/v1.0.0/Lodge-1.0.0.zip).
 
 Lodge is not notarized.
 
-- **macOS 15 and later.** Open Lodge, click **Done** on the warning, then go to **System Settings > Privacy & Security** and click **Open Anyway**.
-- **macOS 14.** Right-click Lodge, choose **Open**, then **Open** again.
+- **macOS 15 Sequoia and later.** Open Lodge, click **Done** on the warning, then go to **System Settings > Privacy & Security**, click **Open Anyway** next to Lodge, and confirm.
+- **macOS 14 Sonoma.** Right-click or Control-click Lodge, choose **Open**, then **Open** again.
 
 The first time Lodge reads a card, macOS asks for access to files on a removable volume. Choose **Allow**. Step by step: [Getting started](docs/getting-started.md).
 

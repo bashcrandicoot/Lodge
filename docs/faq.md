@@ -44,9 +44,9 @@ Removable or ejectable volumes mounted under `/Volumes`. A card that was already
 
 Lodge is not notarized.
 
-On macOS 15 and later, open Lodge, click **Done**, then go to **System Settings > Privacy & Security** and click **Open Anyway**.
+On macOS 15 Sequoia and later, open Lodge, click **Done**, then go to **System Settings > Privacy & Security**, click **Open Anyway** next to Lodge, and confirm.
 
-On macOS 14, right-click Lodge, choose **Open**, then **Open** again.
+On macOS 14 Sonoma, right-click or Control-click Lodge, choose **Open**, then **Open** again.
 
 The first time Lodge reads a card, also allow access to files on a removable volume.
 

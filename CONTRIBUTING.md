@@ -46,6 +46,8 @@ open -n build/DerivedData/Build/Products/Debug/Lodge.app --args \
 | `-LodgeDemoShowFormatAlert` | `YES` |
 | `-LodgeDemoPlainTheme` | `YES`, the solid colours used with Increase Contrast |
 | `-LodgeDemoQuickDump` | `YES` |
+| `-LodgeDemoFolderTemplate` | a folder template, such as `{project}_{date}/{camera}/{type}` |
+| `-LodgeDemoExpandTree` | `YES` to open every folder, or `files` to open the file lists too |
 
 Demo windows are drawn as if they were active, so a screenshot taken with the app in the background still shows the accent on switches and segments. The sample card has Sony XML sidecars, RAW photos, WAVs, two short clips, a few missing copies, and a few cameras. Thumbnails are drawn placeholders. Views also have `#Preview`s for the Xcode canvas. Screenshots checked into the repo live in `Design/screenshots/`, and the ones used on the site are copied to `docs/assets/screenshots/`.
 
@@ -70,7 +72,10 @@ The Lodge Cabin icon on the website and in the README is `docs/assets/app-icon/`
 | `MediaGridViews.swift` | Grid tiles, status badges, the progress ring |
 | `MediaPreview.swift` | Selection, Quick Look, sidecar folding |
 | `Thumbnails.swift` | Quick Look thumbnails |
-| `DestinationStageView.swift` | Favorites, free space, the Layout tree, folder and token drops |
+| `DestinationStageView.swift` | Favorites, free space, folder drops |
+| `FolderTreeView.swift` | The Layout tree, drag-and-drop levels, side-by-side tokens |
+| `FolderTree.swift` | The planned folders, and the folders already on disk |
+| `InlineLevel.swift` | Tokens placed side by side in one folder level |
 | `FormatViews.swift` | Format confirmation, the Ready to format badge |
 | `OffloadBar.swift` | Offload button, progress, completion |
 | `RecentOffloadsView.swift` | Recent Offloads |
