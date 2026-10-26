@@ -343,6 +343,7 @@ private struct ClipsStageContent: View {
 
 /// "C0001.MP4  →  2026-10-25_Coastline_0001.mp4"
 private struct PreviewRow: View {
+    @Environment(\.theme) private var theme
     let item: PlannedFile
     let isPlaceholder: Bool
     /// The file being copied right now.
@@ -409,9 +410,9 @@ private struct PreviewRow: View {
         .background {
             if isActive {
                 RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .fill(Theme.accent.opacity(0.13))
+                    .fill(theme.accent.opacity(0.13))
                     .overlay(alignment: .leading) {
-                        Capsule().fill(Theme.accent).frame(width: 3).padding(.vertical, 5)
+                        Capsule().fill(theme.accent).frame(width: 3).padding(.vertical, 5)
                     }
                     .padding(.horizontal, 3)
                     .transition(.opacity)
@@ -556,11 +557,24 @@ private struct NameField: View {
     var recents: [String] = []
     var clearRecents: (() -> Void)?
 
+    @Environment(\.theme) private var theme
+    @FocusState private var focused: Bool
+
     var body: some View {
         HStack(spacing: 6) {
             TextField(title, text: $text, prompt: Text(prompt))
                 .textFieldStyle(.roundedBorder)
                 .labelsHidden()
+                .focused($focused)
+                // The system focus ring always uses the accent colour asset; draw one in the theme instead.
+                .focusEffectDisabled()
+                .overlay {
+                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                        .strokeBorder(theme.accent.opacity(focused ? 0.75 : 0), lineWidth: 2.5)
+                        .padding(-2)
+                        .allowsHitTesting(false)
+                        .animation(.easeOut(duration: 0.15), value: focused)
+                }
                 .disabled(isDisabled)
                 .accessibilityLabel(title)
                 .accessibilityHint("Used in file and folder names when the naming template includes it")

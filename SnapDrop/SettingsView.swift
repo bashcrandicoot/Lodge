@@ -11,6 +11,9 @@ struct SettingsView: View {
             GeneralSettingsView()
                 .tabItem { Label("General", systemImage: "gearshape") }
                 .tag(SettingsTab.general)
+            AppearanceSettingsView()
+                .tabItem { Label("Appearance", systemImage: "paintpalette") }
+                .tag(SettingsTab.appearance)
             DestinationsSettingsView()
                 .tabItem { Label("Destinations", systemImage: "externaldrive") }
                 .tag(SettingsTab.destinations)
@@ -25,7 +28,7 @@ struct SettingsView: View {
 }
 
 enum SettingsTab: String {
-    case general, destinations, naming, cameras
+    case general, appearance, destinations, naming, cameras
     static let storageKey = "settingsTab"
 }
 
@@ -77,6 +80,65 @@ struct GeneralSettingsView: View {
                         .foregroundStyle(.secondary)
                 }
                 Toggle("Play a sound when an offload finishes", isOn: $settings.playSuccessSound)
+            }
+        }
+        .formStyle(.grouped)
+        .frame(width: 560)
+        .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
+/// Theme swatches and Light / Dark / System.
+struct AppearanceSettingsView: View {
+    @EnvironmentObject private var settings: AppSettings
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.theme) private var theme
+
+    var body: some View {
+        Form {
+            Section {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 70, maximum: 90), spacing: 12)], spacing: 12) {
+                    ForEach(ThemePalette.all) { palette in
+                        Button {
+                            withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.45)) {
+                                settings.themeID = palette.id
+                            }
+                        } label: {
+                            ThemeSwatch(palette: palette, isSelected: settings.themeID == palette.id)
+                        }
+                        .buttonStyle(.plain)
+                        .help(palette.name)
+                    }
+                }
+                .padding(.vertical, 4)
+                HStack {
+                    Text("Preview")
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    ShimmerProgressBar(fraction: 0.62)
+                        .frame(width: 140)
+                    Button {} label: { Label("Offload 12 Files", systemImage: "arrow.down.circle.fill") }
+                        .buttonStyle(.themeProminent)
+                        .allowsHitTesting(false)
+                        .accessibilityHidden(true)
+                }
+            } header: {
+                Text("Theme")
+            } footer: {
+                Text(theme.isPlain
+                     ? "Increase Contrast or Reduce Transparency is on, so SnapDrop uses solid colours from the theme instead of gradients."
+                     : "Colours the buttons, progress, highlights and the window’s background wash.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Section("Appearance") {
+                Picker("Appearance", selection: $settings.appearance) {
+                    ForEach(AppAppearance.allCases) { appearance in
+                        Text(appearance.title).tag(appearance)
+                    }
+                }
+                .pickerStyle(.segmented)
             }
         }
         .formStyle(.grouped)

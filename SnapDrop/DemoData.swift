@@ -14,9 +14,14 @@ enum DemoData {
         return State(rawValue: UserDefaults.standard.string(forKey: "SnapDropDemoState") ?? "") ?? .ready
     }
 
-    /// Set by launching with `-SnapDropDemoSettingsTab <general|destinations|naming|cameras>`.
+    /// Set by launching with `-SnapDropDemoSettingsTab <general|appearance|destinations|naming|cameras>`.
     static var launchSettingsTab: SettingsTab? {
         UserDefaults.standard.string(forKey: "SnapDropDemoSettingsTab").flatMap(SettingsTab.init(rawValue:))
+    }
+
+    /// Set by launching with `-SnapDropDemoTheme <comet|aurora|ocean|…>`.
+    static var launchTheme: ThemePalette.ID? {
+        UserDefaults.standard.string(forKey: "SnapDropDemoTheme").flatMap(ThemePalette.ID.init(rawValue:))
     }
 
     /// Movies (default, in use), an external SSD that isn't plugged in, and Pictures.
@@ -83,6 +88,7 @@ enum DemoData {
         let model = AppModel(settings: settings, ledger: ledger, cameras: cameras, destinations: destinationStore(),
                              formatter: CardFormatter(runner: DemoCommandRunner()), startWatching: false)
         settings.destinationPath = FileManager.default.urls(for: .moviesDirectory, in: .userDomainMask).first?.path
+        if let theme = launchTheme { settings.themeID = theme }
         guard state != .empty else { return model }
 
         settings.apply(NamingPreset.all[1])   // Project / Date / Camera

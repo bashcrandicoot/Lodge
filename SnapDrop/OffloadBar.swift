@@ -179,7 +179,8 @@ private struct CompletionRow: View {
     /// Bumped once on appear to bounce the result symbol.
     @State private var bounces = 0
     @State private var glowing = false
-    @Environment(\.themeIsPlain) private var plainTheme
+    @Environment(\.theme) private var theme
+    private var plainTheme: Bool { theme.isPlain }
 
     var body: some View {
         let summary = session.summary ?? OffloadSummary()
@@ -190,20 +191,20 @@ private struct CompletionRow: View {
                     // A soft glow in the icon's colours behind the checkmark.
                     Circle()
                         .fill(plainTheme
-                              ? AnyShapeStyle(Theme.accent.opacity(glowing ? 0.25 : 0))
-                              : AnyShapeStyle(Theme.borderGradient.opacity(glowing ? 0.45 : 0)))
+                              ? AnyShapeStyle(theme.accent.opacity(glowing ? 0.25 : 0))
+                              : AnyShapeStyle(theme.borderGradient.opacity(glowing ? 0.45 : 0)))
                         .frame(width: 54, height: 54)
                         .blur(radius: 14)
                 }
                 if success && !reduceMotion {
-                    CompletionBurst(color: Theme.coral)
+                    CompletionBurst(color: theme.burst)
                 }
                 Group {
                     if success {
                         Image(systemName: symbol(summary))
                             .symbolRenderingMode(.palette)
                             .foregroundStyle(Color.white,
-                                             plainTheme ? AnyShapeStyle(Theme.accent) : AnyShapeStyle(Theme.borderGradient))
+                                             plainTheme ? AnyShapeStyle(theme.accent) : AnyShapeStyle(theme.borderGradient))
                     } else {
                         Image(systemName: symbol(summary))
                             .foregroundStyle(color(summary))
@@ -211,7 +212,7 @@ private struct CompletionRow: View {
                 }
                 .font(.system(size: 30))
                 .symbolEffect(.bounce, value: bounces)
-                .shadow(color: success && !plainTheme ? Theme.magenta.opacity(glowing ? 0.5 : 0) : .clear, radius: 10)
+                .shadow(color: success && !plainTheme ? theme.glow.opacity(glowing ? 0.5 : 0) : .clear, radius: 10)
             }
             .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {

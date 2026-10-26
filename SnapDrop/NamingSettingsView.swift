@@ -117,6 +117,7 @@ struct NamingSettingsView: View {
 
 /// A wrapping row of token buttons.
 private struct TokenChips: View {
+    @Environment(\.theme) private var theme
     let insert: (TemplateToken) -> Void
 
     var body: some View {
@@ -129,8 +130,8 @@ private struct TokenChips: View {
                         .font(.system(.callout, design: .monospaced))
                         .padding(.horizontal, 8)
                         .padding(.vertical, 3)
-                        .background(Theme.accent.opacity(0.12), in: Capsule())
-                        .foregroundStyle(Theme.accent)
+                        .background(theme.accent.opacity(0.12), in: Capsule())
+                        .foregroundStyle(theme.accent)
                         .contentShape(Capsule())
                 }
                 .buttonStyle(.plain)

@@ -8,7 +8,8 @@ struct FlowStream: View {
     var dotCount = 4
     /// Seconds for one dot to cross the arrow.
     var period: Double = 1.1
-    @Environment(\.themeIsPlain) private var plainTheme
+    @Environment(\.theme) private var theme
+    private var plainTheme: Bool { theme.isPlain }
 
     var body: some View {
         TimelineView(.animation) { context in
@@ -24,7 +25,7 @@ struct FlowStream: View {
                     canvas.fill(Path(ellipseIn: CGRect(x: x - radius, y: midY - radius,
                                                        width: radius * 2, height: radius * 2)),
                                 // Each dot warms from magenta to orange as it crosses.
-                                with: .color(plainTheme ? Theme.accent : Theme.sweep(phase)))
+                                with: .color(plainTheme ? theme.accent : theme.sweep(phase)))
                 }
             }
         }
@@ -37,7 +38,8 @@ struct ShimmerProgressBar: View {
     let fraction: Double
     var shimmering = true
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(\.themeIsPlain) private var plainTheme
+    @Environment(\.theme) private var theme
+    private var plainTheme: Bool { theme.isPlain }
 
     var body: some View {
         GeometryReader { geometry in
@@ -48,8 +50,8 @@ struct ShimmerProgressBar: View {
                     .fill(Color.primary.opacity(0.09))
                 Capsule()
                     .fill(plainTheme
-                          ? AnyShapeStyle(Theme.accent)
-                          : AnyShapeStyle(LinearGradient(colors: Theme.sweepColors,
+                          ? AnyShapeStyle(theme.accent)
+                          : AnyShapeStyle(LinearGradient(colors: theme.progressColors,
                                                          startPoint: .leading, endPoint: .trailing)))
                     .overlay {
                         if shimmering && !reduceMotion && !plainTheme {
@@ -132,10 +134,10 @@ extension View {
         FlowStream().frame(width: 28, height: 20)
         ShimmerProgressBar(fraction: 0.6).frame(width: 300)
         ZStack {
-            CompletionBurst(color: Theme.coral)
+            CompletionBurst(color: ResolvedTheme().burst)
             Image(systemName: "checkmark.circle.fill").font(.system(size: 30))
                 .symbolRenderingMode(.palette)
-                .foregroundStyle(.white, Theme.borderGradient)
+                .foregroundStyle(.white, ResolvedTheme().borderGradient)
         }
     }
     .padding(40)

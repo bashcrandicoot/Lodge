@@ -277,11 +277,12 @@ private struct SpaceInfo: View {
     let url: URL
     let required: Int64?
 
-    @Environment(\.themeIsPlain) private var plainTheme
-    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.theme) private var theme
+    private var plainTheme: Bool { theme.isPlain }
 
-    private var gaugeGradient: Gradient {
-        plainTheme ? Gradient(colors: [Theme.accent]) : Gradient(colors: Theme.gaugeColors(dark: colorScheme == .dark))
+    private var gaugeFill: AnyShapeStyle {
+        plainTheme ? AnyShapeStyle(theme.accent)
+                   : AnyShapeStyle(LinearGradient(colors: theme.gaugeColors, startPoint: .leading, endPoint: .trailing))
     }
 
     var body: some View {
@@ -289,12 +290,11 @@ private struct SpaceInfo: View {
         let total = VolumeInfo.totalBytes(at: url)
         VStack(alignment: .leading, spacing: 4) {
             if let available, let total, total > 0 {
-                Gauge(value: Double(total - available), in: 0...Double(total)) {
-                    EmptyView()
-                }
-                .gaugeStyle(.accessoryLinearCapacity)
-                .tint(isShort(available) ? Gradient(colors: [.red]) : gaugeGradient)
-                .accessibilityLabel("Destination space used")
+                CapacityBar(fraction: Double(total - available) / Double(total),
+                            fill: isShort(available) ? AnyShapeStyle(Color.red) : gaugeFill)
+                    .accessibilityElement()
+                    .accessibilityLabel("Destination space used")
+                    .accessibilityValue("\(Int((Double(total - available) / Double(total) * 100).rounded())) percent")
             }
             HStack {
                 Text(available.map { "\(OffloadFormatting.bytes($0)) available" } ?? "Free space unknown")
@@ -312,6 +312,26 @@ private struct SpaceInfo: View {
     private func isShort(_ available: Int64) -> Bool {
         guard let required else { return false }
         return available < required
+    }
+}
+
+/// A slim capacity bar drawn in SwiftUI, so it follows the theme
+/// (the system gauge always uses the app's accent colour asset).
+private struct CapacityBar: View {
+    let fraction: Double
+    let fill: AnyShapeStyle
+
+    var body: some View {
+        GeometryReader { proxy in
+            ZStack(alignment: .leading) {
+                Capsule().fill(Color.primary.opacity(0.1))
+                Capsule()
+                    .fill(fill)
+                    .frame(width: max(6, proxy.size.width * min(max(fraction, 0), 1)))
+            }
+        }
+        .frame(height: 6)
+        .animation(.easeInOut(duration: 0.3), value: fraction)
     }
 }
 

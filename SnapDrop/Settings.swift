@@ -16,6 +16,8 @@ final class AppSettings: ObservableObject {
         static let recentProjects = "recentProjects"
         static let excludedCategories = "excludedCategories"
         static let successSound = "playSuccessSound"
+        static let theme = "theme"
+        static let appearance = "appearance"
     }
 
     static let maxRecentProjects = 6
@@ -67,6 +69,16 @@ final class AppSettings: ObservableObject {
         didSet { defaults?.set(playSuccessSound, forKey: Key.successSound) }
     }
 
+    /// The colour theme (Settings ▸ Appearance). Comet by default.
+    @Published var themeID: ThemePalette.ID {
+        didSet { defaults?.set(themeID.rawValue, forKey: Key.theme) }
+    }
+
+    /// Light, Dark, or follow the system.
+    @Published var appearance: AppAppearance {
+        didSet { defaults?.set(appearance.rawValue, forKey: Key.appearance) }
+    }
+
     func setCategory(_ category: MediaCategory, included: Bool) {
         if included { includedCategories.insert(category) } else { includedCategories.remove(category) }
     }
@@ -85,6 +97,8 @@ final class AppSettings: ObservableObject {
         let excluded = Set(defaults?.stringArray(forKey: Key.excludedCategories) ?? [])
         includedCategories = Set(MediaCategory.allCases.filter { !excluded.contains($0.rawValue) })
         playSuccessSound = defaults?.object(forKey: Key.successSound) as? Bool ?? true
+        themeID = defaults?.string(forKey: Key.theme).flatMap(ThemePalette.ID.init(rawValue:)) ?? .comet
+        appearance = defaults?.string(forKey: Key.appearance).flatMap(AppAppearance.init(rawValue:)) ?? .system
         // `didSet` doesn't run inside `init`, so save migrated templates explicitly.
         if let savedFolder, savedFolder != folderTemplate { defaults?.set(folderTemplate, forKey: Key.folderTemplate) }
         if let savedFile, savedFile != fileTemplate { defaults?.set(fileTemplate, forKey: Key.fileTemplate) }

@@ -75,14 +75,15 @@ extension View {
     /// Supplies all of the app's shared objects (and the theme settings) to a view
     /// (used by the app and previews).
     func appEnvironment(_ model: AppModel) -> some View {
+        // The theme reads the settings, so it goes inside the objects it needs.
         self
+            .snapDropTheme()
             .environmentObject(model)
             .environmentObject(model.settings)
             .environmentObject(model.watcher)
             .environmentObject(model.ledger)
             .environmentObject(model.cameras)
             .environmentObject(model.destinations)
-            .snapDropTheme()
     }
 }
 

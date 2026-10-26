@@ -20,7 +20,8 @@ struct StagePanel<Content: View>: View {
     let state: StageState
     @ViewBuilder var content: Content
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(\.themeIsPlain) private var plainTheme
+    @Environment(\.theme) private var theme
+    private var plainTheme: Bool { theme.isPlain }
     /// Bumped each time the stage becomes active, to play a short "look here" pop.
     @State private var activations = 0
 
@@ -42,9 +43,9 @@ struct StagePanel<Content: View>: View {
             // The stage that needs attention gets the icon's gradient on its border and a soft
             // glow (on the border only, so the text inside stays sharp).
             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .strokeBorder(plainTheme ? AnyShapeStyle(Theme.accent) : AnyShapeStyle(Theme.borderGradient.opacity(0.8)),
+                .strokeBorder(plainTheme ? AnyShapeStyle(theme.accent) : AnyShapeStyle(theme.borderGradient.opacity(0.8)),
                               lineWidth: plainTheme ? 2 : 1.5)
-                .shadow(color: plainTheme ? .clear : Theme.magenta.opacity(0.4), radius: 7)
+                .shadow(color: plainTheme ? .clear : theme.glow.opacity(0.4), radius: 7)
                 .opacity(state == .active ? 1 : 0)
                 .allowsHitTesting(false)
         }
@@ -66,13 +67,14 @@ struct StageHeader: View {
     let number: Int
     let title: String
     let state: StageState
-    @Environment(\.themeIsPlain) private var plainTheme
+    @Environment(\.theme) private var theme
+    private var plainTheme: Bool { theme.isPlain }
 
     var body: some View {
         HStack(spacing: 8) {
             ZStack {
                 if state == .active && !plainTheme {
-                    Circle().fill(Theme.borderGradient)
+                    Circle().fill(theme.borderGradient)
                 } else {
                     Circle().fill(badgeColor.opacity(state == .pending ? 0.15 : 1))
                 }
@@ -102,7 +104,7 @@ struct StageHeader: View {
     private var badgeColor: Color {
         switch state {
         case .pending: return .secondary
-        case .active: return Theme.accent
+        case .active: return theme.accent
         case .done: return .green
         }
     }
@@ -141,8 +143,10 @@ struct FunnelArrow: View {
 struct CountPill: View {
     let text: String
     let systemImage: String
-    var tint: Color = Theme.accent
+    /// `nil` = the theme's accent.
+    var tint: Color?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.theme) private var theme
 
     var body: some View {
         Label {
@@ -155,8 +159,8 @@ struct CountPill: View {
             .font(.caption.weight(.medium))
             .padding(.horizontal, 8)
             .padding(.vertical, 3)
-            .background(tint.opacity(0.14), in: Capsule())
-            .foregroundStyle(tint)
+            .background((tint ?? theme.accent).opacity(0.14), in: Capsule())
+            .foregroundStyle(tint ?? theme.accent)
     }
 }
 

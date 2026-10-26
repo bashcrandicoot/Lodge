@@ -53,6 +53,7 @@ final class AppModel: ObservableObject {
     private var camerasObserver: AnyCancellable?
     private var destinationsObserver: AnyCancellable?
     private var categoriesObserver: AnyCancellable?
+    private var appearanceObserver: AnyCancellable?
 
     init(settings: AppSettings? = nil, ledger: Ledger? = nil, cameras: CameraStore? = nil,
          destinations: DestinationStore? = nil, formatter: CardFormatter = CardFormatter(),
@@ -85,6 +86,13 @@ final class AppModel: ObservableObject {
             self?.session?.includedCategories = categories
         }
 
+        // Settings ▸ Appearance: Light / Dark / System for every window, alerts and menus included.
+        if !AppModel.isRunningUnitTests && !AppModel.demoForcesAppearance {
+            appearanceObserver = self.settings.$appearance.sink { appearance in
+                NSApp?.appearance = appearance.nsAppearance
+            }
+        }
+
         // The watcher must ignore the volume the destination folder lives on.
         watcher.destinationPathProvider = { [weak self] in self?.settings.destinationPath }
         watcher.onCardInserted = { [weak self] card in self?.cardInserted(card) }
@@ -95,6 +103,15 @@ final class AppModel: ObservableObject {
             watcher.start()
             self.destinations.startWatchingDrives()
         }
+    }
+
+    /// Screenshots pick Light or Dark with `-SnapDropDemoAppearance` (Debug builds only).
+    static var demoForcesAppearance: Bool {
+        #if DEBUG
+        DemoData.launchState != nil && UserDefaults.standard.string(forKey: "SnapDropDemoAppearance") != nil
+        #else
+        false
+        #endif
     }
 
     /// True when the app was launched as the host for the unit tests.

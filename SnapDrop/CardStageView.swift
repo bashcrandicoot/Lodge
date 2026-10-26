@@ -73,6 +73,7 @@ private struct InsertCardPrompt: View {
 
 /// One card in the list.
 private struct CardRow: View {
+    @Environment(\.theme) private var theme
     let card: CardVolume
     let isSelected: Bool
     let isRemoved: Bool
@@ -94,7 +95,7 @@ private struct CardRow: View {
         }
         .background(
             RoundedRectangle(cornerRadius: 9, style: .continuous)
-                .fill(isSelected ? Theme.accent.opacity(0.14) : Color.clear))
+                .fill(isSelected ? theme.accent.opacity(0.14) : Color.clear))
         .contextMenu {
             if showsActions { CardActions() }
         }
