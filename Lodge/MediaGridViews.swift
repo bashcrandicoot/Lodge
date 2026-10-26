@@ -208,6 +208,7 @@ struct MediaTile: View {
                 .fill(isSelected ? theme.accent.opacity(0.14) : Color.clear)
         }
         .contentShape(RoundedRectangle(cornerRadius: 11, style: .continuous))
+        .hoverLift(cornerRadius: 11)
         .animation(reduceMotion ? nil : .spring(duration: 0.4, bounce: 0.55), value: info.status)
         .animation(reduceMotion ? nil : .easeOut(duration: 0.15), value: isSelected)
         .accessibilityElement(children: .ignore)

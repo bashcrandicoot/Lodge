@@ -85,6 +85,9 @@ private struct CardRow: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     /// Bumped when the card shows up or gets selected, to bounce its icon.
     @State private var bounces = 0
+    /// The card springs in with a short accent glow when it's inserted.
+    @State private var inserted = false
+    @State private var glowing = false
 
     var body: some View {
         HStack(spacing: 0) {
@@ -99,12 +102,28 @@ private struct CardRow: View {
         .background(
             RoundedRectangle(cornerRadius: 9, style: .continuous)
                 .fill(isSelected ? theme.accent.opacity(0.14) : Color.clear))
+        .overlay {
+            RoundedRectangle(cornerRadius: 9, style: .continuous)
+                .strokeBorder(theme.accent.opacity(glowing ? 0.7 : 0), lineWidth: 1.5)
+                .shadow(color: theme.glow.opacity(glowing ? 0.55 : 0), radius: 8)
+                .allowsHitTesting(false)
+        }
+        .hoverLift(cornerRadius: 9)
+        .scaleEffect(inserted || reduceMotion ? 1 : 0.94)
+        .opacity(inserted || reduceMotion ? 1 : 0)
         .contextMenu {
             if showsActions { CardActions() }
         }
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: isSelected)
         .onAppear {
-            if !reduceMotion { bounces += 1 }
+            guard !reduceMotion else { inserted = true; return }
+            bounces += 1
+            glowing = true
+            withAnimation(.spring(duration: 0.45, bounce: 0.35)) { inserted = true }
+            Task {
+                try? await Task.sleep(for: .milliseconds(350))
+                withAnimation(.easeOut(duration: 1.1)) { glowing = false }
+            }
         }
         .onChange(of: isSelected) { _, selected in
             if selected && !reduceMotion { bounces += 1 }

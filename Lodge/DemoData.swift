@@ -280,4 +280,19 @@ extension View {
         appEnvironment(model)
     }
 }
+/// Screenshots are taken with the app left in the background (it never takes focus), where
+/// switches, segments and the title bar turn grey. In demo mode, draw every window as if it
+/// were the active one so the screenshots show the real colours. Debug builds only.
+extension DemoData {
+    static func drawWindowsAsActive() {
+        let alwaysActive: @convention(block) (AnyObject) -> Bool = { _ in true }
+        let implementation = imp_implementationWithBlock(alwaysActive)
+        for name in ["isKeyWindow", "isMainWindow", "_hasActiveAppearance",
+                     "_hasActiveAppearanceIgnoringKeyFocus", "hasKeyAppearance", "hasMainAppearance"] {
+            if let method = class_getInstanceMethod(NSWindow.self, NSSelectorFromString(name)) {
+                method_setImplementation(method, implementation)
+            }
+        }
+    }
+}
 #endif

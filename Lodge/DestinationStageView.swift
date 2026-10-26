@@ -362,7 +362,7 @@ enum FolderDrop {
         _ = provider.loadObject(ofClass: URL.self) { url, _ in
             guard let url else { return }
             Task { @MainActor in
-                if !use(url) { NSSound.beep() }
+                if use(url) { Haptics.dropAccepted() } else { NSSound.beep() }
             }
         }
         return true
@@ -723,7 +723,10 @@ private struct TreeDropDelegate: DropDelegate {
         let apply = apply
         _ = provider.loadObject(ofClass: String.self) { text, _ in
             guard let text, let payload = FolderTemplateEditor.payload(text) else { return }
-            Task { @MainActor in apply(payload, slot) }
+            Task { @MainActor in
+                apply(payload, slot)
+                Haptics.dropAccepted()
+            }
         }
         return true
     }

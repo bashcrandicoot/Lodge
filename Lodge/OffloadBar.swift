@@ -199,20 +199,17 @@ private struct CompletionRow: View {
                 if success && !reduceMotion {
                     CompletionBurst(color: theme.burst)
                 }
-                Group {
-                    if success {
-                        Image(systemName: symbol(summary))
-                            .symbolRenderingMode(.palette)
-                            .foregroundStyle(theme.onAccent,
-                                             plainTheme ? AnyShapeStyle(theme.accent) : AnyShapeStyle(theme.borderGradient))
-                    } else {
-                        Image(systemName: symbol(summary))
-                            .foregroundStyle(color(summary))
-                    }
+                if success {
+                    // The tick draws itself in once verification has finished.
+                    DrawnCheckmark(fill: plainTheme ? AnyShapeStyle(theme.accent) : AnyShapeStyle(theme.borderGradient),
+                                   tick: theme.onAccent, size: 30)
+                        .shadow(color: plainTheme ? .clear : theme.glow.opacity(glowing ? 0.5 : 0), radius: 10)
+                } else {
+                    Image(systemName: symbol(summary))
+                        .foregroundStyle(color(summary))
+                        .font(.system(size: 30))
+                        .symbolEffect(.bounce, value: bounces)
                 }
-                .font(.system(size: 30))
-                .symbolEffect(.bounce, value: bounces)
-                .shadow(color: success && !plainTheme ? theme.glow.opacity(glowing ? 0.5 : 0) : .clear, radius: 10)
             }
             .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
@@ -221,9 +218,14 @@ private struct CompletionRow: View {
                         .font(.headline)
                     FormatStatusLine()
                 }
-                Text(subtitle(summary))
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
+                // "57 copied" counts up as the summary appears.
+                CountUpText(value: Double(summary.copied)) { copied in
+                    var counted = summary
+                    counted.copied = Int(copied.rounded())
+                    return subtitle(counted)
+                }
+                .font(.callout.monospacedDigit())
+                .foregroundStyle(.secondary)
                 FormatResultLine()
                     .font(.callout)
             }

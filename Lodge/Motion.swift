@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 // Small animated pieces used around the main window. Each one checks Reduce Motion
 // (System Settings → Accessibility → Display) and stays still when it's on.
@@ -114,7 +115,107 @@ struct CompletionBurst: View {
     }
 }
 
+/// A filled circle whose checkmark draws itself in once, for a clean finished offload.
+/// With Reduce Motion the finished checkmark is shown straight away.
+struct DrawnCheckmark<Fill: ShapeStyle>: View {
+    let fill: Fill
+    let tick: Color
+    var size: CGFloat = 30
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var drawn: CGFloat = 0
+    @State private var popped = false
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(fill)
+                .scaleEffect(popped || reduceMotion ? 1 : 0.6)
+            CheckmarkShape()
+                .trim(from: 0, to: reduceMotion ? 1 : drawn)
+                .stroke(tick, style: StrokeStyle(lineWidth: size * 0.1, lineCap: .round, lineJoin: .round))
+                .padding(size * 0.29)
+        }
+        .frame(width: size, height: size)
+        .onAppear {
+            guard !reduceMotion else { return }
+            withAnimation(.spring(duration: 0.35, bounce: 0.45)) { popped = true }
+            withAnimation(.easeOut(duration: 0.4).delay(0.22)) { drawn = 1 }
+        }
+    }
+}
+
+/// The tick inside `DrawnCheckmark`, drawn from the short stroke to the long one.
+struct CheckmarkShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX, y: rect.midY + rect.height * 0.06))
+        path.addLine(to: CGPoint(x: rect.minX + rect.width * 0.37, y: rect.maxY - rect.height * 0.1))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY + rect.height * 0.1))
+        return path
+    }
+}
+
+/// A number that counts up from zero when it first appears and glides to new values.
+/// With Reduce Motion it just shows the value.
+struct CountUpText: View {
+    let value: Double
+    let format: (Double) -> String
+    @State private var shown: Double?
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    var body: some View {
+        CountingText(value: shown ?? (reduceMotion ? value : 0), format: format)
+            .onAppear { move(to: value, duration: 0.8) }
+            .onChange(of: value) { _, newValue in move(to: newValue, duration: 0.45) }
+            .accessibilityLabel(format(value))
+    }
+
+    private func move(to target: Double, duration: Double) {
+        guard !reduceMotion else { shown = target; return }
+        withAnimation(.easeOut(duration: duration)) { shown = target }
+    }
+}
+
+/// Redraws its text for every in-between value while `value` animates.
+private struct CountingText: View, Animatable {
+    var value: Double
+    let format: (Double) -> String
+    var animatableData: Double {
+        get { value }
+        set { value = newValue }
+    }
+    var body: some View { Text(format(value)) }
+}
+
+/// Trackpad feedback (on Force Touch trackpads) when something is dropped and accepted.
+enum Haptics {
+    @MainActor static func dropAccepted() {
+        NSHapticFeedbackManager.defaultPerformer.perform(.levelChange, performanceTime: .now)
+    }
+}
+
+/// A soft highlight and a small lift under the pointer. Reduce Motion keeps only the highlight.
+private struct HoverLift: ViewModifier {
+    let cornerRadius: CGFloat
+    @State private var hovering = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    func body(content: Content) -> some View {
+        content
+            .background {
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .fill(Color.primary.opacity(hovering ? 0.05 : 0))
+            }
+            .scaleEffect(hovering && !reduceMotion ? 1.015 : 1)
+            .onHover { hovering = $0 }
+            .animation(reduceMotion ? .easeOut(duration: 0.1) : .spring(duration: 0.25, bounce: 0.3), value: hovering)
+    }
+}
+
 extension View {
+    /// Lifts a card row or grid tile slightly while the pointer is over it.
+    func hoverLift(cornerRadius: CGFloat) -> some View { modifier(HoverLift(cornerRadius: cornerRadius)) }
+
     /// Rows fade and slide in one after another when `revealed` turns true.
     /// Only the first rows are delayed, so long lists don't feel slow.
     func staggeredReveal(index: Int, revealed: Bool, reduceMotion: Bool) -> some View {

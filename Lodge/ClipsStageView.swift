@@ -141,7 +141,7 @@ private struct ClipsStageContent: View {
                 }
             }
             Spacer(minLength: 0)
-            Text(OffloadFormatting.bytes(session.newBytes))
+            CountUpText(value: Double(session.newBytes)) { OffloadFormatting.bytes(Int64($0.rounded())) }
                 .font(.callout.monospacedDigit())
                 .foregroundStyle(.secondary)
                 .accessibilityLabel("Total size \(OffloadFormatting.bytes(session.newBytes))")

@@ -52,10 +52,19 @@ enum FormatAlert {
     }
 }
 
-/// Green "Ready to format" seal.
+/// Green "Ready to format" seal. It glows up softly (and the seal bounces) when it appears.
 struct ReadyToFormatBadge: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var glow = 0.0
+    @State private var bounces = 0
+
     var body: some View {
-        Label("Ready to format", systemImage: "checkmark.seal.fill")
+        Label {
+            Text("Ready to format")
+        } icon: {
+            Image(systemName: "checkmark.seal.fill")
+                .symbolEffect(.bounce, value: bounces)
+        }
             .font(.caption.weight(.semibold))
             .lineLimit(1)
             .fixedSize()
@@ -63,6 +72,16 @@ struct ReadyToFormatBadge: View {
             .padding(.horizontal, 7)
             .padding(.vertical, 2)
             .background(Color.green.opacity(0.12), in: Capsule())
+            .background(Capsule().fill(Color.green.opacity(0.35 * glow)).blur(radius: 6))
+            .onAppear {
+                guard !reduceMotion else { glow = 0.5; return }
+                bounces += 1
+                withAnimation(.easeOut(duration: 0.5)) { glow = 1 }
+                Task {
+                    try? await Task.sleep(for: .milliseconds(700))
+                    withAnimation(.easeInOut(duration: 1.2)) { glow = 0.5 }
+                }
+            }
             .help("Every file on this card has a verified copy at the destination.")
             .accessibilityElement(children: .combine)
     }
