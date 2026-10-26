@@ -305,21 +305,26 @@ struct OnboardingDrive: Identifiable, Hashable, Sendable {
         return "\(OffloadFormatting.bytes(free)) free of \(OffloadFormatting.bytes(total))"
     }
 
-    /// The startup disk (suggesting ~/Movies) and writable external drives. Cards are left out:
-    /// removable media, read-only volumes and anything Lodge sees as a card.
+    /// The startup disk (suggesting ~/Movies) and writable drives in /Volumes, external SSDs
+    /// included. Left out: removable media (SD/CFexpress cards), volumes with a camera's folders
+    /// (DCIM, PRIVATE/M4ROOT…: a card in a USB reader), backup volumes (Time Machine) and disk
+    /// images. Loose footage doesn't count: a drive of earlier offloads is a good destination.
     @MainActor
-    static func live(excluding cards: [CardVolume]) -> [OnboardingDrive] {
+    static func live() -> [OnboardingDrive] {
         let keys: [URLResourceKey] = [.volumeLocalizedNameKey, .volumeTotalCapacityKey,
                                       .volumeAvailableCapacityForImportantUsageKey, .volumeIsInternalKey,
                                       .volumeIsRootFileSystemKey, .volumeIsReadOnlyKey, .volumeIsRemovableKey]
-        let cardPaths = Set(cards.map(\.url.standardizedFileURL.path))
         var drives: [OnboardingDrive] = []
         for url in FileManager.default.mountedVolumeURLs(includingResourceValuesForKeys: keys, options: [.skipHiddenVolumes]) ?? [] {
             guard let values = try? url.resourceValues(forKeys: Set(keys)) else { continue }
             let isRoot = values.volumeIsRootFileSystem ?? false
             if !isRoot {
+                // Cheap checks first; the disk image / backup / camera folder checks touch the drive.
                 guard url.path.hasPrefix("/Volumes/"), !(values.volumeIsReadOnly ?? true),
-                      !(values.volumeIsRemovable ?? false), !cardPaths.contains(url.standardizedFileURL.path) else { continue }
+                      !(values.volumeIsRemovable ?? false) else { continue }
+                let traits = VolumeTraits.read(url)
+                guard isOffered(traits, isReadOnly: false,
+                                hasCameraFolders: CameraMedia.hasCameraFolders(root: url.path)) else { continue }
             }
             let movies = FileManager.default.urls(for: .moviesDirectory, in: .userDomainMask).first?.path
                 ?? NSHomeDirectory() + "/Movies"
@@ -333,6 +338,15 @@ struct OnboardingDrive: Identifiable, Hashable, Sendable {
         }
         // External drives first (that's where footage usually goes), the startup disk last.
         return drives.sorted { !$0.isInternal && $1.isInternal }
+    }
+
+    /// Can this volume be offered as a destination on "Destination"? The startup disk always;
+    /// otherwise a writable drive in /Volumes that isn't a card, a camera's card, a backup
+    /// or a disk image. External SSDs count even though they're ejectable.
+    static func isOffered(_ traits: VolumeTraits, isReadOnly: Bool, hasCameraFolders: Bool) -> Bool {
+        if traits.isRootFileSystem { return true }
+        guard traits.path.hasPrefix("/Volumes/"), !isReadOnly else { return false }
+        return !traits.isRemovable && !traits.isDiskImage && !traits.isBackup && !hasCameraFolders
     }
 }
 

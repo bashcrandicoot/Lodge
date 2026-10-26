@@ -125,6 +125,24 @@ enum CameraMedia {
     static func looksLikeCameraMedia(root: String, list: Lister = diskList) -> Bool {
         guard let top = list(root) else { return false }
         let visible = top.filter { !$0.hasPrefix(".") }
+        if hasCameraFolders(root: root, visible: visible, list: list) { return true }
+        if visible.prefix(300).contains(where: isMedia) { return true }
+        // One level down, a few folders only (so a big ordinary drive stays quick).
+        for folder in visible.prefix(12) where (folder as NSString).pathExtension.isEmpty {
+            guard let inner = list(root + "/" + folder) else { continue }
+            if inner.prefix(300).contains(where: { !$0.hasPrefix(".") && isMedia($0) }) { return true }
+        }
+        return false
+    }
+
+    /// Only the folders cameras write (DCIM, PRIVATE/M4ROOT, …) at the root, not loose media files:
+    /// a drive full of earlier offloads is a destination, a card in a USB reader isn't.
+    static func hasCameraFolders(root: String, list: Lister = diskList) -> Bool {
+        guard let top = list(root) else { return false }
+        return hasCameraFolders(root: root, visible: top.filter { !$0.hasPrefix(".") }, list: list)
+    }
+
+    private static func hasCameraFolders(root: String, visible: [String], list: Lister) -> Bool {
         let upper = Set(visible.map { $0.uppercased() })
         for marker in markerFolders {
             let parts = marker.split(separator: "/").map(String.init)
@@ -135,12 +153,6 @@ enum CameraMedia {
                       inner.contains(where: { $0.uppercased() == parts[1] }) {
                 return true
             }
-        }
-        if visible.prefix(300).contains(where: isMedia) { return true }
-        // One level down, a few folders only (so a big ordinary drive stays quick).
-        for folder in visible.prefix(12) where (folder as NSString).pathExtension.isEmpty {
-            guard let inner = list(root + "/" + folder) else { continue }
-            if inner.prefix(300).contains(where: { !$0.hasPrefix(".") && isMedia($0) }) { return true }
         }
         return false
     }

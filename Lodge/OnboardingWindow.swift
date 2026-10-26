@@ -35,7 +35,7 @@ final class OnboardingWindowController: NSObject, NSWindowDelegate {
                 return
             }
         }
-        var drives = OnboardingDrive.live(excluding: model.watcher.cards)
+        var drives = OnboardingDrive.live()
         #if DEBUG
         if AppModel.isDemo { drives = OnboardingDemo.drives }
         if let raw = UserDefaults.standard.string(forKey: "LodgeDemoOnboardingStep"),

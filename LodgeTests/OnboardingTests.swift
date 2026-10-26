@@ -286,3 +286,60 @@ final class OnboardingTests: XCTestCase {
         XCTAssertEqual(TemplatePieces.split("{oops"), [.literal("{oops")])
     }
 }
+
+/// Which drives "Destination" offers.
+final class OnboardingDriveTests: XCTestCase {
+    private func traits(_ path: String, removable: Bool = false, ejectable: Bool = true, isInternal: Bool? = false,
+                        root: Bool = false, diskImage: Bool = false, backup: Bool = false) -> VolumeTraits {
+        var traits = VolumeTraits(path: path)
+        traits.isRemovable = removable
+        traits.isEjectable = ejectable
+        traits.isInternal = isInternal
+        traits.isRootFileSystem = root
+        traits.isDiskImage = diskImage
+        traits.isBackup = backup
+        return traits
+    }
+
+    func testExternalSSDsAreOffered() {
+        // A USB / Thunderbolt SSD: ejectable but not removable (Lodge's card watcher lists it too).
+        XCTAssertTrue(OnboardingDrive.isOffered(traits("/Volumes/Shuttle SSD"), isReadOnly: false, hasCameraFolders: false))
+        XCTAssertTrue(OnboardingDrive.isOffered(traits("/Volumes/Studio RAID", ejectable: false), isReadOnly: false,
+                                                hasCameraFolders: false))
+    }
+
+    func testTheStartupDiskIsOffered() {
+        XCTAssertTrue(OnboardingDrive.isOffered(traits("/", ejectable: false, isInternal: true, root: true),
+                                                isReadOnly: true, hasCameraFolders: false))
+    }
+
+    func testCardsBackupsDiskImagesAndReadOnlyDrivesAreNot() {
+        XCTAssertFalse(OnboardingDrive.isOffered(traits("/Volumes/A7SIII", removable: true), isReadOnly: false,
+                                                 hasCameraFolders: true), "SD card")
+        XCTAssertFalse(OnboardingDrive.isOffered(traits("/Volumes/Untitled", removable: true), isReadOnly: false,
+                                                 hasCameraFolders: false), "Removable media, even empty")
+        XCTAssertFalse(OnboardingDrive.isOffered(traits("/Volumes/CFexpress"), isReadOnly: false,
+                                                 hasCameraFolders: true), "A card in a USB reader")
+        XCTAssertFalse(OnboardingDrive.isOffered(traits("/Volumes/Time Machine", backup: true), isReadOnly: false,
+                                                 hasCameraFolders: false))
+        XCTAssertFalse(OnboardingDrive.isOffered(traits("/Volumes/Installer", diskImage: true), isReadOnly: false,
+                                                 hasCameraFolders: false))
+        XCTAssertFalse(OnboardingDrive.isOffered(traits("/Volumes/Shuttle SSD"), isReadOnly: true,
+                                                 hasCameraFolders: false))
+        XCTAssertFalse(OnboardingDrive.isOffered(traits("/System/Volumes/Data", ejectable: false, isInternal: true),
+                                                 isReadOnly: false, hasCameraFolders: false))
+    }
+
+    func testLooseFootageDoesNotHideADrive() {
+        // A drive of earlier offloads (clips in project folders) is a destination; a camera's folders aren't.
+        let archive: [String: [String]] = ["/Volumes/SSD": ["Northwind", "Clip.MP4"],
+                                           "/Volumes/SSD/Northwind": ["A001C003.MXF"]]
+        XCTAssertFalse(CameraMedia.hasCameraFolders(root: "/Volumes/SSD", list: { archive[$0] }))
+        XCTAssertTrue(CameraMedia.looksLikeCameraMedia(root: "/Volumes/SSD", list: { archive[$0] }),
+                      "…though plugging it in can still ask to import")
+        let card: [String: [String]] = ["/Volumes/Untitled": ["private", "DCIM"], "/Volumes/Untitled/private": ["M4ROOT"]]
+        XCTAssertTrue(CameraMedia.hasCameraFolders(root: "/Volumes/Untitled", list: { card[$0] }))
+        let sony: [String: [String]] = ["/Volumes/Untitled": ["PRIVATE"], "/Volumes/Untitled/PRIVATE": ["M4ROOT"]]
+        XCTAssertTrue(CameraMedia.hasCameraFolders(root: "/Volumes/Untitled", list: { sony[$0] }))
+    }
+}
