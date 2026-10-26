@@ -331,7 +331,7 @@ Updates are signed, so Lodge only installs ones you published. How to publish on
 
 Lodge is free. **Lodge ▸ Support Lodge…**, **Help ▸ Support Lodge…** and the *Support Lodge ♥*
 link at the bottom of Settings ▸ General open the tip page on
-[Gumroad](https://bashframe.gumroad.com/l/lodge). After the 5th successful offload, and at
+[Gumroad](https://bashframes.gumroad.com/l/lodge). After the 5th successful offload, and at
 least 3 days after Lodge first opened, a small card asks once (only when Lodge is idle or
 after you click Done, never during a transfer). *Maybe Later* asks one more time 30 days
 later at most; *Support Lodge* or *Don't Ask Again* stops it for good. It's all kept in
