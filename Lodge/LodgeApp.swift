@@ -10,6 +10,11 @@ struct LodgeApp: App {
     /// The one shared "brain" of the app. `@StateObject` keeps it alive for the app's lifetime.
     @StateObject private var model = LodgeApp.makeModel()
 
+    init() {
+        // Create (and start) Sparkle at launch, as its docs recommend.
+        _ = AppUpdates.controller
+    }
+
     var body: some Scene {
         // A single main window (not a document-style app with many windows).
         Window("Lodge", id: "main") {
@@ -20,10 +25,16 @@ struct LodgeApp: App {
         .defaultSize(width: 1080, height: 660)
         .windowResizability(.contentMinSize)
         .windowToolbarStyle(.unified)
+        .commands {
+            // Lodge ▸ Check for Updates… (right after About Lodge)
+            CommandGroup(after: .appInfo) {
+                CheckForUpdatesView(updater: AppUpdates.updater)
+            }
+        }
 
         // Lodge ▸ Settings… (⌘,)
         Settings {
-            SettingsView()
+            SettingsView(updater: AppUpdates.updater)
                 .appEnvironment(model)
         }
     }

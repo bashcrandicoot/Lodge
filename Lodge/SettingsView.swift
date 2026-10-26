@@ -1,14 +1,18 @@
 import SwiftUI
 import AppKit
+import Sparkle
 
 /// The Settings window (Lodge ▸ Settings…, or ⌘,).
 struct SettingsView: View {
+    /// Sparkle's updater, for the Updates toggles in General (nil hides them).
+    var updater: SPUUpdater?
+
     /// Which tab is showing. Stored so "Edit Cameras…" can open straight to Cameras.
     @AppStorage(SettingsTab.storageKey) private var tab: SettingsTab = .general
 
     var body: some View {
         TabView(selection: $tab) {
-            GeneralSettingsView()
+            GeneralSettingsView(updater: updater)
                 .tabItem { Label("General", systemImage: "gearshape") }
                 .tag(SettingsTab.general)
             AppearanceSettingsView()
@@ -41,6 +45,7 @@ enum SettingsTab: String {
 /// What gets offloaded and what happens after. (Where files go is the default favorite in
 /// the Destinations tab: the main window's destination picker is the one place to change it.)
 struct GeneralSettingsView: View {
+    var updater: SPUUpdater?
     @EnvironmentObject private var settings: AppSettings
     @EnvironmentObject private var model: AppModel
 
@@ -83,6 +88,9 @@ struct GeneralSettingsView: View {
                         .foregroundStyle(.secondary)
                 }
                 Toggle("Play a sound when an offload finishes", isOn: $settings.playSuccessSound)
+            }
+            if let updater {
+                UpdateSettingsSection(updater: updater)
             }
         }
         .formStyle(.grouped)
@@ -170,6 +178,6 @@ struct AppearanceSettingsView: View {
 
 #if DEBUG
 #Preview("Settings") {
-    SettingsView().demoEnvironment(DemoData.model(state: .ready))
+    SettingsView(updater: AppUpdates.updater).demoEnvironment(DemoData.model(state: .ready))
 }
 #endif
