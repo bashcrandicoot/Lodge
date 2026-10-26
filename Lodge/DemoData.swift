@@ -24,6 +24,40 @@ enum DemoData {
         UserDefaults.standard.string(forKey: "LodgeDemoTheme").flatMap(ThemePalette.ID.init(rawValue:))
     }
 
+    /// Set by launching with `-LodgeDemoExpandTree YES` (every folder) or `files` (and the file lists).
+    static var launchExpandTree: String? {
+        guard UserDefaults.standard.bool(forKey: "LodgeDemo"),
+              let value = UserDefaults.standard.string(forKey: "LodgeDemoExpandTree") else { return nil }
+        switch value.lowercased() {
+        case "yes", "1", "true": return "folders"
+        case "files": return "files"
+        default: return nil
+        }
+    }
+
+    /// Made-up folders "already" in the demo destination (it's the real Movies folder, which
+    /// the demo shouldn't show): earlier Coastline shoots, a Drone Day and an Exports folder.
+    static func existingFolders(root: String) -> FolderListing.Lister {
+        let tree: [String: [String]] = [
+            "": ["Coastline", "Coastline_2026-10-18", "Drone Day", "Exports"],
+            "coastline": ["2026-10-18"],
+            "coastline/2026-10-18": ["A7S3"],
+            "coastline/2026-10-18/a7s3": [],
+            "coastline_2026-10-18": ["A7S3"],
+            "coastline_2026-10-18/a7s3": [],
+            "drone day": ["2026-09-30"],
+            "drone day/2026-09-30": [],
+            "exports": [],
+        ]
+        let base = URL(fileURLWithPath: root).standardizedFileURL.path
+        return { url in
+            let path = url.standardizedFileURL.path
+            guard path == base || path.hasPrefix(base + "/") else { return nil }
+            let relative = String(path.dropFirst(base.count)).trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+            return tree[relative.lowercased()]
+        }
+    }
+
     /// Set by launching with `-LodgeDemoLayout grid` (and `-LodgeDemoListThumbnails YES`).
     static var launchLayout: MediaLayout? {
         UserDefaults.standard.string(forKey: "LodgeDemoLayout").flatMap(MediaLayout.init(rawValue:))
@@ -185,6 +219,7 @@ enum DemoData {
         if let layout = launchLayout { settings.mediaLayout = layout }
         settings.showListThumbnails = UserDefaults.standard.bool(forKey: "LodgeDemoListThumbnails")
         model.thumbnails.usesPlaceholders = true
+        if let root = settings.destinationPath { model.subfolderLister = existingFolders(root: root) }
         guard state != .empty else { return model }
 
         settings.apply(NamingPreset.all[1])   // Project / Date / Camera ("Sony Shoot")
@@ -192,6 +227,10 @@ enum DemoData {
            let quick = presets.presets.first(where: { $0.quickDump }) {
             settings.apply(quick)
             presets.markActive(quick.id)
+        }
+        if let folder = UserDefaults.standard.string(forKey: "LodgeDemoFolderTemplate"),
+           NamingTemplates(folder: folder, file: settings.fileTemplate) != nil {
+            settings.folderTemplate = folder
         }
         let all = clips()
         let alreadyDone = all.prefix(15)      // the first six clips (with sidecars) and three photos

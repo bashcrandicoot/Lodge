@@ -31,6 +31,8 @@ final class AppModel: ObservableObject {
     }
     /// Thumbnails for the Media grid (and list, if turned on).
     let thumbnails = ThumbnailProvider()
+    /// Lists the folders already at the destination (the demo swaps in made-up ones).
+    var subfolderLister: FolderListing.Lister = FolderListing.diskSubfolders
     @Published private(set) var isScanning = false
     @Published var showingRecent = false
     @Published private(set) var isEjecting = false
