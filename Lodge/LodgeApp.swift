@@ -42,6 +42,8 @@ struct LodgeApp: App {
                             cameras: CameraStore(fileURL: nil), destinations: DestinationStore(fileURL: nil),
                             presets: PresetStore(fileURL: nil), startWatching: false)
         }
+        // Lodge used to be SnapDrop: copy its data and settings over once (never moved).
+        LegacyMigration.runIfNeeded()
         return AppModel()
     }
 }

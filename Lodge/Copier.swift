@@ -26,9 +26,12 @@ enum Copier {
     /// Read/write in 8 MB chunks so big clips never have to fit in memory.
     static let chunkSize = 8 * 1024 * 1024
 
+    /// Added to the name of a copy until it has been verified.
+    static let partialSuffix = ".lodge-partial"
+
     static func partialURL(for finalURL: URL) -> URL {
         finalURL.deletingLastPathComponent()
-            .appendingPathComponent(finalURL.lastPathComponent + ".lodge-partial")
+            .appendingPathComponent(finalURL.lastPathComponent + partialSuffix)
     }
 
     /// Copies `source` to `finalURL` and verifies it. Returns the SHA-256 (hex).

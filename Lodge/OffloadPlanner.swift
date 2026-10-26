@@ -271,7 +271,7 @@ private struct NameBook {
         let key = folder.lowercased()
         if let names = listed[key] { return names }
         let names = existingNames(folder).map { name in
-            name.hasSuffix(".lodge-partial") ? String(name.dropLast(".lodge-partial".count)) : name
+            LegacyMigration.withoutPartialSuffix(name)
         }
         listed[key] = names
         taken[key, default: []].formUnion(names.map { $0.lowercased() })

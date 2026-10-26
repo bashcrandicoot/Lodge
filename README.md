@@ -2,6 +2,7 @@
 
 A small native macOS app (SwiftUI) that offloads camera SD cards — video, photos, audio
 and sidecar files — safely, verified, and named the way you want.
+Formerly SnapDrop: on its first launch Lodge copies the old app’s data and settings (it never moves or changes them).
 
 ![Lodge ready to offload a card](Design/screenshots/ready-dark.png)
 
@@ -360,6 +361,7 @@ Every view also has `#Preview`s you can open in Xcode's canvas.
 | `Renamer.swift` | Project-name cleanup and date formatting |
 | `Copier.swift` | Copy + SHA-256 verify of one file, and the whole-card offload loop |
 | `Ledger.swift` | The JSON record of everything offloaded |
+| `LegacyMigration.swift` | First launch: copies the old app’s Application Support files and settings into Lodge’s (copy, never move) |
 | `CardInventory.swift` | Every file on a card sorted by what the ledger knows: new, offloaded, or missing at the destination |
 | `ReoffloadAlert.swift` | The Re-offload Everything and Forget This Card's History confirmations |
 | `ShortClips.swift` | The short-clip rule: reading clip lengths, what's skipped and what's included anyway |
