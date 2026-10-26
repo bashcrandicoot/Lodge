@@ -31,7 +31,7 @@
 
 ## Key features
 
-Lodge 1.0.0 is the download below. **Coming in the next update** marks anything newer than that download. Where 1.0.0 works differently, the note says how.
+Lodge 1.0.0 is the download below. **Coming in the next update** marks anything newer than that download. Where 1.0.0 works differently, the note says how. That update also adds **Help > Contact Support…** and **Support Lodge…**, and a quiet tip after a few offloads that you can dismiss.
 
 - **Verified copies.** Each file is written as `<name>.lodge-partial`, read back, and hashed. When the SHA-256 matches the card, Lodge renames it to the final name. A mismatch deletes the partial file and reports a failure. The card is only read.
 - **Names from a template.** The default is `{date}/{project}` and `{date}_{project}_{seq}`. In Settings > Naming the menu is **Examples**: ready-made folder and file pairs, plus token buttons and a live example. `{project}` is the shoot or job name.
@@ -94,6 +94,12 @@ The longer path, including what to do if Offload is waiting, is in [Getting star
 - [Contributing](CONTRIBUTING.md)
 - [Security](SECURITY.md)
 
+## Support
+
+Lodge is made by BashFrames. For help, write to [bashframes@gmail.com](mailto:bashframes@gmail.com).
+
+If Lodge has been useful, you can [Support Lodge](https://bashframe.gumroad.com/l/lodge).
+
 ## License
 
-MIT. See [LICENSE](LICENSE). Copyright © 2026 Sebastian Phillips.
+MIT. See [LICENSE](LICENSE). © 2026 BashFrames.

@@ -4,7 +4,7 @@ Home base for your media. Lodge is a universal app for Apple silicon and Intel M
 
 The main window reads left to right: **Card**, **Media**, **Destination**, with the offload bar along the bottom. Closing the window quits Lodge.
 
-**Coming in the next update.** The preset menu sits at the top right of the window, just left of **Recent Offloads** and **Settings**, and the window title is hidden. In Lodge 1.0.0 the preset menu is in the center of the toolbar, and the title reads Lodge.
+**Coming in the next update.** The preset menu sits at the top right of the window, just left of **Recent Offloads** and **Settings**, and the window title is hidden. In Lodge 1.0.0 the preset menu is in the center of the toolbar, and the title reads Lodge. The Help menu also gains **Contact Support…** and **Support Lodge…**. After a few offloads, Lodge shows a quiet tip once. You can dismiss it.
 
 ![Lodge ready to offload, Default theme, Dark mode](assets/screenshots/ready-dark.png)
 

@@ -4,7 +4,7 @@ Lodge 1.0.0 is the supported release.
 
 ## Reporting
 
-Please report a vulnerability privately: [Open a security advisory](https://github.com/bashcrandicoot/Lodge/security/advisories/new).
+Please report a vulnerability privately: [Open a security advisory](https://github.com/bashcrandicoot/Lodge/security/advisories/new). You can also write to [bashframes@gmail.com](mailto:bashframes@gmail.com).
 
 Include the macOS version, the Lodge version, and what you observed. Give the maintainers a chance to respond before writing about it in public. A public issue is fine for a crash or a copy that failed. It is the wrong place for a report that would help someone erase a disk or read a card they should not have.
 

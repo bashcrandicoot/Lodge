@@ -8,6 +8,7 @@
 - A folder Lodge will create is marked **New**. One already there is marked **Already there**. A folder’s files can fold into one line, the first name with **+ N more** under it. Lodge 1.0.0 shows one example file name, and notes extra folders as a line such as **+ 2 more folders**.
 - Tokens can sit side by side in one folder level, such as `{project}_{date}`. Drop a level or a token on the left or right side of a name. Drag a piece back out between folders to give it its own level. The separator is **Underscore**, **Hyphen**, **Space**, or **None**.
 - The preset menu sits at the top right of the window, just left of **Recent Offloads** and **Settings**, and the window title is hidden. In Lodge 1.0.0 the preset menu is in the center of the toolbar, and the title reads Lodge.
+- **Help > Contact Support…** and **Support Lodge…** join the Help menu. After a few offloads, Lodge shows a quiet tip once. You can dismiss it.
 
 ## 1.0.0
 

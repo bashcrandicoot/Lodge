@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Lodge — Home base for your media.</title>
   <meta name="description" content="Lodge gets your footage off camera cards safely, checked and neatly named.">
+  <meta name="author" content="BashFrames">
   <meta name="theme-color" content="#100e18">
   <meta name="color-scheme" content="dark">
   <link rel="canonical" href="https://bashcrandicoot.github.io/Lodge/">
@@ -321,6 +322,14 @@
     }
     footer nav { display: flex; flex-wrap: wrap; gap: 8px 16px; }
     footer a { color: var(--muted); }
+    footer a.support {
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 980px;
+      padding: 4px 12px;
+      text-decoration: none;
+    }
+    footer a.support:hover { color: var(--accent); border-color: var(--accent); }
 
     @media (max-width: 860px) {
       .grid, .steps, .pair, .install-grid { grid-template-columns: 1fr; }
@@ -478,17 +487,20 @@
           </article>
         </div>
         <p class="note">The first time Lodge reads a card, allow access to files on a removable volume. Building from source is in the <a href="https://github.com/bashcrandicoot/Lodge/blob/main/CONTRIBUTING.md">contribution guide</a>. The <a href="https://github.com/bashcrandicoot/Lodge/blob/main/docs/user-guide.md">user guide</a>, <a href="https://github.com/bashcrandicoot/Lodge/blob/main/docs/faq.md">FAQ</a>, and <a href="https://github.com/bashcrandicoot/Lodge/blob/main/docs/changelog.md">changelog</a> live in the repository.</p>
+        <p class="note"><span class="soon">Coming in the next update</span> Help adds <strong>Contact Support…</strong> and <strong>Support Lodge…</strong>. After a few offloads, a quiet tip appears once. You can dismiss it.</p>
       </div>
     </section>
   </main>
 
   <footer>
     <div class="wrap">
-      <p>Lodge 1.0.0 · Home base for your media. · MIT License · © 2026 Sebastian Phillips</p>
+      <p>Lodge 1.0.0 · Home base for your media. · MIT License · © 2026 BashFrames</p>
       <nav aria-label="Footer">
         <a href="https://github.com/bashcrandicoot/Lodge">GitHub</a>
         <a href="https://github.com/bashcrandicoot/Lodge/releases">Releases</a>
         <a href="https://github.com/bashcrandicoot/Lodge/blob/main/docs/user-guide.md">User guide</a>
+        <a href="mailto:bashframes@gmail.com">bashframes@gmail.com</a>
+        <a class="support" href="https://bashframe.gumroad.com/l/lodge">Support Lodge</a>
         <a href="https://github.com/bashcrandicoot/Lodge/blob/main/SECURITY.md">Security</a>
         <a href="https://github.com/bashcrandicoot/Lodge/blob/main/LICENSE">License</a>
       </nav>
