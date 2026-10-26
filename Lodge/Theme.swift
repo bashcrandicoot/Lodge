@@ -11,6 +11,8 @@ import SwiftUI
 /// - `progress`: the bright sweep for thin things (progress bar, flowing dots, borders).
 /// - `glow`: the shadow colour around the active stage and the finished check.
 /// - `accent…`: the tint for controls, text and selection, per appearance and contrast.
+///   Default follows the system accent colour instead (system blue unless the user picked
+///   another in System Settings); its `accent…` values are the system-blue fallbacks.
 /// - `gauge…`: the destination's used-space bar (never red-looking, so it isn't a warning).
 struct ThemePalette: Identifiable, Equatable, Sendable {
     enum ID: String, CaseIterable, Sendable {
@@ -86,11 +88,13 @@ struct ThemePalette: Identifiable, Equatable, Sendable {
         self.gaugeLight = gaugeLight; self.gaugeDark = gaugeDark
     }
 
-    /// Default in Dark: selected segments and toggles (white drawn on top).
-    static let controlTintDark: UInt32 = 0x6E6E73
-    static let controlTintDarkHighContrast: UInt32 = 0x545458
-    var controlTintDark: UInt32 { Self.controlTintDark }
-    var controlTintDarkHighContrast: UInt32 { Self.controlTintDarkHighContrast }
+    /// Default uses the system accent colour (blue by default) for controls, selection,
+    /// progress and the prominent button. The colour themes keep their own gradients.
+    var followsSystemAccent: Bool { id == .standard }
+
+    /// The standard macOS system blue, used when the system accent can't be read.
+    static let systemBlueLight: UInt32 = 0x007AFF
+    static let systemBlueDark: UInt32 = 0x0A84FF
 
     /// Whether this theme paints a coloured wash behind the window.
     var hasWash: Bool { !wash.isEmpty }
@@ -105,21 +109,22 @@ struct ThemePalette: Identifiable, Equatable, Sendable {
 
     static let all: [ThemePalette] = [standard, aurora, ocean, twilight, ember, forest]
 
-    /// The default: neutral black and white, no colour. The plain system window background,
-    /// a near-white button with black text in Dark (near-black with white text in Light),
-    /// and white-to-grey progress, glow and flowing dots.
+    /// The default: a neutral window (near-black in Dark, no coloured wash) with the standard
+    /// system accent — blue — on toggles, sliders, selected segments, selection, progress,
+    /// badges and the prominent button, like any Mac app. The values below are the
+    /// system-blue fallbacks; at run time `ResolvedTheme` uses the system accent colour.
     static let standard = ThemePalette(
         id: .standard, name: "Default",
         wash: [],
-        button: [0x3A3A3C, 0x2C2C2E, 0x1D1D1F], buttonDark: [0xFFFFFF, 0xF2F2F5, 0xE3E3E8],
-        buttonText: 0xFFFFFF, buttonTextDark: 0x000000,
-        solid: 0x1D1D1F, solidDark: 0xF2F2F5,
-        progress: [0x1D1D1F, 0x48484A, 0x8E8E93], progressDark: [0x8E8E93, 0xD1D1D6, 0xFFFFFF],
-        glow: 0x000000, glowDark: 0xFFFFFF,
-        accentLight: 0x3A3A3C, accentDark: 0xBDBDC2,
-        accentLightHighContrast: 0x1D1D1F, accentDarkHighContrast: 0xE5E5EA,
-        onAccentLight: 0xFFFFFF, onAccentDark: 0x000000,
-        gaugeLight: [0x48484A, 0x6E6E73], gaugeDark: [0x98989D, 0xD1D1D6])
+        button: [0x1A88FF, 0x007AFF, 0x0071EB], buttonDark: [0x2490FF, 0x0A84FF, 0x0A7AEB],
+        buttonText: 0xFFFFFF, buttonTextDark: 0xFFFFFF,
+        solid: 0x0040DD, solidDark: 0x0040DD,
+        progress: [0x0062CC, 0x007AFF, 0x4DA2FF], progressDark: [0x0A84FF, 0x47A3FF, 0x85C2FF],
+        glow: 0x007AFF, glowDark: 0x0A84FF,
+        accentLight: systemBlueLight, accentDark: systemBlueDark,
+        accentLightHighContrast: 0x004FA6, accentDarkHighContrast: 0x6CB5FF,
+        onAccentLight: 0xFFFFFF, onAccentDark: 0xFFFFFF,
+        gaugeLight: [0x0062CC, 0x007AFF], gaugeDark: [0x0A84FF, 0x47A3FF])
 
     static let aurora = ThemePalette(
         id: .aurora, name: "Aurora",
@@ -177,33 +182,58 @@ struct ResolvedTheme: Equatable {
     /// Increase Contrast or Reduce Transparency: solid colours instead of decorative gradients.
     var isPlain = false
     var isHighContrast = false
+    /// The system accent colour (System Settings ▸ Appearance), resolved for this appearance.
+    /// Only Default uses it; `nil` falls back to system blue.
+    var systemAccent: UInt32? = nil
 
-    /// The tint for controls, text and selection.
-    var accent: Color {
-        let hex = isDark
+    /// Whether this theme is tinted with the system accent (Default).
+    private var usesSystemAccent: Bool { palette.followsSystemAccent && systemAccent != nil }
+
+    /// The tint for controls, text and selection, as 0xRRGGBB.
+    var accentHex: UInt32 {
+        if palette.followsSystemAccent, let systemAccent {
+            // Increase Contrast: a deeper (Light) or lighter (Dark) shade, like the system does.
+            guard isHighContrast else { return systemAccent }
+            return isDark ? ThemeMath.mix(systemAccent, 0xFFFFFF, 0.4) : ThemeMath.mix(systemAccent, 0x000000, 0.35)
+        }
+        return isDark
             ? (isHighContrast ? palette.accentDarkHighContrast : palette.accentDark)
             : (isHighContrast ? palette.accentLightHighContrast : palette.accentLight)
-        return Color(hex: hex)
     }
 
-    /// The fill for selected segments and switched-on toggles, which draw white on top.
-    /// Default's light-grey accent would make that white unreadable in Dark, so it uses a mid grey.
-    var controlTint: Color {
-        guard !palette.hasWash, isDark else { return accent }
-        return Color(hex: isHighContrast ? palette.controlTintDarkHighContrast : palette.controlTintDark)
-    }
+    /// The tint for controls, text and selection.
+    var accent: Color { Color(hex: accentHex) }
+
+    /// The fill for selected segments and switched-on toggles (white is drawn on top).
+    var controlTint: Color { accent }
 
     /// Text and symbols drawn on the accent, the progress sweep or the border gradient.
     var onAccent: Color { Color(hex: isDark ? palette.onAccentDark : palette.onAccentLight) }
 
-    var progressStops: [UInt32] { isDark ? palette.progressDark : palette.progress }
+    var progressStops: [UInt32] {
+        if usesSystemAccent {
+            // The system accent, brightening along the bar.
+            let base = accentHex
+            return isDark ? [base, ThemeMath.mix(base, 0xFFFFFF, 0.25), ThemeMath.mix(base, 0xFFFFFF, 0.5)]
+                          : [ThemeMath.mix(base, 0x000000, 0.2), base, ThemeMath.mix(base, 0xFFFFFF, 0.3)]
+        }
+        return isDark ? palette.progressDark : palette.progress
+    }
 
     var progressColors: [Color] { progressStops.map(Color.init(hex:)) }
 
     /// Fill for prominent buttons.
     var buttonGradient: LinearGradient {
-        LinearGradient(colors: (isDark ? palette.buttonDark : palette.button).map(Color.init(hex:)),
-                       startPoint: .leading, endPoint: .trailing)
+        LinearGradient(colors: buttonStops.map(Color.init(hex:)), startPoint: .leading, endPoint: .trailing)
+    }
+
+    /// Default: the system accent with the faintest light-to-dark shading, like a system button.
+    var buttonStops: [UInt32] {
+        if usesSystemAccent {
+            let base = systemAccent ?? accentHex
+            return [ThemeMath.mix(base, 0xFFFFFF, 0.1), base, ThemeMath.mix(base, 0x000000, 0.08)]
+        }
+        return isDark ? palette.buttonDark : palette.button
     }
 
     /// The label colour on prominent buttons.
@@ -216,12 +246,19 @@ struct ResolvedTheme: Equatable {
         LinearGradient(colors: progressColors, startPoint: .topLeading, endPoint: .bottomTrailing)
     }
 
-    var glow: Color { Color(hex: isDark ? palette.glowDark : palette.glow) }
+    var glow: Color { Color(hex: usesSystemAccent ? accentHex : (isDark ? palette.glowDark : palette.glow)) }
 
     /// The confetti-like burst when an offload finishes (the middle of the sweep).
     var burst: Color { Color(hex: progressStops[progressStops.count / 2]) }
 
-    var gaugeColors: [Color] { (isDark ? palette.gaugeDark : palette.gaugeLight).map(Color.init(hex:)) }
+    var gaugeColors: [Color] {
+        if usesSystemAccent {
+            let base = accentHex
+            let stops = isDark ? [base, ThemeMath.mix(base, 0xFFFFFF, 0.25)] : [ThemeMath.mix(base, 0x000000, 0.2), base]
+            return stops.map(Color.init(hex:))
+        }
+        return (isDark ? palette.gaugeDark : palette.gaugeLight).map(Color.init(hex:))
+    }
 
     /// The background wash, or `nil` when gradients are off.
     var washColors: [Color]? {
@@ -303,22 +340,43 @@ extension EnvironmentValues {
 }
 
 /// Resolves the chosen theme once, at the top of a window, and tints every control with it.
-/// (The AccentColor asset is a neutral graphite, the fallback for anything outside SwiftUI.)
+/// (The AccentColor asset is system blue: the accent AppKit controls use when the system
+/// accent is set to Multicolor, and the fallback for anything outside SwiftUI.)
 struct ThemeEnvironment: ViewModifier {
     @EnvironmentObject private var settings: AppSettings
     @Environment(\.colorScheme) private var scheme
     @Environment(\.colorSchemeContrast) private var contrast
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    /// Bumped when the user changes the accent colour in System Settings.
+    @State private var systemColorsVersion = 0
 
     func body(content: Content) -> some View {
+        let isDark = scheme == .dark
         let theme = ResolvedTheme(
             palette: .palette(settings.themeID),
-            isDark: scheme == .dark,
+            isDark: isDark,
             isPlain: contrast == .increased || reduceTransparency || Self.forcedPlain,
-            isHighContrast: contrast == .increased)
+            isHighContrast: contrast == .increased,
+            systemAccent: systemColorsVersion >= 0 ? Self.systemAccentHex(dark: isDark) : nil)
         content
             .environment(\.theme, theme)
             .tint(theme.accent)
+            .onReceive(NotificationCenter.default.publisher(for: NSColor.systemColorsDidChangeNotification)) { _ in
+                systemColorsVersion += 1
+            }
+    }
+
+    /// `NSColor.controlAccentColor` (the user's accent, or the app's system-blue AccentColor
+    /// when it's set to Multicolor) resolved for Light or Dark. `nil` falls back to system blue.
+    static func systemAccentHex(dark: Bool) -> UInt32? {
+        guard let appearance = NSAppearance(named: dark ? .darkAqua : .aqua) else { return nil }
+        var hex: UInt32?
+        appearance.performAsCurrentDrawingAppearance {
+            guard let color = NSColor.controlAccentColor.usingColorSpace(.sRGB) else { return }
+            func channel(_ value: CGFloat) -> UInt32 { UInt32((max(0, min(1, value)) * 255).rounded()) }
+            hex = channel(color.redComponent) << 16 | channel(color.greenComponent) << 8 | channel(color.blueComponent)
+        }
+        return hex
     }
 
     /// Screenshots: `-LodgeDemoPlainTheme YES` shows the solid fallback (Debug builds only).
@@ -334,7 +392,7 @@ struct ThemeEnvironment: ViewModifier {
 extension View {
     func lodgeTheme() -> some View { modifier(ThemeEnvironment()) }
 
-    /// Tints a segmented picker or toggle so white on its selected fill stays readable.
+    /// Tints a segmented picker or toggle with the theme's control colour.
     func themeControlTint() -> some View { modifier(ThemeControlTint()) }
 }
 

@@ -74,9 +74,11 @@ When you insert a card Lodge fills in the funnel and brings its window to the fr
 no pop-up sheet. The clock button in the toolbar shows **Recent Offloads**.
 Animations follow System Settings → Accessibility → Display → **Reduce motion**.
 
-Lodge opens in Dark Mode with the neutral **Default** theme: a near-black window, a
-white **Offload** button with black text, and white-to-grey progress, glow and flowing dots
-— no brand colour. The ready-to-format badge and verified ticks stay green. Colour themes
+Lodge opens in Dark Mode with the **Default** theme: a neutral near-black window with no
+colour wash, and the standard macOS accent colour — system blue — on the **Offload** button,
+switches, sliders, selected segments, selection, progress and badges (it follows your accent
+colour in System Settings ▸ Appearance). The ready-to-format badge and verified ticks stay
+green, warnings orange and destructive actions red. Colour themes
 and Light Mode are one click away in [Settings → Appearance](#themes-and-appearance).
 
 | Ready | Copying | Finished |
@@ -230,7 +232,8 @@ and picks it again next time. *Edit Cameras…* in that menu jumps straight here
 **Settings → Appearance** has the theme, Light / Dark / System, and how the Media files are
 shown.
 
-- **Default** (the default) is neutral black and white, with no coloured wash.
+- **Default** (the default) is a neutral window with no coloured wash and the system accent
+  colour (blue unless you've picked another) on every control.
 - **Aurora**, **Ocean**, **Twilight**, **Ember** and **Forest** are optional colour
   gradients: a soft wash behind the window, the gradient **Offload** button, the progress
   bar, the glowing border of the step that needs you, the dots flowing between steps and the
@@ -240,8 +243,8 @@ shown.
 With **Increase contrast** or **Reduce transparency** turned on, every theme uses solid
 colours instead of gradients. Every theme is tuned separately for Light and Dark and keeps
 button text readable (checked by `ThemeTests`). The palettes live in one place,
-`Theme.swift`; the asset catalog's `AccentColor` is a neutral graphite, the fallback outside
-SwiftUI. Older versions had a "Comet" theme (and "Graphite"); a saved choice of either
+`Theme.swift`; the asset catalog's `AccentColor` is system blue, used by AppKit controls when
+the system accent is Multicolor and as the fallback outside SwiftUI. Older versions had a "Comet" theme (and "Graphite"); a saved choice of either
 becomes Default.
 
 ![Settings → Appearance](Design/screenshots/settings-appearance.png)

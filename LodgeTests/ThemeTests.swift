@@ -51,18 +51,79 @@ final class ThemeTests: XCTestCase {
         let neutral = ThemePalette.standard
         XCTAssertFalse(neutral.hasWash)
         XCTAssertNil(ResolvedTheme(palette: neutral, isDark: true).washColors)
-        // Every neutral colour is a grey: no hue at all.
-        let greys = neutral.button + neutral.buttonDark + neutral.progress + neutral.progressDark
-            + neutral.gaugeLight + neutral.gaugeDark
-            + [neutral.solid, neutral.solidDark, neutral.glow, neutral.glowDark,
-               neutral.accentLight, neutral.accentDark, neutral.accentLightHighContrast, neutral.accentDarkHighContrast]
-        for hex in greys {
+        // The window itself stays neutral: no wash, and grey demo placeholders.
+        for t in stride(from: 0.0, through: 1.0, by: 0.25) {
+            let hex = ThemeMath.sweep([0x3A3A3C, 0x5C5C60, 0x7E7E83], t)
             let r = (hex >> 16) & 0xFF, g = (hex >> 8) & 0xFF, b = hex & 0xFF
             XCTAssertLessThanOrEqual(max(r, g, b) - min(r, g, b), 6, String(hex, radix: 16))
         }
-        // Dark: a near-white button with black text.
-        XCTAssertEqual(neutral.buttonTextDark, 0x000000)
+        // The prominent button: white text on the accent, in Light and Dark.
+        XCTAssertEqual(neutral.buttonTextDark, 0xFFFFFF)
         XCTAssertEqual(neutral.buttonText, 0xFFFFFF)
+    }
+
+    /// Is this colour clearly blue (blue channel well above red and green)?
+    private func isBlue(_ hex: UInt32) -> Bool {
+        let r = (hex >> 16) & 0xFF, g = (hex >> 8) & 0xFF, b = hex & 0xFF
+        return b >= 0xA0 && b > r + 40 && b > g + 20
+    }
+
+    func testDefaultUsesTheSystemBlueAccent() {
+        let neutral = ThemePalette.standard
+        XCTAssertTrue(neutral.followsSystemAccent)
+        XCTAssertEqual(neutral.accentLight, 0x007AFF, "systemBlue (Light)")
+        XCTAssertEqual(neutral.accentDark, 0x0A84FF, "systemBlue (Dark)")
+        // Without a readable system accent, Default falls back to system blue.
+        XCTAssertEqual(ResolvedTheme(palette: neutral, isDark: true).accentHex, 0x0A84FF)
+        XCTAssertEqual(ResolvedTheme(palette: neutral, isDark: false).accentHex, 0x007AFF)
+        // With one, it follows it: toggles, segments, progress, glow and the button.
+        let theme = ResolvedTheme(palette: neutral, isDark: true, systemAccent: 0x0A84FF)
+        XCTAssertEqual(theme.accentHex, 0x0A84FF)
+        XCTAssertEqual(theme.controlTint, theme.accent, "Switches and selected segments use the accent")
+        XCTAssertEqual(theme.buttonStops[1], 0x0A84FF)
+        for hex in theme.progressStops + theme.buttonStops + neutral.button + neutral.buttonDark
+            + neutral.progress + neutral.progressDark + neutral.gaugeLight + neutral.gaugeDark
+            + [neutral.solid, neutral.solidDark, neutral.glow, neutral.glowDark,
+               neutral.accentLightHighContrast, neutral.accentDarkHighContrast] {
+            XCTAssertTrue(isBlue(hex), String(hex, radix: 16))
+        }
+        let purple = ResolvedTheme(palette: neutral, isDark: false, systemAccent: 0x953D96)
+        XCTAssertEqual(purple.accentHex, 0x953D96, "A user-picked accent is followed")
+        // Increase Contrast: system blue gets the stronger shades.
+        XCTAssertEqual(ResolvedTheme(palette: neutral, isDark: false, isHighContrast: true,
+                                     systemAccent: 0x007AFF).accentHex, neutral.accentLightHighContrast)
+        XCTAssertEqual(ResolvedTheme(palette: neutral, isDark: true, isHighContrast: true,
+                                     systemAccent: 0x0A84FF).accentHex, neutral.accentDarkHighContrast)
+    }
+
+    func testColourThemesKeepTheirOwnAccents() {
+        for palette in ThemePalette.all where palette.id != .standard {
+            XCTAssertFalse(palette.followsSystemAccent, palette.name)
+            let theme = ResolvedTheme(palette: palette, isDark: true, systemAccent: 0x0A84FF)
+            XCTAssertEqual(theme.accentHex, palette.accentDark, palette.name)
+            XCTAssertEqual(theme.progressStops, palette.progressDark, palette.name)
+            XCTAssertEqual(theme.buttonStops, palette.buttonDark, palette.name)
+        }
+    }
+
+    @MainActor
+    func testSystemAccentIsReadableAndTheAssetIsSystemBlue() throws {
+        // The resolved system accent is a real colour in both appearances.
+        XCTAssertNotNil(ThemeEnvironment.systemAccentHex(dark: true))
+        XCTAssertNotNil(ThemeEnvironment.systemAccentHex(dark: false))
+        // The app's AccentColor asset is system blue (used when the system accent is Multicolor).
+        let asset = try XCTUnwrap(NSColor(named: "AccentColor", bundle: .main))
+        for name in [NSAppearance.Name.aqua, .darkAqua] {
+            var matches = false
+            NSAppearance(named: name)?.performAsCurrentDrawingAppearance {
+                let a = asset.usingColorSpace(.sRGB), b = NSColor.systemBlue.usingColorSpace(.sRGB)
+                matches = a != nil && b != nil
+                    && abs(a!.redComponent - b!.redComponent) < 0.02
+                    && abs(a!.greenComponent - b!.greenComponent) < 0.02
+                    && abs(a!.blueComponent - b!.blueComponent) < 0.02
+            }
+            XCTAssertTrue(matches, name.rawValue)
+        }
     }
 
     @MainActor
@@ -93,12 +154,15 @@ final class ThemeTests: XCTestCase {
 
     func testButtonTextHasEnoughContrast() {
         for palette in ThemePalette.all {
+            // Default's button is the system accent with white semibold text, exactly like the
+            // system's own default buttons: at least 3:1 (WCAG for bold text and controls).
+            let minimum = palette.followsSystemAccent ? 3 : 4.5
             for stop in palette.button {
-                XCTAssertGreaterThanOrEqual(ThemeMath.contrast(stop, palette.buttonText), 4.5,
+                XCTAssertGreaterThanOrEqual(ThemeMath.contrast(stop, palette.buttonText), minimum,
                                             "\(palette.name) button stop \(String(stop, radix: 16))")
             }
             for stop in palette.buttonDark {
-                XCTAssertGreaterThanOrEqual(ThemeMath.contrast(stop, palette.buttonTextDark), 4.5,
+                XCTAssertGreaterThanOrEqual(ThemeMath.contrast(stop, palette.buttonTextDark), minimum,
                                             "\(palette.name) dark button stop \(String(stop, radix: 16))")
             }
             XCTAssertGreaterThanOrEqual(ThemeMath.contrast(palette.solid, palette.buttonText), 7, "\(palette.name) solid fill")
@@ -108,19 +172,23 @@ final class ThemeTests: XCTestCase {
 
     func testAccentsAreReadableInLightAndDark() {
         for palette in ThemePalette.all {
-            XCTAssertGreaterThanOrEqual(ThemeMath.contrast(palette.accentLight, white), 4.5, palette.name)
+            // System blue on white is 4.0:1, the same as every Mac app's controls and links (≥ 3:1).
+            XCTAssertGreaterThanOrEqual(ThemeMath.contrast(palette.accentLight, white),
+                                        palette.followsSystemAccent ? 3 : 4.5, palette.name)
             XCTAssertGreaterThanOrEqual(ThemeMath.contrast(palette.accentDark, darkBackground), 4.5, palette.name)
             // Increase Contrast: stronger still.
             XCTAssertGreaterThanOrEqual(ThemeMath.contrast(palette.accentLightHighContrast, white), 7, palette.name)
             XCTAssertGreaterThanOrEqual(ThemeMath.contrast(palette.accentDarkHighContrast, darkBackground), 7, palette.name)
         }
-        // White on Default's selected segments and toggles stays readable in Dark.
-        XCTAssertGreaterThanOrEqual(ThemeMath.contrast(ThemePalette.controlTintDark, white), 4.5)
-        XCTAssertGreaterThanOrEqual(ThemeMath.contrast(ThemePalette.controlTintDarkHighContrast, white), 7)
-        // Text drawn on the neutral accent stays readable.
+        // Default in Dark: blue on the near-black window is comfortably readable.
         let neutral = ThemePalette.standard
-        XCTAssertGreaterThanOrEqual(ThemeMath.contrast(neutral.accentLight, neutral.onAccentLight), 4.5)
-        XCTAssertGreaterThanOrEqual(ThemeMath.contrast(neutral.accentDark, neutral.onAccentDark), 4.5)
+        XCTAssertGreaterThanOrEqual(ThemeMath.contrast(neutral.accentDark, 0x1A1A1C), 4.5)
+        // White on Default's selected segments, switches and badges (system blue): ≥ 3:1.
+        XCTAssertGreaterThanOrEqual(ThemeMath.contrast(neutral.accentLight, neutral.onAccentLight), 3)
+        XCTAssertGreaterThanOrEqual(ThemeMath.contrast(neutral.accentDark, neutral.onAccentDark), 3)
+        // Increase Contrast: white on the stronger blue in Light, and the solid button, ≥ 7:1.
+        XCTAssertGreaterThanOrEqual(ThemeMath.contrast(neutral.accentLightHighContrast, white), 7)
+        XCTAssertGreaterThanOrEqual(ThemeMath.contrast(neutral.solid, white), 7)
     }
 
     func testSweepBlendsAndClamps() {
