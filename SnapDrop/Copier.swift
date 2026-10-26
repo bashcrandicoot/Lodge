@@ -175,9 +175,9 @@ struct OffloadJob: Sendable {
         self.init(card: card, plan: plan, destination: destination, alreadyOffloaded: alreadyOffloaded)
     }
 
-    /// The original layout: Destination/YYYY-MM-DD/ShootName/YYYY-MM-DD_ShootName_####.ext
-    init(card: CardVolume, clips: [Clip], shootName: String, destination: URL, alreadyOffloaded: Int) {
-        self.init(card: card, clips: clips, naming: .standard, context: NamingContext(shoot: shootName),
+    /// The default layout: Destination/YYYY-MM-DD/Project/YYYY-MM-DD_Project_####.ext
+    init(card: CardVolume, clips: [Clip], project: String, destination: URL, alreadyOffloaded: Int) {
+        self.init(card: card, clips: clips, naming: .standard, context: NamingContext(project: project),
                   destination: destination, alreadyOffloaded: alreadyOffloaded)
     }
 }

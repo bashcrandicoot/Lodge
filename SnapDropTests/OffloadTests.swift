@@ -65,7 +65,7 @@ final class OffloadTests: XCTestCase {
         try Data("old".utf8).write(to: folder.appendingPathComponent("\(date)_BeachShoot_0003.mp4"))
 
         let volume = CardVolume(url: card, name: "FakeCard", uuid: "TEST-UUID")
-        let job = OffloadJob(card: volume, clips: clips, shootName: "BeachShoot", destination: destination, alreadyOffloaded: 0)
+        let job = OffloadJob(card: volume, clips: clips, project: "BeachShoot", destination: destination, alreadyOffloaded: 0)
         let recorder = Recorder()
 
         let summary = await Offloader.run(job: job, progress: { _ in }, record: { await recorder.add($0) })

@@ -161,7 +161,6 @@ final class AppModel: ObservableObject {
             namingIsValid: naming != nil,
             needs: NamingNeeds(naming),
             project: session.project,
-            shootName: session.shootName,
             hasCamera: !cameraTokenValue(for: session).isEmpty,
             hasDestination: settings.destinationURL != nil,
             requiredBytes: session.newBytes,
@@ -188,7 +187,6 @@ final class AppModel: ObservableObject {
         let card = NamingContext.clean(session.card.name)
         return NamingContext(
             project: session.project,
-            shoot: session.shootName,
             camera: cameraTokenValue(for: session),
             card: card.isEmpty ? "Card" : card)
     }
@@ -221,7 +219,6 @@ final class AppModel: ObservableObject {
         guard session.plan == nil else { return false }
         let needs = NamingNeeds(settings.naming)
         return (needs.project && session.project.isEmpty)
-            || (needs.shoot && session.shootName.isEmpty)
             || (needs.camera && cameraTokenValue(for: session).isEmpty)
     }
 

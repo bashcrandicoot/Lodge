@@ -44,7 +44,7 @@ private struct ClipsStageContent: View {
         StagePanel(number: 2, title: "Media", state: stageState) {
             VStack(alignment: .leading, spacing: 14) {
                 counts
-                shootNameField
+                nameFields
                 preview
             }
         }
@@ -56,7 +56,7 @@ private struct ClipsStageContent: View {
     private var stageState: StageState {
         if session.phase != .ready { return .done }
         if session.newClips.isEmpty { return .done }
-        let missing = (needs.project && session.project.isEmpty) || (needs.shoot && session.shootName.isEmpty)
+        let missing = (needs.project && session.project.isEmpty)
             || (needs.camera && model.cameraTokenValue(for: session).isEmpty)
         return missing ? .active : .done
     }
@@ -87,9 +87,9 @@ private struct ClipsStageContent: View {
         }
     }
 
-    // MARK: Project + shoot name
+    // MARK: Project + camera
 
-    private var shootNameField: some View {
+    private var nameFields: some View {
         Grid(alignment: .leading, horizontalSpacing: 10, verticalSpacing: 8) {
             GridRow {
                 fieldLabel("Project")
@@ -100,14 +100,6 @@ private struct ClipsStageContent: View {
                     isDisabled: isLocked,
                     recents: settings.recentProjects,
                     clearRecents: settings.clearRecentProjects)
-            }
-            GridRow {
-                fieldLabel("Shoot")
-                NameField(
-                    title: "Shoot Name",
-                    prompt: needs.shoot ? "e.g. Beach Shoot" : "Optional, not in the template",
-                    text: $session.shootNameInput,
-                    isDisabled: isLocked)
                     .focused($nameFocused)
             }
             GridRow {
@@ -218,7 +210,7 @@ private struct ClipsStageContent: View {
     }
 }
 
-/// "C0001.MP4  →  2026-10-25_BeachShoot_0001.mp4"
+/// "C0001.MP4  →  2026-10-25_Coastline_0001.mp4"
 private struct PreviewRow: View {
     let item: PlannedFile
     let isPlaceholder: Bool

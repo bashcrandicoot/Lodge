@@ -25,7 +25,7 @@ final class OffloadSession: ObservableObject, Identifiable {
     /// Already-offloaded files in the included categories.
     @Published private(set) var alreadyOffloadedCount = 0
 
-    @Published var shootNameInput = ""
+    /// What the user typed in the Project field (fills `{project}`).
     @Published var projectInput = ""
     /// The camera these files came from (fills `{camera}`).
     @Published var cameraID: UUID?
@@ -74,10 +74,7 @@ final class OffloadSession: ObservableObject, Identifiable {
         newClips.reduce(into: [:]) { $0[$1.category, default: 0] += 1 }
     }
 
-    /// The cleaned-up shoot name ("Beach Shoot" -> "BeachShoot").
-    var shootName: String { NamingContext.clean(shootNameInput) }
-
-    /// The cleaned-up project name.
+    /// The cleaned-up project name ("Beach Day" -> "BeachDay").
     var project: String { NamingContext.clean(projectInput) }
 
     /// Total size of the new clips, in bytes.

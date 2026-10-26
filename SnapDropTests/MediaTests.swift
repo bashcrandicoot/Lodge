@@ -96,7 +96,7 @@ final class MediaTests: XCTestCase {
             file("CLIP/MEDIAPRO.XML", minutesAfter: 5),   // no partner: gets its own number
             file("CLIP/C0003.MP4", minutesAfter: 6),
         ]
-        let plan = OffloadPlanner.plan(files: files, naming: .standard, context: NamingContext(shoot: "S"),
+        let plan = OffloadPlanner.plan(files: files, naming: .standard, context: NamingContext(project: "S"),
                                        existingNames: { _ in [] })
         XCTAssertEqual(plan.map(\.fileName), [
             "2026-10-25_S_0001.mp4", "2026-10-25_S_0001M01.xml",
@@ -196,8 +196,8 @@ final class MediaTests: XCTestCase {
 
         let destination = root.appendingPathComponent("Dest")
         try FileManager.default.createDirectory(at: destination, withIntermediateDirectories: true)
-        let naming = NamingTemplates(folder: "{type}", file: "{date}_{shoot}_{seq}")!
-        let plan = OffloadPlanner.plan(files: files, naming: naming, context: NamingContext(shoot: "Beach"),
+        let naming = NamingTemplates(folder: "{type}", file: "{date}_{project}_{seq}")!
+        let plan = OffloadPlanner.plan(files: files, naming: naming, context: NamingContext(project: "Beach"),
                                        existingNames: OffloadPlanner.diskLister(root: destination))
         let date = Renamer.dateString(for: files[0].captureDate)
         XCTAssertEqual(plan.map(\.relativePath), [

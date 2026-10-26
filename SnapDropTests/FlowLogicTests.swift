@@ -13,14 +13,14 @@ final class FlowLogicTests: XCTestCase {
 
     // MARK: Name preview (planner)
 
-    private func preview(_ clips: [Clip], shoot: String, existing: [String: [String]] = [:]) -> [PlannedFile] {
-        OffloadPlanner.plan(files: clips, naming: .standard, context: NamingContext(shoot: shoot),
+    private func preview(_ clips: [Clip], project: String, existing: [String: [String]] = [:]) -> [PlannedFile] {
+        OffloadPlanner.plan(files: clips, naming: .standard, context: NamingContext(project: project),
                             existingNames: { existing[$0] ?? [] })
     }
 
-    func testPreviewNumbersInShootOrder() {
+    func testPreviewNumbersInCopyOrder() {
         let clips = [clip("C0002.MOV", minutesAfter: 5), clip("C0001.MP4", minutesAfter: 0)]
-        let items = preview(clips, shoot: "BeachShoot")
+        let items = preview(clips, project: "BeachShoot")
         XCTAssertEqual(items.map(\.originalName), ["C0001.MP4", "C0002.MOV"])
         XCTAssertEqual(items.map(\.fileName), ["2026-10-25_BeachShoot_0001.mp4", "2026-10-25_BeachShoot_0002.mov"])
         XCTAssertEqual(items.map(\.folder), ["2026-10-25/BeachShoot", "2026-10-25/BeachShoot"])
@@ -28,14 +28,14 @@ final class FlowLogicTests: XCTestCase {
 
     func testPreviewContinuesAfterExistingAndSplitsByDate() {
         let clips = [clip("A.MP4", minutesAfter: 0, day: 25), clip("B.MP4", minutesAfter: 0, day: 26)]
-        let items = preview(clips, shoot: "Trip", existing: ["2026-10-25/Trip": ["2026-10-25_Trip_0009.mov"]])
+        let items = preview(clips, project: "Trip", existing: ["2026-10-25/Trip": ["2026-10-25_Trip_0009.mov"]])
         XCTAssertEqual(items.map(\.fileName), ["2026-10-25_Trip_0010.mp4", "2026-10-26_Trip_0001.mp4"])
         XCTAssertEqual(PlanLayout.folders(items), ["2026-10-25/Trip", "2026-10-26/Trip"])
     }
 
     func testPreviewMatchesRealOffloadOrder() {
         let clips = [clip("Z.MP4", minutesAfter: 0), clip("A.MP4", minutesAfter: 0), clip("M.MP4", minutesAfter: -3)]
-        let previewOrder = preview(clips, shoot: "X").map(\.originalName)
+        let previewOrder = preview(clips, project: "X").map(\.originalName)
         XCTAssertEqual(previewOrder, Offloader.order(clips).map { $0.url.lastPathComponent })
         XCTAssertEqual(previewOrder, ["M.MP4", "A.MP4", "Z.MP4"])
     }
@@ -48,10 +48,10 @@ final class FlowLogicTests: XCTestCase {
         let folder = destination.appendingPathComponent("\(date)/Trip")
         try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
         FileManager.default.createFile(atPath: folder.appendingPathComponent("\(date)_Trip_0004.mp4").path, contents: Data())
-        let onDisk = OffloadPlanner.plan(files: clips, naming: .standard, context: NamingContext(shoot: "Trip"),
+        let onDisk = OffloadPlanner.plan(files: clips, naming: .standard, context: NamingContext(project: "Trip"),
                                          existingNames: OffloadPlanner.diskLister(root: destination))
         XCTAssertEqual(onDisk.map(\.fileName), ["\(date)_Trip_0005.mp4"])
-        let noDestination = OffloadPlanner.plan(files: clips, naming: .standard, context: NamingContext(shoot: "Trip"),
+        let noDestination = OffloadPlanner.plan(files: clips, naming: .standard, context: NamingContext(project: "Trip"),
                                                 existingNames: OffloadPlanner.diskLister(root: nil))
         XCTAssertEqual(noDestination.map(\.fileName), ["\(date)_Trip_0001.mp4"])
     }
@@ -60,11 +60,11 @@ final class FlowLogicTests: XCTestCase {
 
     func testBlockerReasons() {
         func blocker(card: Bool = true, scanning: Bool = false, files: Int = 3, valid: Bool = true,
-                     needs: NamingNeeds = NamingNeeds(shoot: true), project: String = "", name: String = "Shoot",
+                     needs: NamingNeeds = NamingNeeds(project: true), project: String = "Doc",
                      camera: Bool = false, destination: Bool = true,
                      required: Int64 = 10, available: Int64? = 100) -> String? {
             OffloadReadiness.blocker(hasCard: card, isScanning: scanning, newFileCount: files, namingIsValid: valid,
-                                     needs: needs, project: project, shootName: name, hasCamera: camera,
+                                     needs: needs, project: project, hasCamera: camera,
                                      hasDestination: destination, requiredBytes: required, availableBytes: available)
         }
         XCTAssertNil(blocker())
@@ -73,23 +73,22 @@ final class FlowLogicTests: XCTestCase {
         XCTAssertEqual(blocker(scanning: true), "Scanning card…")
         XCTAssertEqual(blocker(files: 0), "Everything on this card is already offloaded")
         XCTAssertEqual(blocker(valid: false), "Fix the naming template in Settings")
-        XCTAssertEqual(blocker(name: ""), "Enter a shoot name")
+        XCTAssertEqual(blocker(project: ""), "Enter a project name")
         XCTAssertEqual(blocker(destination: false), "Choose a destination folder")
         XCTAssertTrue(blocker(required: 500, available: 100)?.hasPrefix("Not enough space") == true)
         // Fields are only required when the templates use them.
-        XCTAssertNil(blocker(needs: NamingNeeds(), name: ""))
-        XCTAssertEqual(blocker(needs: NamingNeeds(project: true, shoot: true), name: ""), "Enter a project name")
-        XCTAssertNil(blocker(needs: NamingNeeds(project: true), project: "Doc", name: ""))
-        XCTAssertEqual(blocker(needs: NamingNeeds(camera: true)), "Choose a camera")
-        XCTAssertNil(blocker(needs: NamingNeeds(camera: true), camera: true))
+        XCTAssertNil(blocker(needs: NamingNeeds(), project: ""))
+        XCTAssertEqual(blocker(needs: NamingNeeds(project: true, camera: true), project: ""), "Enter a project name")
+        XCTAssertEqual(blocker(needs: NamingNeeds(camera: true), project: ""), "Choose a camera")
+        XCTAssertNil(blocker(needs: NamingNeeds(camera: true), project: "", camera: true))
     }
 
     func testNamingNeedsFollowTemplates() {
-        XCTAssertEqual(NamingNeeds(.standard), NamingNeeds(shoot: true))
+        XCTAssertEqual(NamingNeeds(.standard), NamingNeeds(project: true))
         XCTAssertEqual(NamingNeeds(NamingTemplates(folder: "{project}/{date}/{camera}", file: "{date}_{project}_{camera}_{seq}")),
                        NamingNeeds(project: true, camera: true))
         XCTAssertEqual(NamingNeeds(NamingTemplates(folder: "", file: "{original}")), NamingNeeds())
-        XCTAssertEqual(NamingNeeds(nil), NamingNeeds(shoot: true), "Invalid templates fall back to the default")
+        XCTAssertEqual(NamingNeeds(nil), NamingNeeds(project: true), "Invalid templates fall back to the default")
     }
 
     // MARK: Formatting

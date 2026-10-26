@@ -33,12 +33,12 @@ final class AppSettings: ObservableObject {
         didSet { defaults?.set(ejectAfterOffload, forKey: Key.eject) }
     }
 
-    /// Folder structure template, e.g. "{date}/{shoot}" ("/" separates levels).
+    /// Folder structure template, e.g. "{date}/{project}" ("/" separates levels).
     @Published var folderTemplate: String {
         didSet { defaults?.set(folderTemplate, forKey: Key.folderTemplate) }
     }
 
-    /// File name template, e.g. "{date}_{shoot}_{seq}" (the extension is added automatically).
+    /// File name template, e.g. "{date}_{project}_{seq}" (the extension is added automatically).
     @Published var fileTemplate: String {
         didSet { defaults?.set(fileTemplate, forKey: Key.fileTemplate) }
     }
@@ -75,13 +75,19 @@ final class AppSettings: ObservableObject {
         self.defaults = defaults
         destinationPath = defaults?.string(forKey: Key.destination)
         ejectAfterOffload = defaults?.bool(forKey: Key.eject) ?? false
-        folderTemplate = defaults?.string(forKey: Key.folderTemplate) ?? NamingTemplates.defaultFolder
-        fileTemplate = defaults?.string(forKey: Key.fileTemplate) ?? NamingTemplates.defaultFile
+        // Templates saved before {shoot} was merged into {project} are updated once, here.
+        let savedFolder = defaults?.string(forKey: Key.folderTemplate)
+        let savedFile = defaults?.string(forKey: Key.fileTemplate)
+        folderTemplate = savedFolder.map { TemplateMigration.migrate($0, kind: .folder) } ?? NamingTemplates.defaultFolder
+        fileTemplate = savedFile.map { TemplateMigration.migrate($0, kind: .file) } ?? NamingTemplates.defaultFile
         lastProject = defaults?.string(forKey: Key.lastProject) ?? ""
         recentProjects = defaults?.stringArray(forKey: Key.recentProjects) ?? []
         let excluded = Set(defaults?.stringArray(forKey: Key.excludedCategories) ?? [])
         includedCategories = Set(MediaCategory.allCases.filter { !excluded.contains($0.rawValue) })
         playSuccessSound = defaults?.object(forKey: Key.successSound) as? Bool ?? true
+        // `didSet` doesn't run inside `init`, so save migrated templates explicitly.
+        if let savedFolder, savedFolder != folderTemplate { defaults?.set(folderTemplate, forKey: Key.folderTemplate) }
+        if let savedFile, savedFile != fileTemplate { defaults?.set(fileTemplate, forKey: Key.fileTemplate) }
     }
 
     /// The destination as a URL (handier for file operations).

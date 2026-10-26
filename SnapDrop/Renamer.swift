@@ -2,12 +2,12 @@ import Foundation
 
 /// Pure naming rules. No disk access except in `SequenceAllocator`, so it's easy to test.
 ///
-/// Layout: Destination/YYYY-MM-DD/ShootName/YYYY-MM-DD_ShootName_####.ext
+/// Layout: Destination/YYYY-MM-DD/Project/YYYY-MM-DD_Project_####.ext
 enum Renamer {
-    /// Turns what the user typed into a safe shoot name.
+    /// Turns what the user typed into a safe name for files and folders.
     /// Keeps letters, digits and "-". Everything else splits words, and each word
-    /// starts with a capital letter: "beach shoot" -> "BeachShoot".
-    static func sanitizeShootName(_ raw: String, maxLength: Int = 60) -> String {
+    /// starts with a capital letter: "beach day" -> "BeachDay".
+    static func sanitizeName(_ raw: String, maxLength: Int = 60) -> String {
         var result = ""
         var capitalizeNext = true
         for character in raw {
@@ -35,27 +35,27 @@ enum Renamer {
         return formatter.string(from: date)
     }
 
-    /// "2026-10-25_BeachShoot"
-    static func prefix(dateString: String, shootName: String) -> String {
-        "\(dateString)_\(shootName)"
+    /// "2026-10-25_Coastline"
+    static func prefix(dateString: String, project: String) -> String {
+        "\(dateString)_\(project)"
     }
 
-    /// "2026-10-25_BeachShoot_0007.mp4" (extension always lowercased).
+    /// "2026-10-25_Coastline_0007.mp4" (extension always lowercased).
     static func fileName(prefix: String, sequence: Int, fileExtension: String) -> String {
         let number = String(format: "%04d", sequence)
         let ext = fileExtension.lowercased()
         return ext.isEmpty ? "\(prefix)_\(number)" : "\(prefix)_\(number).\(ext)"
     }
 
-    /// Destination/2026-10-25/BeachShoot/
-    static func folderURL(destination: URL, dateString: String, shootName: String) -> URL {
+    /// Destination/2026-10-25/Coastline/
+    static func folderURL(destination: URL, dateString: String, project: String) -> URL {
         destination
             .appendingPathComponent(dateString, isDirectory: true)
-            .appendingPathComponent(shootName, isDirectory: true)
+            .appendingPathComponent(project, isDirectory: true)
     }
 
     /// Reads the sequence number out of a file name that starts with `prefix`, e.g.
-    /// "2026-10-25_BeachShoot_0012.mp4" -> 12. Returns nil for unrelated names.
+    /// "2026-10-25_Coastline_0012.mp4" -> 12. Returns nil for unrelated names.
     /// Comparison ignores upper/lower case, like the Mac's file system does.
     static func sequenceNumber(in fileName: String, prefix: String) -> Int? {
         let lowerName = fileName.lowercased()
@@ -75,7 +75,7 @@ enum Renamer {
     }
 }
 
-/// Hands out the next free file name in each date/shoot folder.
+/// Hands out the next free file name in each destination folder.
 /// The first time it sees a folder it looks at what's already there and continues
 /// after the highest number, and it always double-checks a name is unused.
 struct SequenceAllocator {

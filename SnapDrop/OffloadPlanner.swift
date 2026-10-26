@@ -4,9 +4,9 @@ import Foundation
 /// shown as the live preview, so what you see is exactly what you get.
 struct PlannedFile: Identifiable, Equatable, Sendable {
     let clip: Clip
-    /// Folder inside the destination, e.g. "2026-10-25/BeachShoot" ("" = the destination itself).
+    /// Folder inside the destination, e.g. "2026-10-25/Coastline" ("" = the destination itself).
     let folder: String
-    /// "2026-10-25_BeachShoot_0001.mp4"
+    /// "2026-10-25_Coastline_0001.mp4"
     let fileName: String
     /// For sidecars (e.g. C0001M01.XML): the original name of the clip it belongs to.
     let sidecarOf: String?
@@ -15,7 +15,7 @@ struct PlannedFile: Identifiable, Equatable, Sendable {
     var originalName: String { clip.url.lastPathComponent }
     var size: Int64 { clip.size }
     var category: MediaCategory { clip.category }
-    /// "2026-10-25/BeachShoot/2026-10-25_BeachShoot_0001.mp4"
+    /// "2026-10-25/Coastline/2026-10-25_Coastline_0001.mp4"
     var relativePath: String { folder.isEmpty ? fileName : folder + "/" + fileName }
 }
 

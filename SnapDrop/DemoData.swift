@@ -85,7 +85,6 @@ enum DemoData {
 
         let session = OffloadSession(card: card, clips: all, knownKeys: ledger.knownKeys)
         session.projectInput = "Coastline"
-        session.shootNameInput = "Beach Shoot"
         session.cameraID = cameras.cameras[1].id
         let total = session.newBytes
         let plan = OffloadPlanner.plan(files: session.newClips, naming: settings.naming ?? .standard,

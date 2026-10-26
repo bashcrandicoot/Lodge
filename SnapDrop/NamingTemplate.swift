@@ -1,21 +1,23 @@
 import Foundation
 
-// Naming templates: "{date}/{shoot}" for folders and "{date}_{shoot}_{seq}" for files.
+// Naming templates: "{date}/{project}" for folders and "{date}_{project}_{seq}" for files.
 // Pure code (no disk, no UI) so every rule can be unit tested.
 
-/// A placeholder that can appear in a template, like `{shoot}`.
+/// A placeholder that can appear in a template, like `{project}`.
 enum TemplateToken: String, CaseIterable, Identifiable, Sendable {
-    case project, shoot, camera, date, year, month, day, time, type, card, original, seq, ext
+    case project, camera, date, year, month, day, time, type, card, original, seq, ext
 
     var id: String { rawValue }
 
-    /// "{shoot}"
+    /// Old token names that still work. `{shoot}` was merged into `{project}`.
+    static let aliases: [String: TemplateToken] = ["shoot": .project]
+
+    /// "{project}"
     var placeholder: String { "{\(rawValue)}" }
 
     var summary: String {
         switch self {
         case .project: return "Project name"
-        case .shoot: return "Shoot name"
         case .camera: return "Selected camera"
         case .date: return "Capture date (2026-10-25)"
         case .year: return "Year (2026)"
@@ -196,7 +198,7 @@ struct NamingTemplate: Equatable, Sendable {
             issues.append(.error("“{}” is an empty token. Pick one from the list below."))
             return nil
         }
-        guard let token = TemplateToken(rawValue: name) else {
+        guard let token = TemplateToken(rawValue: name) ?? TemplateToken.aliases[name] else {
             issues.append(.error("{\(pieces[0])} isn’t a known token."))
             return nil
         }
@@ -232,10 +234,10 @@ struct NamingTemplates: Equatable, Sendable {
     let folder: NamingTemplate
     let file: NamingTemplate
 
-    static let defaultFolder = "{date}/{shoot}"
-    static let defaultFile = "{date}_{shoot}_{seq}"
+    static let defaultFolder = "{date}/{project}"
+    static let defaultFile = "{date}_{project}_{seq}"
 
-    /// Today's behaviour: Destination/2026-10-25/BeachShoot/2026-10-25_BeachShoot_0001.mp4
+    /// The default: Destination/2026-10-25/Coastline/2026-10-25_Coastline_0001.mp4
     static let standard = NamingTemplates(folder: defaultFolder, file: defaultFile)!
 
     /// Parses both strings; `nil` if either has an error.
@@ -259,40 +261,37 @@ struct NamingPreset: Identifiable, Equatable, Sendable {
     var id: String { name }
 
     static let all: [NamingPreset] = [
-        NamingPreset(name: "Date / Shoot", folder: "{date}/{shoot}", file: "{date}_{shoot}_{seq}"),
+        NamingPreset(name: "Date / Project", folder: NamingTemplates.defaultFolder, file: NamingTemplates.defaultFile),
         NamingPreset(name: "Project / Date / Camera", folder: "{project}/{date}/{camera}", file: "{date}_{project}_{camera}_{seq}"),
         NamingPreset(name: "Project / Type / Date", folder: "{project}/{type}/{date}", file: "{date}_{project}_{seq}"),
-        NamingPreset(name: "Year / Month / Day", folder: "{year}/{month}/{day}", file: "{date}_{shoot}_{seq}"),
-        NamingPreset(name: "Date / Shoot, Original Names", folder: "{date}/{shoot}", file: "{original}"),
-        NamingPreset(name: "Flat", folder: "", file: "{date}_{shoot}_{seq}"),
+        NamingPreset(name: "Year / Month / Day", folder: "{year}/{month}/{day}", file: "{date}_{project}_{seq}"),
+        NamingPreset(name: "Date / Project, Original Names", folder: "{date}/{project}", file: "{original}"),
+        NamingPreset(name: "Flat", folder: "", file: "{date}_{project}_{seq}"),
     ]
 }
 
 /// The values tokens are replaced with (already cleaned up for file names).
 struct NamingContext: Equatable, Sendable {
     var project: String
-    var shoot: String
     var camera: String
     var card: String
 
-    init(project: String = "", shoot: String = "", camera: String = "", card: String = "") {
+    init(project: String = "", camera: String = "", card: String = "") {
         self.project = project
-        self.shoot = shoot
         self.camera = camera
         self.card = card
     }
 
-    /// Cleans raw user input the same way everywhere: "Beach Shoot" -> "BeachShoot".
-    static func clean(_ raw: String) -> String { Renamer.sanitizeShootName(raw) }
+    /// Cleans raw user input the same way everywhere: "Beach Day" -> "BeachDay".
+    static func clean(_ raw: String) -> String { Renamer.sanitizeName(raw) }
 
     /// Shown in previews while a field is still empty.
-    static let placeholders = NamingContext(project: "Project", shoot: "ShootName", camera: "Camera", card: "Card")
+    static let placeholders = NamingContext(project: "Project", camera: "Camera", card: "Card")
 
     /// This context with any empty field replaced by its placeholder.
     func fillingBlanks() -> NamingContext {
         NamingContext(
             project: project.isEmpty ? Self.placeholders.project : project,
-            shoot: shoot.isEmpty ? Self.placeholders.shoot : shoot,
             camera: camera.isEmpty ? Self.placeholders.camera : camera,
             card: card.isEmpty ? Self.placeholders.card : card)
     }
@@ -304,7 +303,7 @@ enum TemplateRenderer {
     static let fallbackName = "Untitled"
     static let maxComponentLength = 180
 
-    /// "2026-10-25/BeachShoot" (empty string = straight into the destination).
+    /// "2026-10-25/Coastline" (empty string = straight into the destination).
     static func folderPath(_ template: NamingTemplate, file: Clip, context: NamingContext, date: Date? = nil) -> String {
         template.components
             .map { finish(render($0, file: file, context: context, sequence: nil, date: date)) }
@@ -355,7 +354,6 @@ enum TemplateRenderer {
         let when = date ?? file.captureDate
         switch token {
         case .project: return context.project
-        case .shoot: return context.shoot
         case .camera: return context.camera
         case .card: return context.card
         case .date: return format(when, "yyyy-MM-dd")
@@ -404,5 +402,47 @@ enum TemplateRenderer {
 
     private static func format(_ date: Date, _ pattern: String) -> String {
         (formatters[pattern] ?? makeFormatter(pattern)).string(from: date)
+    }
+}
+
+/// Brings templates saved by older versions up to date.
+enum TemplateMigration {
+    /// `{shoot}` (any case, spaces allowed inside the braces) — merged into `{project}`.
+    private static let shootPattern = try! NSRegularExpression(pattern: #"\{\s*shoot\s*\}"#, options: [.caseInsensitive])
+    /// Two `{project}` tokens side by side, optionally joined by "_", "-" or a space.
+    private static let doubledProject = try! NSRegularExpression(pattern: #"\{project\}[_\- ]?\{project\}"#)
+
+    /// Replaces `{shoot}` with `{project}`. Only when that happened, it also merges
+    /// the duplicates it just created: "{project}/{project}" -> "{project}" and
+    /// "{date}_{project}_{project}" -> "{date}_{project}". Anything else is left alone.
+    static func migrate(_ raw: String, kind: NamingTemplate.Kind) -> String {
+        let range = NSRange(raw.startIndex..., in: raw)
+        guard shootPattern.firstMatch(in: raw, range: range) != nil else { return raw }
+        let replaced = shootPattern.stringByReplacingMatches(in: raw, range: range, withTemplate: "{project}")
+
+        func collapseDoubles(_ text: String) -> String {
+            var result = text
+            while true {
+                let next = doubledProject.stringByReplacingMatches(
+                    in: result, range: NSRange(result.startIndex..., in: result), withTemplate: "{project}")
+                if next == result { return result }
+                result = next
+            }
+        }
+
+        switch kind {
+        case .file:
+            return collapseDoubles(replaced)
+        case .folder:
+            var levels: [String] = []
+            for level in replaced.split(separator: "/", omittingEmptySubsequences: false).map(String.init) {
+                let level = collapseDoubles(level)
+                // Drop a level that's just "{project}" right after another "{project}" level.
+                if level.trimmingCharacters(in: .whitespaces) == "{project}",
+                   levels.last?.trimmingCharacters(in: .whitespaces) == "{project}" { continue }
+                levels.append(level)
+            }
+            return levels.joined(separator: "/")
+        }
     }
 }

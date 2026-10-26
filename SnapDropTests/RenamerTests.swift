@@ -2,14 +2,14 @@ import XCTest
 @testable import SnapDrop
 
 final class RenamerTests: XCTestCase {
-    func testSanitizeShootName() {
-        XCTAssertEqual(Renamer.sanitizeShootName("Beach Shoot"), "BeachShoot")
-        XCTAssertEqual(Renamer.sanitizeShootName("beach shoot"), "BeachShoot")
-        XCTAssertEqual(Renamer.sanitizeShootName("  my_wedding!! day 2 "), "MyWeddingDay2")
-        XCTAssertEqual(Renamer.sanitizeShootName("sunset-beach"), "Sunset-beach")
-        XCTAssertEqual(Renamer.sanitizeShootName("--hello--"), "Hello")
-        XCTAssertEqual(Renamer.sanitizeShootName("../../etc"), "Etc")
-        XCTAssertEqual(Renamer.sanitizeShootName("   "), "")
+    func testSanitizeName() {
+        XCTAssertEqual(Renamer.sanitizeName("Beach Shoot"), "BeachShoot")
+        XCTAssertEqual(Renamer.sanitizeName("beach shoot"), "BeachShoot")
+        XCTAssertEqual(Renamer.sanitizeName("  my_wedding!! day 2 "), "MyWeddingDay2")
+        XCTAssertEqual(Renamer.sanitizeName("sunset-beach"), "Sunset-beach")
+        XCTAssertEqual(Renamer.sanitizeName("--hello--"), "Hello")
+        XCTAssertEqual(Renamer.sanitizeName("../../etc"), "Etc")
+        XCTAssertEqual(Renamer.sanitizeName("   "), "")
     }
 
     func testDateString() {
@@ -18,21 +18,21 @@ final class RenamerTests: XCTestCase {
     }
 
     func testFileNameAndFolder() {
-        let prefix = Renamer.prefix(dateString: "2026-10-25", shootName: "BeachShoot")
-        XCTAssertEqual(Renamer.fileName(prefix: prefix, sequence: 7, fileExtension: "MP4"), "2026-10-25_BeachShoot_0007.mp4")
-        let folder = Renamer.folderURL(destination: URL(fileURLWithPath: "/Dest"), dateString: "2026-10-25", shootName: "BeachShoot")
-        XCTAssertEqual(folder.path, "/Dest/2026-10-25/BeachShoot")
+        let prefix = Renamer.prefix(dateString: "2026-10-25", project: "Coastline")
+        XCTAssertEqual(Renamer.fileName(prefix: prefix, sequence: 7, fileExtension: "MP4"), "2026-10-25_Coastline_0007.mp4")
+        let folder = Renamer.folderURL(destination: URL(fileURLWithPath: "/Dest"), dateString: "2026-10-25", project: "Coastline")
+        XCTAssertEqual(folder.path, "/Dest/2026-10-25/Coastline")
     }
 
     func testSequenceParsing() {
-        let prefix = "2026-10-25_BeachShoot"
-        XCTAssertEqual(Renamer.sequenceNumber(in: "2026-10-25_BeachShoot_0012.mp4", prefix: prefix), 12)
-        XCTAssertEqual(Renamer.sequenceNumber(in: "2026-10-25_beachshoot_0003.MOV", prefix: prefix), 3)
-        XCTAssertEqual(Renamer.sequenceNumber(in: "2026-10-25_BeachShoot_0004.mp4.snapdrop-partial", prefix: prefix), 4)
-        XCTAssertNil(Renamer.sequenceNumber(in: "2026-10-25_BeachShootTwo_0099.mp4", prefix: prefix))
-        XCTAssertNil(Renamer.sequenceNumber(in: "2026-10-25_BeachShoot_12abc.mp4", prefix: prefix))
+        let prefix = "2026-10-25_Coastline"
+        XCTAssertEqual(Renamer.sequenceNumber(in: "2026-10-25_Coastline_0012.mp4", prefix: prefix), 12)
+        XCTAssertEqual(Renamer.sequenceNumber(in: "2026-10-25_coastline_0003.MOV", prefix: prefix), 3)
+        XCTAssertEqual(Renamer.sequenceNumber(in: "2026-10-25_Coastline_0004.mp4.snapdrop-partial", prefix: prefix), 4)
+        XCTAssertNil(Renamer.sequenceNumber(in: "2026-10-25_CoastlineTwo_0099.mp4", prefix: prefix))
+        XCTAssertNil(Renamer.sequenceNumber(in: "2026-10-25_Coastline_12abc.mp4", prefix: prefix))
         XCTAssertNil(Renamer.sequenceNumber(in: "notes.txt", prefix: prefix))
-        XCTAssertEqual(Renamer.highestSequence(in: ["2026-10-25_BeachShoot_0002.mp4", "2026-10-25_BeachShoot_0010.mov", "x.mp4"], prefix: prefix), 10)
+        XCTAssertEqual(Renamer.highestSequence(in: ["2026-10-25_Coastline_0002.mp4", "2026-10-25_Coastline_0010.mov", "x.mp4"], prefix: prefix), 10)
         XCTAssertEqual(Renamer.highestSequence(in: [], prefix: prefix), 0)
     }
 

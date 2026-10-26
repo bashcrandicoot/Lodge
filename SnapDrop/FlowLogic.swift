@@ -5,18 +5,16 @@ import Foundation
 /// Which fields the current templates need filled in.
 struct NamingNeeds: Equatable, Sendable {
     var project = false
-    var shoot = false
     var camera = false
 
-    init(project: Bool = false, shoot: Bool = false, camera: Bool = false) {
+    init(project: Bool = false, camera: Bool = false) {
         self.project = project
-        self.shoot = shoot
         self.camera = camera
     }
 
     init(_ naming: NamingTemplates?) {
         let naming = naming ?? .standard
-        self.init(project: naming.uses(.project), shoot: naming.uses(.shoot), camera: naming.uses(.camera))
+        self.init(project: naming.uses(.project), camera: naming.uses(.camera))
     }
 }
 
@@ -27,9 +25,8 @@ enum OffloadReadiness {
         isScanning: Bool,
         newFileCount: Int,
         namingIsValid: Bool = true,
-        needs: NamingNeeds = NamingNeeds(shoot: true),
-        project: String = "",
-        shootName: String,
+        needs: NamingNeeds = NamingNeeds(project: true),
+        project: String,
         hasCamera: Bool = false,
         hasDestination: Bool,
         requiredBytes: Int64,
@@ -40,7 +37,6 @@ enum OffloadReadiness {
         if newFileCount == 0 { return "Everything on this card is already offloaded" }
         if !namingIsValid { return "Fix the naming template in Settings" }
         if needs.project && project.isEmpty { return "Enter a project name" }
-        if needs.shoot && shootName.isEmpty { return "Enter a shoot name" }
         if needs.camera && !hasCamera { return "Choose a camera" }
         if !hasDestination { return "Choose a destination folder" }
         if let available = availableBytes, available < requiredBytes {
