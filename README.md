@@ -415,9 +415,10 @@ Every view also has `#Preview`s you can open in Xcode's canvas.
 | `ReoffloadAlert.swift` | The Re-offload Everything and Forget This Card's History confirmations |
 | `ShortClips.swift` | The short-clip rule: reading clip lengths, what's skipped and what's included anyway |
 | `Settings.swift` | Preferences: destination, templates, file types, short clips, eject, sound, theme, appearance, media layout, recent projects |
-| `Assets.xcassets/AppIcon` | App icon sizes: the hand-made "Lodge Cabin" set from `Design/lodge-cabin/` |
-| `Design/lodge-cabin/` | "Lodge Cabin" icon set, as delivered: one PNG per icon slot, its `Contents.json` and `icon_1024.png`; plus the 2400×800 header images `lodge-header-dark.png` and `lodge-header-light.png` |
-| `Design/icon-1024.png` | Master app icon (Lodge Cabin, 1024×1024) |
+| `Assets.xcassets/AppIcon` | App icon sizes: the hand-made night "Lodge Cabin" set from `Design/lodge-cabin-night/` |
+| `Design/lodge-cabin-night/` | Night "Lodge Cabin" icon set (v5 B), as delivered: one PNG per icon slot, its `Contents.json`, `icon_1024.png`, and the masters `lodge-cabin.svg` and `lodge-cabin-small.svg` |
+| `Design/icon-1024.png` | Master app icon (night Lodge Cabin, 1024×1024) |
+| `Design/lodge-cabin-sunset/` | The previous sunset "Lodge Cabin" icon set, archived, with its 2400×800 header images `lodge-header-dark.png` and `lodge-header-light.png` |
 | `Design/dusk-cabin-v3/` | The previous "Dusk Cabin" (v3) icon set, archived |
 | `Design/comet-a-v3/` | The previous "Comet A" (v3) icon set, archived |
 | `Design/comet-a-v1/`, `Design/comet-a-v2/` | Earlier Comet A drafts, kept for reference |
@@ -430,27 +431,29 @@ The project uses Xcode's folder-synced groups: any `.swift` file you add to the
 
 ## Updating the icon
 
-The icon is "Lodge Cabin": a log cabin with a winding path on a sunset gradient. The set
-in `Design/lodge-cabin/` is used exactly as delivered.
+The icon is the night "Lodge Cabin" (v5 B): a snow-roofed log cabin with lit windows and
+chimney smoke under a starry night sky. The set in `Design/lodge-cabin-night/` is used
+exactly as delivered; `lodge-cabin.svg` is the master for the large sizes and
+`lodge-cabin-small.svg` the simplified one for the small sizes.
 
-Each size is drawn by hand. The 16×16, 16×16@2x and 32×32 versions come from a
+Each size is drawn by hand. The 16×16, 16×16@2x and 32×32 versions come from the
 simplified small master that stays readable in the menu bar and Finder lists, so
 **don't generate the sizes by scaling one image with `sips`**. To update it:
 
-1. Put the new set in `Design/lodge-cabin/` with these names:
+1. Put the new set in `Design/lodge-cabin-night/` (or a new folder) with these names:
    `icon_16x16.png`, `icon_16x16@2x.png`, `icon_32x32.png`, `icon_32x32@2x.png`,
    `icon_128x128.png`, `icon_128x128@2x.png`, `icon_256x256.png`, `icon_256x256@2x.png`,
    `icon_512x512.png`, `icon_512x512@2x.png`, plus `icon_1024.png`.
 2. Copy them into the asset catalog and refresh the master copy:
 
 ```sh
-cp Design/lodge-cabin/icon_*x*.png Lodge/Assets.xcassets/AppIcon.appiconset/
-cp Design/lodge-cabin/icon_1024.png Design/icon-1024.png
+cp Design/lodge-cabin-night/icon_*x*.png Lodge/Assets.xcassets/AppIcon.appiconset/
+cp Design/lodge-cabin-night/icon_1024.png Design/icon-1024.png
 ```
 
 `Contents.json` already points each slot at the file with the same name. The previous
-icons are archived in `Design/dusk-cabin-v3/` (Dusk Cabin) and `Design/comet-a-v1/` … `v3/`
-(Comet A).
+icons are archived in `Design/lodge-cabin-sunset/` (the sunset Lodge Cabin),
+`Design/dusk-cabin-v3/` (Dusk Cabin) and `Design/comet-a-v1/` … `v3/` (Comet A).
 
 ## License
 
