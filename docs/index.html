@@ -330,21 +330,30 @@
     .features h3 { min-height: 1.25em; }
     .card p,
     .steps p { margin: 0; color: var(--muted); font-size: var(--small); line-height: 1.5; }
+    .features > .card {
+      align-self: stretch;
+      height: 100%;
+    }
     .card.lead {
       border-color: rgba(183, 198, 255, 0.72);
       background:
         linear-gradient(180deg, rgba(183, 198, 255, 0.1), rgba(183, 198, 255, 0) 48%),
         var(--card);
-      box-shadow: 0 0 0 1px rgba(183, 198, 255, 0.14), 0 16px 40px rgba(61, 79, 206, 0.16);
+      box-shadow: inset 0 0 0 1px rgba(183, 198, 255, 0.22);
     }
     .scheme {
       display: block;
+      max-width: 100%;
       margin-top: var(--space-3);
       color: #d7e0ff;
       font-size: 12px;
       line-height: 1.45;
-      overflow-wrap: anywhere;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      overflow-wrap: normal;
     }
+    .scheme + .scheme { margin-top: 2px; }
     .soon {
       display: inline-block;
       margin: 0 var(--space-2) 0 0;
@@ -375,17 +384,6 @@
       padding: 0;
       list-style: none;
     }
-    .steps::before {
-      content: "";
-      position: absolute;
-      z-index: 2;
-      pointer-events: none;
-      top: 47px;
-      left: 6%;
-      right: 6%;
-      height: 1px;
-      background: linear-gradient(90deg, rgba(183, 198, 255, 0), #b7c6ff 18%, #8ea0ef 50%, #b7c6ff 82%, rgba(183, 198, 255, 0));
-    }
     .steps li {
       position: relative;
       z-index: 1;
@@ -413,25 +411,38 @@
     .steps li.is-in {
       animation: step-in 0.7s ease var(--stagger, 0ms) both, step-shimmer 9s linear infinite;
     }
+    .steps li:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      top: 50%;
+      left: calc(100% + 3px);
+      width: 10px;
+      height: 2px;
+      transform: translateY(-50%);
+      pointer-events: none;
+      border-radius: 2px;
+      background: linear-gradient(90deg, rgba(94, 116, 230, 0.35), #ffffff 50%, rgba(183, 198, 255, 0.45));
+      box-shadow: 0 0 8px 1px rgba(143, 164, 255, 0.85);
+    }
     .num {
       position: relative;
-      z-index: 3;
+      z-index: 1;
       display: inline-block;
       margin: 0 0 var(--space-4);
-      padding-right: 10px;
-      background: var(--card);
       font-weight: 650;
-      font-size: 48px;
+      font-size: 64px;
       letter-spacing: -0.04em;
-      line-height: 1;
+      line-height: 0.9;
       flex: none;
     }
     .num span {
-      background-image: linear-gradient(160deg, #ffffff 8%, #d7e0ff 40%, #b7c6ff 72%, #8ea0ef 100%);
+      background-image: linear-gradient(180deg, #ffffff 0%, #d5defe 30%, #8ea2ff 68%, #3d4fce 100%);
       -webkit-background-clip: text;
       background-clip: text;
+      -webkit-text-fill-color: transparent;
       color: transparent;
-      filter: drop-shadow(0 0 10px rgba(183, 198, 255, 0.55));
+      filter: drop-shadow(0 0 14px rgba(120, 146, 255, 0.95));
     }
 
     .pair {
@@ -511,14 +522,13 @@
     }
     @media (max-width: 800px) {
       .pair, .install-grid, .steps { grid-template-columns: 1fr; }
-      .steps::before {
-        top: 8px;
-        bottom: 8px;
-        left: -12px;
-        right: auto;
+      .steps li:not(:last-child)::after {
+        top: calc(100% + 3px);
+        left: 50%;
         width: 2px;
-        height: auto;
-        background: linear-gradient(180deg, rgba(183, 198, 255, 0), #b7c6ff 12%, #8ea0ef 50%, #b7c6ff 88%, rgba(183, 198, 255, 0));
+        height: 10px;
+        transform: translateX(-50%);
+        background: linear-gradient(180deg, rgba(94, 116, 230, 0.35), #ffffff 50%, rgba(183, 198, 255, 0.45));
       }
       .features { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .features h3 { min-height: 0; }
@@ -543,7 +553,7 @@
         opacity: 1;
         transform: none;
       }
-      .num span { filter: none; }
+      .steps li:not(:last-child)::after { box-shadow: none; }
     }
   </style>
 </head>
@@ -606,7 +616,8 @@
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h6l2 2h8v9H4z"/><path d="M4 11h16"/></svg>
             <h3>Custom folder schemes</h3>
             <p>Build each level from date, project, or camera.</p>
-            <code class="scheme">2026-10-25/Coastline/2026-10-25_Coastline_0001.mp4</code>
+            <code class="scheme">2026-10-25/Coastline/</code>
+            <code class="scheme">2026-10-25_Coastline_0001.mp4</code>
           </article>
           <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12.5l2.5 2.5L16 9"/></svg>
