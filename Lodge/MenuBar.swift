@@ -123,16 +123,16 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         }
     }
 
-    /// The little Lodge cabin icon, in color. `MenuBarIconTemplate` is a one-color version that
-    /// follows the menu bar's appearance, if the color one ever needs to go.
-    /// PNGs (1x/2x/3x), not a PDF: the PDF's gradients and transparency groups came out as a
+    /// The little Lodge cabin as a plain silhouette: one solid shape, no colour. A template image,
+    /// so macOS draws it white in a dark menu bar and black in a light one, like the system icons.
+    /// PNGs (1x/2x/3x, 16 pt), not a PDF: a PDF with gradients and transparency groups came out as a
     /// plain white square once Xcode compiled it into the asset catalog.
-    nonisolated static func iconImage(template: Bool = false) -> NSImage? {
+    nonisolated static func iconImage() -> NSImage? {
         // A copy, so changing it never touches the shared `NSImage(named:)` instance.
-        let image = (NSImage(named: template ? "MenuBarIconTemplate" : "MenuBarIcon")?.copy() as? NSImage)
+        let image = (NSImage(named: "MenuBarIcon")?.copy() as? NSImage)
             ?? NSImage(systemSymbolName: "house.lodge", accessibilityDescription: "Lodge")
-        image?.isTemplate = template
-        image?.size = template ? NSSize(width: 22, height: 16) : NSSize(width: 16, height: 16)
+        image?.isTemplate = true
+        image?.size = NSSize(width: 16, height: 16)
         image?.accessibilityDescription = "Lodge"
         return image
     }

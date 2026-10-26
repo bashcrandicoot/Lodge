@@ -242,6 +242,11 @@ Dock or Spotlight and the window (and the Dock icon) come back.
   disks, the startup disk, your destination drives or drives with no camera folders/media.
   A card that mounts during an offload is asked about when the offload finishes. Cards you
   said *Don't ask* for are listed under the switch with **Ask Again**.
+- The menu bar icon is a plain cabin silhouette (a template image, so it's white in a dark
+  menu bar and black in a light one, like the system icons). Its master is
+  `Design/lodge-cabin-night/menubar/MenuBarIcon.svg`.
+- **Ask with** — a notification or the floating panel. If you don't see a prompt when you plug
+  in a card (for example while a Focus or Do Not Disturb is on), switch to Floating panel.
 - **Show menu bar icon** (on by default) — turn it off (or ⌘-drag the icon out of the menu
   bar) to run hidden; Lodge still asks to import. To get back in, open Lodge from Finder or
   Spotlight.

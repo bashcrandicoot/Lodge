@@ -37,6 +37,26 @@ struct SettingsView: View {
     }
 }
 
+extension View {
+    /// A Form tab of Settings: 560 wide and as tall as its content, up to `maxHeight`; a longer
+    /// tab scrolls instead of making the Settings window taller than most screens.
+    func settingsPaneSize(maxHeight: CGFloat = SettingsLayout.maxPaneHeight) -> some View {
+        frame(width: SettingsLayout.paneWidth)
+            .frame(maxHeight: maxHeight)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
+enum SettingsAnchor {
+    static let menuBar = "menubar"
+}
+
+enum SettingsLayout {
+    static let paneWidth: CGFloat = 560
+    /// Tall enough for General down to the Menu Bar section on a 13" laptop; anything below scrolls.
+    static let maxPaneHeight: CGFloat = 600
+}
+
 enum SettingsTab: String {
     case general, appearance, presets, destinations, naming, files, cameras
     static let storageKey = "settingsTab"
@@ -50,6 +70,7 @@ struct GeneralSettingsView: View {
     @EnvironmentObject private var model: AppModel
 
     var body: some View {
+        ScrollViewReader { proxy in
         Form {
             Section {
                 ForEach(MediaCategory.allCases) { category in
@@ -90,6 +111,7 @@ struct GeneralSettingsView: View {
                 Toggle("Play a sound when an offload finishes", isOn: $settings.playSuccessSound)
             }
             MenuBarSettingsSection(loginItem: model.loginItem)
+                .id(SettingsAnchor.menuBar)
             if let updater {
                 UpdateSettingsSection(updater: updater)
             }
@@ -100,8 +122,17 @@ struct GeneralSettingsView: View {
         }
         .formStyle(.grouped)
         .themeControlTint()
-        .frame(width: 560)
-        .fixedSize(horizontal: false, vertical: true)
+        #if DEBUG
+        .task {
+            // Screenshots: `-LodgeDemoSettingsScroll menubar` scrolls General down to Menu Bar.
+            guard DemoData.launchState != nil,
+                  UserDefaults.standard.string(forKey: "LodgeDemoSettingsScroll") == SettingsAnchor.menuBar else { return }
+            try? await Task.sleep(for: .milliseconds(400))
+            proxy.scrollTo(SettingsAnchor.menuBar, anchor: .top)
+        }
+        #endif
+        }
+        .settingsPaneSize()
     }
 }
 
@@ -111,7 +142,7 @@ struct MenuBarSettingsSection: View {
     @ObservedObject var loginItem: LoginItem
     @EnvironmentObject private var settings: AppSettings
 
-    static let promptStyleHint = "While a Focus such as Do Not Disturb is on, macOS keeps notifications in Notification Center without showing them. The floating panel always shows. To get notifications during a Focus, allow Lodge in System Settings ▸ Focus."
+    static let promptStyleHint = "If you don’t see a prompt when you plug in a card (for example while a Focus or Do Not Disturb is on), switch to Floating panel. macOS keeps notifications quiet during a Focus; the floating panel always shows."
 
     static let hiddenIconHint = "With the icon hidden, Lodge keeps running in the background and still asks to import. Open Lodge from Finder, the Dock or Spotlight to show its window, and quit it from there with ⌘Q."
 
@@ -131,14 +162,13 @@ struct MenuBarSettingsSection: View {
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            VStack(alignment: .leading, spacing: 4) {
-                Picker("Ask with", selection: $settings.importPromptStyle) {
-                    ForEach(ImportPromptStyle.allCases) { Text($0.title).tag($0) }
+            Picker(selection: $settings.importPromptStyle) {
+                ForEach(ImportPromptStyle.allCases) { Text($0.title).tag($0) }
+            } label: {
+                HStack(spacing: 4) {
+                    Text("Ask with")
+                    InfoHint(text: Self.promptStyleHint, subject: "Ask with")
                 }
-                Text(Self.promptStyleHint)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
             }
             .disabled(!settings.askToImport)
             Toggle(isOn: $settings.showMenuBarIcon) {
@@ -259,8 +289,7 @@ struct AppearanceSettingsView: View {
         }
         .formStyle(.grouped)
         .themeControlTint()
-        .frame(width: 560)
-        .fixedSize(horizontal: false, vertical: true)
+        .settingsPaneSize()
     }
 }
 

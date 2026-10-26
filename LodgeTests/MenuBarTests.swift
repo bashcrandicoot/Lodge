@@ -30,19 +30,20 @@ final class MenuBarItemTests: XCTestCase {
     }
 
     func testMenuBarIconComesFromTheAssetCatalog() throws {
-        let color = try XCTUnwrap(StatusItemController.iconImage())
-        XCTAssertFalse(color.isTemplate)
-        XCTAssertEqual(color.size.height, 16, accuracy: 0.5)
+        let icon = try XCTUnwrap(StatusItemController.iconImage())
+        XCTAssertTrue(icon.isTemplate)
+        XCTAssertEqual(icon.size, NSSize(width: 16, height: 16))
         XCTAssertNotNil(NSImage(named: "MenuBarIcon"))
-        let template = try XCTUnwrap(StatusItemController.iconImage(template: true))
-        XCTAssertTrue(template.isTemplate)
-        XCTAssertEqual(template.size, NSSize(width: 22, height: 16))
-        XCTAssertNotNil(NSImage(named: "MenuBarIconTemplate"))
+        // Only the silhouette ships: the colour variant and the old separate template are gone.
+        XCTAssertNil(NSImage(named: "MenuBarIconTemplate"))
         // Bitmaps only: the PDF version compiled into a plain white square.
-        XCTAssertFalse(color.representations.contains { $0 is NSPDFImageRep })
+        XCTAssertFalse(icon.representations.contains { $0 is NSPDFImageRep })
     }
 
-    func testMenuBarIconIsInColor() throws {
+    /// Draws the icon at 2x and checks its alpha: a cabin-shaped silhouette, not a solid square
+    /// (which is what the broken PDF turned into) and not empty. Colour is ignored on purpose:
+    /// a template image is drawn from its alpha alone.
+    func testMenuBarIconIsASilhouetteNotASquare() throws {
         let image = try XCTUnwrap(StatusItemController.iconImage())
         let rep = try XCTUnwrap(NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: 32, pixelsHigh: 32, bitsPerSample: 8,
                                                  samplesPerPixel: 4, hasAlpha: true, isPlanar: false,
@@ -52,10 +53,22 @@ final class MenuBarItemTests: XCTestCase {
         NSGraphicsContext.current = NSGraphicsContext(bitmapImageRep: rep)
         image.draw(in: NSRect(x: 0, y: 0, width: 16, height: 16))
         NSGraphicsContext.restoreGraphicsState()
-        // The night sky (4pt in from the top left; `colorAt` counts from the top) is dark purple, not white.
-        let sky = try XCTUnwrap(rep.colorAt(x: 8, y: 8)?.usingColorSpace(.deviceRGB))
-        XCTAssertLessThan(sky.brightnessComponent, 0.4)
-        XCTAssertGreaterThan(sky.alphaComponent, 0.9)
+
+        func alpha(_ x: Int, _ y: Int) -> CGFloat { rep.colorAt(x: x, y: y)?.alphaComponent ?? 0 }
+        var covered = 0
+        for y in 0..<32 { for x in 0..<32 where alpha(x, y) > 0.5 { covered += 1 } }
+        let coverage = Double(covered) / Double(32 * 32)
+        XCTAssertGreaterThan(coverage, 0.25, "The icon is (nearly) empty")
+        XCTAssertLessThan(coverage, 0.7, "The icon fills its square: it would show as a solid block")
+        // The corners are transparent (a square would fill them); the walls are solid.
+        for (x, y) in [(0, 0), (31, 0), (0, 31), (31, 31), (2, 2), (29, 2)] {
+            XCTAssertLessThan(alpha(x, y), 0.1, "corner \(x),\(y) isn't transparent")
+        }
+        XCTAssertGreaterThan(alpha(16, 22), 0.9, "the cabin's walls should be solid")
+        // The roof's peak comes to a point: the top rows are much narrower than the walls.
+        let wallsWidth = (0..<32).filter { alpha($0, 22) > 0.5 }.count
+        let peakWidth = (0..<32).filter { alpha($0, 9) > 0.5 }.count
+        XCTAssertLessThan(peakWidth, wallsWidth)
     }
 
     func testPromptTitle() {
