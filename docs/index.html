@@ -268,25 +268,6 @@
       width: min(1060px, 100%);
       margin: var(--space-6) auto 0;
     }
-    .motion-row {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: var(--space-5);
-      margin-top: var(--space-6);
-    }
-    .motion-check {
-      --motion-ratio: 720 / 200;
-      width: min(360px, 100%);
-    }
-    .motion-glow {
-      --motion-ratio: 540 / 560;
-      width: min(270px, 100%);
-    }
-    .motion-note {
-      margin: var(--space-4) 0 0;
-      text-align: center;
-    }
 
     section { padding-block: var(--space-8); }
     h2 {
@@ -305,10 +286,17 @@
 
     .features {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: var(--space-4);
       align-items: stretch;
       margin: 0;
+    }
+    .feature-note {
+      margin: var(--space-5) 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+      text-align: center;
     }
     .card {
       display: flex;
@@ -464,12 +452,17 @@
 
     @media (max-width: 800px) {
       .pair, .install-grid, .steps { grid-template-columns: 1fr; }
+      .features { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .features h3 { min-height: 0; }
       section { padding-block: var(--space-7); }
       .hero { padding-block: var(--space-6) var(--space-4); }
     }
     @media (max-width: 480px) {
       .wrap { padding-inline: var(--space-4); }
+      .features { grid-template-columns: 1fr; }
+      .nav-inner { flex-wrap: nowrap; min-height: 56px; }
+      .nav-links { flex-wrap: nowrap; }
+      .nav-links a:not(.download) { display: none; }
     }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
@@ -531,54 +524,40 @@
     <section id="features">
       <div class="wrap">
         <h2>From the card to a folder you trust</h2>
-        <p class="section-intro">Card, Media, Destination, and the offload bar.</p>
+        <p class="section-intro">Lodge checks each copy, brings over only what is new, and shows when the card is ready.</p>
         <div class="features">
           <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12.5l2.5 2.5L16 9"/></svg>
             <h3>Checked with SHA-256</h3>
-            <p>Every copy is matched to the card.</p>
-          </article>
-          <article class="card">
-            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h12M6 12h8M6 18h10"/></svg>
-            <h3>Names you can read</h3>
-            <p>Preview every name before copying.</p>
+            <p>Every copied file is checked against the card, so you know it arrived intact.</p>
           </article>
           <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7h11v12H8z"/><path d="M5 5h11v2"/></svg>
             <h3>Only what is new</h3>
-            <p>Only new files are copied again.</p>
-          </article>
-          <article class="card">
-            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l8 14H4z"/><path d="M12 10v4M12 16.5v.5"/></svg>
-            <h3>Missing copies</h3>
-            <p>A lost copy is marked in orange.</p>
+            <p>Lodge remembers what it already copied and brings over only new files.</p>
           </article>
           <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 7h6"/></svg>
             <h3>Ready to format</h3>
-            <p>A green badge shows a verified card.</p>
+            <p>A green badge tells you when every file on the card is safely copied.</p>
           </article>
           <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h16M4 16h16"/><circle cx="9" cy="8" r="2" fill="var(--card)"/><circle cx="15" cy="16" r="2" fill="var(--card)"/></svg>
-            <h3>Presets and quick dump</h3>
-            <p>Skip short clips, or save a setup.</p>
+            <h3>Short clips and presets</h3>
+            <p>Skip accidental short clips, and save your favorite setup as a preset.</p>
           </article>
           <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h6l2 2h8v9H4z"/></svg>
             <h3>Drop a folder</h3>
-            <p>Drop a folder to set where files go.</p>
+            <p>Drag a folder onto Lodge to choose where your footage goes.</p>
           </article>
           <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h7l4 4v12H7z"/><path d="M14 4v4h4"/></svg>
             <h3>Proxies and sidecars</h3>
-            <p>Small files travel with the clip.</p>
-          </article>
-          <article class="card">
-            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.2-5.5"/><path d="M20 5v5h-5"/></svg>
-            <h3>Updates</h3>
-            <p>Coming in the next update.</p>
+            <p>Proxy files and sidecar files travel with their clip automatically.</p>
           </article>
         </div>
+        <p class="feature-note">Automatic update checks are coming in the next update.</p>
       </div>
     </section>
 
@@ -602,23 +581,7 @@
             <p>Copy and check every file.</p>
           </li>
         </ol>
-        <div class="motion-row">
-          <figure class="motion motion-glow">
-            <video autoplay muted loop playsinline preload="metadata" poster="assets/motion/lodge-card-glow@2x.png" width="270" height="280" aria-label="A memory card glowing as it is inserted.">
-              <source src="assets/motion/lodge-card-glow@2x.mp4" type="video/mp4">
-            </video>
-            <img class="motion-still" src="assets/motion/lodge-card-glow@2x.png" width="270" height="280" alt="A memory card glowing as it is inserted.">
-            <figcaption class="caption">A card glows when it is inserted.</figcaption>
-          </figure>
-          <figure class="motion motion-check">
-            <video autoplay muted loop playsinline preload="metadata" poster="assets/motion/lodge-complete-check@2x.png" width="360" height="100" aria-label="A green checkmark draws in beside Offload complete.">
-              <source src="assets/motion/lodge-complete-check@2x.mp4" type="video/mp4">
-            </video>
-            <img class="motion-still" src="assets/motion/lodge-complete-check@2x.png" width="360" height="100" alt="A green checkmark beside Offload complete. 57 copied, 128 GB.">
-            <figcaption class="caption">The finished checkmark draws itself.</figcaption>
-          </figure>
-        </div>
-        <p class="note motion-note">Reduce Motion turns the movement off.</p>
+        <div class="step-media"><!-- A step video will go here when it is ready. --></div>
       </div>
     </section>
 
