@@ -3,7 +3,7 @@
 A small native macOS app (SwiftUI) that offloads camera SD cards — video, photos, audio
 and sidecar files — safely, verified, and named the way you want.
 
-![SnapDrop ready to offload a card](Design/screenshots/ready-light.png)
+![SnapDrop ready to offload a card](Design/screenshots/ready-dark.png)
 
 ## What it does
 
@@ -73,21 +73,69 @@ When you insert a card SnapDrop fills in the funnel and brings its window to the
 no pop-up sheet. The clock button in the toolbar shows **Recent Offloads**.
 Animations follow System Settings → Accessibility → Display → **Reduce motion**.
 
-The colours come from the Comet A app icon — plum, magenta, coral and a warm orange — as a
-very soft wash behind the window, the gradient **Offload** button, the progress bar, the
-glowing border of the step that needs you, the dots flowing between steps while copying
-and the glow when an offload completes. With **Increase contrast** or **Reduce
-transparency** turned on, SnapDrop uses solid colours instead of gradients. The palette
-lives in one place, `Theme.swift`; the app's accent colour (`AccentColor` in the asset
-catalog) is magenta in Light Mode and coral in Dark Mode.
+SnapDrop opens in Dark Mode with the neutral **Default** theme: a near-black window, a
+white **Offload** button with black text, and white-to-grey progress, glow and flowing dots
+— no brand colour. The ready-to-format badge and verified ticks stay green. Colour themes
+and Light Mode are one click away in [Settings → Appearance](#themes-and-appearance).
 
-| Ready | Copying | Finished (Dark Mode) |
+| Ready | Copying | Finished |
 | --- | --- | --- |
-| ![](Design/screenshots/ready-light.png) | ![](Design/screenshots/running-light.png) | ![](Design/screenshots/finished-dark.png) |
+| ![](Design/screenshots/ready-dark.png) | ![](Design/screenshots/running-dark.png) | ![](Design/screenshots/finished-dark.png) |
 
-| No card | Ready (Dark Mode) |
+| No card | Light Mode | Ember theme |
+| --- | --- | --- |
+| ![](Design/screenshots/empty-dark.png) | ![](Design/screenshots/ready-light.png) | ![](Design/screenshots/ready-ember-dark.png) |
+
+## Thumbnails and Quick Look
+
+The switch above the Media list (☰ / ▦) shows the files as a **list** or a **thumbnail
+grid**; SnapDrop remembers your choice. In the grid each tile has a thumbnail, the new name
+(shortened in the middle), the clip's length, its type, and a "+1" paperclip for sidecars
+that travel with it. While copying, the current tile shows a progress ring and verified
+tiles get a green tick; files offloaded before are dimmed, missing copies get a warning, and
+skipped short clips are striped with **Include Anyway** in their right-click menu. The
+filter and right-click menus work the same in both views. **Settings → Appearance →
+Show thumbnails in the list** adds small thumbnails to list rows too.
+
+Thumbnails come from Quick Look, are made in the background (four at a time, one at a time
+while copying), are cached by path, size and modification date, and are only ever *read*
+from the card. Formats Quick Look can't draw (BRAW, R3D, MXF, XML…) show a symbol instead.
+
+**Quick Look:** select files and press **Space** (or double-click, or right-click →
+**Quick Look**). The arrow keys move through the files in the order shown, following the
+filter; with several files selected (⌘-click, ⇧-click) the panel steps through just those.
+Files Quick Look can't open show *No preview available for .braw*.
+
+| Grid | Grid (Light Mode) |
 | --- | --- |
-| ![](Design/screenshots/empty-light.png) | ![](Design/screenshots/ready-dark.png) |
+| ![](Design/screenshots/grid-dark.png) | ![](Design/screenshots/grid-light.png) |
+
+## Skipping short clips
+
+Accidental takes — a clip you started and stopped right away — don't need to be offloaded.
+With **Settings → General → Skip short videos** (on by default) videos shorter than
+**5 seconds** (adjustable from 1 to 60) stay on the card, together with their sidecars. The
+Media panel shows *2 short clips skipped*; click it to see them and choose **Include
+Anyway** for one or **Include All** for every one. Clips whose length can't be read (BRAW,
+R3D) are always offloaded.
+
+A card whose only remaining files are skipped short clips can still be formatted — the
+button then reads **Format and Discard N Short Clips**, so it's clear they'll be lost.
+
+## Re-offloading
+
+Offloaded files aren't copied again, but sometimes you want them to be: a copy was deleted
+from the destination, or you want a second copy somewhere else. **Re-offload…** in the
+Media panel offers:
+
+- **Re-offload Missing Copies** — files the ledger has but whose copy is gone or changed
+  size (shown as *3 missing at destination*).
+- **Re-offload Everything on This Card…** — copy the whole card again.
+- Per file, from the right-click menu: **Re-offload This File** / **Don't Re-offload**.
+
+Re-offloaded files are marked *re-offload* and always land as new copies; nothing existing
+is ever overwritten. The card's **…** menu also has **Forget This Card's History…**, which
+clears the ledger for that card so everything on it counts as new.
 
 ## Formatting a card
 
@@ -132,8 +180,11 @@ folder so a folder that's renamed or moved is still found.
 ## Settings (⌘,)
 
 **General** — the current destination folder; which [file types](#file-types) to offload (all on by
-default); *Eject card after offload* (off by default, and only when every file copied and
-verified); *Play a sound when an offload finishes* (on by default).
+default); [*Skip short videos*](#skipping-short-clips) and the length; *Eject card after
+offload* (off by default, and only when every file copied and verified); *Play a sound when
+an offload finishes* (on by default).
+
+**Appearance** — see [Themes and appearance](#themes-and-appearance).
 
 **Naming** — a folder template and a file template, presets, and a live example.
 Click a token chip to insert it where you were typing. Mistakes (an unclosed `{`, an
@@ -169,9 +220,30 @@ and picks it again next time. *Edit Cameras…* in that menu jumps straight here
 
 **Destinations** — your [favorite destinations](#favorite-destinations).
 
-| Naming | Cameras | Destinations |
-| --- | --- | --- |
-| ![](Design/screenshots/settings-naming.png) | ![](Design/screenshots/settings-cameras.png) | ![](Design/screenshots/settings-destinations.png) |
+| General | Naming | Cameras | Destinations |
+| --- | --- | --- | --- |
+| ![](Design/screenshots/settings-general.png) | ![](Design/screenshots/settings-naming.png) | ![](Design/screenshots/settings-cameras.png) | ![](Design/screenshots/settings-destinations.png) |
+
+### Themes and appearance
+
+**Settings → Appearance** has the theme, Light / Dark / System, and how the Media files are
+shown.
+
+- **Default** (the default) is neutral black and white, with no coloured wash.
+- **Aurora**, **Ocean**, **Twilight**, **Ember** and **Forest** are optional colour
+  gradients: a soft wash behind the window, the gradient **Offload** button, the progress
+  bar, the glowing border of the step that needs you, the dots flowing between steps and the
+  glow when an offload completes.
+- **Appearance** is **Dark** unless you pick Light or System.
+
+With **Increase contrast** or **Reduce transparency** turned on, every theme uses solid
+colours instead of gradients. Every theme is tuned separately for Light and Dark and keeps
+button text readable (checked by `ThemeTests`). The palettes live in one place,
+`Theme.swift`; the asset catalog's `AccentColor` is a neutral graphite, the fallback outside
+SwiftUI. Older versions had a "Comet" theme (and "Graphite"); a saved choice of either
+becomes Default.
+
+![Settings → Appearance](Design/screenshots/settings-appearance.png)
 
 ## File types
 
@@ -239,11 +311,16 @@ open -n build/DerivedData/Build/Products/Debug/SnapDrop.app --args \
 ```
 
 States: `empty`, `ready`, `running`, `finished`. Appearance: `light` or `dark`.
-Add `-SnapDropDemoSettingsTab general|destinations|naming|cameras` to open Settings on that
-tab, `-SnapDropDemoShowFormatAlert YES` to show the Format confirmation, or
+Add `-SnapDropDemoSettingsTab general|appearance|destinations|naming|cameras` to open Settings on that
+tab, `-SnapDropDemoTheme ember` (or `default`, `aurora`, `ocean`, `twilight`, `forest`) for a
+theme, `-SnapDropDemoLayout grid` for the thumbnail grid (`-SnapDropDemoListThumbnails YES`
+for list thumbnails), `-SnapDropDemoScope skipped|offloaded` to show the skipped short clips
+or the files offloaded before, `-SnapDropDemoQuickLook C0008.MP4` to open Quick Look on a file,
+`-SnapDropDemoWindowSize 1060x700` to size the window (centred on the sharpest screen), `-SnapDropDemoShowFormatAlert YES` to show the Format confirmation, or
 `-SnapDropDemoPlainTheme YES` to see the solid colours used with Increase contrast.
 Formatting can never run in demo mode.
-The sample card has clips with Sony XML sidecars, RAW photos, WAVs and a few cameras.
+The sample card has clips with Sony XML sidecars, RAW photos, WAVs, two short clips, a few
+missing copies and a few cameras; thumbnails are drawn placeholders in the theme's colours.
 Every view also has `#Preview`s you can open in Xcode's canvas.
 
 ## Code tour
@@ -252,12 +329,15 @@ Every view also has `#Preview`s you can open in Xcode's canvas.
 | --- | --- |
 | `SnapDropApp.swift` | App entry point: main window and Settings scene |
 | `AppModel.swift` | Ties settings, cameras, destinations, card watcher, ledger and the current offload together; eject, format, sound |
-| `Theme.swift` | The Comet A colours, window wash and gradient button style, with solid fallbacks |
+| `Theme.swift` | Themes (Default and the colour gradients), window wash and prominent button style, with solid fallbacks |
 | `ContentView.swift` | Main window: the Card → Media → Destination funnel and toolbar |
 | `FunnelComponents.swift` | Shared pieces: stage panel, step badge, arrows, count pills |
 | `Motion.swift` | Animated pieces: arrow stream, shimmering progress bar, completion burst, row reveal |
 | `CardStageView.swift` | ① Card panel, Ready to format badge, card actions menu |
-| `ClipsStageView.swift` | ② Media panel: counts, project/camera, filterable name preview |
+| `ClipsStageView.swift` | ② Media panel: counts, project/camera, filterable list or grid, selection, re-offload and short-clip controls |
+| `MediaGridViews.swift` | Grid tiles, thumbnails, status badges, progress ring, list/grid switch |
+| `MediaPreview.swift` | Selection, Quick Look order and panel, sidecar folding for the grid |
+| `Thumbnails.swift` | Quick Look thumbnail loading: cache, concurrency limit, cancellation, supported types |
 | `DestinationStageView.swift` | ③ Destination panel: favorites picker, free space, layout |
 | `FormatViews.swift` | Format confirmation, Ready to format badge, format status and buttons |
 | `OffloadBar.swift` | Bottom bar: Offload button, progress/ETA/Cancel, completion actions |
@@ -280,13 +360,16 @@ Every view also has `#Preview`s you can open in Xcode's canvas.
 | `Renamer.swift` | Project-name cleanup and date formatting |
 | `Copier.swift` | Copy + SHA-256 verify of one file, and the whole-card offload loop |
 | `Ledger.swift` | The JSON record of everything offloaded |
-| `Settings.swift` | Preferences: destination, templates, file types, eject, sound, recent projects |
+| `CardInventory.swift` | Every file on a card sorted by what the ledger knows: new, offloaded, or missing at the destination |
+| `ReoffloadAlert.swift` | The Re-offload Everything and Forget This Card's History confirmations |
+| `ShortClips.swift` | The short-clip rule: reading clip lengths, what's skipped and what's included anyway |
+| `Settings.swift` | Preferences: destination, templates, file types, short clips, eject, sound, theme, appearance, media layout, recent projects |
 | `Assets.xcassets/AppIcon` | App icon sizes: the hand-made "Comet A" set from `Design/comet-a/` |
 | `Design/comet-a/` | "Comet A" icon set by Yuwie, one PNG per icon slot |
 | `Design/icon-1024.png` | Master app icon (Comet A, 1024×1024) |
 | `Design/icon-legacy-blue.png`, `.svg` | The previous blue icon, kept for reference |
 | `Design/screenshots/` | Screenshots of the app (taken from demo mode) |
-| `SnapDropTests/` | Unit tests: templates, planner, sidecars, file types, junk skipping, cameras, ledger, copy/verify, end-to-end fake cards, format readiness and safety checks (with a fake `diskutil`), favorite destinations, theme colours |
+| `SnapDropTests/` | Unit tests: templates, planner, sidecars, file types, junk skipping, cameras, ledger, copy/verify, end-to-end fake cards, format readiness and safety checks (with a fake `diskutil`), favorite destinations, themes and their migration, re-offload, short clips, thumbnails and Quick Look order |
 
 The project uses Xcode's folder-synced groups: any `.swift` file you add to the
 `SnapDrop/` folder is automatically part of the app. No third-party dependencies.
