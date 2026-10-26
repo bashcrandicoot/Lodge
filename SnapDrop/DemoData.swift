@@ -65,10 +65,12 @@ enum DemoData {
         try? FileManager.default.removeItem(at: ledgerURL)
         let ledger = Ledger(fileURL: ledgerURL)
         let cameras = cameraStore()
-        let model = AppModel(settings: settings, ledger: ledger, cameras: cameras, startWatching: false)
+        // The demo never runs diskutil: every command "fails", so Format can't erase anything.
+        let model = AppModel(settings: settings, ledger: ledger, cameras: cameras,
+                             formatter: CardFormatter(runner: DemoCommandRunner()), startWatching: false)
+        settings.destinationPath = FileManager.default.urls(for: .moviesDirectory, in: .userDomainMask).first?.path
         guard state != .empty else { return model }
 
-        settings.destinationPath = FileManager.default.urls(for: .moviesDirectory, in: .userDomainMask).first?.path
         settings.apply(NamingPreset.all[1])   // Project / Date / Camera
         let all = clips()
         let alreadyDone = all.prefix(15)      // the first six clips (with sidecars) and three photos
@@ -114,8 +116,24 @@ enum DemoData {
         default:
             break
         }
-        model.installDemo(card: card, session: session)
+        // Ready to format once everything is offloaded; otherwise "N files not yet offloaded".
+        let readiness: FormatReadiness
+        if state == .finished {
+            readiness = FormatReadiness(fileCount: all.count, totalBytes: all.reduce(0) { $0 + $1.size },
+                                        copiesFolder: (settings.destinationPath ?? "") + "/Coastline")
+        } else {
+            readiness = FormatReadiness.compute(files: all, volumeIdentity: card.identity,
+                                                entries: ledger.entriesByKey(), fileSize: { _ in nil })
+        }
+        model.installDemo(card: card, session: session, readiness: readiness)
         return model
+    }
+}
+
+/// Stands in for diskutil in demo mode: every command fails.
+struct DemoCommandRunner: CommandRunning {
+    func run(_ executable: String, _ arguments: [String]) async throws -> CommandResult {
+        CommandResult(status: 1, output: Data(), errorOutput: "Demo mode")
     }
 }
 

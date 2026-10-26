@@ -24,12 +24,32 @@ final class AppModel: ObservableObject {
     @Published var showingRecent = false
     @Published private(set) var isEjecting = false
     @Published var ejectError: String?
+    /// Is the selected card safe to format? `nil` while scanning / no card.
+    @Published private(set) var formatReadiness: FormatReadiness?
+    @Published private(set) var formatState: FormatState = .idle
+
+    enum FormatState: Equatable {
+        case idle
+        case formatting(cardName: String)
+        case formatted(cardName: String)
+        case failed(String)
+
+        var isFormatting: Bool { if case .formatting = self { return true } else { return false } }
+    }
+
+    let formatter: CardFormatter
+    /// Mount path of the card being formatted (its unmount/remount is expected, not a removal).
+    private var formattingCardPath: String?
+    /// Where the freshly formatted card will show up again.
+    private var pendingFormattedMount: String?
 
     private var sessionObserver: AnyCancellable?
     private var camerasObserver: AnyCancellable?
     private var categoriesObserver: AnyCancellable?
 
-    init(settings: AppSettings? = nil, ledger: Ledger? = nil, cameras: CameraStore? = nil, startWatching: Bool = true) {
+    init(settings: AppSettings? = nil, ledger: Ledger? = nil, cameras: CameraStore? = nil,
+         formatter: CardFormatter = CardFormatter(), startWatching: Bool = true) {
+        self.formatter = formatter
         self.settings = settings ?? AppSettings()
         self.ledger = ledger ?? Ledger()
         self.cameras = cameras ?? CameraStore()
@@ -71,12 +91,20 @@ final class AppModel: ObservableObject {
 
     /// A card was plugged in: fill the funnel with it and bring the window forward.
     private func cardInserted(_ card: CardVolume) {
-        guard !isBusy else { return }
+        if let pending = pendingFormattedMount, pending == card.url.path {
+            // The card we just formatted is back, empty.
+            pendingFormattedMount = nil
+            select(card, keepFormatState: true)
+            return
+        }
+        guard !isBusy, !formatState.isFormatting else { return }
         select(card)
         bringWindowForward()
     }
 
     private func cardRemoved(_ card: CardVolume) {
+        // Formatting unmounts and remounts the card; that's not the user pulling it out.
+        if formattingCardPath == card.url.path || pendingFormattedMount == card.url.path { return }
         guard selectedCardID == card.id else { return }
         if let current = session, current.card.id == card.id, current.phase != .ready {
             // Keep the progress/summary visible; just note the card is gone.
@@ -87,19 +115,44 @@ final class AppModel: ObservableObject {
     }
 
     /// Shows `card` in the funnel and scans it for clips in the background.
-    func select(_ card: CardVolume) {
-        guard !isBusy else { return }
+    func select(_ card: CardVolume, keepFormatState: Bool = false) {
+        guard !isBusy, !formatState.isFormatting else { return }
         selectedCardID = card.id
         session = nil
+        formatReadiness = nil
+        if !keepFormatState {
+            formatState = .idle
+            pendingFormattedMount = nil
+        }
         isScanning = true
+        let entries = ledger.entriesByKey()
         Task {
-            let clips = await Task.detached(priority: .userInitiated) {
-                ClipScanner.scan(volumeURL: card.url)
+            let (clips, readiness) = await Task.detached(priority: .userInitiated) {
+                let clips = ClipScanner.scan(volumeURL: card.url)
+                let readiness = FormatReadiness.compute(files: clips, volumeIdentity: card.identity, entries: entries,
+                                                        fileSize: FormatReadiness.diskFileSize)
+                return (clips, readiness)
             }.value
             // The user may have picked a different card while we were scanning.
             guard self.selectedCardID == card.id else { return }
             self.isScanning = false
+            self.formatReadiness = readiness
             self.install(OffloadSession(card: card, clips: clips, knownKeys: self.ledger.knownKeys))
+        }
+    }
+
+    /// Re-checks "Ready to format" for the current session's files (after an offload).
+    private func refreshFormatReadiness(for session: OffloadSession) {
+        let card = session.card
+        let files = session.allNewFiles + session.allOffloadedFiles
+        let entries = ledger.entriesByKey()
+        Task {
+            let readiness = await Task.detached(priority: .userInitiated) {
+                FormatReadiness.compute(files: files, volumeIdentity: card.identity, entries: entries,
+                                        fileSize: FormatReadiness.diskFileSize)
+            }.value
+            guard self.session === session else { return }
+            self.formatReadiness = readiness
         }
     }
 
@@ -125,6 +178,7 @@ final class AppModel: ObservableObject {
     private func install(_ newSession: OffloadSession) {
         newSession.onFinished = { [weak self, weak newSession] summary in
             guard let self, let newSession else { return }
+            self.refreshFormatReadiness(for: newSession)
             let allGood = OffloadFeedback.isCleanSuccess(summary)
             if OffloadFeedback.shouldPlaySuccessSound(summary, enabled: self.settings.playSuccessSound) {
                 NSSound(named: "Glass")?.play()
@@ -158,6 +212,7 @@ final class AppModel: ObservableObject {
             hasCard: true,
             isScanning: isScanning,
             newFileCount: session.newClips.count,
+            cardIsEmpty: session.allNewFiles.isEmpty && session.allOffloadedFiles.isEmpty,
             namingIsValid: naming != nil,
             needs: NamingNeeds(naming),
             project: session.project,
@@ -244,6 +299,75 @@ final class AppModel: ObservableObject {
         }
     }
 
+    // MARK: Formatting
+
+    /// Format Card… is offered only for a mounted, fully offloaded card while nothing else runs.
+    var canFormatSelectedCard: Bool {
+        guard let card = selectedCard, watcher.cards.contains(card), formatReadiness?.isReady == true,
+              !isBusy, !isScanning, !isEjecting, !formatState.isFormatting, session?.cardRemoved != true else { return false }
+        return true
+    }
+
+    /// Asks for confirmation (Cancel is the default button), then formats.
+    func confirmFormatSelectedCard() {
+        guard canFormatSelectedCard, let card = selectedCard, let readiness = formatReadiness else { return }
+        let alert = FormatAlert.make(cardName: card.name, readiness: readiness)
+        let window = NSApp.windows.first { $0.identifier?.rawValue.hasPrefix("main") == true && $0.isVisible }
+            ?? NSApp.keyWindow
+        let handler: (NSApplication.ModalResponse) -> Void = { [weak self] response in
+            guard response == FormatAlert.formatResponse else { return }
+            self?.formatSelectedCard()
+        }
+        if let window {
+            alert.beginSheetModal(for: window, completionHandler: handler)
+        } else {
+            handler(alert.runModal())
+        }
+    }
+
+    /// Erases the selected card with diskutil (same file system and name) after re-checking it.
+    func formatSelectedCard() {
+        guard canFormatSelectedCard, let card = selectedCard else { return }
+        formatState = .formatting(cardName: card.name)
+        formattingCardPath = card.url.path
+        let entries = ledger.entriesByKey()
+        let destinationPath = settings.destinationPath
+        let destinationVolume = settings.destinationURL
+            .flatMap { try? $0.resourceValues(forKeys: [.volumeURLKey]).volume }?.path
+        let formatter = self.formatter
+        Task {
+            let outcome = await formatter.format(
+                card: card, destinationPath: destinationPath, destinationVolume: destinationVolume,
+                stillReady: {
+                    let files = ClipScanner.scan(volumeURL: card.url)
+                    return FormatReadiness.compute(files: files, volumeIdentity: card.identity, entries: entries,
+                                                   fileSize: FormatReadiness.diskFileSize).isReady
+                })
+            self.formatFinished(card: card, outcome: outcome)
+        }
+    }
+
+    private func formatFinished(card: CardVolume, outcome: FormatOutcome) {
+        formattingCardPath = nil
+        switch outcome {
+        case .refused(let message), .failed(let message):
+            formatState = .failed(message)
+        case .formatted(let name, let mountPoint):
+            formatState = .formatted(cardName: name)
+            formatReadiness = FormatReadiness()   // empty: nothing pending, nothing to format
+            let mount = mountPoint ?? card.url.path
+            if settings.ejectAfterOffload {
+                // Keep the finished offload on screen; the unmount marks its card as removed.
+                ejectCard(CardVolume(url: URL(fileURLWithPath: mount, isDirectory: true), name: name, uuid: nil))
+            } else if let back = watcher.cards.first(where: { $0.url.path == mount }) {
+                select(back, keepFormatState: true)
+            } else {
+                // Not remounted yet: `cardInserted` shows it when it appears.
+                pendingFormattedMount = mount
+            }
+        }
+    }
+
     // MARK: Window
 
     /// Activates SnapDrop and brings its main window to the front.
@@ -256,10 +380,11 @@ final class AppModel: ObservableObject {
 
     #if DEBUG
     /// Used by previews and demo mode to show a card without real hardware.
-    func installDemo(card: CardVolume, session demoSession: OffloadSession) {
+    func installDemo(card: CardVolume, session demoSession: OffloadSession, readiness: FormatReadiness? = nil) {
         watcher.injectDemoCards([card])
         selectedCardID = card.id
         isScanning = false
+        formatReadiness = readiness
         install(demoSession)
     }
     #endif

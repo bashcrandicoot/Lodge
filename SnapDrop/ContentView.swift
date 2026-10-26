@@ -61,6 +61,11 @@ struct ContentView: View {
                 try? await Task.sleep(for: .milliseconds(600))
                 openSettings()
             }
+            // Screenshots: `-SnapDropDemoShowFormatAlert YES` opens the Format confirmation.
+            if DemoData.launchState != nil, UserDefaults.standard.bool(forKey: "SnapDropDemoShowFormatAlert") {
+                try? await Task.sleep(for: .milliseconds(900))
+                model.confirmFormatSelectedCard()
+            }
         }
         #endif
     }

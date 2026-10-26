@@ -122,7 +122,14 @@ private struct ClipsStageContent: View {
 
     @ViewBuilder
     private var preview: some View {
-        if session.newClips.isEmpty {
+        if session.allNewFiles.isEmpty && session.allOffloadedFiles.isEmpty {
+            ContentUnavailableView {
+                Label("Card Is Empty", systemImage: "sdcard")
+            } description: {
+                Text("There's nothing on this card to offload.")
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else if session.newClips.isEmpty {
             ContentUnavailableView {
                 Label("All Caught Up", systemImage: "checkmark.seal")
             } description: {

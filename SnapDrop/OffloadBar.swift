@@ -59,11 +59,14 @@ private struct ReadyRow: View {
     let title: String
     let blocker: String?
     let start: () -> Void
+    @EnvironmentObject private var model: AppModel
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         HStack(spacing: 12) {
-            if let blocker {
+            if showsFormatResult {
+                FormatResultLine()
+            } else if let blocker {
                 Label(blocker, systemImage: "info.circle")
                     .foregroundStyle(.secondary)
             } else {
@@ -87,6 +90,14 @@ private struct ReadyRow: View {
             .disabled(blocker != nil)
             .help(blocker ?? "Copy and verify the new files")
             .accessibilityHint(blocker ?? "")
+        }
+    }
+
+    /// Right after formatting, say how it went instead of "This card is empty".
+    private var showsFormatResult: Bool {
+        switch model.formatState {
+        case .formatted, .failed: return true
+        case .idle, .formatting: return false
         }
     }
 }
@@ -194,11 +205,16 @@ private struct CompletionRow: View {
             }
             .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
-                Text(title(summary))
-                    .font(.headline)
+                HStack(spacing: 8) {
+                    Text(title(summary))
+                        .font(.headline)
+                    FormatStatusLine()
+                }
                 Text(subtitle(summary))
                     .font(.callout)
                     .foregroundStyle(.secondary)
+                FormatResultLine()
+                    .font(.callout)
             }
             .accessibilityElement(children: .combine)
 
@@ -212,6 +228,9 @@ private struct CompletionRow: View {
                 Label("Show in Finder", systemImage: "folder")
             }
             .disabled(settings.destinationURL == nil)
+            if !session.cardRemoved {
+                FormatCardButton()
+            }
             Button(action: model.ejectSelectedCard) {
                 Label(session.cardRemoved ? "Ejected" : "Eject Card", systemImage: "eject.fill")
             }

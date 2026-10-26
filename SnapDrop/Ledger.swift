@@ -60,6 +60,13 @@ final class Ledger: ObservableObject {
         knownKeys.contains(key)
     }
 
+    /// The newest entry for each clip key (used to check a card is safe to format).
+    func entriesByKey() -> [String: LedgerEntry] {
+        var result: [String: LedgerEntry] = [:]
+        for entry in entries { result[entry.sourceKey] = entry }
+        return result
+    }
+
     /// Records a verified copy and saves the ledger to disk right away.
     func add(_ entry: LedgerEntry) {
         entries.append(entry)

@@ -83,7 +83,33 @@ private struct CardRow: View {
     @State private var bounces = 0
 
     var body: some View {
-        Button(action: action) {
+        HStack(spacing: 0) {
+            Button(action: action) { rowContent }
+                .buttonStyle(.plain)
+            if showsActions {
+                CardActionsMenu()
+                    .padding(.trailing, 8)
+                    .transition(.opacity)
+            }
+        }
+        .background(
+            RoundedRectangle(cornerRadius: 9, style: .continuous)
+                .fill(isSelected ? Color.accentColor.opacity(0.14) : Color.clear))
+        .contextMenu {
+            if showsActions { CardActions() }
+        }
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: isSelected)
+        .onAppear {
+            if !reduceMotion { bounces += 1 }
+        }
+        .onChange(of: isSelected) { _, selected in
+            if selected && !reduceMotion { bounces += 1 }
+        }
+    }
+
+    private var showsActions: Bool { isSelected && !isRemoved }
+
+    private var rowContent: some View {
             HStack(spacing: 10) {
                 Image(systemName: isRemoved ? "eject.circle" : "sdcard.fill")
                     .font(.system(size: 22))
@@ -99,27 +125,21 @@ private struct CardRow: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
+                    if showsActions {
+                        FormatStatusLine()
+                            .padding(.top, 2)
+                            .transition(.opacity)
+                    }
                 }
                 Spacer(minLength: 0)
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 8)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(
-                RoundedRectangle(cornerRadius: 9, style: .continuous)
-                    .fill(isSelected ? Color.accentColor.opacity(0.14) : Color.clear))
             .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: isSelected)
-        .onAppear {
-            if !reduceMotion { bounces += 1 }
-        }
-        .onChange(of: isSelected) { _, selected in
-            if selected && !reduceMotion { bounces += 1 }
-        }
-        .accessibilityLabel("\(card.name), \(subtitle)")
-        .accessibilityAddTraits(isSelected ? [.isSelected] : [])
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("\(card.name), \(subtitle)")
+            .accessibilityAddTraits(isSelected ? [.isSelected] : [])
     }
 
     private var subtitle: String {
@@ -130,6 +150,37 @@ private struct CardRow: View {
             parts.append(OffloadFormatting.bytes(total))
         }
         return parts.isEmpty ? card.url.path : parts.joined(separator: " · ")
+    }
+}
+
+/// The selected card's "…" menu.
+private struct CardActionsMenu: View {
+    var body: some View {
+        Menu {
+            CardActions()
+        } label: {
+            Image(systemName: "ellipsis.circle")
+                .font(.system(size: 15))
+                .foregroundStyle(.secondary)
+        }
+        .menuStyle(.borderlessButton)
+        .menuIndicator(.hidden)
+        .fixedSize()
+        .help("Card actions")
+        .accessibilityLabel("Card actions")
+    }
+}
+
+/// Shared by the "…" menu and the context menu.
+private struct CardActions: View {
+    @EnvironmentObject private var model: AppModel
+
+    var body: some View {
+        Button("Format Card…") { model.confirmFormatSelectedCard() }
+            .disabled(!model.canFormatSelectedCard)
+        Divider()
+        Button("Eject Card") { model.ejectSelectedCard() }
+            .disabled(model.isBusy || model.isEjecting || model.formatState.isFormatting)
     }
 }
 
