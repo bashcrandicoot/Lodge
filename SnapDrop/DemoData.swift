@@ -90,17 +90,19 @@ enum DemoData {
         let total = session.newBytes
         let plan = OffloadPlanner.plan(files: session.newClips, naming: settings.naming ?? .standard,
                                        context: model.namingContext(for: session), existingNames: { _ in [] })
+        // While "copying", the current file is a clip partway down the list.
+        let current = plan.indices.first { $0 >= 9 && plan[$0].category == .video } ?? min(9, plan.count - 1)
         switch state {
         case .running:
             session.applyDemo(
                 phase: .running,
-                progress: OffloadProgress(filesDone: 9, filesTotal: plan.count,
-                                          currentFile: plan[9].originalName, currentID: plan[9].id,
+                progress: OffloadProgress(filesDone: current, filesTotal: plan.count,
+                                          currentFile: plan[current].originalName, currentID: plan[current].id,
                                           bytesDone: total * 2 / 5, bytesTotal: total),
                 startedAt: Date().addingTimeInterval(-140),
                 summary: nil,
                 plan: plan,
-                verifiedIDs: Set(plan.prefix(9).map(\.id)))
+                verifiedIDs: Set(plan.prefix(current).map(\.id)))
         case .finished:
             session.applyDemo(
                 phase: .finished,

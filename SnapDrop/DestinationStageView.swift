@@ -124,7 +124,8 @@ private struct FolderLayout: View {
     let plan: [PlannedFile]
 
     var body: some View {
-        let first = plan.first
+        // Show a real clip as the example when there is one (not a sidecar or a WAV).
+        let first = plan.first { $0.category == .video } ?? plan.first
         let levels = first.map { $0.folder.split(separator: "/").map(String.init) } ?? []
         let otherFolders = max(0, PlanLayout.folders(plan).count - 1)
         VStack(alignment: .leading, spacing: 3) {

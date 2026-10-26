@@ -67,11 +67,13 @@ struct GeneralSettingsView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
             Section("After Offload") {
-                Toggle("Eject card after offload", isOn: $settings.ejectAfterOffload)
-                Toggle("Play a sound when done", isOn: $settings.playSuccessSound)
-                Text("The card is only ejected when every file was copied and verified.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 4) {
+                    Toggle("Eject card after offload", isOn: $settings.ejectAfterOffload)
+                    Text("Only when every file was copied and verified.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                Toggle("Play a sound when an offload finishes", isOn: $settings.playSuccessSound)
             }
         }
         .formStyle(.grouped)
