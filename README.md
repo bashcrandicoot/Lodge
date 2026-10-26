@@ -397,9 +397,11 @@ Every view also has `#Preview`s you can open in Xcode's canvas.
 | `ReoffloadAlert.swift` | The Re-offload Everything and Forget This Card's History confirmations |
 | `ShortClips.swift` | The short-clip rule: reading clip lengths, what's skipped and what's included anyway |
 | `Settings.swift` | Preferences: destination, templates, file types, short clips, eject, sound, theme, appearance, media layout, recent projects |
-| `Assets.xcassets/AppIcon` | App icon sizes: the hand-made "Comet A" set from `Design/comet-a/` |
-| `Design/comet-a/` | "Comet A" icon set by Yuwie, one PNG per icon slot |
-| `Design/icon-1024.png` | Master app icon (Comet A, 1024×1024) |
+| `Assets.xcassets/AppIcon` | App icon sizes: the hand-made "Dusk Cabin" set from `Design/dusk-cabin/` |
+| `Design/dusk-cabin/` | "Dusk Cabin" (v3) icon set by Yuwie, as delivered: one PNG per icon slot, its `Contents.json` and the same images under plain size names (`icon_16.png` … `icon_1024.png`) |
+| `Design/icon-1024.png` | Master app icon (Dusk Cabin, 1024×1024) |
+| `Design/comet-a-v3/` | The previous "Comet A" (v3) icon set, archived |
+| `Design/comet-a-v1/`, `Design/comet-a-v2/` | Earlier Comet A drafts, kept for reference |
 | `Design/icon-legacy-blue.png`, `.svg` | The previous blue icon, kept for reference |
 | `Design/screenshots/` | Screenshots of the app (taken from demo mode) |
 | `LodgeTests/` | Unit tests: templates, planner, sidecars, file types, junk skipping, cameras, ledger, copy/verify, end-to-end fake cards, format readiness and safety checks (with a fake `diskutil`), favorite destinations, themes and their migration, re-offload, short clips, thumbnails and Quick Look order |
@@ -409,25 +411,26 @@ The project uses Xcode's folder-synced groups: any `.swift` file you add to the
 
 ## Updating the icon
 
-The icon is the "Comet A" set from Yuwie's Figma file:
-<https://www.figma.com/design/6ToCClZ7GdsUFwWitX4MgP>
+The icon is Yuwie's "Dusk Cabin" (v3): a snowy cabin with lit windows under a crescent
+moon. The set in `Design/dusk-cabin/` is used exactly as delivered.
 
 Each size is drawn by hand. The 16×16, 16×16@2x and 32×32 versions are simplified so
 they stay readable in the menu bar and Finder lists, so **don't generate the sizes by
 scaling one image with `sips`**. To update it:
 
-1. Export the set from Figma into `Design/comet-a/` with these names:
+1. Put the new set in `Design/dusk-cabin/` with these names:
    `icon_16x16.png`, `icon_16x16@2x.png`, `icon_32x32.png`, `icon_32x32@2x.png`,
    `icon_128x128.png`, `icon_128x128@2x.png`, `icon_256x256.png`, `icon_256x256@2x.png`,
-   `icon_512x512.png`, `icon_512x512@2x.png`, plus `lodge-icon-1024.png`.
+   `icon_512x512.png`, `icon_512x512@2x.png`, plus `icon_1024.png`.
 2. Copy them into the asset catalog and refresh the master copy:
 
 ```sh
-cp Design/comet-a/icon_*.png Lodge/Assets.xcassets/AppIcon.appiconset/
-cp Design/comet-a/lodge-icon-1024.png Design/icon-1024.png
+cp Design/dusk-cabin/icon_*x*.png Lodge/Assets.xcassets/AppIcon.appiconset/
+cp Design/dusk-cabin/icon_1024.png Design/icon-1024.png
 ```
 
-`Contents.json` already points each slot at the file with the same name.
+`Contents.json` already points each slot at the file with the same name. The previous
+Comet A icon is archived in `Design/comet-a-v3/`.
 
 ## License
 
