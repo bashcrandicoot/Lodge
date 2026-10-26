@@ -56,11 +56,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         case "dark": NSApp.appearance = NSAppearance(named: .darkAqua)
         default: break
         }
-        // Screenshots: `-SnapDropDemoWindowSize 1240x800` resizes the main window.
+        // Screenshots: `-SnapDropDemoWindowSize 1240x800` resizes the main window and centres it
+        // on a Retina screen when there is one, so every screenshot is captured at 2x.
         if let size = UserDefaults.standard.string(forKey: "SnapDropDemoWindowSize")?.split(separator: "x"),
            size.count == 2, let width = Double(size[0]), let height = Double(size[1]) {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                NSApp.windows.first { $0.title == "SnapDrop" }?.setContentSize(NSSize(width: width, height: height))
+                guard let window = NSApp.windows.first(where: { $0.title == "SnapDrop" }) else { return }
+                window.setContentSize(NSSize(width: width, height: height))
+                DemoData.centreOnSharpestScreen(window)
             }
         }
         #endif

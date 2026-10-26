@@ -60,6 +60,12 @@ struct ContentView: View {
                 UserDefaults.standard.set(tab.rawValue, forKey: SettingsTab.storageKey)
                 try? await Task.sleep(for: .milliseconds(600))
                 openSettings()
+                if UserDefaults.standard.string(forKey: "SnapDropDemoWindowSize") != nil {
+                    try? await Task.sleep(for: .milliseconds(500))
+                    if let window = NSApp.windows.first(where: { $0.isVisible && $0.title != "SnapDrop" && $0.frame.width > 300 }) {
+                        DemoData.centreOnSharpestScreen(window)
+                    }
+                }
             }
             // Screenshots: `-SnapDropDemoShowFormatAlert YES` opens the Format confirmation.
             if DemoData.launchState != nil, UserDefaults.standard.bool(forKey: "SnapDropDemoShowFormatAlert") {
