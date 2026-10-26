@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lodge — Home base for your media.</title>
+  <meta name="description" content="Lodge gets your footage off camera cards safely, checked and neatly named.">
+  <meta name="author" content="BashFrames">
+  <meta name="theme-color" content="#100e18">
+  <meta name="color-scheme" content="dark">
+  <link rel="canonical" href="https://bashcrandicoot.github.io/Lodge/">
+  <link rel="icon" href="assets/favicon.ico" sizes="any">
+  <link rel="icon" href="assets/favicon.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Lodge">
+  <meta property="og:url" content="https://bashcrandicoot.github.io/Lodge/">
+  <meta property="og:title" content="Lodge — Home base for your media.">
+  <meta property="og:description" content="Lodge gets your footage off camera cards safely, checked and neatly named.">
+  <meta property="og:image" content="https://bashcrandicoot.github.io/Lodge/assets/lodge-social-preview.png">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="640">
+  <meta property="og:image:alt" content="Lodge. Home base for your media. A log cabin at night, with pines and mountains.">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Lodge — Home base for your media.">
+  <meta name="twitter:description" content="Lodge gets your footage off camera cards safely, checked and neatly named.">
+  <meta name="twitter:image" content="https://bashcrandicoot.github.io/Lodge/assets/lodge-social-preview.png">
+  <meta name="twitter:image:alt" content="Lodge. Home base for your media. A log cabin at night, with pines and mountains.">
+
+  <style>
+    :root {
+      --bg: #100e18;
+      --ink: #ffffff;
+      --muted: #b7b1c9;
+      --accent: #b7c6ff;
+      --button: #3d4fce;
+      --button-hover: #4d5ed6;
+      --card: #1b1830;
+      --line: rgba(230, 220, 255, 0.12);
+      --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Helvetica, Arial, sans-serif;
+      --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      --max: 1080px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font);
+      font-size: 17px;
+      line-height: 1.5;
+      text-rendering: optimizeLegibility;
+    }
+    img { max-width: 100%; height: auto; }
+    a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 0.16em; }
+    a:hover { color: #d7e0ff; }
+    :focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .skip {
+      position: absolute;
+      left: 16px;
+      top: -48px;
+      background: var(--button);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      z-index: 5;
+    }
+    .skip:focus { top: 12px; }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 4;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 28px;
+      background: rgba(16, 14, 24, 0.86);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: saturate(140%) blur(16px);
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--ink);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      text-decoration: none;
+    }
+    .brand img { width: 28px; height: 28px; }
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 18px;
+      align-items: center;
+    }
+    .nav-links a {
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 15px;
+    }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-links .download {
+      color: #fff;
+      background: var(--button);
+      border-radius: 980px;
+      padding: 6px 14px;
+    }
+    .nav-links .download:hover { background: var(--button-hover); color: #fff; }
+
+    .wrap { width: min(var(--max), calc(100% - 40px)); margin: 0 auto; }
+
+    .hero {
+      position: relative;
+      padding: 28px 0 12px;
+      text-align: center;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 40px;
+      width: min(820px, 100%);
+      height: 280px;
+      transform: translateX(-50%);
+      background: radial-gradient(ellipse at center, rgba(120, 100, 190, 0.22), rgba(120, 100, 190, 0) 70%);
+      pointer-events: none;
+    }
+    .hero-inner { position: relative; }
+    .hero img.header {
+      width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto 22px;
+      border-radius: 16px;
+    }
+    .lede {
+      max-width: 38rem;
+      margin: 0 auto 28px;
+      color: var(--muted);
+      font-size: 19px;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 22px;
+    }
+    a.store { display: inline-block; line-height: 0; border-radius: 16px; }
+    a.store img { display: block; height: auto; }
+    .download-row { margin: 0 0 18px; }
+    .button {
+      display: inline-block;
+      background: var(--button);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      border-radius: 12px;
+      padding: 12px 18px;
+      border: 1px solid transparent;
+    }
+    .button:hover { background: var(--button-hover); color: #fff; }
+    .button.secondary {
+      background: transparent;
+      color: var(--ink);
+      border-color: rgba(255, 255, 255, 0.28);
+    }
+    .button.secondary:hover { border-color: var(--accent); color: var(--ink); background: transparent; }
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+    }
+    .badges img { height: 20px; }
+
+    .shot {
+      margin: 12px auto 8px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+      overflow: hidden;
+    }
+    .caption {
+      color: var(--muted);
+      font-size: 14px;
+      text-align: center;
+      margin: 10px 0 0;
+    }
+
+    section { padding: 64px 0; }
+    h2 {
+      font-size: clamp(28px, 4vw, 40px);
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin: 0 0 12px;
+    }
+    .section-intro { color: var(--muted); max-width: 40rem; margin: 0 0 28px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 20px 20px 18px;
+    }
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: clamp(40px, 6vw, 64px);
+      font-weight: 650;
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+    }
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 17px;
+      letter-spacing: -0.02em;
+    }
+    .card p { margin: 0; color: var(--muted); font-size: 15px; }
+    .soon {
+      display: inline-block;
+      margin: 0 0.35em 0 0;
+      padding: 1px 8px;
+      border-radius: 980px;
+      background: rgba(183, 198, 255, 0.16);
+      color: #d7e0ff;
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: 0.01em;
+      line-height: 1.6;
+      vertical-align: 1px;
+      white-space: nowrap;
+    }
+    .card code, p code, li code {
+      font-family: var(--mono);
+      font-size: 0.92em;
+      color: #e5e5ea;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: step;
+    }
+    .steps li {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 20px;
+    }
+    .steps li::before {
+      counter-increment: step;
+      content: counter(step);
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      margin-bottom: 12px;
+      border-radius: 50%;
+      background: var(--button);
+      color: #fff;
+      font-weight: 650;
+      font-size: 14px;
+    }
+    .steps strong { display: block; margin-bottom: 6px; }
+    .steps p { margin: 0; color: var(--muted); font-size: 15px; }
+
+    .pair {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 28px;
+      align-items: center;
+    }
+    .pair img {
+      border-radius: 16px;
+      border: 1px solid var(--line);
+    }
+    .themes ul { margin: 12px 0 0; padding-left: 1.1em; color: var(--muted); }
+    .themes li { margin: 6px 0; }
+    .themes li span { color: var(--ink); }
+
+    .install-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .install-grid h3 { margin: 0 0 8px; font-size: 17px; }
+    .install-grid p, .install-grid li { color: var(--muted); }
+    .install-grid ol, .install-grid ul { margin: 0; padding-left: 1.2em; }
+    .install-grid li { margin: 6px 0; }
+    .note { font-size: 14px; color: var(--muted); margin-top: 14px; }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 0 48px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    footer .wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      justify-content: space-between;
+      align-items: center;
+    }
+    footer nav { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+    footer a { color: var(--muted); }
+    footer a.support {
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 980px;
+      padding: 4px 12px;
+      text-decoration: none;
+    }
+    footer a.support:hover { color: var(--accent); border-color: var(--accent); }
+
+    @media (max-width: 860px) {
+      .grid, .steps, .pair, .install-grid { grid-template-columns: 1fr; }
+      .nav { padding: 12px 16px; }
+      section { padding: 48px 0; }
+      .hero { padding-top: 36px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body id="top">
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="nav">
+    <a class="brand" href="#top">
+      <img src="assets/app-icon/icon_128x128.png" width="128" height="128" alt="">
+      Lodge
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#features">Features</a>
+      <a href="#themes">Themes</a>
+      <a href="#install">Install</a>
+      <a href="https://github.com/bashcrandicoot/Lodge/blob/main/docs/user-guide.md">User guide</a>
+      <a class="download" href="https://bashframes.gumroad.com/l/lodge">Download</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <div class="hero">
+      <div class="hero-inner wrap">
+        <img class="header" src="assets/lodge-header-dark.png" width="1600" height="500" alt="Lodge. Home base for your media. A log cabin at night, with pines and mountains.">
+        <h1>From card to calm.</h1>
+        <p class="lede">Lodge gets your footage off camera cards safely, checked and neatly named.</p>
+        <div class="actions">
+          <a class="store" href="https://bashframes.gumroad.com/l/lodge"><img src="assets/download-button.png" width="320" height="72" alt="Download Lodge for Mac"></a>
+          <a class="button secondary" href="https://github.com/bashcrandicoot/Lodge/blob/main/docs/getting-started.md">Getting started</a>
+        </div>
+        <p class="badges">
+          <img alt="macOS 14 or later" src="https://img.shields.io/badge/macOS-14%2B-3A3A3C?style=flat&logo=apple&logoColor=white">
+          <a href="https://www.swift.org"><img alt="Swift 5" src="https://img.shields.io/badge/Swift-5-F05138?style=flat&logo=swift&logoColor=white"></a>
+          <a href="https://github.com/bashcrandicoot/Lodge/blob/main/LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-0A84FF?style=flat"></a>
+          <a href="https://github.com/bashcrandicoot/Lodge"><img alt="Vibe Coded" src="https://img.shields.io/badge/-Vibe%20Coded-0A84FF?style=flat"></a>
+        </p>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <img class="shot" src="assets/screenshots/ready-dark.png" width="1440" alt="Lodge in Dark mode, ready to offload. The preset control at the top right reads Sony Shoot, and the window title is hidden. Offload 54 Files sits along the bottom.">
+      <p class="caption">Default theme, Dark mode. The card line shows how many files are new, and how many were ignored. <span class="soon">Coming in the next update</span> This picture’s preset menu is at the top right, and the title is hidden. Lodge 1.0.0 keeps that menu in the center of the toolbar, and the title reads Lodge.</p>
+    </div>
+
+    <section id="features">
+      <div class="wrap">
+        <h2>From the card to a folder you trust</h2>
+        <p class="section-intro">Insert a card. Lodge fills the window, left to right: Card, Media, Destination, and the offload bar along the bottom.</p>
+        <div class="grid">
+          <article class="card">
+            <h3>SHA-256 on every copy</h3>
+            <p>Lodge writes <code>&lt;name&gt;.lodge-partial</code>, reads it back, and compares the hash with the card. A match becomes the finished file. A mismatch is deleted and reported. The card is only read.</p>
+          </article>
+          <article class="card">
+            <h3>Names you can read later</h3>
+            <p>Templates use <code>{project}</code>, <code>{date}</code>, <code>{camera}</code>, <code>{seq}</code>, and more. The <strong>Examples</strong> menu in Settings &gt; Naming drops in a ready-made pair, and the main window previews every name before the copy starts.</p>
+          </article>
+          <article class="card">
+            <h3>Only what is new</h3>
+            <p>A ledger remembers each verified file. Insert the same card again and Lodge copies the new ones. The line on the card reads <strong>54 new files · 5 ignored</strong>, then <strong>57 copied · 5 ignored</strong> when the offload finishes.</p>
+          </article>
+          <article class="card">
+            <h3>Missing copies, called out</h3>
+            <p>If a file in the ledger is gone from the destination, or its size has changed, Media shows an orange count: <strong>3 missing at destination</strong>. <strong>Re-offload Missing Copies</strong> makes a new copy. Existing files stay where they are.</p>
+          </article>
+          <article class="card">
+            <h3>Ready to format</h3>
+            <p>When every file has a verified copy that is still in the destination, the card shows a glowing green <strong>Ready to format</strong> badge. <strong>Format Card…</strong> asks first, with <strong>Cancel</strong> as the default, and keeps exFAT, FAT32, or FAT16.</p>
+          </article>
+          <article class="card">
+            <h3>Short clips, presets, quick dump</h3>
+            <p><strong>Skip videos shorter than</strong> runs from <strong>Off</strong> to <strong>30 s</strong>, and starts at <strong>5 s</strong>. A preset saves where the footage goes, how folders are named, which camera, short clips, quick dump, and the file rules. You choose it from the preset menu. Lodge remembers the camera for each card and selects it again when that card is inserted. <span class="soon">Coming in the next update</span> The preset menu sits at the top right of the window, and the title is hidden. In Lodge 1.0.0 that menu is in the center of the toolbar. Quick dump leaves <code>{project}</code> out so you can just empty the card. The checkbox then reads <strong>Quick dump</strong>, with an ⓘ that says it skips the project name and dumps the footage into a dated folder. In Lodge 1.0.0 the checkbox reads <strong>Quick dump: skip project name</strong>.</p>
+          </article>
+          <article class="card">
+            <h3>Drop a folder, or a level</h3>
+            <p>Drop a Finder folder on Destination or on the Layout tree. In Lodge 1.0.0, drag a level to rearrange the folders, or add one from <strong>Add a level</strong>. <span class="soon">Coming in the next update</span> <strong>Expand All</strong> and <strong>Collapse All</strong> open the tree, and folder names can sit side by side, such as <code>{project}_{date}</code>, with the separator you pick. A long file list folds to the first name, with <strong>+ N more</strong> under it. An accepted drop clicks on a Force Touch trackpad.</p>
+          </article>
+          <article class="card">
+            <h3>Proxies, sidecars, ignore list</h3>
+            <p>A <code>.lrv</code> file is a proxy, and Lodge does not copy it as video. Settings &gt; Files sends <code>.lrv</code> and <code>.lrf</code> to <strong>Proxies/</strong>, and <code>.thm</code>, <code>.xml</code>, and <code>.srt</code> to <strong>Sidecars/</strong>. They keep the clip’s new name. The ignore list is never copied, and Lodge also skips system junk such as <code>recycler</code> and <code>recycled</code>. In Lodge 1.0.0 the other files land in the folder the template makes, and audio recorded with a clip stays next to that clip. <span class="soon">Coming in the next update</span> Each extension gets its own folder, such as <strong>MP4/</strong>, <strong>ARW/</strong>, and <strong>WAV/</strong>. <code>.JPG</code> and <code>.JPEG</code> share <strong>JPG/</strong>. Proxies and sidecars stay separate.</p>
+          </article>
+          <article class="card">
+            <h3>Updates</h3>
+            <p>Lodge 1.0.0 does not check for a new version. Download the next one from Gumroad. <span class="soon">Coming in the next update</span> <strong>Lodge &gt; Check for Updates…</strong> looks now. In Settings &gt; General, under <strong>Updates</strong>, <strong>Automatically check for updates</strong> is on, and <strong>Automatically download and install updates</strong> is off. Lodge checks once a day.</p>
+          </article>
+          <article class="card">
+            <h3>Motion, quietly</h3>
+            <p>The finished checkmark draws itself. The copied count and the size count up. A card glows as it is inserted, rows and tiles lift under the pointer, and the Ready badge glows when it appears. Reduce Motion turns the movement off.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="how" aria-labelledby="how-title">
+      <div class="wrap">
+        <h2 id="how-title">Three steps, then the card can rest</h2>
+        <ol class="steps">
+          <li>
+            <strong>Insert</strong>
+            <p>Any removable drive under <code>/Volumes</code> shows up in Card, including one that was already mounted. An empty card says <strong>Card Is Empty</strong>.</p>
+          </li>
+          <li>
+            <strong>Name</strong>
+            <p>Fill in the project when the template needs it. “Beach Shoot” becomes <code>BeachShoot</code>. Recent projects are one click away. The list shows the finished names.</p>
+          </li>
+          <li>
+            <strong>Offload</strong>
+            <p>The button says why it is waiting, or <strong>Offload 12 Files</strong> when it is ready. Afterwards: <strong>Show in Finder</strong>, <strong>Format Card…</strong> when the card is ready, <strong>Eject Card</strong>, and <strong>Done</strong>.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="themes">
+      <div class="wrap pair themes">
+        <img src="assets/screenshots/ready-ember-dark.png" width="1440" alt="Lodge in the Ember theme, Dark mode, ready to offload. The preset control at the top right, and the hidden title, are the next update.">
+        <div>
+          <h2>Default is neutral black</h2>
+          <p class="section-intro">Lodge opens in Dark mode. Default is a neutral black and white window, with no colour wash. Buttons, switches, sliders, selection, progress, and badges use the system accent: system blue, unless you picked another accent in System Settings.</p>
+          <ul>
+            <li><span>Aurora, Ocean, Twilight, Ember, and Forest</span> are optional colour themes. Each tints the window wash, the Offload button, the progress bar, the glowing border of the step that needs you, and the dots that travel between steps.</li>
+            <li><span>Light, Dark, or System</span> is a switch in Settings &gt; Appearance. Dark is the setting Lodge starts with.</li>
+            <li><span>Increase Contrast and Reduce Transparency</span> turn every theme to solid colours.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="install">
+      <div class="wrap">
+        <h2>Install Lodge 1.0.0</h2>
+        <p class="section-intro">Lodge is a universal app for Apple silicon and Intel Macs. It requires macOS 14 or later. <a href="https://bashframes.gumroad.com/l/lodge">Download Lodge from Gumroad</a>, then open the disk image and drag Lodge to Applications.</p>
+        <p class="download-row"><a class="store" href="https://bashframes.gumroad.com/l/lodge"><img src="assets/download-button.png" width="320" height="72" alt="Download Lodge for Mac"></a></p>
+        <div class="install-grid">
+          <article class="card">
+            <h3>macOS 15 Sequoia and later</h3>
+            <ol>
+              <li>Open Lodge.</li>
+              <li>Click <strong>Done</strong> on the warning.</li>
+              <li>Go to <strong>System Settings &gt; Privacy &amp; Security</strong>.</li>
+              <li>Click <strong>Open Anyway</strong> next to Lodge, and confirm.</li>
+            </ol>
+          </article>
+          <article class="card">
+            <h3>macOS 14 Sonoma</h3>
+            <ol>
+              <li>Right-click or Control-click Lodge.</li>
+              <li>Choose <strong>Open</strong>.</li>
+              <li>Choose <strong>Open</strong> again.</li>
+            </ol>
+            <p>Lodge is not notarized, which is why macOS asks.</p>
+          </article>
+        </div>
+        <p class="note">The first time Lodge reads a card, allow access to files on a removable volume. Building from source is in the <a href="https://github.com/bashcrandicoot/Lodge/blob/main/CONTRIBUTING.md">contribution guide</a>. The <a href="https://github.com/bashcrandicoot/Lodge/blob/main/docs/user-guide.md">user guide</a>, <a href="https://github.com/bashcrandicoot/Lodge/blob/main/docs/faq.md">FAQ</a>, and <a href="https://github.com/bashcrandicoot/Lodge/blob/main/docs/changelog.md">changelog</a> live in the repository.</p>
+        <p class="note"><span class="soon">Coming in the next update</span> <strong>Help &gt; Contact Support…</strong> writes to bashframes@gmail.com, and <strong>Support Lodge…</strong> opens the same page as the download. <strong>About Lodge</strong> credits BashFrames. After five verified offloads, and at least three days after you first open that version, a quiet card asks once when Lodge is idle. <strong>Maybe Later</strong> asks one more time. <strong>Don’t Ask Again</strong> stops it.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>Lodge 1.0.0 · Home base for your media. · MIT License · © 2026 BashFrames</p>
+      <nav aria-label="Footer">
+        <a href="https://github.com/bashcrandicoot/Lodge">GitHub</a>
+        <a href="https://github.com/bashcrandicoot/Lodge/blob/main/docs/user-guide.md">User guide</a>
+        <a href="mailto:bashframes@gmail.com">bashframes@gmail.com</a>
+        <a class="support" href="https://bashframes.gumroad.com/l/lodge">Support Lodge</a>
+        <a href="https://github.com/bashcrandicoot/Lodge/blob/main/SECURITY.md">Security</a>
+        <a href="https://github.com/bashcrandicoot/Lodge/blob/main/LICENSE">License</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

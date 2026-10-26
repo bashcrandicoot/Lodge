@@ -1,0 +1,25 @@
+name: Feature request
+description: Something Lodge should do on a future release.
+title: "[Feature]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Lodge 1.0.0 is described in the [user guide](https://github.com/bashcrandicoot/Lodge/blob/main/docs/user-guide.md). If the behavior you want is already there, the guide is the faster answer.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: The shoot, the card, or the folder layout that Lodge does not cover yet.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What should Lodge do?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What do you do instead today?

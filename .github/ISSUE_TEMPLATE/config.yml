@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security report
+    url: https://github.com/bashcrandicoot/Lodge/security/advisories/new
+    about: Report a vulnerability in private.
+  - name: User guide
+    url: https://github.com/bashcrandicoot/Lodge/blob/main/docs/user-guide.md
+    about: How Lodge copies, names, and formats a card.
