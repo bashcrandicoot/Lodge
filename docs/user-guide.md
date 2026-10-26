@@ -8,7 +8,7 @@ The main window reads left to right: **Card**, **Media**, **Destination**, with 
 
 ![Lodge in Dark mode, ready to offload. The preset control at the top right reads Sony Shoot, and the window title is hidden. Offload 54 Files sits along the bottom.](assets/screenshots/ready-dark.png)
 
-The pictures in this guide are the next update’s window. The preset control is at the top right and the title is hidden. The copying, grid, and finished pictures include a wagon scene on the offload bar. Lodge 1.0.0 keeps the preset menu in the center of the toolbar, the title reads Lodge, and the offload bar has no wagon. The pictures still use the 1.0.0 Quick dump label, **Quick dump: skip project name**, and they still put files in the template’s folders, with **Proxies** and **Sidecars**, rather than a folder per extension.
+The pictures in this guide are the next update’s window. The preset control is at the top right and the title is hidden. The copying, grid, and finished pictures include a wagon scene on the offload bar. Lodge 1.0.0 keeps the preset menu in the center of the toolbar, the title reads Lodge, with the card’s name under the title, and the offload bar has no wagon. The pictures still use the 1.0.0 Quick dump label, **Quick dump: skip project name**, and they still put files in the template’s folders, with **Proxies** and **Sidecars**, rather than a folder per extension.
 
 ## Cards
 
