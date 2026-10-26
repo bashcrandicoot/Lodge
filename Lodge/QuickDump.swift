@@ -129,22 +129,39 @@ enum FolderTemplateEditor {
     /// Drag payloads (plain text, so they never clash with Finder's file drags).
     static let levelPrefix = "lodge-level:"
     static let tokenPrefix = "lodge-token:"
+    /// One piece of a combined level: "lodge-item:<level>:<piece>".
+    static let itemPrefix = "lodge-item:"
 
     enum Payload: Equatable {
         case level(Int)
         case token(TemplateToken)
+        /// One piece of a level that has several side by side ("{date}" in "{project}_{date}").
+        case item(level: Int, item: Int)
+    }
+
+    static func text(for payload: Payload) -> String {
+        switch payload {
+        case .level(let index): return levelPrefix + String(index)
+        case .token(let token): return tokenPrefix + token.rawValue
+        case .item(let level, let item): return itemPrefix + "\(level):\(item)"
+        }
     }
 
     static func payload(_ text: String) -> Payload? {
         if text.hasPrefix(levelPrefix), let index = Int(text.dropFirst(levelPrefix.count)) { return .level(index) }
+        if text.hasPrefix(itemPrefix) {
+            let numbers = text.dropFirst(itemPrefix.count).split(separator: ":").compactMap { Int($0) }
+            return numbers.count == 2 ? .item(level: numbers[0], item: numbers[1]) : nil
+        }
         if text.hasPrefix(tokenPrefix), let token = TemplateToken(rawValue: String(text.dropFirst(tokenPrefix.count))) {
             return .token(token)
         }
         return nil
     }
 
-    /// Applies a drop onto the level at `target` (`levels.count` = after the last level):
-    /// a dragged level moves there, a token is inserted there.
+    /// Applies a drop between levels, at `target` (`levels.count` = after the last level):
+    /// a dragged level moves there, a token is inserted there, and a piece of a combined
+    /// level becomes its own level there.
     static func drop(_ payload: Payload, on target: Int, in template: String) -> String {
         switch payload {
         case .level(let from):
@@ -152,6 +169,8 @@ enum FolderTemplateEditor {
             return from == to ? template : move(template, from: from, to: to)
         case .token(let token):
             return insert(token, into: template, at: target)
+        case .item(let level, let item):
+            return extractItem(template, level: level, item: item, toSlot: target)
         }
     }
 }
