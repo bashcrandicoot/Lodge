@@ -1,9 +1,9 @@
-# SnapDrop
+# Lodge
 
 A small native macOS app (SwiftUI) that offloads camera SD cards — video, photos, audio
 and sidecar files — safely, verified, and named the way you want.
 
-![SnapDrop ready to offload a card](Design/screenshots/ready-dark.png)
+![Lodge ready to offload a card](Design/screenshots/ready-dark.png)
 
 ## What it does
 
@@ -33,15 +33,15 @@ and sidecar files — safely, verified, and named the way you want.
      from the same shoot picks up where the first left off. Nothing is ever overwritten.
    - Extensions are lowercased.
 5. **Verifies every copy** with SHA-256. Each file is first copied to
-   `<name>.snapdrop-partial`, the copy is re-read from disk and hashed, and only when it
+   `<name>.lodge-partial`, the copy is re-read from disk and hashed, and only when it
    matches the source is it renamed to its final name. A mismatch deletes the partial
    file and is reported as a failure.
 6. **Remembers what it copied** in a ledger at
-   `~/Library/Application Support/SnapDrop/ledger.json`, so inserting the same card
+   `~/Library/Application Support/Lodge/ledger.json`, so inserting the same card
    again only copies files that are new. A file is identified by the card's volume UUID
    (or name) + its path on the card + size + modification time.
 
-SnapDrop **never changes or deletes anything on the card** — unless you explicitly ask it
+Lodge **never changes or deletes anything on the card** — unless you explicitly ask it
 to [format a card](#formatting-a-card) whose files have all been copied and verified.
 
 ## The window
@@ -69,11 +69,11 @@ The main window reads left to right, like a funnel:
   format), **Eject Card** and **Done**, and a "Glass" sound plays if everything copied
   and verified.
 
-When you insert a card SnapDrop fills in the funnel and brings its window to the front —
+When you insert a card Lodge fills in the funnel and brings its window to the front —
 no pop-up sheet. The clock button in the toolbar shows **Recent Offloads**.
 Animations follow System Settings → Accessibility → Display → **Reduce motion**.
 
-SnapDrop opens in Dark Mode with the neutral **Default** theme: a near-black window, a
+Lodge opens in Dark Mode with the neutral **Default** theme: a near-black window, a
 white **Offload** button with black text, and white-to-grey progress, glow and flowing dots
 — no brand colour. The ready-to-format badge and verified ticks stay green. Colour themes
 and Light Mode are one click away in [Settings → Appearance](#themes-and-appearance).
@@ -89,7 +89,7 @@ and Light Mode are one click away in [Settings → Appearance](#themes-and-appea
 ## Thumbnails and Quick Look
 
 The switch above the Media list (☰ / ▦) shows the files as a **list** or a **thumbnail
-grid**; SnapDrop remembers your choice. In the grid each tile has a thumbnail, the new name
+grid**; Lodge remembers your choice. In the grid each tile has a thumbnail, the new name
 (shortened in the middle), the clip's length, its type, and a "+1" paperclip for sidecars
 that travel with it. While copying, the current tile shows a progress ring and verified
 tiles get a green tick; files offloaded before are dimmed, missing copies get a warning, and
@@ -150,7 +150,7 @@ asks first, with **Cancel** as the default button:
 ![The Format confirmation](Design/screenshots/format-confirm.png)
 
 Formatting keeps the card's file system (exFAT, FAT32 or FAT16) and its name, using
-`diskutil eraseVolume`. Before erasing, SnapDrop checks again that the card is still ready
+`diskutil eraseVolume`. Before erasing, Lodge checks again that the card is still ready
 and refuses unless the volume:
 
 - is the card it scanned, mounted under `/Volumes`, and is a volume on a disk (not a whole
@@ -171,10 +171,10 @@ with their free space, plus **Choose Other Folder…** and **Edit Favorites…**
 a drive that isn't plugged in shows *Not connected* and can't be picked until it's back.
 
 Manage them in **Settings → Destinations**: add (+), remove (−), rename (click the name
-and type), **Change Folder…**, drag to reorder and **Make Default**. SnapDrop starts with the
+and type), **Change Folder…**, drag to reorder and **Make Default**. Lodge starts with the
 favorite you used last (or the default). Your existing destination becomes the first
 favorite the first time you open this version. The list is saved in
-`~/Library/Application Support/SnapDrop/destinations.json`, with a bookmark for each
+`~/Library/Application Support/Lodge/destinations.json`, with a bookmark for each
 folder so a folder that's renamed or moved is still found.
 
 ## Settings (⌘,)
@@ -215,7 +215,7 @@ would end up with the same name get `_2`, `_3`… instead of overwriting.
 
 **Cameras** — your list of cameras, each with a name ("Sony FX3") and an optional short
 code ("A") used by `{camera}`. Add, rename, reorder (drag) and delete. In the main window
-pick one from the **Camera** menu; SnapDrop remembers which camera you used with each card
+pick one from the **Camera** menu; Lodge remembers which camera you used with each card
 and picks it again next time. *Edit Cameras…* in that menu jumps straight here.
 
 **Destinations** — your [favorite destinations](#favorite-destinations).
@@ -266,7 +266,7 @@ The type comes from the file extension (upper or lower case).
 
 ## Run it
 
-1. Open `SnapDrop.xcodeproj` in Xcode (double-click it).
+1. Open `Lodge.xcodeproj` in Xcode (double-click it).
 2. Press **⌘R**.
 3. First run: click **Choose Folder…** in the *Destination* panel (or in Settings, ⌘,) and
    pick the folder for your footage. It's remembered from then on.
@@ -279,24 +279,24 @@ folder you pick.
 
 ### First-launch notes
 
-- macOS may ask *"SnapDrop would like to access files on a removable volume"* the first
+- macOS may ask *"Lodge would like to access files on a removable volume"* the first
   time it reads a card. Click **Allow**. (If you clicked Don't Allow, turn it back on in
   System Settings → Privacy & Security → Files and Folders.)
-- If you copy the built `SnapDrop.app` somewhere and open it outside Xcode, Gatekeeper may
+- If you copy the built `Lodge.app` somewhere and open it outside Xcode, Gatekeeper may
   block it because it isn't notarized. Right-click the app → **Open** → **Open**
   (or System Settings → Privacy & Security → *Open Anyway*).
-- Closing the window quits SnapDrop. Keep it open while you work so it can catch cards.
+- Closing the window quits Lodge. Keep it open while you work so it can catch cards.
 
 ## Build from the command line
 
 ```sh
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
-  xcodebuild -project SnapDrop.xcodeproj -scheme SnapDrop -configuration Debug \
+  xcodebuild -project Lodge.xcodeproj -scheme Lodge -configuration Debug \
   -derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO build
 
 # unit tests
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
-  xcodebuild -project SnapDrop.xcodeproj -scheme SnapDrop \
+  xcodebuild -project Lodge.xcodeproj -scheme Lodge \
   -derivedDataPath build/DerivedData test
 ```
 
@@ -306,18 +306,18 @@ To see the UI without a card, launch the Debug build with sample data. It never 
 your real settings or ledger:
 
 ```sh
-open -n build/DerivedData/Build/Products/Debug/SnapDrop.app --args \
-  -SnapDropDemo YES -SnapDropDemoState ready -SnapDropDemoAppearance dark
+open -n build/DerivedData/Build/Products/Debug/Lodge.app --args \
+  -LodgeDemo YES -LodgeDemoState ready -LodgeDemoAppearance dark
 ```
 
 States: `empty`, `ready`, `running`, `finished`. Appearance: `light` or `dark`.
-Add `-SnapDropDemoSettingsTab general|appearance|destinations|naming|cameras` to open Settings on that
-tab, `-SnapDropDemoTheme ember` (or `default`, `aurora`, `ocean`, `twilight`, `forest`) for a
-theme, `-SnapDropDemoLayout grid` for the thumbnail grid (`-SnapDropDemoListThumbnails YES`
-for list thumbnails), `-SnapDropDemoScope skipped|offloaded` to show the skipped short clips
-or the files offloaded before, `-SnapDropDemoQuickLook C0008.MP4` to open Quick Look on a file,
-`-SnapDropDemoWindowSize 1060x700` to size the window (centred on the sharpest screen), `-SnapDropDemoShowFormatAlert YES` to show the Format confirmation, or
-`-SnapDropDemoPlainTheme YES` to see the solid colours used with Increase contrast.
+Add `-LodgeDemoSettingsTab general|appearance|destinations|naming|cameras` to open Settings on that
+tab, `-LodgeDemoTheme ember` (or `default`, `aurora`, `ocean`, `twilight`, `forest`) for a
+theme, `-LodgeDemoLayout grid` for the thumbnail grid (`-LodgeDemoListThumbnails YES`
+for list thumbnails), `-LodgeDemoScope skipped|offloaded` to show the skipped short clips
+or the files offloaded before, `-LodgeDemoQuickLook C0008.MP4` to open Quick Look on a file,
+`-LodgeDemoWindowSize 1060x700` to size the window (centred on the sharpest screen), `-LodgeDemoShowFormatAlert YES` to show the Format confirmation, or
+`-LodgeDemoPlainTheme YES` to see the solid colours used with Increase contrast.
 Formatting can never run in demo mode.
 The sample card has clips with Sony XML sidecars, RAW photos, WAVs, two short clips, a few
 missing copies and a few cameras; thumbnails are drawn placeholders in the theme's colours.
@@ -327,7 +327,7 @@ Every view also has `#Preview`s you can open in Xcode's canvas.
 
 | File | What's in it |
 | --- | --- |
-| `SnapDropApp.swift` | App entry point: main window and Settings scene |
+| `LodgeApp.swift` | App entry point: main window and Settings scene |
 | `AppModel.swift` | Ties settings, cameras, destinations, card watcher, ledger and the current offload together; eject, format, sound |
 | `Theme.swift` | Themes (Default and the colour gradients), window wash and prominent button style, with solid fallbacks |
 | `ContentView.swift` | Main window: the Card → Media → Destination funnel and toolbar |
@@ -369,10 +369,10 @@ Every view also has `#Preview`s you can open in Xcode's canvas.
 | `Design/icon-1024.png` | Master app icon (Comet A, 1024×1024) |
 | `Design/icon-legacy-blue.png`, `.svg` | The previous blue icon, kept for reference |
 | `Design/screenshots/` | Screenshots of the app (taken from demo mode) |
-| `SnapDropTests/` | Unit tests: templates, planner, sidecars, file types, junk skipping, cameras, ledger, copy/verify, end-to-end fake cards, format readiness and safety checks (with a fake `diskutil`), favorite destinations, themes and their migration, re-offload, short clips, thumbnails and Quick Look order |
+| `LodgeTests/` | Unit tests: templates, planner, sidecars, file types, junk skipping, cameras, ledger, copy/verify, end-to-end fake cards, format readiness and safety checks (with a fake `diskutil`), favorite destinations, themes and their migration, re-offload, short clips, thumbnails and Quick Look order |
 
 The project uses Xcode's folder-synced groups: any `.swift` file you add to the
-`SnapDrop/` folder is automatically part of the app. No third-party dependencies.
+`Lodge/` folder is automatically part of the app. No third-party dependencies.
 
 ## Updating the icon
 
@@ -386,12 +386,12 @@ scaling one image with `sips`**. To update it:
 1. Export the set from Figma into `Design/comet-a/` with these names:
    `icon_16x16.png`, `icon_16x16@2x.png`, `icon_32x32.png`, `icon_32x32@2x.png`,
    `icon_128x128.png`, `icon_128x128@2x.png`, `icon_256x256.png`, `icon_256x256@2x.png`,
-   `icon_512x512.png`, `icon_512x512@2x.png`, plus `snapdrop-icon-1024.png`.
+   `icon_512x512.png`, `icon_512x512@2x.png`, plus `lodge-icon-1024.png`.
 2. Copy them into the asset catalog and refresh the master copy:
 
 ```sh
-cp Design/comet-a/icon_*.png SnapDrop/Assets.xcassets/AppIcon.appiconset/
-cp Design/comet-a/snapdrop-icon-1024.png Design/icon-1024.png
+cp Design/comet-a/icon_*.png Lodge/Assets.xcassets/AppIcon.appiconset/
+cp Design/comet-a/lodge-icon-1024.png Design/icon-1024.png
 ```
 
 `Contents.json` already points each slot at the file with the same name.
