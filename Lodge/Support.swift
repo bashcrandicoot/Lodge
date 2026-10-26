@@ -7,7 +7,7 @@ enum Support {
     static let developerName = "BashFrames"
     static let email = "bashframes@gmail.com"
     /// Tips for Lodge (Help ▸ Support Lodge…, the Settings footer and the support card).
-    static let tipJarURL = URL(string: "https://bashframe.gumroad.com/l/lodge")!
+    static let tipJarURL = URL(string: "https://bashframes.gumroad.com/l/lodge")!
 
     /// A plain `mailto:` link, for the About window and the Settings footer.
     static var emailURL: URL { mailURL(body: nil) }

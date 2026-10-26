@@ -196,7 +196,7 @@ A card whose only remaining files are skipped short clips can still be formatted
 
 **Coming in the next update.** The preset menu sits at the top right of the window, just left of **Recent Offloads** and **Settings**, and the window title is hidden. In Lodge 1.0.0 the preset menu is in the center of the toolbar, and the title reads Lodge.
 
-A preset saves the destination, the folder and file templates, the camera, the short-clip setting, quick dump, and the file rules.
+A preset saves the destination, the folder and file templates, the camera, the short-clip setting, quick dump, and the file rules. You choose it from the menu. When a card is inserted, Lodge selects the camera you last used with that card, identified by the card’s volume UUID, or by its name when it has no UUID. The offload starts when you click **Offload**.
 
 **Save Current Setup as Preset…** saves what the window is using now. Change any of that afterwards and the menu shows **Edited**, and offers **Update “Name”** for the preset in use. **Manage Presets…** opens Settings > Presets. With no preset selected the menu says **No Preset**.
 
@@ -292,7 +292,7 @@ Lodge 1.0.0 has none of this. It never checks. Download the next version from Gu
 
 ## Support
 
-Write to [bashframes@gmail.com](mailto:bashframes@gmail.com). If Lodge has been useful, [Support Lodge](https://bashframe.gumroad.com/l/lodge). Pay what you want.
+Write to [bashframes@gmail.com](mailto:bashframes@gmail.com). If Lodge has been useful, [Support Lodge](https://bashframes.gumroad.com/l/lodge). Pay what you want.
 
 **Coming in the next update.** **Help > Contact Support…** opens an email to that address. The subject is Lodge Support. Under a blank line for your message, Lodge adds its version, its build number, and the macOS version. **Lodge > Support Lodge…** and **Help > Support Lodge…** open the Gumroad page. **Lodge > About Lodge** says Made by BashFrames, with a link to the same email. The bottom of Settings > General reads Made by BashFrames, then **Support**, then **Support Lodge ♥**.
 

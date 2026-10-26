@@ -40,7 +40,7 @@ Lodge 1.0.0 is the download below. **Coming in the next update** marks anything 
 - **A ledger of what was copied.** Lodge remembers each verified file in `~/Library/Application Support/Lodge/ledger.json`. The same card again copies only what is new. If a copy is missing or its size has changed, Media warns you, in orange, and offers **Re-offload**.
 - **Ready to format.** When every file has a verified copy that is still at the destination, the card shows a green **Ready to format** badge, and **Format Card…** is available. Cancel is the default. Lodge keeps exFAT, FAT32, or FAT16, and the card’s name.
 - **Short clips.** **Skip videos shorter than** runs from **Off** to **30 s**. The default is **5 s**. A stepper beside the slider goes up to 60 seconds. Skipped clips stay on the card with their sidecars until you choose **Include Anyway** or **Include All**.
-- **Presets.** A preset saves a whole setup: destination, templates, camera, short clips, quick dump, and file rules. After you change something, the menu says **Edited** and offers to update that preset. Manage them in Settings > Presets. **Coming in the next update.** The preset menu sits at the top right of the window, just left of **Recent Offloads** and **Settings**, and the window title is hidden. In Lodge 1.0.0 the preset menu is in the center of the toolbar, and the title reads Lodge.
+- **Presets for each camera.** A preset saves the setup: where the footage goes, how the folders and files are named, which camera, short clips, quick dump, and the file rules for proxies, sidecars, and ignored names. You choose it from the preset menu. Lodge remembers the camera you used with each card, by the card’s volume UUID or its name, and selects that camera again when the card is inserted. After you change the setup, the menu says **Edited** and offers to update that preset. Manage them in Settings > Presets. **Coming in the next update.** The preset menu sits at the top right of the window, just left of **Recent Offloads** and **Settings**, and the window title is hidden. In Lodge 1.0.0 the preset menu is in the center of the toolbar, and the title reads Lodge.
 - **Quick dump.** **Quick dump: skip project name** takes `{project}` out of the templates, so there is nothing to type. Numbering carries on from the files already in the folder. **Coming in the next update.** The checkbox reads **Quick dump**, with an ⓘ beside it. Hover or click the ⓘ and it says: Skips the project name and dumps all the footage straight into a dated folder.
 - **Proxies and sidecars.** A `.lrv` file is a low-resolution proxy. Lodge does not copy it as video. With the default file rules, `lrv` and `lrf` go in a **Proxies** folder, and `thm`, `xml`, and `srt` go in a **Sidecars** folder. Both keep the clip’s new name. Lodge never copies the ignore list, or system junk such as `recycler` and `recycled`.
 - **A folder for each extension.** **Coming in the next update.** Inside the folder the template makes, each file goes in a folder named for its extension, in capitals: `MP4/`, `ARW/`, `WAV/`, and the rest. `.mp4` and `.MP4` share `MP4/`. `.JPG`, `.JPEG`, and `.JPE` share `JPG/`. `.TIF` and `.TIFF` share `TIF/`. An extension Lodge does not know still gets a folder (`.xyz` goes in `XYZ/`). A file with no extension stays in the template folder. Proxies stay in **Proxies/** and sidecars stay in **Sidecars/**, not in `LRV/` or `XML/`. Audio recorded with a clip, such as `C0001.WAV`, goes in `WAV/` and keeps that clip’s name and number. A JPEG beside a RAW file is its own photo, in `JPG/`, with the next number. One sequence runs across the whole shoot folder, including every format folder, and continues after files already there. If the template uses `{type}`, the extension folder sits inside `Video/`, `Photo/`, `Audio/`, or `Other/`. In Lodge 1.0.0 the files land in the folder the template makes. Proxies and sidecars already have their own folders, and audio recorded with a clip stays next to that clip.
@@ -68,10 +68,10 @@ These pictures are the next update’s window. The preset menu is at the top rig
 ## Download Lodge
 
 <p align="center">
-  <a href="https://bashframe.gumroad.com/l/lodge"><img src="docs/assets/download-button.png" alt="Download Lodge for Mac" width="320" height="72"></a>
+  <a href="https://bashframes.gumroad.com/l/lodge"><img src="docs/assets/download-button.png" alt="Download Lodge for Mac" width="320" height="72"></a>
 </p>
 
-[Download Lodge from Gumroad](https://bashframe.gumroad.com/l/lodge). Open the disk image and drag Lodge to Applications.
+[Download Lodge from Gumroad](https://bashframes.gumroad.com/l/lodge). Open the disk image and drag Lodge to Applications.
 
 Lodge is not notarized. The first time you open it:
 
@@ -109,7 +109,7 @@ Lodge is made by BashFrames. For help, write to [bashframes@gmail.com](mailto:ba
 
 After five offloads where every file was copied and verified, and at least three days after you first open that version, a small card asks if you want to support Lodge. It appears only when Lodge is idle, never during a copy, and at most twice. **Maybe Later** asks once more, 30 days later. **Support Lodge** and **Don’t Ask Again** stop it.
 
-If Lodge has been useful, [Support Lodge](https://bashframe.gumroad.com/l/lodge). Pay what you want.
+If Lodge has been useful, [Support Lodge](https://bashframes.gumroad.com/l/lodge). Pay what you want.
 
 ## License
 

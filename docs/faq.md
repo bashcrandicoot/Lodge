@@ -26,7 +26,7 @@ Lodge formats exFAT, FAT32, and FAT16, and keeps the card’s name. Other format
 
 ## What is the difference between a preset and Examples?
 
-**Examples**, in Settings > Naming, fills in a folder template and a file template. A preset saves the whole setup: destination, templates, camera, short clips, quick dump, and file rules. After you change that setup, the menu says **Edited**.
+**Examples**, in Settings > Naming, fills in a folder template and a file template. A preset saves the whole setup: destination, templates, camera, short clips, quick dump, and file rules. After you change that setup, the menu says **Edited**. You choose the preset from the menu. When a card is inserted, Lodge selects the camera you last used with that card, by its volume UUID or its name.
 
 **Coming in the next update.** The preset menu sits at the top right of the window, and the window title is hidden. In Lodge 1.0.0 the preset menu is in the center of the toolbar, and the title reads Lodge.
 
@@ -62,7 +62,7 @@ The first time Lodge reads a card, also allow access to files on a removable vol
 
 ## How do I get help?
 
-Write to [bashframes@gmail.com](mailto:bashframes@gmail.com). If Lodge has been useful, [Support Lodge](https://bashframe.gumroad.com/l/lodge). Pay what you want.
+Write to [bashframes@gmail.com](mailto:bashframes@gmail.com). If Lodge has been useful, [Support Lodge](https://bashframes.gumroad.com/l/lodge). Pay what you want.
 
 **Coming in the next update.** **Help > Contact Support…** opens an email to that address, subject Lodge Support, with the Lodge and macOS versions under your message. **Help > Support Lodge…** and **Lodge > Support Lodge…** open the same page. **Lodge > About Lodge** says Made by BashFrames, with a link to the same email.
 
@@ -70,7 +70,7 @@ After five offloads where every file was copied and verified, and at least three
 
 ## How do I update Lodge?
 
-Lodge 1.0.0 does not check for updates. [Download Lodge from Gumroad](https://bashframe.gumroad.com/l/lodge) when you want a newer copy.
+Lodge 1.0.0 does not check for updates. [Download Lodge from Gumroad](https://bashframes.gumroad.com/l/lodge) when you want a newer copy.
 
 **Coming in the next update.** **Lodge > Check for Updates…** looks now. The item is dimmed while a check is already running. In Settings > General, under **Updates**, **Automatically check for updates** is on, and **Automatically download and install updates** is off. The second switch is unavailable while automatic checks are off. Lodge checks once a day. The 1.0.0 download cannot do this. Download the next version from Gumroad once. That version is the first one that can look for a newer one.
 

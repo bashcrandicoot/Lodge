@@ -16,4 +16,4 @@ During an offload Lodge only reads the card. It writes on the destination you ch
 
 **Format Card…** does erase a card. It asks first, with Cancel as the default, and it refuses anything that is not the scanned removable volume: the startup disk, a drive that is part of the Mac, a whole disk rather than a volume, and the drive the destination folder is on. It will format exFAT, FAT32, and FAT16 only. If you believe those checks can be bypassed, that is a security report.
 
-The app is not notarized and is not sandboxed. A build you make yourself is signed to run locally. [Download Lodge from Gumroad](https://bashframe.gumroad.com/l/lodge).
+The app is not notarized and is not sandboxed. A build you make yourself is signed to run locally. [Download Lodge from Gumroad](https://bashframes.gumroad.com/l/lodge).

@@ -16,7 +16,7 @@
 
 ## 1.0.0
 
-First public release of Lodge, a native Mac app (macOS 14 or later) for offloading camera memory cards. [Download Lodge from Gumroad](https://bashframe.gumroad.com/l/lodge).
+First public release of Lodge, a native Mac app (macOS 14 or later) for offloading camera memory cards. [Download Lodge from Gumroad](https://bashframes.gumroad.com/l/lodge).
 
 ### Offload and verification
 
