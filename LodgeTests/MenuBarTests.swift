@@ -1,4 +1,5 @@
 import XCTest
+import AppKit
 @testable import Lodge
 
 final class MenuBarItemTests: XCTestCase {
@@ -26,6 +27,16 @@ final class MenuBarItemTests: XCTestCase {
         let items = MenuBarItem.items(cards: [a7], isPaused: false, isBusy: true)
         XCTAssertTrue(items.contains(.importCard(path: "/Volumes/A7SIII", name: "A7SIII", enabled: false)))
         XCTAssertTrue(items.contains(.offloading))
+    }
+
+    func testMenuBarIconComesFromTheAssetCatalog() throws {
+        let color = try XCTUnwrap(StatusItemController.iconImage())
+        XCTAssertFalse(color.isTemplate)
+        XCTAssertEqual(color.size.height, 16, accuracy: 0.5)
+        XCTAssertNotNil(NSImage(named: "MenuBarIcon"))
+        let template = try XCTUnwrap(StatusItemController.iconImage(template: true))
+        XCTAssertTrue(template.isTemplate)
+        XCTAssertNotNil(NSImage(named: "MenuBarIconTemplate"))
     }
 
     func testPromptTitle() {

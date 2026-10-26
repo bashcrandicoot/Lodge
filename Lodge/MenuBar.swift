@@ -123,15 +123,23 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         }
     }
 
+    /// The little Lodge cabin icon, in color. `MenuBarIconTemplate` is a one-color version that
+    /// follows the menu bar's appearance, if the color one ever needs to go.
+    nonisolated static func iconImage(template: Bool = false) -> NSImage? {
+        let image = NSImage(named: template ? "MenuBarIconTemplate" : "MenuBarIcon")
+            ?? NSImage(systemSymbolName: "house.lodge", accessibilityDescription: "Lodge")
+        image?.isTemplate = template
+        image?.accessibilityDescription = "Lodge"
+        return image
+    }
+
     private func install() {
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         item.autosaveName = "LodgeMenuBarIcon"
         // ⌘-dragging the icon out of the menu bar turns "Show menu bar icon" off.
         item.behavior = .removalAllowed
         if let button = item.button {
-            let image = NSImage(systemSymbolName: "house.lodge", accessibilityDescription: "Lodge")
-            image?.isTemplate = true
-            button.image = image
+            button.image = Self.iconImage()
             button.toolTip = "Lodge"
         }
         let menu = NSMenu()
