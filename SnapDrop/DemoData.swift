@@ -14,6 +14,21 @@ enum DemoData {
         return State(rawValue: UserDefaults.standard.string(forKey: "SnapDropDemoState") ?? "") ?? .ready
     }
 
+    /// Set by launching with `-SnapDropDemoSettingsTab <general|naming|cameras>`.
+    static var launchSettingsTab: SettingsTab? {
+        UserDefaults.standard.string(forKey: "SnapDropDemoSettingsTab").flatMap(SettingsTab.init(rawValue:))
+    }
+
+    @MainActor
+    static func cameraStore() -> CameraStore {
+        CameraStore(fileURL: nil, cameras: [
+            Camera(name: "Sony FX3", code: "A"),
+            Camera(name: "Sony A7S III", code: "B"),
+            Camera(name: "DJI Mini 4 Pro", code: "Drone"),
+            Camera(name: "Zoom H6"),
+        ])
+    }
+
     static let card = CardVolume(url: URL(fileURLWithPath: "/Volumes/A7SIII"), name: "A7S III", uuid: "DEMO-CARD")
 
     static func clips() -> [Clip] {
@@ -38,7 +53,8 @@ enum DemoData {
         let ledgerURL = FileManager.default.temporaryDirectory.appendingPathComponent("snapdrop-demo-ledger.json")
         try? FileManager.default.removeItem(at: ledgerURL)
         let ledger = Ledger(fileURL: ledgerURL)
-        let model = AppModel(settings: settings, ledger: ledger, startWatching: false)
+        let cameras = cameraStore()
+        let model = AppModel(settings: settings, ledger: ledger, cameras: cameras, startWatching: false)
         guard state != .empty else { return model }
 
         settings.destinationPath = FileManager.default.urls(for: .moviesDirectory, in: .userDomainMask).first?.path
@@ -58,6 +74,7 @@ enum DemoData {
         let session = OffloadSession(card: card, clips: all, knownKeys: ledger.knownKeys)
         session.projectInput = "Coastline"
         session.shootNameInput = "Beach Shoot"
+        session.cameraID = cameras.cameras[1].id
         let total = session.newBytes
         let plan = OffloadPlanner.plan(files: session.newClips, naming: settings.naming ?? .standard,
                                        context: model.namingContext(for: session), existingNames: { _ in [] })

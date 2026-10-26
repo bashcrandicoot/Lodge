@@ -19,6 +19,8 @@ final class OffloadSession: ObservableObject, Identifiable {
 
     @Published var shootNameInput = ""
     @Published var projectInput = ""
+    /// The camera these files came from (fills `{camera}`).
+    @Published var cameraID: UUID?
     /// The final names, fixed when the offload starts (the preview shows these while copying).
     @Published private(set) var plan: [PlannedFile]?
     /// Card paths of files that were copied and verified in this offload.

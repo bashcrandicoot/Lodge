@@ -5,6 +5,9 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject private var model: AppModel
     @EnvironmentObject private var settings: AppSettings
+    #if DEBUG
+    @Environment(\.openSettings) private var openSettings
+    #endif
 
     var body: some View {
         VStack(spacing: 0) {
@@ -50,6 +53,16 @@ struct ContentView: View {
         }
         .navigationTitle("SnapDrop")
         .navigationSubtitle(model.selectedCard?.name ?? "No card")
+        #if DEBUG
+        .task {
+            // Screenshots: `-SnapDropDemoSettingsTab naming` opens Settings on that tab.
+            if DemoData.launchState != nil, let tab = DemoData.launchSettingsTab {
+                UserDefaults.standard.set(tab.rawValue, forKey: SettingsTab.storageKey)
+                try? await Task.sleep(for: .milliseconds(600))
+                openSettings()
+            }
+        }
+        #endif
     }
 }
 
@@ -61,6 +74,7 @@ extension View {
             .environmentObject(model.settings)
             .environmentObject(model.watcher)
             .environmentObject(model.ledger)
+            .environmentObject(model.cameras)
     }
 }
 

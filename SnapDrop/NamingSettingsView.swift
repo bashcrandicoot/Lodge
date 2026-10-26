@@ -146,6 +146,7 @@ private struct TokenChips: View {
 /// What the current templates produce for a sample video and photo.
 private struct ExamplePaths: View {
     @EnvironmentObject private var settings: AppSettings
+    @EnvironmentObject private var cameras: CameraStore
 
     var body: some View {
         if let naming = settings.naming {
@@ -182,8 +183,9 @@ private struct ExamplePaths: View {
 
     private var context: NamingContext {
         let project = NamingContext.clean(settings.lastProject)
+        let camera = (cameras.camera(id: cameras.lastCameraID) ?? cameras.cameras.first)?.tokenValue ?? ""
         return NamingContext(project: project.isEmpty ? "Coastline" : project, shoot: "BeachShoot",
-                             camera: "A7SIII", card: "A7SIII")
+                             camera: camera.isEmpty ? "FX3" : camera, card: "A7SIII")
     }
 
     static let samples: [Clip] = {

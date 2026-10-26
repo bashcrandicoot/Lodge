@@ -12,6 +12,7 @@ final class AppModel: ObservableObject {
     let settings: AppSettings
     let watcher: VolumeWatcher
     let ledger: Ledger
+    let cameras: CameraStore
 
     /// The card shown in the funnel (its mount path).
     @Published private(set) var selectedCardID: String?
@@ -25,11 +26,18 @@ final class AppModel: ObservableObject {
     @Published var ejectError: String?
 
     private var sessionObserver: AnyCancellable?
+    private var camerasObserver: AnyCancellable?
 
-    init(settings: AppSettings? = nil, ledger: Ledger? = nil, startWatching: Bool = true) {
+    init(settings: AppSettings? = nil, ledger: Ledger? = nil, cameras: CameraStore? = nil, startWatching: Bool = true) {
         self.settings = settings ?? AppSettings()
         self.ledger = ledger ?? Ledger()
+        self.cameras = cameras ?? CameraStore()
         self.watcher = VolumeWatcher()
+
+        // The Offload button depends on the camera list (e.g. the chosen camera was deleted).
+        camerasObserver = self.cameras.objectWillChange.sink { [weak self] _ in
+            self?.objectWillChange.send()
+        }
 
         // The watcher must ignore the volume the destination folder lives on.
         watcher.destinationPathProvider = { [weak self] in self?.settings.destinationPath }
@@ -117,7 +125,8 @@ final class AppModel: ObservableObject {
                 self.ejectCard(newSession.card)
             }
         }
-        newSession.projectInput = settings.lastProject
+        if newSession.projectInput.isEmpty { newSession.projectInput = settings.lastProject }
+        newSession.cameraID = cameras.suggestedCamera(forCard: newSession.card.identity) ?? newSession.cameraID
         session = newSession
     }
 
@@ -159,6 +168,7 @@ final class AppModel: ObservableObject {
             context: namingContext(for: session),
             existingNames: OffloadPlanner.diskLister(root: destination))
         settings.rememberProject(session.projectInput)
+        cameras.remember(session.cameraID, forCard: session.card.identity)
         session.start(plan: plan, destination: destination, ledger: ledger)
     }
 
@@ -176,7 +186,14 @@ final class AppModel: ObservableObject {
 
     /// The `{camera}` value for the session's selected camera ("" if none).
     func cameraTokenValue(for session: OffloadSession) -> String {
-        ""
+        cameras.camera(id: session.cameraID)?.tokenValue ?? ""
+    }
+
+    /// Picks the camera for the current card and remembers it for next time.
+    func selectCamera(_ id: UUID?) {
+        guard let session, session.phase == .ready else { return }
+        session.cameraID = id
+        cameras.remember(id, forCard: session.card.identity)
     }
 
     /// What the preview shows: the frozen plan once copying started, otherwise a fresh

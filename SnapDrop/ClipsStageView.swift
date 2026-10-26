@@ -51,6 +51,7 @@ private struct ClipsStageContent: View {
         if session.phase != .ready { return .done }
         if session.newClips.isEmpty { return .done }
         let missing = (needs.project && session.project.isEmpty) || (needs.shoot && session.shootName.isEmpty)
+            || (needs.camera && model.cameraTokenValue(for: session).isEmpty)
         return missing ? .active : .done
     }
 
@@ -74,25 +75,38 @@ private struct ClipsStageContent: View {
     // MARK: Project + shoot name
 
     private var shootNameField: some View {
-        HStack(alignment: .top, spacing: 10) {
-            NameField(
-                title: "Project",
-                prompt: "e.g. Coastline",
-                text: $session.projectInput,
-                cleaned: session.project,
-                isUsed: needs.project,
-                isDisabled: isLocked,
-                recents: settings.recentProjects,
-                clearRecents: settings.clearRecentProjects)
-            NameField(
-                title: "Shoot Name",
-                prompt: "e.g. Beach Shoot",
-                text: $session.shootNameInput,
-                cleaned: session.shootName,
-                isUsed: needs.shoot,
-                isDisabled: isLocked)
-                .focused($nameFocused)
+        Grid(alignment: .leading, horizontalSpacing: 10, verticalSpacing: 8) {
+            GridRow {
+                fieldLabel("Project")
+                NameField(
+                    title: "Project",
+                    prompt: needs.project ? "e.g. Coastline" : "Optional, not in the template",
+                    text: $session.projectInput,
+                    isDisabled: isLocked,
+                    recents: settings.recentProjects,
+                    clearRecents: settings.clearRecentProjects)
+            }
+            GridRow {
+                fieldLabel("Shoot")
+                NameField(
+                    title: "Shoot Name",
+                    prompt: needs.shoot ? "e.g. Beach Shoot" : "Optional, not in the template",
+                    text: $session.shootNameInput,
+                    isDisabled: isLocked)
+                    .focused($nameFocused)
+            }
+            GridRow {
+                fieldLabel("Camera")
+                CameraField(selection: session.cameraID, isUsed: needs.camera, isDisabled: isLocked)
+            }
         }
+    }
+
+    private func fieldLabel(_ text: String) -> some View {
+        Text(text)
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(.secondary)
+            .gridColumnAlignment(.trailing)
     }
 
     private var isLocked: Bool { session.phase != .ready || session.newClips.isEmpty }
@@ -175,65 +189,88 @@ private struct PreviewRow: View {
     }
 }
 
-/// A labelled text field for a name token, with an optional "recent" menu.
+/// A text field for a name token, with an optional "recent" menu.
 private struct NameField: View {
     let title: String
     let prompt: String
     @Binding var text: String
-    let cleaned: String
-    let isUsed: Bool
     let isDisabled: Bool
     var recents: [String] = []
     var clearRecents: (() -> Void)?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 5) {
-            HStack(spacing: 4) {
-                Text(title)
-                    .font(.subheadline.weight(.semibold))
-                if !isUsed {
-                    Text("not in template")
-                        .font(.caption2)
-                        .foregroundStyle(.tertiary)
-                }
-                Spacer(minLength: 0)
-                if !recents.isEmpty {
-                    Menu {
-                        ForEach(recents, id: \.self) { name in
-                            Button(name) { text = name }
-                        }
-                        if let clearRecents {
-                            Divider()
-                            Button("Clear Recent Projects", action: clearRecents)
-                        }
-                    } label: {
-                        Image(systemName: "clock.arrow.circlepath")
-                    }
-                    .menuStyle(.borderlessButton)
-                    .menuIndicator(.hidden)
-                    .fixedSize()
-                    .disabled(isDisabled)
-                    .help("Recent \(title.lowercased())s")
-                    .accessibilityLabel("Recent \(title.lowercased())s")
-                }
-            }
+        HStack(spacing: 6) {
             TextField(title, text: $text, prompt: Text(prompt))
                 .textFieldStyle(.roundedBorder)
-                .controlSize(.large)
+                .labelsHidden()
                 .disabled(isDisabled)
+                .accessibilityLabel(title)
                 .accessibilityHint("Used in file and folder names when the naming template includes it")
-            Text(hint.isEmpty ? " " : hint)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
+            if !recents.isEmpty {
+                Menu {
+                    ForEach(recents, id: \.self) { name in
+                        Button(name) { text = name }
+                    }
+                    if let clearRecents {
+                        Divider()
+                        Button("Clear Recent Projects", action: clearRecents)
+                    }
+                } label: {
+                    Image(systemName: "clock.arrow.circlepath")
+                }
+                .menuStyle(.borderlessButton)
+                .menuIndicator(.hidden)
+                .fixedSize()
+                .disabled(isDisabled)
+                .help("Recent projects")
+                .accessibilityLabel("Recent projects")
+            }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+/// Pop-up menu for the camera, with a shortcut to the camera list in Settings.
+private struct CameraField: View {
+    let selection: UUID?
+    let isUsed: Bool
+    let isDisabled: Bool
+    @EnvironmentObject private var model: AppModel
+    @EnvironmentObject private var cameras: CameraStore
+    @Environment(\.openSettings) private var openSettings
+
+    var body: some View {
+        Menu {
+            if cameras.cameras.isEmpty {
+                Text("No cameras yet")
+            } else {
+                Picker("Camera", selection: Binding(get: { selection }, set: { model.selectCamera($0) })) {
+                    ForEach(cameras.cameras) { camera in
+                        Text(camera.displayName).tag(Optional(camera.id))
+                    }
+                }
+                .pickerStyle(.inline)
+                .labelsHidden()
+            }
+            Divider()
+            Button(cameras.cameras.isEmpty ? "Add Cameras…" : "Edit Cameras…") {
+                UserDefaults.standard.set(SettingsTab.cameras.rawValue, forKey: SettingsTab.storageKey)
+                openSettings()
+            }
+        } label: {
+            Text(label)
+        }
+        .fixedSize()
+        .disabled(isDisabled)
+        .help("The camera these files came from. Fills the {camera} token.")
+        .accessibilityLabel("Camera, \(selected?.displayName ?? "none chosen")")
     }
 
-    private var hint: String {
-        let typed = text.trimmingCharacters(in: .whitespaces)
-        guard !cleaned.isEmpty, typed != cleaned else { return isUsed ? "" : "Optional" }
-        return "Saved as “\(cleaned)”"
+    private var selected: Camera? { cameras.camera(id: selection) }
+
+    private var label: String {
+        if let selected { return selected.displayName }
+        if cameras.cameras.isEmpty { return "Add a camera…" }
+        return isUsed ? "Choose a camera…" : "None (optional)"
     }
 }
 

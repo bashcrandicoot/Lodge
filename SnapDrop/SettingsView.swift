@@ -14,6 +14,9 @@ struct SettingsView: View {
             NamingSettingsView()
                 .tabItem { Label("Naming", systemImage: "textformat") }
                 .tag(SettingsTab.naming)
+            CamerasSettingsView()
+                .tabItem { Label("Cameras", systemImage: "camera") }
+                .tag(SettingsTab.cameras)
         }
     }
 }
