@@ -6,6 +6,7 @@ struct DestinationStageView: View {
     @EnvironmentObject private var model: AppModel
     @EnvironmentObject private var settings: AppSettings
     @EnvironmentObject private var watcher: VolumeWatcher
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         StagePanel(number: 3, title: "Destination", state: settings.destinationURL == nil ? .active : .done) {
@@ -50,9 +51,13 @@ struct DestinationStageView: View {
             }
             .accessibilityElement(children: .combine)
 
-            SpaceInfo(url: url, required: model.session?.newBytes)
+            // Until a card is scanned there's nothing to lay out, so just show the folder.
+            SpaceInfo(url: url, required: plan.isEmpty ? nil : model.session?.newBytes)
 
-            FolderLayout(root: url.lastPathComponent, plan: plan)
+            if !plan.isEmpty {
+                FolderLayout(root: url.lastPathComponent, plan: plan)
+                    .transition(reduceMotion ? .opacity : .opacity.combined(with: .move(edge: .top)))
+            }
 
             Spacer(minLength: 0)
 
@@ -68,17 +73,13 @@ struct DestinationStageView: View {
             }
             .controlSize(.small)
         }
+        .animation(reduceMotion ? nil : .spring(duration: 0.4), value: plan.isEmpty)
     }
 
-    /// The planned names (with placeholders), or a sample file when there's no card.
+    /// The planned names (with placeholders) once a scanned card has something to copy.
     private var plan: [PlannedFile] {
-        if let session = model.session, !session.newClips.isEmpty {
-            return model.previewPlan(for: session)
-        }
-        let sample = Clip(url: URL(fileURLWithPath: "/Volumes/Card/DCIM/C0001.MP4"), relativePath: "DCIM/C0001.MP4",
-                          size: 0, creationDate: Date(), modificationDate: Date())
-        return OffloadPlanner.plan(files: [sample], naming: settings.naming ?? .standard,
-                                   context: NamingContext().fillingBlanks(), existingNames: { _ in [] })
+        guard let session = model.session, session.plan != nil || !session.newClips.isEmpty else { return [] }
+        return model.previewPlan(for: session)
     }
 }
 
