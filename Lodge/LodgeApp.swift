@@ -33,8 +33,7 @@ struct LodgeApp: App {
                 Button("Support Lodge…") { Support.openTipJar() }
             }
             // Help ▸ Contact Support… and Support Lodge…
-            // .help placement is empty without a Help Book, so items "after" it never show; replace it instead.
-            CommandGroup(replacing: .help) {
+            CommandGroup(after: .help) {
                 Button("Contact Support…") { Support.contactSupport() }
                 Button("Support Lodge…") { Support.openTipJar() }
             }
