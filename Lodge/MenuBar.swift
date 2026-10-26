@@ -156,8 +156,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         visibilityObservation = item.observe(\.isVisible, options: [.new]) { [weak self] _, change in
             guard change.newValue == false else { return }
             Task { @MainActor in
-                guard let self, let model = self.model, model.menuBarIconInserted else { return }
-                model.menuBarIconInserted = false
+                self?.model?.menuBarIconRemovedByUser()
             }
         }
     }

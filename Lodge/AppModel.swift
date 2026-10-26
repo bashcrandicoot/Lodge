@@ -23,12 +23,9 @@ final class AppModel: ObservableObject {
     /// Settings ▸ General ▸ Menu Bar ▸ Open at login.
     let loginItem: LoginItem
     /// The menu bar icon is showing (menu bar mode with "Show menu bar icon" on).
-    /// `StatusItemController` follows it; ⌘-dragging the icon out turns it off.
-    @Published var menuBarIconInserted = false {
-        didSet {
-            if !menuBarIconInserted, settings.menuBarIconVisible { settings.showMenuBarIcon = false }
-        }
-    }
+    /// `StatusItemController` follows it. Only `menuBarIconRemovedByUser()` (⌘-dragging the icon
+    /// out) turns "Show menu bar icon" off; turning menu bar mode off leaves that setting alone.
+    @Published private(set) var menuBarIconInserted = false
 
     /// The card shown in the funnel (its mount path).
     @Published private(set) var selectedCardID: String?
@@ -271,6 +268,13 @@ final class AppModel: ObservableObject {
                 }
             },
         ]
+    }
+
+    /// The user ⌘-dragged the menu bar icon out of the menu bar: "Show menu bar icon" goes off.
+    func menuBarIconRemovedByUser() {
+        guard menuBarIconInserted else { return }
+        settings.showMenuBarIcon = false
+        menuBarIconInserted = false
     }
 
     private func cardRemoved(_ card: CardVolume) {

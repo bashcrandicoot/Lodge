@@ -154,3 +154,52 @@ final class ImportPrompterTests: XCTestCase {
         XCTAssertEqual(model.settings.ignoredImportCards.count, 1)
     }
 }
+
+@MainActor
+final class MenuBarModeTests: XCTestCase {
+    private func model() -> AppModel {
+        AppModel(settings: AppSettings(defaults: nil), ledger: Ledger(fileURL: FileManager.default.temporaryDirectory.appendingPathComponent("lodge-menubar-mode-tests.json")), cameras: CameraStore(fileURL: nil),
+                 destinations: DestinationStore(fileURL: nil), presets: PresetStore(fileURL: nil),
+                 supportPrompt: SupportPromptStore(defaults: nil), startWatching: false)
+    }
+
+    /// Regression: turning menu bar mode off used to clear "Show menu bar icon" too, so the icon
+    /// stayed hidden after turning menu bar mode back on.
+    func testTurningMenuBarModeOffAndOnBringsTheIconBack() {
+        let model = model()
+        let settings = model.settings
+        settings.keepRunningInMenuBar = true
+        XCTAssertTrue(model.menuBarIconInserted)
+        settings.keepRunningInMenuBar = false
+        XCTAssertFalse(model.menuBarIconInserted)
+        XCTAssertTrue(settings.showMenuBarIcon, "Turning menu bar mode off must leave Show menu bar icon alone")
+        settings.keepRunningInMenuBar = true
+        XCTAssertTrue(model.menuBarIconInserted, "The icon comes back with menu bar mode")
+    }
+
+    func testHidingTheIconInSettingsDoesNotTurnOffMenuBarMode() {
+        let model = model()
+        model.settings.keepRunningInMenuBar = true
+        model.settings.showMenuBarIcon = false
+        XCTAssertFalse(model.menuBarIconInserted)
+        XCTAssertTrue(model.settings.keepRunningInMenuBar)
+        model.settings.showMenuBarIcon = true
+        XCTAssertTrue(model.menuBarIconInserted)
+    }
+
+    /// ⌘-dragging the icon out of the menu bar is the one thing that turns "Show menu bar icon" off.
+    func testDraggingTheIconOutTurnsShowIconOff() {
+        let model = model()
+        model.settings.keepRunningInMenuBar = true
+        model.menuBarIconRemovedByUser()
+        XCTAssertFalse(model.menuBarIconInserted)
+        XCTAssertFalse(model.settings.showMenuBarIcon)
+        XCTAssertTrue(model.settings.keepRunningInMenuBar, "Menu bar mode stays on, just without the icon")
+    }
+
+    func testIconRemovalIsIgnoredWhenItWasNotShowing() {
+        let model = model()
+        model.menuBarIconRemovedByUser()
+        XCTAssertTrue(model.settings.showMenuBarIcon)
+    }
+}
