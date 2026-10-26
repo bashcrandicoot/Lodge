@@ -58,7 +58,7 @@ struct MediaThumbnail: View {
     /// Demo thumbnails: a slice of the theme's gradient, different for every file.
     private var placeholder: some View {
         let t = Double(StableHash.of(fileName) % 1000) / 1000
-        return LinearGradient(colors: [theme.sweep(t), theme.sweep((t + 0.45).truncatingRemainder(dividingBy: 1))],
+        return LinearGradient(colors: [theme.placeholder(t), theme.placeholder((t + 0.45).truncatingRemainder(dividingBy: 1))],
                               startPoint: .topLeading, endPoint: .bottomTrailing)
             .overlay {
                 Image(systemName: clip.category.symbol)
@@ -239,22 +239,22 @@ struct MediaTile: View {
             badge("checkmark.circle.fill", .green)
                 .transition(reduceMotion ? .opacity : .scale(scale: 0.2).combined(with: .opacity))
         case .offloaded:
-            if info.isReoffload { badge("arrow.clockwise.circle.fill", theme.accent) } else { badge("checkmark.circle.fill", .secondary) }
+            if info.isReoffload { badge("arrow.clockwise.circle.fill", theme.accent, on: theme.onAccent) } else { badge("checkmark.circle.fill", .secondary) }
         case .missing:
             badge("exclamationmark.triangle.fill", .orange)
                 .help("Copy missing at the destination")
         case .pending:
-            if info.isReoffload { badge("arrow.clockwise.circle.fill", theme.accent).help("Will be copied again as a new copy") }
+            if info.isReoffload { badge("arrow.clockwise.circle.fill", theme.accent, on: theme.onAccent).help("Will be copied again as a new copy") }
         case .copying, .skipped:
             EmptyView()
         }
     }
 
-    private func badge(_ symbol: String, _ color: Color) -> some View {
+    private func badge(_ symbol: String, _ color: Color, on foreground: Color = .white) -> some View {
         Image(systemName: symbol)
             .font(.system(size: 15, weight: .semibold))
             .symbolRenderingMode(.palette)
-            .foregroundStyle(.white, color)
+            .foregroundStyle(foreground, color)
             .background(Circle().fill(.black.opacity(0.25)).padding(1))
     }
 
@@ -346,6 +346,7 @@ struct MediaLayoutPicker: View {
             }
         }
         .pickerStyle(.segmented)
+        .themeControlTint()
         .labelsHidden()
         .controlSize(.small)
         .fixedSize()

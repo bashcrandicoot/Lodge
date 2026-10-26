@@ -19,7 +19,7 @@ enum DemoData {
         UserDefaults.standard.string(forKey: "SnapDropDemoSettingsTab").flatMap(SettingsTab.init(rawValue:))
     }
 
-    /// Set by launching with `-SnapDropDemoTheme <comet|aurora|ocean|…>`.
+    /// Set by launching with `-SnapDropDemoTheme <default|aurora|ocean|…>`.
     static var launchTheme: ThemePalette.ID? {
         UserDefaults.standard.string(forKey: "SnapDropDemoTheme").flatMap(ThemePalette.ID.init(rawValue:))
     }
@@ -29,17 +29,26 @@ enum DemoData {
         UserDefaults.standard.string(forKey: "SnapDropDemoLayout").flatMap(MediaLayout.init(rawValue:))
     }
 
+    /// Screenshots: moves a window to the middle of the highest-resolution screen (a Retina one
+    /// when there is one), so captures are 2x even when an external 1x display is the main one.
+    @MainActor
+    static func centreOnSharpestScreen(_ window: NSWindow) {
+        guard let screen = NSScreen.screens.max(by: { $0.backingScaleFactor < $1.backingScaleFactor }) else { return }
+        let area = screen.visibleFrame, frame = window.frame
+        window.setFrameOrigin(NSPoint(x: area.midX - frame.width / 2, y: area.midY - frame.height / 2))
+    }
+
     /// Quick Look in demo mode: the files don't exist, so preview a picture in the theme's colours
     /// (drawn once into the temporary folder).
     @MainActor
     static func previewImage(for clip: Clip, theme: ResolvedTheme) -> URL? {
         guard MediaPreviewSupport.hasThumbnail(fileName: clip.url.lastPathComponent) else { return nil }
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent("SnapDropDemoPreviews", isDirectory: true)
-        let url = folder.appendingPathComponent("\(theme.palette.id.rawValue)-\(clip.url.deletingPathExtension().lastPathComponent).png")
+        let url = folder.appendingPathComponent("\(theme.palette.id.rawValue)-\(theme.isDark ? "dark" : "light")-\(clip.url.deletingPathExtension().lastPathComponent).png")
         if FileManager.default.fileExists(atPath: url.path) { return url }
         try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
         let t = Double(StableHash.of(clip.url.lastPathComponent) % 1000) / 1000
-        let picture = LinearGradient(colors: [theme.sweep(t), theme.sweep((t + 0.45).truncatingRemainder(dividingBy: 1))],
+        let picture = LinearGradient(colors: [theme.placeholder(t), theme.placeholder((t + 0.45).truncatingRemainder(dividingBy: 1))],
                                      startPoint: .topLeading, endPoint: .bottomTrailing)
             .overlay {
                 Image(systemName: clip.category.symbol)

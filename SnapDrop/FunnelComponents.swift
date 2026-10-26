@@ -86,7 +86,7 @@ struct StageHeader: View {
                 } else {
                     Text("\(number)")
                         .font(.system(size: 12, weight: .bold, design: .rounded))
-                        .foregroundStyle(state == .pending ? Color.secondary : Color.white)
+                        .foregroundStyle(state == .pending ? Color.secondary : (state == .active ? theme.onAccent : Color.white))
                 }
             }
             .frame(width: 22, height: 22)

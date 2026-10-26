@@ -14,33 +14,95 @@ final class ThemeTests: XCTestCase {
         XCTAssertEqual(Set(ThemePalette.all.map(\.name)).count, ThemePalette.all.count)
         for palette in ThemePalette.all {
             XCTAssertFalse(palette.name.isEmpty)
-            XCTAssertEqual(palette.wash.count, 4, palette.name)
-            XCTAssertEqual(palette.wash.count, ThemePalette.washOpacityLight.count, palette.name)
-            XCTAssertEqual(palette.wash.count, ThemePalette.washOpacityDark.count, palette.name)
+            XCTAssertEqual(palette.wash.count, palette.id == .standard ? 0 : 4, palette.name)
+            if palette.hasWash {
+                XCTAssertEqual(palette.wash.count, ThemePalette.washOpacityLight.count, palette.name)
+                XCTAssertEqual(palette.wash.count, ThemePalette.washOpacityDark.count, palette.name)
+            }
             XCTAssertEqual(palette.button.count, 3, palette.name)
+            XCTAssertEqual(palette.buttonDark.count, 3, palette.name)
             XCTAssertEqual(palette.progress.count, 3, palette.name)
+            XCTAssertEqual(palette.progressDark.count, 3, palette.name)
             XCTAssertEqual(palette.gaugeLight.count, 2, palette.name)
             XCTAssertEqual(palette.gaugeDark.count, 2, palette.name)
             XCTAssertEqual(ThemePalette.palette(palette.id), palette)
         }
     }
 
-    @MainActor
-    func testCometIsTheDefaultAndMatchesTheIcon() {
-        XCTAssertEqual(AppSettings(defaults: nil).themeID, .comet)
-        XCTAssertEqual(AppSettings(defaults: nil).appearance, .system)
-        XCTAssertEqual(ResolvedTheme().palette, .comet)
-        XCTAssertEqual(ThemePalette.comet.wash, [0x6E3566, 0xA3305E, 0xEE6A55, 0xFFA36B])
-        XCTAssertEqual(ThemePalette.comet.progress, [0xA3305E, 0xEE6A55, 0xFFA36B])
+    func testCometAndGraphiteAreGone() {
+        let ids = ThemePalette.ID.allCases.map(\.rawValue)
+        let names = ThemePalette.all.map { $0.name.lowercased() }
+        for removed in ["comet", "graphite"] {
+            XCTAssertFalse(ids.contains(removed))
+            XCTAssertFalse(names.contains(removed))
+            XCTAssertNil(ThemePalette.ID(rawValue: removed))
+        }
+        XCTAssertEqual(ThemePalette.all.map(\.name), ["Default", "Aurora", "Ocean", "Twilight", "Ember", "Forest"])
     }
 
-    func testWhiteButtonTextHasEnoughContrast() {
+    @MainActor
+    func testDefaultIsNeutralBlackAndDark() {
+        let settings = AppSettings(defaults: nil)
+        XCTAssertEqual(settings.themeID, .standard)
+        XCTAssertEqual(settings.themeID.rawValue, "default")
+        XCTAssertEqual(settings.appearance, .dark)
+        XCTAssertEqual(ResolvedTheme().palette, .standard)
+        XCTAssertEqual(ThemePalette.all.first?.id, .standard)
+        let neutral = ThemePalette.standard
+        XCTAssertFalse(neutral.hasWash)
+        XCTAssertNil(ResolvedTheme(palette: neutral, isDark: true).washColors)
+        // Every neutral colour is a grey: no hue at all.
+        let greys = neutral.button + neutral.buttonDark + neutral.progress + neutral.progressDark
+            + neutral.gaugeLight + neutral.gaugeDark
+            + [neutral.solid, neutral.solidDark, neutral.glow, neutral.glowDark,
+               neutral.accentLight, neutral.accentDark, neutral.accentLightHighContrast, neutral.accentDarkHighContrast]
+        for hex in greys {
+            let r = (hex >> 16) & 0xFF, g = (hex >> 8) & 0xFF, b = hex & 0xFF
+            XCTAssertLessThanOrEqual(max(r, g, b) - min(r, g, b), 6, String(hex, radix: 16))
+        }
+        // Dark: a near-white button with black text.
+        XCTAssertEqual(neutral.buttonTextDark, 0x000000)
+        XCTAssertEqual(neutral.buttonText, 0xFFFFFF)
+    }
+
+    @MainActor
+    func testSavedCometGraphiteOrUnknownBecomeDefault() throws {
+        for saved in ["comet", "graphite", "something-new"] {
+            let suite = "SnapDropThemeMigration-\(UUID().uuidString)"
+            let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+            defer { defaults.removePersistentDomain(forName: suite) }
+            defaults.set(saved, forKey: "theme")
+            let settings = AppSettings(defaults: defaults)
+            XCTAssertEqual(settings.themeID, .standard, saved)
+            XCTAssertEqual(defaults.string(forKey: "theme"), "default", saved)
+        }
+        XCTAssertEqual(ThemePalette.ID(savedValue: "ember"), .ember)
+        XCTAssertEqual(ThemePalette.ID(savedValue: nil), .standard)
+    }
+
+    @MainActor
+    func testExistingInstallWithoutAChoiceGetsDark() throws {
+        let suite = "SnapDropAppearanceDefault-\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        addTeardownBlock { defaults.removePersistentDomain(forName: suite) }
+        defaults.set("/Users/someone/Movies", forKey: "destination")   // an older install
+        XCTAssertEqual(AppSettings(defaults: defaults).appearance, .dark)
+        defaults.set("light", forKey: "appearance")
+        XCTAssertEqual(AppSettings(defaults: defaults).appearance, .light)
+    }
+
+    func testButtonTextHasEnoughContrast() {
         for palette in ThemePalette.all {
             for stop in palette.button {
-                XCTAssertGreaterThanOrEqual(ThemeMath.contrast(stop, white), 4.5,
+                XCTAssertGreaterThanOrEqual(ThemeMath.contrast(stop, palette.buttonText), 4.5,
                                             "\(palette.name) button stop \(String(stop, radix: 16))")
             }
-            XCTAssertGreaterThanOrEqual(ThemeMath.contrast(palette.solid, white), 7, "\(palette.name) solid fill")
+            for stop in palette.buttonDark {
+                XCTAssertGreaterThanOrEqual(ThemeMath.contrast(stop, palette.buttonTextDark), 4.5,
+                                            "\(palette.name) dark button stop \(String(stop, radix: 16))")
+            }
+            XCTAssertGreaterThanOrEqual(ThemeMath.contrast(palette.solid, palette.buttonText), 7, "\(palette.name) solid fill")
+            XCTAssertGreaterThanOrEqual(ThemeMath.contrast(palette.solidDark, palette.buttonTextDark), 7, "\(palette.name) dark solid fill")
         }
     }
 
@@ -52,6 +114,13 @@ final class ThemeTests: XCTestCase {
             XCTAssertGreaterThanOrEqual(ThemeMath.contrast(palette.accentLightHighContrast, white), 7, palette.name)
             XCTAssertGreaterThanOrEqual(ThemeMath.contrast(palette.accentDarkHighContrast, darkBackground), 7, palette.name)
         }
+        // White on Default's selected segments and toggles stays readable in Dark.
+        XCTAssertGreaterThanOrEqual(ThemeMath.contrast(ThemePalette.controlTintDark, white), 4.5)
+        XCTAssertGreaterThanOrEqual(ThemeMath.contrast(ThemePalette.controlTintDarkHighContrast, white), 7)
+        // Text drawn on the neutral accent stays readable.
+        let neutral = ThemePalette.standard
+        XCTAssertGreaterThanOrEqual(ThemeMath.contrast(neutral.accentLight, neutral.onAccentLight), 4.5)
+        XCTAssertGreaterThanOrEqual(ThemeMath.contrast(neutral.accentDark, neutral.onAccentDark), 4.5)
     }
 
     func testSweepBlendsAndClamps() {

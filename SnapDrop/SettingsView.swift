@@ -100,6 +100,7 @@ struct GeneralSettingsView: View {
             }
         }
         .formStyle(.grouped)
+        .themeControlTint()
         .frame(width: 560)
         .fixedSize(horizontal: false, vertical: true)
     }
@@ -144,7 +145,7 @@ struct AppearanceSettingsView: View {
             } footer: {
                 Text(theme.isPlain
                      ? "Increase Contrast or Reduce Transparency is on, so SnapDrop uses solid colours from the theme instead of gradients."
-                     : "Colours the buttons, progress, highlights and the window’s background wash.")
+                     : "Default is neutral black and white. The colour themes tint the buttons, progress, highlights and the window’s background.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -175,6 +176,7 @@ struct AppearanceSettingsView: View {
             }
         }
         .formStyle(.grouped)
+        .themeControlTint()
         .frame(width: 560)
         .fixedSize(horizontal: false, vertical: true)
     }

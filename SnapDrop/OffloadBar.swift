@@ -203,7 +203,7 @@ private struct CompletionRow: View {
                     if success {
                         Image(systemName: symbol(summary))
                             .symbolRenderingMode(.palette)
-                            .foregroundStyle(Color.white,
+                            .foregroundStyle(theme.onAccent,
                                              plainTheme ? AnyShapeStyle(theme.accent) : AnyShapeStyle(theme.borderGradient))
                     } else {
                         Image(systemName: symbol(summary))

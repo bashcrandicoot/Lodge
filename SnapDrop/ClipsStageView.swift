@@ -281,6 +281,7 @@ private struct ClipsStageContent: View {
                     }
                 }
                 .pickerStyle(.segmented)
+                .themeControlTint()
                 .labelsHidden()
                 .controlSize(.small)
                 .accessibilityLabel("Show file type")

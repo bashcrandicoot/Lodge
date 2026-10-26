@@ -91,12 +91,12 @@ final class AppSettings: ObservableObject {
         ShortClipRule(isEnabled: skipShortClips, threshold: Double(shortClipSeconds))
     }
 
-    /// The colour theme (Settings ▸ Appearance). Comet by default.
+    /// The colour theme (Settings ▸ Appearance). Default (neutral black) unless chosen.
     @Published var themeID: ThemePalette.ID {
         didSet { defaults?.set(themeID.rawValue, forKey: Key.theme) }
     }
 
-    /// Light, Dark, or follow the system.
+    /// Light, Dark, or follow the system. Dark unless chosen.
     @Published var appearance: AppAppearance {
         didSet { defaults?.set(appearance.rawValue, forKey: Key.appearance) }
     }
@@ -132,13 +132,17 @@ final class AppSettings: ObservableObject {
         skipShortClips = defaults?.object(forKey: Key.skipShort) as? Bool ?? true
         let seconds = defaults?.object(forKey: Key.shortSeconds) as? Int ?? 5
         shortClipSeconds = min(max(seconds, ShortClipRule.thresholdRange.lowerBound), ShortClipRule.thresholdRange.upperBound)
-        themeID = defaults?.string(forKey: Key.theme).flatMap(ThemePalette.ID.init(rawValue:)) ?? .comet
-        appearance = defaults?.string(forKey: Key.appearance).flatMap(AppAppearance.init(rawValue:)) ?? .system
+        themeID = ThemePalette.ID(savedValue: defaults?.string(forKey: Key.theme))
+        appearance = defaults?.string(forKey: Key.appearance).flatMap(AppAppearance.init(rawValue:)) ?? .dark
         mediaLayout = defaults?.string(forKey: Key.mediaLayout).flatMap(MediaLayout.init(rawValue:)) ?? .list
         showListThumbnails = defaults?.bool(forKey: Key.listThumbnails) ?? false
         // `didSet` doesn't run inside `init`, so save migrated templates explicitly.
         if let savedFolder, savedFolder != folderTemplate { defaults?.set(folderTemplate, forKey: Key.folderTemplate) }
         if let savedFile, savedFile != fileTemplate { defaults?.set(fileTemplate, forKey: Key.fileTemplate) }
+        // Themes that no longer exist ("comet", "graphite") are saved as Default.
+        if let savedTheme = defaults?.string(forKey: Key.theme), savedTheme != themeID.rawValue {
+            defaults?.set(themeID.rawValue, forKey: Key.theme)
+        }
     }
 
     /// The destination as a URL (handier for file operations).

@@ -24,7 +24,7 @@ struct FlowStream: View {
                     canvas.opacity = sin(phase * .pi)
                     canvas.fill(Path(ellipseIn: CGRect(x: x - radius, y: midY - radius,
                                                        width: radius * 2, height: radius * 2)),
-                                // Each dot warms from magenta to orange as it crosses.
+                                // Each dot moves along the theme's sweep as it crosses.
                                 with: .color(plainTheme ? theme.accent : theme.sweep(phase)))
                 }
             }

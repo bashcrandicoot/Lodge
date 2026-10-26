@@ -14,42 +14,112 @@ import SwiftUI
 /// - `gauge…`: the destination's used-space bar (never red-looking, so it isn't a warning).
 struct ThemePalette: Identifiable, Equatable, Sendable {
     enum ID: String, CaseIterable, Sendable {
-        case comet, aurora, ocean, twilight, ember, forest, graphite
+        /// The neutral black look, and the default. Saved as "default".
+        case standard = "default"
+        case aurora, ocean, twilight, ember, forest
+
+        /// A saved theme name, including ones from older versions: "comet" (the old default) and
+        /// "graphite" (now part of Default) — and anything unknown — become Default.
+        init(savedValue: String?) {
+            self = savedValue.flatMap(ID.init(rawValue:)) ?? .standard
+        }
     }
 
     let id: ID
     let name: String
+    /// Empty for Default, which has no coloured wash.
     let wash: [UInt32]
     let button: [UInt32]
+    let buttonDark: [UInt32]
+    let buttonText: UInt32
+    let buttonTextDark: UInt32
     let solid: UInt32
+    let solidDark: UInt32
     let progress: [UInt32]
+    let progressDark: [UInt32]
     let glow: UInt32
+    let glowDark: UInt32
     let accentLight: UInt32
     let accentDark: UInt32
     let accentLightHighContrast: UInt32
     let accentDarkHighContrast: UInt32
+    /// Text and symbols drawn on top of the accent (e.g. the active step number).
+    let onAccentLight: UInt32
+    let onAccentDark: UInt32
     let gaugeLight: [UInt32]
     let gaugeDark: [UInt32]
+
+    /// A coloured gradient theme: the same button, progress and glow in Light and Dark, white text.
+    init(id: ID, name: String, wash: [UInt32], button: [UInt32], solid: UInt32,
+         progress: [UInt32], glow: UInt32,
+         accentLight: UInt32, accentDark: UInt32,
+         accentLightHighContrast: UInt32, accentDarkHighContrast: UInt32,
+         gaugeLight: [UInt32], gaugeDark: [UInt32]) {
+        self.init(id: id, name: name, wash: wash,
+                  button: button, buttonDark: button, buttonText: 0xFFFFFF, buttonTextDark: 0xFFFFFF,
+                  solid: solid, solidDark: solid, progress: progress, progressDark: progress,
+                  glow: glow, glowDark: glow,
+                  accentLight: accentLight, accentDark: accentDark,
+                  accentLightHighContrast: accentLightHighContrast, accentDarkHighContrast: accentDarkHighContrast,
+                  onAccentLight: 0xFFFFFF, onAccentDark: 0xFFFFFF,
+                  gaugeLight: gaugeLight, gaugeDark: gaugeDark)
+    }
+
+    init(id: ID, name: String, wash: [UInt32],
+         button: [UInt32], buttonDark: [UInt32], buttonText: UInt32, buttonTextDark: UInt32,
+         solid: UInt32, solidDark: UInt32, progress: [UInt32], progressDark: [UInt32],
+         glow: UInt32, glowDark: UInt32,
+         accentLight: UInt32, accentDark: UInt32,
+         accentLightHighContrast: UInt32, accentDarkHighContrast: UInt32,
+         onAccentLight: UInt32, onAccentDark: UInt32,
+         gaugeLight: [UInt32], gaugeDark: [UInt32]) {
+        self.id = id; self.name = name; self.wash = wash
+        self.button = button; self.buttonDark = buttonDark
+        self.buttonText = buttonText; self.buttonTextDark = buttonTextDark
+        self.solid = solid; self.solidDark = solidDark
+        self.progress = progress; self.progressDark = progressDark
+        self.glow = glow; self.glowDark = glowDark
+        self.accentLight = accentLight; self.accentDark = accentDark
+        self.accentLightHighContrast = accentLightHighContrast
+        self.accentDarkHighContrast = accentDarkHighContrast
+        self.onAccentLight = onAccentLight; self.onAccentDark = onAccentDark
+        self.gaugeLight = gaugeLight; self.gaugeDark = gaugeDark
+    }
+
+    /// Default in Dark: selected segments and toggles (white drawn on top).
+    static let controlTintDark: UInt32 = 0x6E6E73
+    static let controlTintDarkHighContrast: UInt32 = 0x545458
+    var controlTintDark: UInt32 { Self.controlTintDark }
+    var controlTintDarkHighContrast: UInt32 { Self.controlTintDarkHighContrast }
+
+    /// Whether this theme paints a coloured wash behind the window.
+    var hasWash: Bool { !wash.isEmpty }
 
     /// How strong each wash stop is, in Light and Dark.
     static let washOpacityLight: [Double] = [0.05, 0.045, 0.05, 0.07]
     static let washOpacityDark: [Double] = [0.12, 0.05, 0.03, 0.045]
 
     static func palette(_ id: ID) -> ThemePalette {
-        all.first { $0.id == id } ?? comet
+        all.first { $0.id == id } ?? standard
     }
 
-    static let all: [ThemePalette] = [comet, aurora, ocean, twilight, ember, forest, graphite]
+    static let all: [ThemePalette] = [standard, aurora, ocean, twilight, ember, forest]
 
-    /// The default, from the Comet A app icon: plum → magenta → coral → warm orange.
-    static let comet = ThemePalette(
-        id: .comet, name: "Comet",
-        wash: [0x6E3566, 0xA3305E, 0xEE6A55, 0xFFA36B],
-        button: [0x6E3566, 0xA3305E, 0xC8434F], solid: 0x86224E,
-        progress: [0xA3305E, 0xEE6A55, 0xFFA36B], glow: 0xA3305E,
-        accentLight: 0xA3305E, accentDark: 0xEE6A55,
-        accentLightHighContrast: 0x7A1F4A, accentDarkHighContrast: 0xFFB3A3,
-        gaugeLight: [0x6E3566, 0xA3305E], gaugeDark: [0xA3305E, 0xC2405C])
+    /// The default: neutral black and white, no colour. The plain system window background,
+    /// a near-white button with black text in Dark (near-black with white text in Light),
+    /// and white-to-grey progress, glow and flowing dots.
+    static let standard = ThemePalette(
+        id: .standard, name: "Default",
+        wash: [],
+        button: [0x3A3A3C, 0x2C2C2E, 0x1D1D1F], buttonDark: [0xFFFFFF, 0xF2F2F5, 0xE3E3E8],
+        buttonText: 0xFFFFFF, buttonTextDark: 0x000000,
+        solid: 0x1D1D1F, solidDark: 0xF2F2F5,
+        progress: [0x1D1D1F, 0x48484A, 0x8E8E93], progressDark: [0x8E8E93, 0xD1D1D6, 0xFFFFFF],
+        glow: 0x000000, glowDark: 0xFFFFFF,
+        accentLight: 0x3A3A3C, accentDark: 0xBDBDC2,
+        accentLightHighContrast: 0x1D1D1F, accentDarkHighContrast: 0xE5E5EA,
+        onAccentLight: 0xFFFFFF, onAccentDark: 0x000000,
+        gaugeLight: [0x48484A, 0x6E6E73], gaugeDark: [0x98989D, 0xD1D1D6])
 
     static let aurora = ThemePalette(
         id: .aurora, name: "Aurora",
@@ -95,15 +165,6 @@ struct ThemePalette: Identifiable, Equatable, Sendable {
         accentLight: 0x1E7A45, accentDark: 0x6BD488,
         accentLightHighContrast: 0x0F5230, accentDarkHighContrast: 0xA9EDB9,
         gaugeLight: [0x14503A, 0x1B6B44], gaugeDark: [0x2A9A5E, 0x5CC46E])
-
-    static let graphite = ThemePalette(
-        id: .graphite, name: "Graphite",
-        wash: [0x2B2D31, 0x4A4E55, 0x7A7F87, 0xB8BCC2],
-        button: [0x34373C, 0x4A4E56, 0x5B6068], solid: 0x34373C,
-        progress: [0x6B7079, 0x9AA0A8, 0xC8CDD3], glow: 0x6B7079,
-        accentLight: 0x4F545C, accentDark: 0xB4BAC2,
-        accentLightHighContrast: 0x2F3237, accentDarkHighContrast: 0xDDE1E6,
-        gaugeLight: [0x4A4E56, 0x6B7079], gaugeDark: [0x8A9098, 0xB4BAC2])
 }
 
 // MARK: - The theme as views see it
@@ -111,7 +172,7 @@ struct ThemePalette: Identifiable, Equatable, Sendable {
 /// A palette resolved for the current window: Light or Dark, and whether gradients are off.
 /// Views read it with `@Environment(\.theme)`.
 struct ResolvedTheme: Equatable {
-    var palette: ThemePalette = .comet
+    var palette: ThemePalette = .standard
     var isDark = false
     /// Increase Contrast or Reduce Transparency: solid colours instead of decorative gradients.
     var isPlain = false
@@ -125,37 +186,59 @@ struct ResolvedTheme: Equatable {
         return Color(hex: hex)
     }
 
-    var progressColors: [Color] { palette.progress.map(Color.init(hex:)) }
-
-    /// Fill for prominent buttons (white text).
-    var buttonGradient: LinearGradient {
-        LinearGradient(colors: palette.button.map(Color.init(hex:)), startPoint: .leading, endPoint: .trailing)
+    /// The fill for selected segments and switched-on toggles, which draw white on top.
+    /// Default's light-grey accent would make that white unreadable in Dark, so it uses a mid grey.
+    var controlTint: Color {
+        guard !palette.hasWash, isDark else { return accent }
+        return Color(hex: isHighContrast ? palette.controlTintDarkHighContrast : palette.controlTintDark)
     }
 
-    var solidFill: Color { Color(hex: palette.solid) }
+    /// Text and symbols drawn on the accent, the progress sweep or the border gradient.
+    var onAccent: Color { Color(hex: isDark ? palette.onAccentDark : palette.onAccentLight) }
+
+    var progressStops: [UInt32] { isDark ? palette.progressDark : palette.progress }
+
+    var progressColors: [Color] { progressStops.map(Color.init(hex:)) }
+
+    /// Fill for prominent buttons.
+    var buttonGradient: LinearGradient {
+        LinearGradient(colors: (isDark ? palette.buttonDark : palette.button).map(Color.init(hex:)),
+                       startPoint: .leading, endPoint: .trailing)
+    }
+
+    /// The label colour on prominent buttons.
+    var buttonText: Color { Color(hex: isDark ? palette.buttonTextDark : palette.buttonText) }
+
+    var solidFill: Color { Color(hex: isDark ? palette.solidDark : palette.solid) }
 
     /// Border and glow for the stage that needs attention, and the finished check.
     var borderGradient: LinearGradient {
         LinearGradient(colors: progressColors, startPoint: .topLeading, endPoint: .bottomTrailing)
     }
 
-    var glow: Color { Color(hex: palette.glow) }
+    var glow: Color { Color(hex: isDark ? palette.glowDark : palette.glow) }
 
     /// The confetti-like burst when an offload finishes (the middle of the sweep).
-    var burst: Color { Color(hex: palette.progress[palette.progress.count / 2]) }
+    var burst: Color { Color(hex: progressStops[progressStops.count / 2]) }
 
     var gaugeColors: [Color] { (isDark ? palette.gaugeDark : palette.gaugeLight).map(Color.init(hex:)) }
 
     /// The background wash, or `nil` when gradients are off.
     var washColors: [Color]? {
-        guard !isPlain else { return nil }
+        guard !isPlain, palette.hasWash else { return nil }
         let opacities = isDark ? ThemePalette.washOpacityDark : ThemePalette.washOpacityLight
         return zip(palette.wash, opacities).map { Color(hex: $0).opacity($1) }
     }
 
+    /// Demo thumbnails and previews: the progress sweep, or mid greys for Default
+    /// (its sweep runs to white, which would wash out the white symbol on top).
+    func placeholder(_ t: Double) -> Color {
+        Color(hex: ThemeMath.sweep(palette.hasWash ? progressStops : [0x3A3A3C, 0x5C5C60, 0x7E7E83], t))
+    }
+
     /// A colour partway along the progress sweep (`t` from 0 to 1).
     func sweep(_ t: Double) -> Color {
-        Color(hex: ThemeMath.sweep(palette.progress, t))
+        Color(hex: ThemeMath.sweep(progressStops, t))
     }
 }
 
@@ -220,7 +303,7 @@ extension EnvironmentValues {
 }
 
 /// Resolves the chosen theme once, at the top of a window, and tints every control with it.
-/// (The AccentColor asset stays Comet as the fallback for anything outside SwiftUI.)
+/// (The AccentColor asset is a neutral graphite, the fallback for anything outside SwiftUI.)
 struct ThemeEnvironment: ViewModifier {
     @EnvironmentObject private var settings: AppSettings
     @Environment(\.colorScheme) private var scheme
@@ -250,6 +333,14 @@ struct ThemeEnvironment: ViewModifier {
 
 extension View {
     func snapDropTheme() -> some View { modifier(ThemeEnvironment()) }
+
+    /// Tints a segmented picker or toggle so white on its selected fill stays readable.
+    func themeControlTint() -> some View { modifier(ThemeControlTint()) }
+}
+
+private struct ThemeControlTint: ViewModifier {
+    @Environment(\.theme) private var theme
+    func body(content: Content) -> some View { content.tint(theme.controlTint) }
 }
 
 /// Light / Dark / follow the system (Settings ▸ Appearance).
@@ -283,7 +374,12 @@ struct ThemeBackground: View {
 
     var body: some View {
         ZStack {
-            Color(nsColor: .windowBackgroundColor)
+            if theme.isDark && !theme.palette.hasWash {
+                // Default in Dark: a true neutral near-black, not tinted by the desktop picture.
+                Color(hex: 0x1A1A1C)
+            } else {
+                Color(nsColor: .windowBackgroundColor)
+            }
             if let colors = theme.washColors {
                 LinearGradient(colors: colors, startPoint: .topLeading, endPoint: .bottomTrailing)
             }
@@ -315,7 +411,7 @@ private struct ThemeProminentButton: View {
         let pressed = configuration.isPressed && isEnabled
         configuration.label
             .font(large ? .body.weight(.semibold) : .callout.weight(.semibold))
-            .foregroundStyle(isEnabled ? AnyShapeStyle(Color.white) : AnyShapeStyle(.tertiary))
+            .foregroundStyle(isEnabled ? AnyShapeStyle(theme.buttonText) : AnyShapeStyle(.tertiary))
             .padding(.horizontal, large ? 14 : 10)
             .padding(.vertical, large ? 6 : 3)
             .frame(minHeight: large ? 30 : 22)
@@ -326,7 +422,7 @@ private struct ThemeProminentButton: View {
                     shape.fill(theme.solidFill)
                 } else {
                     shape.fill(theme.buttonGradient)
-                        .overlay(shape.fill(Color.white.opacity(hovering && !pressed ? 0.07 : 0)))
+                        .overlay(shape.fill(theme.buttonText.opacity(hovering && !pressed ? 0.07 : 0)))
                 }
             }
             .overlay {
@@ -363,11 +459,11 @@ struct ThemeSwatch: View {
         VStack(spacing: 6) {
             ZStack {
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(LinearGradient(colors: palette.wash.map(Color.init(hex:)),
+                    .fill(LinearGradient(colors: (palette.hasWash ? palette.wash : [0x3A3A3C, 0x0B0B0C]).map(Color.init(hex:)),
                                          startPoint: .topLeading, endPoint: .bottomTrailing))
                 // A tiny button, to show the fill white text sits on.
                 Capsule()
-                    .fill(LinearGradient(colors: palette.button.map(Color.init(hex:)),
+                    .fill(LinearGradient(colors: palette.buttonDark.map(Color.init(hex:)),
                                          startPoint: .leading, endPoint: .trailing))
                     .frame(width: 34, height: 12)
                     .overlay(Capsule().strokeBorder(.white.opacity(0.5), lineWidth: 0.5))
