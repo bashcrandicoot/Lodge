@@ -4,7 +4,7 @@ import Foundation
 /// shown as the live preview, so what you see is exactly what you get.
 struct PlannedFile: Identifiable, Equatable, Sendable {
     let clip: Clip
-    /// Folder inside the destination, e.g. "2026-10-25/Coastline" ("" = the destination itself).
+    /// Folder inside the destination, e.g. "2026-10-25/Coastline/MP4" ("" = the destination itself).
     let folder: String
     /// "2026-10-25_Coastline_0001.mp4"
     let fileName: String
@@ -12,17 +12,27 @@ struct PlannedFile: Identifiable, Equatable, Sendable {
     let sidecarOf: String?
     /// Proxies and sidecars go into their own subfolder of the shoot folder.
     var role: FileRole = .main
+    /// The subfolder Lodge added under the templates' folder: "MP4", "ARW"… (one per file
+    /// extension), "Proxies" or "Sidecars". nil when the file sits right in the templates' folder.
+    var sortFolder: String? = nil
 
     var id: String { clip.relativePath }
     var originalName: String { clip.url.lastPathComponent }
     var size: Int64 { clip.size }
     var category: MediaCategory { clip.category }
-    /// "2026-10-25/Coastline/2026-10-25_Coastline_0001.mp4"
+    /// "2026-10-25/Coastline/MP4/2026-10-25_Coastline_0001.mp4"
     var relativePath: String { folder.isEmpty ? fileName : folder + "/" + fileName }
+    /// The folder the folder template made: "2026-10-25/Coastline" (`folder` without `sortFolder`).
+    var templateFolder: String {
+        guard sortFolder != nil else { return folder }
+        return (folder as NSString).deletingLastPathComponent
+    }
 }
 
-/// Works out final names for a batch of files: applies the templates, continues
-/// numbering after what's already in each folder, and never reuses a name.
+/// Works out final names for a batch of files: applies the templates, sorts every file into a
+/// folder for its extension (MP4/, ARW/, WAV/…; proxies and sidecars into Proxies/ and
+/// Sidecars/), continues numbering after what's already there, and never reuses a name.
+/// Numbers run across the whole shoot folder, so a clip's WAV and XML keep its number.
 enum OffloadPlanner {
     /// Lists what is already in a destination folder ("" = the destination itself).
     typealias ExistingNames = (_ folder: String) -> [String]
@@ -40,9 +50,25 @@ enum OffloadPlanner {
 
         let ordered = Offloader.order(files)
         let sidecars = SidecarMatcher.match(ordered, rules: rules)
+        let primaries = ordered.filter { sidecars.primary[$0.relativePath] == nil }
 
-        for file in ordered where sidecars.primary[file.relativePath] == nil {
+        // First, the templates' folder for each file and the format folders each one will hold,
+        // so numbering can carry on from files already in any of them.
+        var templateFolders: [String: String] = [:]
+        var formatFolders: [String: Set<String>] = [:]   // template folder (lowercased) → "MP4"…
+        for file in primaries {
             let folder = TemplateRenderer.folderPath(naming.folder, file: file, context: context)
+            templateFolders[file.relativePath] = folder
+            let helpers = (sidecars.byPrimary[file.relativePath] ?? []).filter { $0.role == .main }.map(\.file)
+            for item in [file] + helpers where rules.role(of: item.url.lastPathComponent) == .main {
+                if let format = FormatFolder.name(forFile: item.url.lastPathComponent) {
+                    formatFolders[folder.lowercased(), default: []].insert(format)
+                }
+            }
+        }
+
+        for file in primaries {
+            let folder = templateFolders[file.relativePath] ?? ""
             let ext = file.url.pathExtension.lowercased()
             let role = rules.role(of: file.url.lastPathComponent)
 
@@ -53,46 +79,58 @@ enum OffloadPlanner {
                 let original = (file.url.lastPathComponent as NSString).deletingPathExtension
                 let name = names.unique(stem: NameRules.safeComponent(original), ext: ext, in: target)
                 names.reserve(name, in: target)
-                result.append(PlannedFile(clip: file, folder: target, fileName: name, sidecarOf: nil, role: role))
+                result.append(PlannedFile(clip: file, folder: target, fileName: name, sidecarOf: nil,
+                                          role: role, sortFolder: subfolder))
                 continue
             }
 
+            let format = FormatFolder.name(forFile: file.url.lastPathComponent)
+            let target = format.map { subfolderPath(folder, $0) } ?? folder
             let stem = TemplateRenderer.fileStem(naming.file, file: file, context: context)
             let fileName: String
 
             if stem.padding != nil {
-                // Numbered: continue after the highest number already used with this prefix.
+                // Numbered: continue after the highest number already used with this prefix,
+                // in the shoot folder itself (older offloads) or any of its format folders.
                 let prefix = stem.before.trimmingLeadingDotsAndSpaces()
                 let key = folder.lowercased() + "\u{0}" + prefix.lowercased() + "\u{0}" + stem.fixedAfter.lowercased()
-                var number = counters[key] ?? (highestSequence(
-                    in: names.names(in: folder), prefix: prefix, fixedAfter: stem.fixedAfter,
-                    endsAfterFixed: stem.afterIsFixed) + 1)
+                var number: Int
+                if let next = counters[key] {
+                    number = next
+                } else {
+                    let searched = [folder] + (formatFolders[folder.lowercased()] ?? []).sorted()
+                        .map { subfolderPath(folder, $0) }
+                    let existing = searched.flatMap { names.names(in: $0) }
+                    number = highestSequence(in: existing, prefix: prefix, fixedAfter: stem.fixedAfter,
+                                             endsAfterFixed: stem.afterIsFixed) + 1
+                }
                 var attempts = 0
-                while names.isTaken(join(stem.name(sequence: number), ext), in: folder), attempts < 100_000 {
+                while names.isTaken(join(stem.name(sequence: number), ext), in: target), attempts < 100_000 {
                     // A name so long the number was cut off can't be fixed by counting up.
                     if stem.name(sequence: number + 1) == stem.name(sequence: number) { break }
                     number += 1
                     attempts += 1
                 }
                 // (Only if a name was so long the number got cut off: fall back to "_2" suffixes.)
-                fileName = names.unique(stem: stem.name(sequence: number), ext: ext, in: folder)
+                fileName = names.unique(stem: stem.name(sequence: number), ext: ext, in: target)
                 counters[key] = number + 1
             } else {
-                fileName = names.unique(stem: stem.name(sequence: nil), ext: ext, in: folder)
+                fileName = names.unique(stem: stem.name(sequence: nil), ext: ext, in: target)
             }
-            names.reserve(fileName, in: folder)
-            result.append(PlannedFile(clip: file, folder: folder, fileName: fileName, sidecarOf: nil))
+            names.reserve(fileName, in: target)
+            result.append(PlannedFile(clip: file, folder: target, fileName: fileName, sidecarOf: nil, sortFolder: format))
 
             // Sidecars (C0001M01.XML, GL010001.LRV, C0001.WAV…) follow their clip with the same new
-            // name: next to it, or in its Proxies/ or Sidecars/ subfolder.
+            // name: in its Proxies/ or Sidecars/ subfolder, or in the folder for their own extension.
             let newStem = ext.isEmpty ? fileName : String(fileName.dropLast(ext.count + 1))
             for sidecar in sidecars.byPrimary[file.relativePath] ?? [] {
                 let sidecarExt = sidecar.file.url.pathExtension.lowercased()
-                let target = sidecar.role.folderName.map { subfolderPath(folder, $0) } ?? folder
-                let sidecarName = names.unique(stem: newStem + sidecar.suffix, ext: sidecarExt, in: target)
-                names.reserve(sidecarName, in: target)
-                result.append(PlannedFile(clip: sidecar.file, folder: target, fileName: sidecarName,
-                                          sidecarOf: file.url.lastPathComponent, role: sidecar.role))
+                let sub = sidecar.role.folderName ?? FormatFolder.name(forFile: sidecar.file.url.lastPathComponent)
+                let sidecarTarget = sub.map { subfolderPath(folder, $0) } ?? folder
+                let sidecarName = names.unique(stem: newStem + sidecar.suffix, ext: sidecarExt, in: sidecarTarget)
+                names.reserve(sidecarName, in: sidecarTarget)
+                result.append(PlannedFile(clip: sidecar.file, folder: sidecarTarget, fileName: sidecarName,
+                                          sidecarOf: file.url.lastPathComponent, role: sidecar.role, sortFolder: sub))
             }
         }
         return result
@@ -128,7 +166,7 @@ enum OffloadPlanner {
         ext.isEmpty ? stem : stem + "." + ext
     }
 
-    /// "2026-10-25/Coastline" + "Proxies" (or just "Proxies" at the destination itself).
+    /// "2026-10-25/Coastline" + "Proxies" or "MP4" (or just "MP4" at the destination itself).
     static func subfolderPath(_ folder: String, _ subfolder: String) -> String {
         folder.isEmpty ? subfolder : folder + "/" + subfolder
     }
@@ -179,7 +217,7 @@ enum SidecarMatcher {
         let file: Clip
         /// Extra text kept after the new name, e.g. "M01" ("" for an exact match).
         let suffix: String
-        /// `.proxy` and `.sidecar` go into their own subfolder; `.main` stays next to the clip.
+        /// `.proxy` and `.sidecar` go into Proxies/ or Sidecars/; `.main` into its own format folder.
         var role: FileRole = .main
     }
 

@@ -14,6 +14,8 @@ struct FolderNode: Identifiable, Equatable, Sendable {
     var files: [PlannedFile] = []
     /// "Proxies" or "Sidecars": made for proxy and sidecar files, not by the templates.
     var isRoleFolder = false
+    /// "MP4", "ARW", "WAV"…: the folder for one file extension, made by Lodge, not the templates.
+    var isFormatFolder = false
 
     var id: String { path }
 
@@ -72,8 +74,11 @@ enum FolderTree {
             // A role folder holds only proxies or sidecars.
             let isRole = roleFolders.contains(box.name) && !box.files.isEmpty
                 && box.files.allSatisfy { $0.role != .main } && box.children.isEmpty
+            // A format folder holds the files Lodge sorted into it by extension.
+            let isFormat = !isRole && !box.files.isEmpty && box.children.isEmpty
+                && box.files.allSatisfy { $0.role == .main && $0.sortFolder == box.name && $0.folder == box.path }
             return FolderNode(name: box.name, path: box.path, depth: box.depth,
-                              children: children, files: box.files, isRoleFolder: isRole)
+                              children: children, files: box.files, isRoleFolder: isRole, isFormatFolder: isFormat)
         }
         return node(root)
     }

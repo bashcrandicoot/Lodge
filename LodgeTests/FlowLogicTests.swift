@@ -23,14 +23,14 @@ final class FlowLogicTests: XCTestCase {
         let items = preview(clips, project: "BeachShoot")
         XCTAssertEqual(items.map(\.originalName), ["C0001.MP4", "C0002.MOV"])
         XCTAssertEqual(items.map(\.fileName), ["2026-10-25_BeachShoot_0001.mp4", "2026-10-25_BeachShoot_0002.mov"])
-        XCTAssertEqual(items.map(\.folder), ["2026-10-25/BeachShoot", "2026-10-25/BeachShoot"])
+        XCTAssertEqual(items.map(\.folder), ["2026-10-25/BeachShoot/MP4", "2026-10-25/BeachShoot/MOV"])
     }
 
     func testPreviewContinuesAfterExistingAndSplitsByDate() {
         let clips = [clip("A.MP4", minutesAfter: 0, day: 25), clip("B.MP4", minutesAfter: 0, day: 26)]
         let items = preview(clips, project: "Trip", existing: ["2026-10-25/Trip": ["2026-10-25_Trip_0009.mov"]])
         XCTAssertEqual(items.map(\.fileName), ["2026-10-25_Trip_0010.mp4", "2026-10-26_Trip_0001.mp4"])
-        XCTAssertEqual(PlanLayout.folders(items), ["2026-10-25/Trip", "2026-10-26/Trip"])
+        XCTAssertEqual(PlanLayout.folders(items), ["2026-10-25/Trip/MP4", "2026-10-26/Trip/MP4"])
     }
 
     func testPreviewMatchesRealOffloadOrder() {

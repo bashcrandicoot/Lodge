@@ -399,7 +399,7 @@ struct FilesSettingsView: View {
             } header: {
                 Text("Sidecars")
             } footer: {
-                footnote("Thumbnails, metadata and telemetry (.THM, .XML, .SRT) go into a Sidecars folder. Audio recorded with a clip (.WAV) stays next to it.")
+                footnote("Thumbnails, metadata and telemetry (.THM, .XML, .SRT) go into a Sidecars folder. Audio recorded with a clip (.WAV) goes in the WAV folder with the clip’s name.")
             }
             Section {
                 EditableList(items: Binding(get: { settings.fileRules.ignorePatterns },

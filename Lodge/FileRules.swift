@@ -19,6 +19,28 @@ enum FileRole: String, Codable, Sendable {
     }
 }
 
+/// The folder each kind of file goes into inside the shoot folder: one per file extension,
+/// named in capitals ("MP4", "ARW", "WAV", "XYZ" for an unknown ".xyz"). Upper and lower case
+/// share a folder (.MP4 and .mp4 both go in MP4), and so do two spellings of one format
+/// (.JPEG goes in JPG, .TIFF in TIF). Proxies and sidecars use `FileRole.folderName` instead.
+enum FormatFolder {
+    /// Spellings of the same format that share a folder.
+    static let aliases: [String: String] = ["jpeg": "jpg", "jpe": "jpg", "tiff": "tif"]
+
+    /// "MP4" for "mp4" or "MP4"; nil for a file without an extension.
+    static func name(forExtension ext: String) -> String? {
+        let lower = ext.lowercased()
+        guard !lower.isEmpty else { return nil }
+        let name = NameRules.safeComponent((aliases[lower] ?? lower).uppercased())
+        return name.isEmpty ? nil : name
+    }
+
+    /// "MP4" for "C0001.MP4"; nil for "README".
+    static func name(forFile fileName: String) -> String? {
+        name(forExtension: (fileName as NSString).pathExtension)
+    }
+}
+
 /// Proxy and sidecar extensions, and the files that are never offloaded.
 /// Pure and `Codable`, so it's saved in settings and presets and unit tested.
 struct FileRules: Codable, Equatable, Hashable, Sendable {
@@ -39,7 +61,8 @@ struct FileRules: Codable, Equatable, Hashable, Sendable {
                                     sidecarExtensions: defaultSidecarExtensions,
                                     ignorePatterns: defaultIgnorePatterns)
 
-    /// No proxy or sidecar folders: every helper file stays next to its clip (and nothing extra is ignored).
+    /// No proxy or sidecar folders: helper files are sorted by extension like everything else,
+    /// keeping their clip's name (and nothing extra is ignored).
     static let keepTogether = FileRules(proxyExtensions: [], sidecarExtensions: [], ignorePatterns: [])
 
     init(proxyExtensions: [String], sidecarExtensions: [String], ignorePatterns: [String]) {

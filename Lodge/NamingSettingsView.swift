@@ -17,7 +17,7 @@ struct NamingSettingsView: View {
                     text: $settings.folderTemplate,
                     field: .folder,
                     issues: settings.folderIssues,
-                    note: "“/” makes a subfolder. Leave empty to put files straight into the destination.")
+                    note: "“/” makes a subfolder. Inside it, each extension gets its own folder (MP4, ARW, WAV…). Leave empty to put those right in the destination.")
                 templateEditor(
                     title: "File name",
                     text: $settings.fileTemplate,

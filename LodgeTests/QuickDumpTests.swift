@@ -65,8 +65,8 @@ final class QuickDumpTests: XCTestCase {
             $0 == "2026-10-25" ? ["2026-10-25_0001.mp4", "2026-10-25_0002.mp4", "notes.txt"] : []
         })
         XCTAssertEqual(plan.map(\.relativePath), [
-            "2026-10-25/2026-10-25_0003.mp4",
-            "2026-10-25/2026-10-25_0004.mp4",
+            "2026-10-25/MP4/2026-10-25_0003.mp4",
+            "2026-10-25/MP4/2026-10-25_0004.mp4",
             "2026-10-25/Sidecars/2026-10-25_0004M01.xml",
         ])
     }
@@ -89,7 +89,7 @@ final class QuickDumpTests: XCTestCase {
         settings.quickDump = true
         XCTAssertNil(model.offloadBlocker, "Quick dump doesn't need one")
         session.projectInput = "Ignored"
-        XCTAssertEqual(model.previewPlan(for: session).map(\.relativePath), ["2026-10-25/2026-10-25_0001.mp4"])
+        XCTAssertEqual(model.previewPlan(for: session).map(\.relativePath), ["2026-10-25/MP4/2026-10-25_0001.mp4"])
         XCTAssertEqual(model.namingContext(for: session).project, "")
     }
 

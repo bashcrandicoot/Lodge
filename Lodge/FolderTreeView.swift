@@ -2,7 +2,7 @@ import SwiftUI
 import AppKit
 import UniformTypeIdentifiers
 
-/// The folder tree at the destination: every folder the offload creates (per-type, Proxies and
+/// The folder tree at the destination: every folder the offload creates (per-extension, Proxies and
 /// Sidecars too), plus the folders already there. Each folder opens with its triangle
 /// (Option-click opens or closes everything inside).
 ///
@@ -116,7 +116,8 @@ struct FolderLayout: View {
         }
         let chain = chainPaths
         // The tree only lines up with the template when the plan follows it.
-        let levelsMatch = settings.effectiveNaming != nil && (example.map { $0.folder.isEmpty ? 0 : $0.folder.split(separator: "/").count - ($0.role == .main ? 0 : 1) } ?? 0) == kept.count
+        let levelsMatch = settings.effectiveNaming != nil
+            && (example.map { $0.templateFolder.split(separator: "/").count } ?? 0) == kept.count
 
         var rows: [TreeRow] = []
         func addOthers(_ names: [String], under path: String, depth: Int) {
@@ -142,8 +143,8 @@ struct FolderLayout: View {
 
         func walk(_ node: FolderNode) {
             let key = TreeRow.folderKey(node.path)
-            let level: Int? = levelsMatch && node.depth >= 1 && node.depth <= kept.count && !node.isRoleFolder
-                ? kept[node.depth - 1] : nil
+            let level: Int? = levelsMatch && node.depth >= 1 && node.depth <= kept.count
+                && !node.isRoleFolder && !node.isFormatFolder ? kept[node.depth - 1] : nil
             let onDisk = node.depth == 0 ? (subfolders("") ?? []) : subfolders(node.path)
             let others = FolderTree.otherFolders(onDisk: onDisk ?? [], planned: node.children.map(\.name))
             let ghostLevels = chain.contains(node.path) ? (ghosts[node.depth] ?? []) : []
@@ -209,6 +210,13 @@ struct FolderLayout: View {
                                       detail: role == .proxy ? countText(node.fileCount, "proxy", "proxies")
                                                              : countText(node.fileCount, "file", "files"),
                                       help: exists ? "Already in \(root.lastPathComponent)" : "Lodge creates this folder")
+            }
+            if node.isFormatFolder {
+                return TreeRowContent(title: node.name, symbol: exists ? "folder.fill" : "folder",
+                                      style: exists ? .existing : .new,
+                                      detail: countText(node.fileCount, "file", "files"),
+                                      help: "Every .\(node.name) file goes in here"
+                                          + (exists ? " (already in \(root.lastPathComponent))" : ""))
             }
             var content = TreeRowContent(title: node.name, symbol: exists ? "folder.fill" : "folder",
                                          style: exists ? .existing : .new,

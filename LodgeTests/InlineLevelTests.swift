@@ -181,9 +181,9 @@ final class InlineLevelTests: XCTestCase {
                                        context: NamingContext(project: "Coastline", camera: "", card: "Card"),
                                        existingNames: existing)
         XCTAssertEqual(plan.map(\.relativePath), [
-            "Coastline_2026-10-25/2026-10-25_Coastline_0003.mp4",
-            "Coastline_2026-10-25/2026-10-25_Coastline_0004.mp4",
-            "Coastline_2026-10-26/2026-10-26_Coastline_0001.mp4",
+            "Coastline_2026-10-25/MP4/2026-10-25_Coastline_0003.mp4",
+            "Coastline_2026-10-25/MP4/2026-10-25_Coastline_0004.mp4",
+            "Coastline_2026-10-26/MP4/2026-10-26_Coastline_0001.mp4",
         ])
     }
 }

@@ -24,14 +24,28 @@ Formerly SnapDrop: on its first launch Lodge copies the old app’s data and set
    Destination/
      2026-10-25/
        BeachShoot/
-         2026-10-25_BeachShoot_0001.mp4
-         2026-10-25_BeachShoot_0001M01.xml    ← sidecar keeps its clip's name
-         2026-10-25_BeachShoot_0002.arw
+         MP4/
+           2026-10-25_BeachShoot_0001.mp4
+         ARW/
+           2026-10-25_BeachShoot_0002.arw
+         WAV/
+           2026-10-25_BeachShoot_0001.wav     ← audio recorded with clip 0001
+         Proxies/
+           2026-10-25_BeachShoot_0001.lrf
+         Sidecars/
+           2026-10-25_BeachShoot_0001M01.xml  ← sidecar keeps its clip's name
    ```
 
+   - **Every extension gets its own folder**, named in capitals: `MP4`, `MOV`, `MXF`,
+     `BRAW`, `R3D`, `ARW`, `CR3`, `NEF`, `DNG`, `RAF`, `HEIC`, `JPG`, `PNG`, `WAV`, `MP3`…
+     and anything Lodge doesn't know gets one too (`.xyz` → `XYZ`). Upper and lower case
+     share one (`.MP4` and `.mp4` → `MP4`), and so do two spellings of one format
+     (`.JPEG` → `JPG`, `.TIFF` → `TIF`). Proxies and sidecars go into *Proxies* and
+     *Sidecars* instead. The format folders sit inside the folder the template makes.
    - The date is the file's creation date (or modification date if there's none).
-   - Numbers continue after the highest one already in that folder, so a second card
-     from the same shoot picks up where the first left off. Nothing is ever overwritten.
+   - Numbers run across the whole shoot folder (all its format folders), and continue after
+     the highest one already there, so a second card from the same shoot picks up where the
+     first left off. Nothing is ever overwritten.
    - Extensions are lowercased.
 5. **Verifies every copy** with SHA-256. Each file is first copied to
    `<name>.lodge-partial`, the copy is re-read from disk and hashed, and only when it
@@ -62,7 +76,7 @@ The main window reads left to right, like a funnel:
 - **Destination** — the folder and its free space. Click the folder to switch between
   your [favorite destinations](#favorite-destinations). Once a card is scanned it also
   shows how much space the offload needs and the folder layout files will land in.
-  The **Layout** tree shows every folder the offload makes, per-type, *Proxies* and
+  The **Layout** tree shows every folder the offload makes, per-extension, *Proxies* and
   *Sidecars* folders included. Click a triangle to open a folder (Option-click opens or
   closes everything inside it), or use **Expand All** / **Collapse All** next to the title.
   Folders that are already there have a filled icon; ones still to be made are outlined;
@@ -224,7 +238,7 @@ an offload finishes* (on by default); *Automatically check for updates* (on) and
 **Files** — which extensions are proxies (`lrv lrf`, copied into a *Proxies* folder) and
 sidecars (`thm xml srt`, into a *Sidecars* folder), and the ignore list of files that are
 never offloaded (`.DS_Store`, `._*`, `.Spotlight-V100`, …). Both folders sit next to the
-clips and their files keep their clip's new name.
+format folders (`MP4`, `ARW`…) and their files keep their clip's new name.
 
 **Naming** — a folder template and a file template, presets, and a live example.
 Click a token chip to insert it where you were typing. Mistakes (an unclosed `{`, an
@@ -239,7 +253,7 @@ and the Offload button stays off until they're fixed. **Reset to Default** bring
 | `{date}` | Capture date, `2026-10-25` |
 | `{year}` `{month}` `{day}` | `2026`, `10`, `25` |
 | `{time}` | Capture time, `143005` |
-| `{type}` | `Video`, `Photo`, `Audio` or `Other` |
+| `{type}` | `Video`, `Photo`, `Audio` or `Other` (a grouping level; files still get a folder per extension inside it) |
 | `{card}` | The card's volume name |
 | `{original}` | The original file name without extension, `C0001` |
 | `{seq}` | Sequence number, `0001`; `{seq:3}` gives `001` |
@@ -298,8 +312,8 @@ The type comes from the file extension (upper or lower case).
 | Other | everything else (`xml`, `lrf`, `thm`, …) |
 
 - **Sidecars** keep their clip's new name: an audio or other file next to a video or photo
-  with the same name (`GX010001.WAV` → `…_0001.wav`), or Sony's `C0001M01.XML` style
-  (`…_0001M01.xml`). They don't use up a sequence number.
+  with the same name (`GX010001.WAV` → `WAV/…_0001.wav`), or Sony's `C0001M01.XML` style
+  (`Sidecars/…_0001M01.xml`). They don't use up a sequence number.
 - **Never copied:** anything starting with `.` (`.DS_Store`, `._C0001.MP4`,
   `.Spotlight-V100`, `.fseventsd`, `.Trashes`, `.TemporaryItems`…), `System Volume
   Information`, `$RECYCLE.BIN`, `Thumbs.db`, `desktop.ini`. Empty (zero-byte) files that
