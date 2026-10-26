@@ -10,7 +10,7 @@
 # Optional release notes: Lodge-<version>.md (or .html) next to the zip.
 #
 # Only appcast.xml in the repo is changed. Nothing is uploaded or pushed.
-# See docs/RELEASING.md for the whole release, step by step.
+# See RELEASING.md for the whole release, step by step.
 #
 # Environment (optional):
 #   SPARKLE_BIN    folder with Sparkle's generate_appcast (found automatically otherwise)
@@ -99,4 +99,4 @@ fi
 cp "$staging/appcast.xml" "$ROOT/appcast.xml"
 echo
 echo "Updated appcast.xml with Lodge $version. Next: commit it, upload the zip and dmg"
-echo "to the v$version GitHub release, then push (see docs/RELEASING.md)."
+echo "to the v$version GitHub release, then push (see RELEASING.md)."

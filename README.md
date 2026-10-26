@@ -325,7 +325,7 @@ Lodge checks for new versions once a day with [Sparkle](https://sparkle-project.
 using the feed in [`appcast.xml`](appcast.xml), and offers to install them. Choose
 **Lodge ▸ Check for Updates…** to check now, or turn the checks off in Settings ▸ General.
 Updates are signed, so Lodge only installs ones you published. How to publish one:
-[docs/RELEASING.md](docs/RELEASING.md). (1.0.0 predates Sparkle and can't update itself.)
+[RELEASING.md](RELEASING.md). (1.0.0 predates Sparkle and can't update itself.)
 
 ## Support Lodge
 
