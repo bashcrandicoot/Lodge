@@ -213,7 +213,8 @@ Numbering carries on from what's already in the folder.
 **General** — which [file types](#file-types) to offload (all on by default);
 [*Skip videos shorter than*](#skipping-short-clips); *Eject card after
 offload* (off by default, and only when every file copied and verified); *Play a sound when
-an offload finishes* (on by default).
+an offload finishes* (on by default); *Automatically check for updates* (on) and
+*Automatically download and install updates* (off), see [Updates](#updates).
 
 **Appearance** — see [Themes and appearance](#themes-and-appearance).
 
@@ -303,6 +304,14 @@ The type comes from the file extension (upper or lower case).
   Information`, `$RECYCLE.BIN`, `Thumbs.db`, `desktop.ini`. Empty (zero-byte) files that
   aren't hidden are copied.
 
+## Updates
+
+Lodge checks for new versions once a day with [Sparkle](https://sparkle-project.org),
+using the feed in [`appcast.xml`](appcast.xml), and offers to install them. Choose
+**Lodge ▸ Check for Updates…** to check now, or turn the checks off in Settings ▸ General.
+Updates are signed, so Lodge only installs ones you published. How to publish one:
+[docs/RELEASING.md](docs/RELEASING.md). (1.0.0 predates Sparkle and can't update itself.)
+
 ## Run it
 
 1. Open `Lodge.xcodeproj` in Xcode (double-click it).
@@ -370,7 +379,8 @@ Every view also has `#Preview`s you can open in Xcode's canvas.
 
 | File | What's in it |
 | --- | --- |
-| `LodgeApp.swift` | App entry point: main window and Settings scene |
+| `LodgeApp.swift` | App entry point: main window, Settings scene and Check for Updates… |
+| `Updates.swift` | Sparkle updater, the Check for Updates… menu item and the update settings |
 | `AppModel.swift` | Ties settings, cameras, destinations, card watcher, ledger and the current offload together; eject, format, sound |
 | `Theme.swift` | Themes (Default and the colour gradients), window wash and prominent button style, with solid fallbacks |
 | `ContentView.swift` | Main window: the Card → Media → Destination funnel and toolbar |
@@ -427,7 +437,9 @@ Every view also has `#Preview`s you can open in Xcode's canvas.
 | `LodgeTests/` | Unit tests: templates, planner, sidecars, file types, junk skipping, cameras, ledger, copy/verify, end-to-end fake cards, format readiness and safety checks (with a fake `diskutil`), favorite destinations, themes and their migration, re-offload, short clips, thumbnails and Quick Look order |
 
 The project uses Xcode's folder-synced groups: any `.swift` file you add to the
-`Lodge/` folder is automatically part of the app. No third-party dependencies.
+`Lodge/` folder is automatically part of the app (except `Lodge/Info.plist`, which holds
+the Sparkle keys). The one third-party dependency is
+[Sparkle](https://github.com/sparkle-project/Sparkle) 2, added with Swift Package Manager.
 
 ## Updating the icon
 
