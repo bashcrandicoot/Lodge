@@ -1,5 +1,6 @@
 import XCTest
 import AppKit
+import UserNotifications
 @testable import Lodge
 
 final class MenuBarItemTests: XCTestCase {
@@ -201,5 +202,26 @@ final class MenuBarModeTests: XCTestCase {
         let model = model()
         model.menuBarIconRemovedByUser()
         XCTAssertTrue(model.settings.showMenuBarIcon)
+    }
+}
+
+/// Notification or floating panel for "Import with Lodge?".
+final class ImportPromptRouteTests: XCTestCase {
+    func testNotificationOnlyWhenItWillBeShown() {
+        XCTAssertEqual(ImportPrompter.route(authorization: .authorized, alerts: .enabled, style: .banner), .notification)
+        XCTAssertEqual(ImportPrompter.route(authorization: .authorized, alerts: .enabled, style: .alert), .notification)
+        XCTAssertEqual(ImportPrompter.route(authorization: .provisional, alerts: .enabled, style: .banner), .notification)
+    }
+
+    func testAlertsOffOrStyleNoneFallsBackToThePanel() {
+        XCTAssertEqual(ImportPrompter.route(authorization: .authorized, alerts: .enabled, style: .none), .panel)
+        XCTAssertEqual(ImportPrompter.route(authorization: .authorized, alerts: .disabled, style: .banner), .panel)
+        XCTAssertEqual(ImportPrompter.route(authorization: .authorized, alerts: .notSupported, style: .banner), .panel)
+    }
+
+    func testDeniedAndUndecided() {
+        XCTAssertEqual(ImportPrompter.route(authorization: .denied, alerts: .enabled, style: .banner), .panel)
+        XCTAssertEqual(ImportPrompter.route(authorization: .notDetermined, alerts: .notSupported, style: .none),
+                       .panelAndAskPermission)
     }
 }

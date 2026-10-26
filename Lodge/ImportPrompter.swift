@@ -178,10 +178,11 @@ final class ImportPrompter: NSObject, ObservableObject {
             let center = UNUserNotificationCenter.current()
             let settings = await center.notificationSettings()
             Logger.importPrompt.info("Prompting for \(card.url.path, privacy: .public): notification authorization \(settings.authorizationStatus.logName, privacy: .public), alerts \(settings.alertSetting.logName, privacy: .public)")
-            switch settings.authorizationStatus {
-            case .authorized, .provisional, .ephemeral:
+            switch Self.route(authorization: settings.authorizationStatus, alerts: settings.alertSetting,
+                              style: settings.alertStyle) {
+            case .notification:
                 await postNotification(for: card)
-            case .notDetermined:
+            case .panelAndAskPermission:
                 // First prompt ever (the setting was on by default, so never switched on).
                 // Show the panel right away: the permission request waits on the user.
                 showPanel(for: card)
@@ -191,9 +192,31 @@ final class ImportPrompter: NSObject, ObservableObject {
                 } catch {
                     Logger.importPrompt.error("Asking for notification permission failed: \(error.localizedDescription, privacy: .public)")
                 }
-            default:
+            case .panel:
+                if settings.authorizationStatus != .denied {
+                    // Allowed, but with alerts off or the style set to None, the notification would
+                    // only land quietly in Notification Center.
+                    Logger.importPrompt.info("Notification alerts are off for Lodge (alerts \(settings.alertSetting.logName, privacy: .public), style \(settings.alertStyle.rawValue, privacy: .public)): showing the panel instead")
+                }
                 showPanel(for: card)
             }
+        }
+    }
+
+    /// How the prompt shows up when notifications are the chosen style.
+    enum Route: Equatable { case notification, panel, panelAndAskPermission }
+
+    /// A notification only when macOS will actually show it as a banner or alert: allowed, with
+    /// alerts on and a style other than None. Otherwise the floating panel.
+    nonisolated static func route(authorization: UNAuthorizationStatus, alerts: UNNotificationSetting,
+                                  style: UNAlertStyle) -> Route {
+        switch authorization {
+        case .notDetermined:
+            return .panelAndAskPermission
+        case .authorized, .provisional, .ephemeral:
+            return alerts == .enabled && style != .none ? .notification : .panel
+        default:
+            return .panel
         }
     }
 
