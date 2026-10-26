@@ -223,6 +223,8 @@ off a card. `{project}` is taken out of both templates cleanly — `{date}/{proj
 `{date}_{project}_{seq}` become `{date}` + `{date}_{seq}` — so there's no project to type.
 Numbering carries on from what's already in the folder.
 
+![The Quick dump hint](Design/screenshots/quickdump-hint-dark.png)
+
 ## Menu bar mode
 
 Turn on **Settings → General → Menu Bar → Keep Lodge running in the menu bar** (off by
@@ -249,6 +251,10 @@ Dock or Spotlight and the window (and the Dock icon) come back.
 
 The icon's menu has **Open Lodge**, **Import from <card>…** for each connected card,
 **Pause Detection** (until Lodge quits), **Settings…** and **Quit Lodge**.
+
+| The menu bar icon's menu | The import prompt (panel, when notifications are off) |
+| --- | --- |
+| ![](Design/screenshots/menubar-menu-dark.png) | ![](Design/screenshots/import-prompt-dark.png) |
 
 ## Settings (⌘,)
 
@@ -366,6 +372,10 @@ later at most; *Support Lodge* or *Don't Ask Again* stops it for good. It's all 
 Lodge's own preferences: no notifications, no network calls, no tracking. The header art is
 in `Design/support-graphic/` (the `SupportHeader` image in the asset catalog).
 Help ▸ Contact Support… emails [bashframes@gmail.com](mailto:bashframes@gmail.com).
+
+| The Support Lodge card | About Lodge |
+| --- | --- |
+| ![](Design/screenshots/support-light.png) | ![](Design/screenshots/about-light.png) |
 
 ## Run it
 
