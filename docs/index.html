@@ -269,13 +269,12 @@
       margin: var(--space-6) auto 0;
     }
     .motion-row {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: var(--space-4);
-      align-items: start;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-5);
       margin-top: var(--space-6);
     }
-    .motion-row .motion { margin-inline: auto; }
     .motion-check {
       --motion-ratio: 720 / 200;
       width: min(360px, 100%);
@@ -464,7 +463,7 @@
     footer a.support:hover { color: var(--accent); border-color: var(--accent); }
 
     @media (max-width: 800px) {
-      .pair, .install-grid, .steps, .motion-row { grid-template-columns: 1fr; }
+      .pair, .install-grid, .steps { grid-template-columns: 1fr; }
       .features h3 { min-height: 0; }
       section { padding-block: var(--space-7); }
       .hero { padding-block: var(--space-6) var(--space-4); }
@@ -537,47 +536,47 @@
           <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12.5l2.5 2.5L16 9"/></svg>
             <h3>Checked with SHA-256</h3>
-            <p>Every copy is read back and matched to the card.</p>
+            <p>Every copy is matched to the card.</p>
           </article>
           <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h12M6 12h8M6 18h10"/></svg>
             <h3>Names you can read</h3>
-            <p>Templates preview every name before copying.</p>
+            <p>Preview every name before copying.</p>
           </article>
           <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7h11v12H8z"/><path d="M5 5h11v2"/></svg>
             <h3>Only what is new</h3>
-            <p>The same card again copies only new files.</p>
+            <p>Only new files are copied again.</p>
           </article>
           <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l8 14H4z"/><path d="M12 10v4M12 16.5v.5"/></svg>
             <h3>Missing copies</h3>
-            <p>A lost copy is marked so you can replace it.</p>
+            <p>A lost copy is marked in orange.</p>
           </article>
           <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 7h6"/></svg>
             <h3>Ready to format</h3>
-            <p>A green badge shows when every copy is verified.</p>
+            <p>A green badge shows a verified card.</p>
           </article>
           <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h16M4 16h16"/><circle cx="9" cy="8" r="2" fill="var(--card)"/><circle cx="15" cy="16" r="2" fill="var(--card)"/></svg>
             <h3>Presets and quick dump</h3>
-            <p>Skip short clips, or save the whole setup.</p>
+            <p>Skip short clips, or save a setup.</p>
           </article>
           <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h6l2 2h8v9H4z"/></svg>
             <h3>Drop a folder</h3>
-            <p>Drop a Finder folder to set the destination.</p>
+            <p>Drop a folder to set where files go.</p>
           </article>
           <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h7l4 4v12H7z"/><path d="M14 4v4h4"/></svg>
             <h3>Proxies and sidecars</h3>
-            <p>Small files travel with the clip, not as footage.</p>
+            <p>Small files travel with the clip.</p>
           </article>
           <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.2-5.5"/><path d="M20 5v5h-5"/></svg>
             <h3>Updates</h3>
-            <p>Daily update checks are coming in the next update.</p>
+            <p>Coming in the next update.</p>
           </article>
         </div>
       </div>
@@ -595,7 +594,7 @@
           <li>
             <span class="num" aria-hidden="true">2</span>
             <h3>Name the files</h3>
-            <p>See every finished name before you copy.</p>
+            <p>Preview the names before you copy.</p>
           </li>
           <li>
             <span class="num" aria-hidden="true">3</span>
@@ -628,11 +627,11 @@
         <img src="assets/screenshots/ready-ember-dark.png" width="1440" alt="Lodge in the Ember theme, Dark mode, ready to offload. The preset control at the top right, and the hidden title, are the next update.">
         <div>
           <h2>Default is neutral black</h2>
-          <p class="section-intro">Lodge opens in Dark mode. Default is a neutral black and white window, with no colour wash. Buttons, switches, sliders, selection, progress, and badges use the system accent: system blue, unless you picked another accent in System Settings.</p>
+          <p class="section-intro">Lodge opens in Dark mode, with no colour wash.</p>
           <ul>
-            <li><span>Aurora, Ocean, Twilight, Ember, and Forest</span> are optional colour themes. Each tints the window wash, the Offload button, the progress bar, the glowing border of the step that needs you, and the dots that travel between steps.</li>
-            <li><span>Light, Dark, or System</span> is a switch in Settings &gt; Appearance. Dark is the setting Lodge starts with.</li>
-            <li><span>Increase Contrast and Reduce Transparency</span> turn every theme to solid colours.</li>
+            <li><span>Aurora, Ocean, Twilight, Ember, and Forest</span> are optional colour themes.</li>
+            <li><span>Light, Dark, or System.</span> Dark is how Lodge starts.</li>
+            <li><span>Increase Contrast and Reduce Transparency</span> turn every theme solid.</li>
           </ul>
         </div>
       </div>
@@ -666,7 +665,7 @@
           </article>
         </div>
         <p class="note">The first time Lodge reads a card, allow access to files on a removable volume. Building from source is in the <a href="https://github.com/bashcrandicoot/Lodge/blob/main/CONTRIBUTING.md">contribution guide</a>. The <a href="https://github.com/bashcrandicoot/Lodge/blob/main/docs/user-guide.md">user guide</a>, <a href="https://github.com/bashcrandicoot/Lodge/blob/main/docs/faq.md">FAQ</a>, and <a href="https://github.com/bashcrandicoot/Lodge/blob/main/docs/changelog.md">changelog</a> live in the repository.</p>
-        <p class="note"><span class="soon">Coming in the next update</span> <strong>Help &gt; Contact Support…</strong> writes to bashframes@gmail.com, and <strong>Support Lodge…</strong> opens the same page as the download. <strong>About Lodge</strong> credits BashFrames. After five verified offloads, and at least three days after you first open that version, a quiet card asks once when Lodge is idle. <strong>Maybe Later</strong> asks one more time. <strong>Don’t Ask Again</strong> stops it.</p>
+        <p class="note"><span class="soon">Coming in the next update</span> Help can email bashframes@gmail.com, and a quiet card may ask you to support Lodge.</p>
       </div>
     </section>
   </main>
