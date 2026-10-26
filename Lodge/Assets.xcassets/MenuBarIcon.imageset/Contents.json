@@ -1,15 +1,26 @@
 {
-  "images" : [
+  "images": [
     {
-      "filename" : "MenuBarIcon.pdf",
-      "idiom" : "universal"
+      "filename": "MenuBarIcon.png",
+      "idiom": "universal",
+      "scale": "1x"
+    },
+    {
+      "filename": "MenuBarIcon@2x.png",
+      "idiom": "universal",
+      "scale": "2x"
+    },
+    {
+      "filename": "MenuBarIcon@3x.png",
+      "idiom": "universal",
+      "scale": "3x"
     }
   ],
-  "info" : {
-    "author" : "xcode",
-    "version" : 1
+  "info": {
+    "author": "xcode",
+    "version": 1
   },
-  "properties" : {
-    "preserves-vector-representation" : true, "template-rendering-intent" : "original"
+  "properties": {
+    "template-rendering-intent": "original"
   }
 }

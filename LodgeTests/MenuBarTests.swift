@@ -36,7 +36,26 @@ final class MenuBarItemTests: XCTestCase {
         XCTAssertNotNil(NSImage(named: "MenuBarIcon"))
         let template = try XCTUnwrap(StatusItemController.iconImage(template: true))
         XCTAssertTrue(template.isTemplate)
+        XCTAssertEqual(template.size, NSSize(width: 22, height: 16))
         XCTAssertNotNil(NSImage(named: "MenuBarIconTemplate"))
+        // Bitmaps only: the PDF version compiled into a plain white square.
+        XCTAssertFalse(color.representations.contains { $0 is NSPDFImageRep })
+    }
+
+    func testMenuBarIconIsInColor() throws {
+        let image = try XCTUnwrap(StatusItemController.iconImage())
+        let rep = try XCTUnwrap(NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: 32, pixelsHigh: 32, bitsPerSample: 8,
+                                                 samplesPerPixel: 4, hasAlpha: true, isPlanar: false,
+                                                 colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0))
+        rep.size = NSSize(width: 16, height: 16)   // 2x
+        NSGraphicsContext.saveGraphicsState()
+        NSGraphicsContext.current = NSGraphicsContext(bitmapImageRep: rep)
+        image.draw(in: NSRect(x: 0, y: 0, width: 16, height: 16))
+        NSGraphicsContext.restoreGraphicsState()
+        // The night sky (4pt in from the top left; `colorAt` counts from the top) is dark purple, not white.
+        let sky = try XCTUnwrap(rep.colorAt(x: 8, y: 8)?.usingColorSpace(.deviceRGB))
+        XCTAssertLessThan(sky.brightnessComponent, 0.4)
+        XCTAssertGreaterThan(sky.alphaComponent, 0.9)
     }
 
     func testPromptTitle() {
