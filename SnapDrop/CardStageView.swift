@@ -42,7 +42,10 @@ struct CardStageView: View {
         guard card.id == model.selectedCardID else { return nil }
         if model.isScanning { return "Scanning…" }
         guard let session = model.session else { return nil }
-        return "\(OffloadFormatting.fileCount(session.newClips.count)) new"
+        let new = "\(OffloadFormatting.fileCount(session.newClips.count)) new"
+        // System files and the ignore list: never copied, never block formatting, just counted.
+        let ignored = session.inventory.ignored.count
+        return ignored > 0 ? "\(new) · \(ignored) ignored" : new
     }
 }
 
@@ -125,7 +128,11 @@ private struct CardRow: View {
                     Text(subtitle)
                         .font(.caption)
                         .foregroundStyle(.secondary)
-                        .lineLimit(1)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .help(detail?.contains("ignored") == true
+                              ? "Ignored items (system files and your ignore list in Settings ▸ Files) aren’t copied and don’t stop the card being ready to format."
+                              : "")
                     if showsActions {
                         FormatStatusLine()
                             .padding(.top, 2)

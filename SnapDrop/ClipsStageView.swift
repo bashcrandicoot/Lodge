@@ -51,7 +51,7 @@ private struct ClipsStageContent: View {
     private static let tileMinimum: CGFloat = 132
     private static let tileSpacing: CGFloat = 8
 
-    private var needs: NamingNeeds { NamingNeeds(settings.naming) }
+    private var needs: NamingNeeds { NamingNeeds(settings.effectiveNaming) }
 
     var body: some View {
         StagePanel(number: 2, title: "Media", state: stageState) {
@@ -76,7 +76,7 @@ private struct ClipsStageContent: View {
             if !Task.isCancelled { noPreviewID = nil }
         }
         .onAppear {
-            if session.phase == .ready && !session.newClips.isEmpty { nameFocused = true }
+            if session.phase == .ready && !session.newClips.isEmpty && !settings.quickDump { nameFocused = true }
             #if DEBUG
             // Screenshots: `-SnapDropDemoScope skipped|offloaded` opens that list.
             if DemoData.launchState != nil, let raw = UserDefaults.standard.string(forKey: "SnapDropDemoScope"),
@@ -161,9 +161,10 @@ private struct ClipsStageContent: View {
                 fieldLabel("Project")
                 NameField(
                     title: "Project",
-                    prompt: needs.project ? "e.g. Coastline" : "Optional, not in the template",
+                    prompt: settings.quickDump ? "Not needed for a quick dump"
+                        : needs.project ? "e.g. Coastline" : "Optional, not in the template",
                     text: $session.projectInput,
-                    isDisabled: isLocked,
+                    isDisabled: isLocked || settings.quickDump,
                     recents: settings.recentProjects,
                     clearRecents: settings.clearRecentProjects,
                     focus: $nameFocused)
@@ -171,6 +172,10 @@ private struct ClipsStageContent: View {
             GridRow {
                 fieldLabel("Camera")
                 CameraField(selection: session.cameraID, isUsed: needs.camera, isDisabled: isLocked)
+            }
+            GridRow {
+                Color.clear.gridCellUnsizedAxes([.horizontal, .vertical])
+                QuickDumpToggle(isDisabled: session.phase != .ready)
             }
         }
     }
@@ -329,7 +334,7 @@ private struct ClipsStageContent: View {
 
     private func toCopyGrid(_ items: [PlannedFile], placeholder: Bool) -> some View {
         let byID = Dictionary(items.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
-        let tiles = TileFolding.fold(items.map(\.id), primaryOf: SidecarMatcher.match(items.map(\.clip)).primary)
+        let tiles = TileFolding.fold(items.map(\.id), primaryOf: SidecarMatcher.match(items.map(\.clip), rules: session.fileRules).primary)
         let order = tiles.map(\.id)
         // While copying a sidecar, keep its clip's tile in view.
         let tileOf = Dictionary(tiles.flatMap { tile in ([tile.id] + tile.sidecars).map { ($0, tile.id) } },
@@ -430,7 +435,7 @@ private struct ClipsStageContent: View {
                    ? "\(session.missingCopiesInView) missing" : "All copies present")
         if layout == .grid {
             let byID = Dictionary(files.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
-            let tiles = TileFolding.fold(files.map(\.id), primaryOf: SidecarMatcher.match(Offloader.order(files)).primary)
+            let tiles = TileFolding.fold(files.map(\.id), primaryOf: SidecarMatcher.match(Offloader.order(files), rules: session.fileRules).primary)
             let order = tiles.map(\.id)
             ScrollView {
                 grid {
@@ -648,7 +653,7 @@ private struct ClipsStageContent: View {
     private var demoPreviewOrder: [String] {
         let items = model.previewPlan(for: session)
         guard layout == .grid else { return items.map(\.id) }
-        return TileFolding.fold(items.map(\.id), primaryOf: SidecarMatcher.match(items.map(\.clip)).primary).map(\.id)
+        return TileFolding.fold(items.map(\.id), primaryOf: SidecarMatcher.match(items.map(\.clip), rules: session.fileRules).primary).map(\.id)
     }
     #endif
 
@@ -1158,3 +1163,24 @@ private struct CameraField: View {
         .padding()
 }
 #endif
+
+/// "Quick dump: skip project name": for just getting the footage off the camera.
+private struct QuickDumpToggle: View {
+    let isDisabled: Bool
+    @EnvironmentObject private var settings: AppSettings
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Toggle(isOn: Binding(
+                get: { settings.quickDump },
+                set: { value in withAnimation(reduceMotion ? nil : .snappy(duration: 0.25)) { settings.quickDump = value } })) {
+                Text("Quick dump: skip project name")
+            }
+            .toggleStyle(.checkbox)
+            .disabled(isDisabled)
+            .fixedSize()
+        }
+        .help("Leaves {project} out of folder and file names, so you don't need to type one. Numbering carries on from what's already there.")
+    }
+}
