@@ -2,7 +2,7 @@
 
 Lodge copies video, photos, audio, and the small files that belong with them off a camera card, checks every copy, and names the result from a template. This guide is everything the window does. Install steps are in [Getting started](getting-started.md).
 
-The main window reads left to right: **Card**, **Media**, **Destination**, with the offload bar along the bottom. The preset menu sits on that bar, just to the left of **Offload**. **Recent Offloads** and **Settings** are in the toolbar. Closing the window quits Lodge.
+The main window reads left to right: **Card**, **Media**, **Destination**, with the offload bar along the bottom. The preset menu at the top right of the window sits just left of **Recent Offloads** and **Settings**. Closing the window quits Lodge.
 
 ![Lodge ready to offload, Default theme, Dark mode](assets/screenshots/ready-dark.png)
 
@@ -151,7 +151,7 @@ Click a token to insert it into the field you were editing. Mistakes are explain
 
 ### Examples
 
-The **Examples** menu in Settings > Naming fills in a folder template and a file template. It is separate from presets, which save a whole setup. The preset menu is on the offload bar, just to the left of **Offload**.
+The **Examples** menu in Settings > Naming fills in a folder template and a file template. It is separate from the preset menu at the top right of the window, which saves a whole setup.
 
 | Example | Folder | File |
 | --- | --- | --- |
@@ -188,7 +188,7 @@ A card whose only remaining files are skipped short clips can still be formatted
 
 ## Presets
 
-The menu on the offload bar, just to the left of **Offload**, switches presets. A preset saves the destination, the folder and file templates, the camera, the short-clip setting, quick dump, and the file rules.
+The preset menu at the top right of the window switches presets. A preset saves the destination, the folder and file templates, the camera, the short-clip setting, quick dump, and the file rules.
 
 **Save Current Setup as Preset…** saves what the window is using now. Change any of that afterwards and the menu shows **Edited**, and offers **Update “Name”** for the preset in use. **Manage Presets…** opens Settings > Presets. With no preset selected the menu says **No Preset**.
 

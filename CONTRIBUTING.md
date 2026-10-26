@@ -87,7 +87,7 @@ The Lodge Cabin icon on the website and in the README is `docs/assets/app-icon/`
 | `FileRules.swift` | Proxy and sidecar extensions, the ignore list |
 | `QuickDump.swift` | Removes `{project}` from the templates |
 | `OffloadPreset.swift` | Saved setups |
-| `PresetViews.swift` | Preset menu on the offload bar, Settings > Presets and Files, the short-clip slider |
+| `PresetViews.swift` | Preset menu at the top right of the window, Settings > Presets and Files, the short-clip slider |
 | `OffloadPlanner.swift` | Final paths, sequence numbers, sidecar matching |
 | `MediaCategory.swift` | Video, photo, audio, other |
 | `CameraStore.swift` | Cameras and per-card memory |

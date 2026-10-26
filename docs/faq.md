@@ -26,7 +26,7 @@ Lodge formats exFAT, FAT32, and FAT16, and keeps the card’s name. Other format
 
 ## What is the difference between a preset and Examples?
 
-**Examples**, in Settings > Naming, fills in a folder template and a file template. A **preset**, on the offload bar just to the left of **Offload**, saves the whole setup: destination, templates, camera, short clips, quick dump, and file rules. After you change that setup, the menu says **Edited**.
+**Examples**, in Settings > Naming, fills in a folder template and a file template. A preset, from the preset menu at the top right of the window, saves the whole setup: destination, templates, camera, short clips, quick dump, and file rules. After you change that setup, the menu says **Edited**.
 
 ## How do I change the folders in Layout?
 
