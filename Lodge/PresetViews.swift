@@ -428,8 +428,7 @@ struct FilesSettingsView: View {
         }
         .formStyle(.grouped)
         .themeControlTint()
-        .frame(width: 560)
-        .fixedSize(horizontal: false, vertical: true)
+        .settingsPaneSize()
     }
 
     private func footnote(_ text: String) -> some View {

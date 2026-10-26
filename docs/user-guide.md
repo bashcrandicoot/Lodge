@@ -2,15 +2,22 @@
 
 Home base for your media. Lodge is a universal app for Apple silicon and Intel Macs, on macOS 14 or later. It copies video, photos, audio, and the small files that belong with them off a camera card, checks every copy, and names the result from a template. This guide is everything the window does. Install steps are in [Getting started](getting-started.md).
 
-The main window reads left to right: **Card**, **Media**, **Destination**, with the offload bar along the bottom. The preset menu sits at the top right, just left of **Recent Offloads** and **Settings**, and the window title is hidden. The card’s name is in the Card column.
-
-The first time Lodge opens, it shows **Welcome to Lodge**. When a card is inserted, Lodge can ask **Import with Lodge?**. **Keep Lodge running in the menu bar** leaves Lodge available from its menu bar icon after you close the window. **Show menu bar icon** and a Login Item are in Settings.
+The main window reads left to right: **Card**, **Media**, **Destination**, with the offload bar along the bottom. The preset menu sits at the top right, just left of **Recent Offloads** and **Settings**, and the window title is hidden. The card’s name is in the Card column. Closing the window quits Lodge, unless [menu bar mode](#menu-bar-mode) is on. Lodge 1.0.1 has a new app icon.
 
 ![Lodge in Dark mode, ready to offload. The preset menu is at the top right. Offload 54 Files sits along the bottom.](assets/screenshots/ready-dark.png)
 
+## First-launch setup
+
+The first time Lodge opens, **Welcome to Lodge** shows **Set up your first preset**. It is a short guide through five steps: what a preset is, the destination, the folder levels, naming and safety, then a review that previews a sample card with the real names. **Save preset** saves the destination as a favorite and the preset, and switches to it unless you untick **Switch to this preset now**.
+
+- **Destination** lists your Mac and connected drives, external SSDs included. Memory cards, Time Machine disks and disk images are left out. **Make it my default destination** only shows when you already have other favorites; a first favorite is always the default.
+- **Skip setup** keeps Lodge’s defaults and setup does not come back.
+- Closing the window keeps your progress. Setup resumes on the same step next time.
+- If you already used Lodge (presets, favorites or offloads), setup never shows.
+
 ## Cards
 
-Lodge watches for removable or ejectable drives mounted under `/Volumes`, including a card that was already in when the app opened. The drive that holds your destination folder is skipped, and so is the startup disk. When a card appears, Lodge brings its window forward.
+Lodge watches for removable or ejectable drives mounted under `/Volumes`, including a card that was already in when the app opened. The drive that holds your destination folder is skipped, and so is the startup disk. When a card appears while you are in another app, Lodge asks **Import with Lodge?** (see [Ask to import](#ask-to-import)). With that switch off, an open Lodge window comes forward instead.
 
 Click a card in the list when more than one is mounted. While a copy is running, switching cards is locked.
 
@@ -270,6 +277,33 @@ Settings > General has an **Updates** section:
 - **Automatically download and install updates** is off. It is unavailable while automatic checks are off.
 
 The note under the switches says you can also choose **Lodge > Check for Updates…** any time. Updates are EdDSA-signed through Sparkle. Copying itself does not upload anything.
+
+Lodge 1.0.0 can’t update itself. [Download Lodge from Gumroad](https://bashframes.gumroad.com/l/lodge) once to get 1.0.1. After that, Lodge updates itself.
+
+## Menu bar mode
+
+Turn on **Settings > General > Menu Bar > Keep Lodge running in the menu bar** (off by default) and closing the window leaves Lodge running: it leaves the Dock and Command-Tab, keeps a cabin icon in the menu bar, and keeps watching for cards. Open Lodge from the icon, Finder, the Dock or Spotlight to bring the window back.
+
+The icon’s menu has **Open Lodge**, **Import from “Card”…** for each connected card, **Pause Detection** (until you choose **Resume Detection**), **Settings…** and **Quit Lodge**.
+
+- **Show menu bar icon** (on). Turn it off, or Command-drag the icon out of the menu bar, to run without it. Lodge still asks to import. Turning menu bar mode off and on again does not hide the icon.
+- **Open at login** starts Lodge in the menu bar, without a window. macOS may ask you to allow it in **System Settings > General > Login Items**. Turning menu bar mode off turns this off too.
+
+![The menu bar icon’s menu.](assets/screenshots/menubar-menu-dark.png)
+
+### Ask to import
+
+**Ask to import when a card or drive is plugged in** is on by default and works whenever Lodge is running. When a card, or an external drive with camera folders or media, is plugged in while you are in another app, Lodge asks **“A7S III card connected. Import with Lodge?”** with **Import**, **Ignore** and **Don’t ask for this card**. **Import** opens Lodge with the card selected. Nothing is copied until you click Offload.
+
+Lodge does not ask while you are looking at its window, while detection is paused, twice for the same card within 20 seconds, or for the startup disk, network volumes, disk images, Time Machine disks and your destination drives. A card plugged in during an offload or a format is asked about when it finishes. Cards you chose **Don’t ask** for are listed under the switch, each with **Ask Again**.
+
+**Ask with** picks a notification or Lodge’s floating panel. The first time, macOS asks whether Lodge may send notifications. When notifications are off for Lodge, or its alert style is **None**, Lodge shows the floating panel instead. The panel sits in the top-right corner and never takes focus.
+
+![The floating import panel.](assets/screenshots/import-prompt-dark.png)
+
+### If the prompt doesn’t show
+
+macOS keeps notifications quiet while a Focus, such as Do Not Disturb, is on. If you plug in a card and see nothing, set **Ask with** to **Floating panel**. The panel shows during a Focus too.
 
 ## Support
 

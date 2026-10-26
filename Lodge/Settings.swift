@@ -25,6 +25,11 @@ final class AppSettings: ObservableObject {
         static let quickDump = "quickDump"
         static let fileRules = "fileRules"
         static let destinationMigrated = "destinationMovedToFavorites"
+        static let menuBarMode = "keepRunningInMenuBar"
+        static let askToImport = "askToImportOnMount"
+        static let showMenuBarIcon = "showMenuBarIcon"
+        static let importPromptStyle = "importPromptStyle"
+        static let ignoredImportCards = "ignoredImportCards"
     }
 
     static let maxRecentProjects = 6
@@ -149,6 +154,48 @@ final class AppSettings: ObservableObject {
         didSet { defaults?.set(showListThumbnails, forKey: Key.listThumbnails) }
     }
 
+    // MARK: Menu bar (Settings ▸ General ▸ Menu Bar)
+
+    /// Keep running in the menu bar after the window closes, watching for cards. Off by default.
+    @Published var keepRunningInMenuBar: Bool {
+        didSet { defaults?.set(keepRunningInMenuBar, forKey: Key.menuBarMode) }
+    }
+
+    /// Ask "Import with Lodge?" when a card or drive with camera media is plugged in. On by default.
+    @Published var askToImport: Bool {
+        didSet { defaults?.set(askToImport, forKey: Key.askToImport) }
+    }
+
+    /// How "Import with Lodge?" shows up. A notification by default; macOS holds notifications
+    /// back while a Focus (Do Not Disturb, Work…) is on, and the floating panel shows anyway.
+    @Published var importPromptStyle: ImportPromptStyle {
+        didSet { defaults?.set(importPromptStyle.rawValue, forKey: Key.importPromptStyle) }
+    }
+
+    /// The menu bar icon (only shown with `keepRunningInMenuBar`). On by default.
+    @Published var showMenuBarIcon: Bool {
+        didSet { defaults?.set(showMenuBarIcon, forKey: Key.showMenuBarIcon) }
+    }
+
+    /// Cards that never get the import prompt ("Don't ask for this card").
+    @Published private(set) var ignoredImportCards: [IgnoredImportCard] {
+        didSet { defaults?.set(try? JSONEncoder().encode(ignoredImportCards), forKey: Key.ignoredImportCards) }
+    }
+
+    var ignoredImportIdentities: Set<String> { Set(ignoredImportCards.map(\.identity)) }
+
+    /// True when the menu bar icon should be in the menu bar right now.
+    var menuBarIconVisible: Bool { keepRunningInMenuBar && showMenuBarIcon }
+
+    func ignoreImports(from card: CardVolume) {
+        guard !ignoredImportIdentities.contains(card.identity) else { return }
+        ignoredImportCards.append(IgnoredImportCard(identity: card.identity, name: card.name))
+    }
+
+    func stopIgnoringImports(_ identity: String) {
+        ignoredImportCards.removeAll { $0.identity == identity }
+    }
+
     func setCategory(_ category: MediaCategory, included: Bool) {
         if included { includedCategories.insert(category) } else { includedCategories.remove(category) }
     }
@@ -175,6 +222,13 @@ final class AppSettings: ObservableObject {
         mediaLayout = defaults?.string(forKey: Key.mediaLayout).flatMap(MediaLayout.init(rawValue:)) ?? .list
         showListThumbnails = defaults?.bool(forKey: Key.listThumbnails) ?? false
         quickDump = defaults?.bool(forKey: Key.quickDump) ?? false
+        keepRunningInMenuBar = defaults?.bool(forKey: Key.menuBarMode) ?? false
+        askToImport = defaults?.object(forKey: Key.askToImport) as? Bool ?? true
+        showMenuBarIcon = defaults?.object(forKey: Key.showMenuBarIcon) as? Bool ?? true
+        importPromptStyle = defaults?.string(forKey: Key.importPromptStyle).flatMap(ImportPromptStyle.init(rawValue:))
+            ?? .notification
+        ignoredImportCards = defaults?.data(forKey: Key.ignoredImportCards)
+            .flatMap { try? JSONDecoder().decode([IgnoredImportCard].self, from: $0) } ?? []
         fileRules = defaults?.data(forKey: Key.fileRules).flatMap { try? JSONDecoder().decode(FileRules.self, from: $0) }
             ?? .standard
         // `didSet` doesn't run inside `init`, so save migrated templates explicitly.
@@ -270,5 +324,19 @@ final class AppSettings: ObservableObject {
             panel.directoryURL = start
         }
         return panel.runModal() == .OK ? panel.url : nil
+    }
+}
+
+/// Settings ▸ Menu Bar ▸ "Ask with": a notification, or Lodge's own floating panel.
+enum ImportPromptStyle: String, CaseIterable, Identifiable, Sendable {
+    case notification
+    case panel
+
+    var id: String { rawValue }
+    var title: String {
+        switch self {
+        case .notification: "Notification"
+        case .panel: "Floating panel"
+        }
     }
 }

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="190 174 644 644">
+<!-- Lodge cabin silhouette for the menu bar (template image): one solid shape, no colour, no cut-outs.
+     Traced from Design/lodge-cabin-night/lodge-cabin-small.svg (cabin group, translate 0 26). -->
+<g fill="#000" stroke="none">
+  <path d="M318 461.8 L512 326 L706 461.8 V718 H318 Z"/>
+  <path d="M318 538 H706 Q728 538 728 560 V696 Q728 718 706 718 H318 Q296 718 296 696 V560 Q296 538 318 538 Z"/>
+  <rect x="612" y="330" width="64" height="100" rx="6"/>
+  <rect x="604" y="320" width="80" height="22" rx="10"/>
+</g>
+<path d="M228 524.8 L512 326 L796 524.8" fill="none" stroke="#000" stroke-width="66" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -1,6 +1,6 @@
 # Contributing
 
-Lodge is a native macOS app: Swift and SwiftUI, macOS 14 or later, Swift 5. The Xcode project has no third-party dependencies. `Lodge/` and `LodgeTests/` are folder-synced groups, so a `.swift` file you add there is part of the target.
+Lodge is a native macOS app: Swift and SwiftUI, macOS 14 or later, Swift 5. The only third-party dependency is [Sparkle](https://sparkle-project.org) (for updates), added with Swift Package Manager; Xcode fetches it on the first build. `Lodge/` and `LodgeTests/` are folder-synced groups, so a `.swift` file you add there is part of the target.
 
 Issues and pull requests are welcome. Bug reports and feature requests have templates. Please read the [user guide](docs/user-guide.md) before filing something the app already does. Security issues go through [SECURITY.md](SECURITY.md), not a public issue.
 
@@ -20,7 +20,7 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
   -derivedDataPath build/DerivedData test
 ```
 
-The first time the app reads a card, macOS asks for removable-volume access. Closing the window quits the app.
+The first time the app reads a card, macOS asks for removable-volume access. Closing the window quits the app unless menu bar mode is on. Card mounts and import-prompt decisions are logged: `/usr/bin/log show --last 10m --info --predicate 'subsystem == "com.sebastianphillips.Lodge"'`.
 
 `LegacyMigration.swift` runs once on launch and copies the previous app’s Application Support files and settings into Lodge’s. It copies them. It does not move or change the originals. Anything Lodge already has is kept.
 
@@ -48,6 +48,13 @@ open -n build/DerivedData/Build/Products/Debug/Lodge.app --args \
 | `-LodgeDemoQuickDump` | `YES` |
 | `-LodgeDemoFolderTemplate` | a folder template, such as `{project}_{date}/{camera}/{type}` |
 | `-LodgeDemoExpandTree` | `YES` to open every folder, or `files` to open the file lists too |
+| `-LodgeDemoMenuBar` | `YES`, menu bar mode on with one card on the Don’t ask list |
+| `-LodgeDemoMount` | `YES`, simulates plugging in the demo card (the floating import panel) |
+| `-LodgeDemoMenuPreview` | `YES`, draws the menu bar icon’s menu in a window |
+| `-LodgeDemoInfoHint` | a hint’s subject, such as `Quick dump`; renders its popover to `/tmp/lodge-infohint.png` |
+| `-LodgeDemoSettingsScroll` | `menubar`, scrolls Settings > General to Menu Bar |
+| `-LodgeDemoOnboarding` | `YES`, opens first-launch setup with sample drives (outside demo mode it restarts the real setup, Release builds included) |
+| `-LodgeDemoOnboardingStep` | `splash`, `template`, `destination`, `folders`, `naming`, `review`, `done` |
 
 Demo windows are drawn as if they were active, so a screenshot taken with the app in the background still shows the accent on switches and segments. The sample card has Sony XML sidecars, RAW photos, WAVs, two short clips, a few missing copies, and a few cameras. Thumbnails are drawn placeholders. Views also have `#Preview`s for the Xcode canvas. Screenshots checked into the repo live in `Design/screenshots/`, and the ones used on the site are copied to `docs/assets/screenshots/`.
 
@@ -110,6 +117,18 @@ Palettes live in `Theme.swift`. Each theme is tuned separately for Light and Dar
 | `ReoffloadAlert.swift` | Re-offload everything, and forget history |
 | `ShortClips.swift` | The short-clip rule |
 | `Settings.swift` | Preferences |
+| `Log.swift` | The `ImportPrompt` log category |
+| `MenuBar.swift` | Menu bar icon and menu, reopening the main window, Open at login |
+| `ImportPromptPolicy.swift` | Which mounted volumes get an import prompt; camera folder detection |
+| `ImportPrompter.swift` | The Import with Lodge? notification, its queue, debounce and panel fallback |
+| `ImportPromptPanel.swift` | The floating, non-activating import panel |
+| `InfoHint.swift` | The ⓘ hover hint |
+| `Onboarding.swift` | First-launch setup: steps, the saved draft, who sees it, saving into real settings |
+| `OnboardingWindow.swift` | The setup window and when it shows |
+| `OnboardingView.swift` | Setup's splash and five-step shell |
+| `OnboardingSteps.swift` | Setup's steps |
+| `OnboardingDone.swift` | Setup's done screen |
+| `OnboardingComponents.swift` | Setup's palette, cards, token pills and folder preview tree |
 
 ## Docs
 

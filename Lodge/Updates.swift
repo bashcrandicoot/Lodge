@@ -6,7 +6,7 @@ import Sparkle
 ///
 /// Sparkle reads the feed at `SUFeedURL` (Info.plist), shows its own "A new version is
 /// available" window, and only installs updates signed with the private key that matches
-/// `SUPublicEDKey`. See docs/RELEASING.md for how to publish an update.
+/// `SUPublicEDKey`. See RELEASING.md for how to publish an update.
 @MainActor
 enum AppUpdates {
     /// The one Sparkle controller for the app's lifetime. It isn't started for the unit tests'

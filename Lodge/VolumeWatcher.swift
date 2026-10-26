@@ -1,5 +1,6 @@
 import Foundation
 import AppKit
+import os
 
 /// A memory card (or other removable drive) that is mounted under /Volumes.
 struct CardVolume: Identifiable, Hashable, Sendable {
@@ -47,8 +48,9 @@ final class VolumeWatcher: ObservableObject {
     /// Cards that are currently mounted.
     @Published private(set) var cards: [CardVolume] = []
 
-    /// Called when a new card shows up (also for cards already inserted at launch).
-    var onCardInserted: ((CardVolume) -> Void)?
+    /// Called when a new card shows up (also for cards already inserted at launch, with
+    /// `isNewMount` false; true when it was just plugged in).
+    var onCardInserted: ((_ card: CardVolume, _ isNewMount: Bool) -> Void)?
     /// Called when a card is ejected or pulled out.
     var onCardRemoved: ((CardVolume) -> Void)?
     /// Asked for the destination folder so its volume can be ignored.
@@ -73,8 +75,9 @@ final class VolumeWatcher: ObservableObject {
             forName: NSWorkspace.didMountNotification, object: nil, queue: .main
         ) { [weak self] note in
             guard let url = note.userInfo?[NSWorkspace.volumeURLUserInfoKey] as? URL else { return }
+            Logger.importPrompt.info("Mounted: \(url.path, privacy: .public)")
             // We asked for the main queue above, so we really are on the main thread.
-            MainActor.assumeIsolated { self?.volumeMounted(at: url) }
+            MainActor.assumeIsolated { self?.volumeMounted(at: url, isNewMount: true) }
         })
 
         observers.append(center.addObserver(
@@ -90,7 +93,7 @@ final class VolumeWatcher: ObservableObject {
             options: [.skipHiddenVolumes]
         ) ?? []
         for url in mounted {
-            volumeMounted(at: url)
+            volumeMounted(at: url, isNewMount: false)
         }
     }
 
@@ -113,11 +116,17 @@ final class VolumeWatcher: ObservableObject {
         }
     }
 
-    private func volumeMounted(at url: URL) {
-        guard let card = makeCard(from: url) else { return }
-        guard !cards.contains(where: { $0.id == card.id }) else { return }
+    private func volumeMounted(at url: URL, isNewMount: Bool) {
+        guard let card = makeCard(from: url) else {
+            if isNewMount { Logger.importPrompt.info("Not a card or drive: \(url.path, privacy: .public)") }
+            return
+        }
+        guard !cards.contains(where: { $0.id == card.id }) else {
+            Logger.importPrompt.info("Already listed: \(url.path, privacy: .public)")
+            return
+        }
         cards.append(card)
-        onCardInserted?(card)
+        onCardInserted?(card, isNewMount)
     }
 
     private func volumeUnmounted(at url: URL) {

@@ -27,7 +27,7 @@ Lodge is not notarized, so macOS asks before it will launch.
 2. Choose **Open**.
 3. Choose **Open** again.
 
-**Keep Lodge running in the menu bar** leaves Lodge available from its menu bar icon. **Show menu bar icon** and a Login Item are in Settings. The first time Lodge opens, it shows **Welcome to Lodge**. When a card is inserted, Lodge can ask **Import with Lodge?**
+**Keep Lodge running in the menu bar** is off by default. When it is on, closing the window leaves Lodge running. **Show menu bar icon** and **Open at login** are in Settings > General > Menu Bar. The first launch shows **Welcome to Lodge**, a short guide to your first preset. When a card is plugged in while you are in another app, Lodge can ask **Import with Lodge?**
 
 ## Allow access to the card
 
@@ -37,7 +37,7 @@ If you chose Don’t Allow, turn it back on in **System Settings > Privacy & Sec
 
 ## Choose a destination
 
-The Destination column starts empty.
+The first time Lodge opens, **Set up your first preset** picks a destination and builds a preset with you. See [First-launch setup](user-guide.md#first-launch-setup). If you skip it, the Destination column starts empty.
 
 1. Click **Choose Folder…**, or drop a folder from Finder onto Destination.
 2. Lodge remembers that folder.

@@ -1,6 +1,7 @@
 import Foundation
 import AppKit
 import Combine
+import os
 
 /// The app's central object. It owns the settings, the card watcher, the ledger,
 /// which card is selected, and that card's offload session.
@@ -17,6 +18,14 @@ final class AppModel: ObservableObject {
     let presets: PresetStore
     /// The occasional "Support Lodge" card (see SupportPrompt.swift).
     let supportPrompt: SupportPromptStore
+    /// "A7SIII card connected · Import with Lodge?" (see ImportPrompter.swift).
+    let importPrompter: ImportPrompter
+    /// Settings ▸ General ▸ Menu Bar ▸ Open at login.
+    let loginItem: LoginItem
+    /// The menu bar icon is showing (menu bar mode with "Show menu bar icon" on).
+    /// `StatusItemController` follows it. Only `menuBarIconRemovedByUser()` (⌘-dragging the icon
+    /// out) turns "Show menu bar icon" off; turning menu bar mode off leaves that setting alone.
+    @Published private(set) var menuBarIconInserted = false
 
     /// The card shown in the funnel (its mount path).
     @Published private(set) var selectedCardID: String?
@@ -71,6 +80,7 @@ final class AppModel: ObservableObject {
     private var shortRuleObserver: AnyCancellable?
     private var fileRulesObserver: AnyCancellable?
     private var presetsObserver: AnyCancellable?
+    private var menuBarObservers: [AnyCancellable] = []
     /// Video lengths by ledger key (`nil` = couldn't be read), so rescans don't read them again.
     private var durationCache: [String: Double?] = [:]
     /// Reads video lengths for "Skip videos shorter than" (tests swap in a fake).
@@ -90,6 +100,10 @@ final class AppModel: ObservableObject {
         self.supportPrompt = supportPrompt
             ?? (AppModel.isRunningUnitTests ? SupportPromptStore(defaults: nil) : SupportPromptStore())
         self.watcher = VolumeWatcher()
+        // Unit tests and demo mode never ask for notification permission or touch login items.
+        let isLive = !AppModel.isRunningUnitTests && !AppModel.isDemo
+        self.importPrompter = ImportPrompter(usesNotifications: isLive)
+        self.loginItem = LoginItem(isLive: isLive)
 
         // The old Settings ▸ General ▸ Destination folder joins the favorites, once: favorites are
         // now the only place destinations are set. Then start in the default favorite.
@@ -145,8 +159,11 @@ final class AppModel: ObservableObject {
 
         // The watcher must ignore the volume the destination folder lives on.
         watcher.destinationPathProvider = { [weak self] in self?.settings.destinationPath }
-        watcher.onCardInserted = { [weak self] card in self?.cardInserted(card) }
+        watcher.onCardInserted = { [weak self] card, isNewMount in self?.cardInserted(card, isNewMount: isNewMount) }
         watcher.onCardRemoved = { [weak self] card in self?.cardRemoved(card) }
+
+        importPrompter.model = self
+        observeMenuBarSettings()
 
         // Don't watch for cards while unit tests run inside the app.
         if startWatching && !AppModel.isRunningUnitTests {
@@ -159,6 +176,14 @@ final class AppModel: ObservableObject {
     static var demoForcesAppearance: Bool {
         #if DEBUG
         DemoData.launchState != nil && UserDefaults.standard.string(forKey: "LodgeDemoAppearance") != nil
+        #else
+        false
+        #endif
+    }
+
+    static var isDemo: Bool {
+        #if DEBUG
+        DemoData.launchState != nil
         #else
         false
         #endif
@@ -178,22 +203,84 @@ final class AppModel: ObservableObject {
 
     // MARK: Cards
 
-    /// A card was plugged in: fill the funnel with it and bring the window forward.
-    private func cardInserted(_ card: CardVolume) {
+    /// A card was plugged in (or was already there at launch): fill the funnel with it.
+    /// For a card plugged in while Lodge is in the background, "Ask to import" shows a prompt
+    /// (see `ImportPrompter`); with it off, an open window comes forward as before.
+    private func cardInserted(_ card: CardVolume, isNewMount: Bool) {
         if let pending = pendingFormattedMount, pending == card.url.path {
             // The card we just formatted is back, empty.
             pendingFormattedMount = nil
             select(card, keepFormatState: true)
             return
         }
-        guard !isBusy, !formatState.isFormatting else { return }
-        select(card)
-        bringWindowForward()
+        guard isNewMount else {
+            Logger.importPrompt.info("Card already there at launch: \(card.url.path, privacy: .public) (selected, no prompt)")
+            // Already there at launch: the window opens with it (nothing to bring forward).
+            guard !isBusy, !formatState.isFormatting else { return }
+            select(card)
+            return
+        }
+        let userIsLookingAtLodge = MainWindow.isFrontmost
+        Logger.importPrompt.info("Card inserted: \(card.url.path, privacy: .public), new mount \(isNewMount, privacy: .public), Lodge frontmost \(userIsLookingAtLodge, privacy: .public), app active \(NSApp.isActive, privacy: .public), window open \(MainWindow.isOpen, privacy: .public), askToImport \(self.settings.askToImport, privacy: .public), style \(self.settings.importPromptStyle.rawValue, privacy: .public), menu bar mode \(self.settings.keepRunningInMenuBar, privacy: .public), paused \(self.importPrompter.isPaused, privacy: .public), busy \(self.isBusy, privacy: .public)")
+        if !isBusy, !formatState.isFormatting { select(card) }
+        // Already in front: the card is right there in the Card stage.
+        if userIsLookingAtLodge || importPrompter.isPaused {
+            Logger.importPrompt.info("No prompt: \(userIsLookingAtLodge ? "Lodge is in front, the card is selected" : "detection is paused", privacy: .public)")
+            return
+        }
+        if settings.askToImport {
+            importPrompter.cardMounted(card)   // queued until an offload or format finishes
+        } else if MainWindow.isOpen, !isBusy, !formatState.isFormatting {
+            bringWindowForward()
+        }
+    }
+
+    /// The prompt's Import (or the menu bar's "Import from …"): show Lodge with `card` selected.
+    /// Never starts an offload.
+    func showForImport(_ card: CardVolume) {
+        if !isBusy, !formatState.isFormatting, selectedCardID != card.id || (session == nil && !isScanning) {
+            select(card)
+        }
+        MainWindow.show(activate: !AppModel.isDemo)
+    }
+
+    /// Menu bar settings: ask for notification permission when a prompt setting is turned on,
+    /// and let the app's scenes (the menu bar icon) follow the switches.
+    private func observeMenuBarSettings() {
+        menuBarObservers = [
+            settings.$keepRunningInMenuBar.combineLatest(settings.$showMenuBarIcon).sink { [weak self] keep, show in
+                guard let self, self.menuBarIconInserted != (keep && show) else { return }
+                self.menuBarIconInserted = keep && show
+            },
+            settings.$askToImport.dropFirst().filter { $0 }.sink { [weak self] _ in
+                self?.importPrompter.requestPermissionIfNeeded()
+            },
+            settings.$keepRunningInMenuBar.dropFirst().sink { [weak self] on in
+                guard let self else { return }
+                if on {
+                    if self.settings.askToImport { self.importPrompter.requestPermissionIfNeeded() }
+                } else {
+                    // Without the menu bar, Lodge quits with its window again: no hidden login item.
+                    if self.loginItem.isOn { self.loginItem.set(false) }
+                    if !AppModel.isRunningUnitTests, NSApp.activationPolicy() == .accessory {
+                        NSApp.setActivationPolicy(.regular)
+                    }
+                }
+            },
+        ]
+    }
+
+    /// The user ⌘-dragged the menu bar icon out of the menu bar: "Show menu bar icon" goes off.
+    func menuBarIconRemovedByUser() {
+        guard menuBarIconInserted else { return }
+        settings.showMenuBarIcon = false
+        menuBarIconInserted = false
     }
 
     private func cardRemoved(_ card: CardVolume) {
         // Formatting unmounts and remounts the card; that's not the user pulling it out.
         if formattingCardPath == card.url.path || pendingFormattedMount == card.url.path { return }
+        importPrompter.cardRemoved(card)
         guard selectedCardID == card.id else { return }
         if let current = session, current.card.id == card.id, current.phase != .ready {
             // Keep the progress/summary visible; just note the card is gone.
@@ -289,6 +376,7 @@ final class AppModel: ObservableObject {
             self.refreshInventory(for: newSession)
             let allGood = OffloadFeedback.isCleanSuccess(summary)
             self.supportPrompt.offloadFinished(cleanSuccess: allGood)
+            self.importPrompter.offloadEnded()
             if OffloadFeedback.shouldPlaySuccessSound(summary, enabled: self.settings.playSuccessSound) {
                 NSSound(named: "Glass")?.play()
             }
@@ -640,8 +728,10 @@ final class AppModel: ObservableObject {
         switch outcome {
         case .refused(let message), .failed(let message):
             formatState = .failed(message)
+            importPrompter.offloadEnded()
         case .formatted(let name, let mountPoint):
             formatState = .formatted(cardName: name)
+            importPrompter.offloadEnded()
             cardInventory = CardInventory()   // empty: nothing pending, nothing to format
             let mount = mountPoint ?? card.url.path
             if settings.ejectAfterOffload {
@@ -660,10 +750,8 @@ final class AppModel: ObservableObject {
 
     /// Activates Lodge and brings its main window to the front.
     func bringWindowForward() {
-        NSApp.activate()
-        let main = NSApp.windows.first { $0.identifier?.rawValue.hasPrefix("main") == true }
-            ?? NSApp.windows.first { $0.canBecomeMain }
-        main?.makeKeyAndOrderFront(nil)
+        guard NSApp != nil, !AppModel.isRunningUnitTests else { return }
+        MainWindow.show()
     }
 
     #if DEBUG

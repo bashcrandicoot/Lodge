@@ -48,6 +48,10 @@ Once a card is scanned, **Layout** in Destination shows the folders Lodge will m
 
 Removable or ejectable volumes mounted under `/Volumes`. A card that was already inserted at launch counts. The startup disk does not, and neither does the volume your destination folder is on.
 
+## Why didn’t Lodge ask to import my card?
+
+Lodge asks only while it is running, and only when you are in another app. Keep it running after you close the window with **Settings > General > Menu Bar > Keep Lodge running in the menu bar**. If a Focus or Do Not Disturb is on, macOS holds the notification back: set **Ask with** to **Floating panel**. Lodge also skips drives without camera folders or media, your destination drives, and cards you chose **Don’t ask** for. See [Ask to import](user-guide.md#ask-to-import).
+
 ## Why did macOS block Lodge?
 
 Lodge is not notarized.
@@ -68,7 +72,9 @@ After five offloads where every file was copied and verified, and at least three
 
 ## How do I update Lodge?
 
-**Lodge > Check for Updates…** looks now. The item is dimmed while a check is already running. In Settings > General, under **Updates**, **Automatically check for updates** is on, and **Automatically download and install updates** is off. The second switch is unavailable while automatic checks are off. Lodge checks once a day. Updates are EdDSA-signed through Sparkle. You can still [download Lodge from Gumroad](https://bashframes.gumroad.com/l/lodge).
+**Lodge > Check for Updates…** looks now. The item is dimmed while a check is already running. In Settings > General, under **Updates**, **Automatically check for updates** is on, and **Automatically download and install updates** is off. The second switch is unavailable while automatic checks are off. Lodge checks once a day. Updates are EdDSA-signed through Sparkle.
+
+Lodge 1.0.0 can’t update itself. [Download Lodge from Gumroad](https://bashframes.gumroad.com/l/lodge) once to get 1.0.1. After that, Lodge updates itself.
 
 ## How are files sorted into folders?
 
@@ -94,7 +100,7 @@ Lodge does not overwrite. With `{seq}` in the template, numbering continues afte
 
 ## What happens the first time I open Lodge?
 
-Lodge shows **Welcome to Lodge**. **Keep Lodge running in the menu bar** and **Show menu bar icon** are in Settings, and Lodge can be a Login Item. When a card is inserted, Lodge can ask **Import with Lodge?**.
+**Welcome to Lodge** is a short guide to your first preset: destination, folders, naming and safety. It does not show if you already have presets, favorites, or offloads. **Keep Lodge running in the menu bar** is off by default. When it is on, closing the window leaves Lodge running. **Show menu bar icon** and **Open at login** are in Settings > General > Menu Bar. When a card is plugged in while you are in another app, Lodge can ask **Import with Lodge?** as a notification or a floating panel.
 
 ## I turned a file type off. Will Format still wait for it?
 

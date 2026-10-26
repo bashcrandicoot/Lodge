@@ -2,15 +2,18 @@
 
 ## 1.0.1
 
-- **Lodge > Check for Updates…** looks for a new version. The item is dimmed while a check is already running. Settings > General has an **Updates** section: **Automatically check for updates** (on) and **Automatically download and install updates** (off, and unavailable while checks are off). Lodge checks once a day. Updates are EdDSA-signed through Sparkle. Copying never uploads anything.
-- **Help > Contact Support…** opens an email to bashframes@gmail.com, subject Lodge Support, with the Lodge and macOS versions under the message. **Lodge > Support Lodge…** and **Help > Support Lodge…** open the Gumroad page in your browser. **Lodge > About Lodge** says Made by BashFrames, with a link to that email. Settings > General ends with the same credit, a **Support** link, and **Support Lodge**.
-- After five offloads where every file was copied and verified, and at least three days after that version first opens, a **Support Lodge** card appears when Lodge is idle. It never appears during a copy. **Maybe Later** asks once more, 30 days later. **Support Lodge** and **Don’t Ask Again** stop it. Lodge asks at most twice.
-- Each file goes in a folder named for its extension, in capitals, inside the folder the template makes: `MP4/`, `ARW/`, `WAV/`, and the rest. `.mp4` and `.MP4` share a folder. `.JPG`, `.JPEG`, and `.JPE` share `JPG/`. `.TIF` and `.TIFF` share `TIF/`. Proxies stay in **Proxies/** and sidecars stay in **Sidecars/**. **Flat** skips the shoot folders and still sorts files into one folder per type.
-- The preset menu sits at the top right of the window, just left of **Recent Offloads** and **Settings**, and the window title is hidden.
-- The Layout tree expands and collapses. **Expand All** (or Option-click a triangle) and **Collapse All** sit beside **Layout**.
-- A wagon drives across the offload bar while files copy, and parks when the copy is verified.
-- The first launch shows **Welcome to Lodge**. Inserting a card can ask **Import with Lodge?**. **Keep Lodge running in the menu bar**, **Show menu bar icon**, and a Login Item keep Lodge available after the window closes.
-- The Quick dump checkbox reads **Quick dump**, with an ⓘ beside it.
+**Coming from 1.0.0?** Lodge 1.0.0 can’t update itself, so [download 1.0.1 from Gumroad](https://bashframes.gumroad.com/l/lodge) once. After that, Lodge updates itself.
+
+### New
+
+- **Menu bar mode.** **Keep Lodge running in the menu bar** is off by default. When it is on, closing the window leaves Lodge running, out of the Dock and Command-Tab, with **Show menu bar icon** (on by default) and **Open at login**.
+- **Ask to import.** When a card is plugged in while you are in another app, Lodge asks **Import with Lodge?** as a notification or a floating panel.
+- **First-launch setup.** **Welcome to Lodge** is a short guide to your first preset: destination, folders, naming and safety.
+- **A folder for each file type.** Inside the last folder, files are sorted into one folder per extension (`MP4/`, `WAV/`, `ARW/`). JPG and JPEG share `JPG/`. **Flat** skips the shoot folders and still sorts by type.
+- **Check for Updates.** **Lodge > Check for Updates…** looks now and is dimmed while a check is running. Settings > General: **Automatically check for updates** (on) and **Automatically download and install updates** (off, and unavailable while checks are off). Lodge checks once a day. Updates are EdDSA-signed through Sparkle.
+- **Support Lodge.** Links in the Lodge and Help menus and the Settings footer. The support card appears after five clean offloads and three days, when Lodge is idle, at most twice. **Maybe Later** waits 30 days. **Support Lodge** and **Don’t Ask Again** stop it.
+- **Contact.** **About Lodge** says Made by BashFrames and links to bashframes@gmail.com. **Help > Contact Support…** opens that address.
+- **Also new:** a new app icon, the preset menu at the top right, an expandable Layout tree, and a wagon on the offload bar.
 
 ## 1.0.0
 

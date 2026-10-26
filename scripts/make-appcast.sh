@@ -10,7 +10,7 @@
 # Optional release notes: Lodge-<version>.md (or .html) next to the zip.
 #
 # Only appcast.xml in the repo is changed. Nothing is uploaded or pushed.
-# See docs/RELEASING.md for the whole release, step by step.
+# See RELEASING.md for the whole release, step by step.
 #
 # Environment (optional):
 #   SPARKLE_BIN    folder with Sparkle's generate_appcast (found automatically otherwise)
@@ -90,7 +90,13 @@ echo "(If macOS asks whether generate_appcast may use your Keychain, click Alway
 "$bin/generate_appcast" "${args[@]}" "$staging"
 
 # Refuse an unsigned entry: Lodge only installs updates signed with your key.
-if ! grep -A20 "<sparkle:version>$app_build</sparkle:version>" "$staging/appcast.xml" | grep -q 'sparkle:edSignature='; then
+# Look anywhere in the new <item>: embedded release notes push the enclosure (which carries
+# the signature) well below <sparkle:version>.
+new_item() {
+    awk -v b="<sparkle:version>$app_build</sparkle:version>" \
+        '/<item>/{buf=""} {buf=buf $0 "\n"} /<\/item>/{if (index(buf, b)) printf "%s", buf}' "$1"
+}
+if ! new_item "$staging/appcast.xml" | grep -q 'sparkle:edSignature='; then
     echo "The new entry wasn't signed (does your Keychain key match SUPublicEDKey?)." >&2
     echo "appcast.xml was left unchanged." >&2
     exit 70
@@ -99,4 +105,4 @@ fi
 cp "$staging/appcast.xml" "$ROOT/appcast.xml"
 echo
 echo "Updated appcast.xml with Lodge $version. Next: commit it, upload the zip and dmg"
-echo "to the v$version GitHub release, then push (see docs/RELEASING.md)."
+echo "to the v$version GitHub release, then push (see RELEASING.md)."

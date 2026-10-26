@@ -8,6 +8,8 @@ Artwork and screenshots for people working on Lodge. The public README and the w
 | --- | --- |
 | `lodge-cabin-night/` | The night Lodge Cabin icon set the app uses now: one PNG per slot, `Contents.json`, `icon_1024.png`, and the masters `lodge-cabin.svg` and `lodge-cabin-small.svg`. |
 | `lodge-cabin-sunset/` | The previous sunset Lodge Cabin set, including the 2400-pixel header masters `lodge-header-dark.png` and `lodge-header-light.png`. |
+| `lodge-cabin-night/menubar/` | `MenuBarIcon.svg`, the master for the menu bar icon (`MenuBarIcon` PNGs in the asset catalog, drawn as a template image). |
+| `onboarding/` | First-launch setup: `SPEC.md`, the screen mockups and the scene, glyph and wordmark masters behind `OnboardingSplashScene`, `OnboardingDoneScene`, `LodgeGlyph` and `LodgeWordmark`. |
 | `support-graphic/` | Art for the Support Lodge card (`SupportHeader` in the asset catalog). |
 | `icon-1024.png` | Master app icon, 1024×1024. |
 | `screenshots/` | Screenshots taken in demo mode. The copies used on the site and in the README live in `docs/assets/screenshots/`. |
