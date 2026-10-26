@@ -221,7 +221,8 @@ enum DemoData {
         // The demo never runs diskutil: every command "fails", so Format can't erase anything.
         let presets = presetStore(cameras: cameras)
         let model = AppModel(settings: settings, ledger: ledger, cameras: cameras, destinations: destinationStore(),
-                             presets: presets, formatter: CardFormatter(runner: DemoCommandRunner()), startWatching: false)
+                             presets: presets, supportPrompt: SupportPromptStore(defaults: nil),
+                             formatter: CardFormatter(runner: DemoCommandRunner()), startWatching: false)
         settings.destinationPath = FileManager.default.urls(for: .moviesDirectory, in: .userDomainMask).first?.path
         if let theme = launchTheme { settings.themeID = theme }
         if let layout = launchLayout { settings.mediaLayout = layout }

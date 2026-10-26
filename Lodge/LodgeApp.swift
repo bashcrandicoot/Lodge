@@ -30,10 +30,12 @@ struct LodgeApp: App {
             CommandGroup(replacing: .appInfo) {
                 Button("About Lodge") { Support.showAboutPanel() }
                 CheckForUpdatesView(updater: AppUpdates.updater)
+                Button("Support Lodge…") { Support.openTipJar() }
             }
-            // Help ▸ Contact Support…
+            // Help ▸ Contact Support… and Support Lodge…
             CommandGroup(after: .help) {
                 Button("Contact Support…") { Support.contactSupport() }
+                Button("Support Lodge…") { Support.openTipJar() }
             }
         }
 

@@ -6,6 +6,8 @@ import AppKit
 enum Support {
     static let developerName = "BashFrames"
     static let email = "bashframes@gmail.com"
+    /// Tips for Lodge (Help ▸ Support Lodge…, the Settings footer and the support card).
+    static let tipJarURL = URL(string: "https://bashframe.gumroad.com/l/lodge")!
 
     /// A plain `mailto:` link, for the About window and the Settings footer.
     static var emailURL: URL { mailURL(body: nil) }
@@ -55,6 +57,11 @@ enum Support {
     static func contactSupport() {
         NSWorkspace.shared.open(supportEmailURL)
     }
+
+    /// Opens the Gumroad page in the browser.
+    static func openTipJar() {
+        NSWorkspace.shared.open(tipJarURL)
+    }
 }
 
 /// The quiet "Made by BashFrames · Support" line at the bottom of Settings ▸ General.
@@ -65,6 +72,10 @@ struct SettingsCreditsFooter: View {
             Text("·").accessibilityHidden(true)
             Link("Support", destination: Support.supportEmailURL)
                 .help("Email \(Support.email)")
+            Text("·").accessibilityHidden(true)
+            Link("Support Lodge ♥", destination: Support.tipJarURL)
+                .help("Leave a tip for Lodge on Gumroad")
+                .accessibilityLabel("Support Lodge")
         }
         .font(.caption)
         .foregroundStyle(.secondary)

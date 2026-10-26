@@ -31,6 +31,12 @@ struct ContentView: View {
                 .background(.bar)
         }
         .background(ThemeBackground())
+        .modifier(SupportPromptOverlay())
+        .task {
+            // Lodge is idle a moment after launch: the support card may show then too.
+            try? await Task.sleep(for: .seconds(3))
+            model.considerSupportPrompt()
+        }
         .toolbar {
             // With the title hidden the toolbar has nothing on the left, so a flexible space
             // keeps Recent Offloads and Settings on the trailing side, away from the traffic lights.
@@ -79,6 +85,11 @@ struct ContentView: View {
                     }
                 }
             }
+            // Screenshots: `-LodgeDemoSupportPrompt YES` shows the support card.
+            if DemoData.launchState != nil, UserDefaults.standard.bool(forKey: "LodgeDemoSupportPrompt") {
+                try? await Task.sleep(for: .milliseconds(600))
+                model.supportPrompt.forceShow()
+            }
             // Screenshots: `-LodgeDemoShowFormatAlert YES` opens the Format confirmation.
             if DemoData.launchState != nil, UserDefaults.standard.bool(forKey: "LodgeDemoShowFormatAlert") {
                 try? await Task.sleep(for: .milliseconds(900))
@@ -103,6 +114,7 @@ extension View {
             .environmentObject(model.cameras)
             .environmentObject(model.destinations)
             .environmentObject(model.presets)
+            .environmentObject(model.supportPrompt)
     }
 }
 

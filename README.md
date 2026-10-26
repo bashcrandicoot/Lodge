@@ -312,6 +312,18 @@ using the feed in [`appcast.xml`](appcast.xml), and offers to install them. Choo
 Updates are signed, so Lodge only installs ones you published. How to publish one:
 [docs/RELEASING.md](docs/RELEASING.md). (1.0.0 predates Sparkle and can't update itself.)
 
+## Support Lodge
+
+Lodge is free. **Lodge ▸ Support Lodge…**, **Help ▸ Support Lodge…** and the *Support Lodge ♥*
+link at the bottom of Settings ▸ General open the tip page on
+[Gumroad](https://bashframe.gumroad.com/l/lodge). After the 5th successful offload, and at
+least 3 days after Lodge first opened, a small card asks once (only when Lodge is idle or
+after you click Done, never during a transfer). *Maybe Later* asks one more time 30 days
+later at most; *Support Lodge* or *Don't Ask Again* stops it for good. It's all kept in
+Lodge's own preferences: no notifications, no network calls, no tracking. The header art is
+in `Design/support-graphic/` (the `SupportHeader` image in the asset catalog).
+Help ▸ Contact Support… emails [bashframes@gmail.com](mailto:bashframes@gmail.com).
+
 ## Run it
 
 1. Open `Lodge.xcodeproj` in Xcode (double-click it).
@@ -365,7 +377,8 @@ theme, `-LodgeDemoLayout grid` for the thumbnail grid (`-LodgeDemoListThumbnails
 for list thumbnails), `-LodgeDemoScope skipped|offloaded` to show the skipped short clips
 or the files offloaded before, `-LodgeDemoQuickLook C0008.MP4` to open Quick Look on a file,
 `-LodgeDemoFolderTemplate '{project}_{date}/{camera}/{type}'` to use another folder template,
-`-LodgeDemoAbout YES` to open the About window,
+`-LodgeDemoAbout YES` to open the About window, `-LodgeDemoSupportPrompt YES` to show the
+Support Lodge card,
 `-LodgeDemoExpandTree YES` (or `files`) to open the whole Layout tree (and its file lists),
 `-LodgeDemoWindowSize 1060x700` to size the window (centred on the sharpest screen), `-LodgeDemoShowFormatAlert YES` to show the Format confirmation, or
 `-LodgeDemoPlainTheme YES` to see the solid colours used with Increase contrast. Demo windows
@@ -381,6 +394,8 @@ Every view also has `#Preview`s you can open in Xcode's canvas.
 | File | What's in it |
 | --- | --- |
 | `LodgeApp.swift` | App entry point: main window, Settings scene and Check for Updates… |
+| `Support.swift` | BashFrames, the support email and tip page (one place to change them), About credits, Settings footer |
+| `SupportPrompt.swift` | The Support Lodge card and its timing rules |
 | `Updates.swift` | Sparkle updater, the Check for Updates… menu item and the update settings |
 | `AppModel.swift` | Ties settings, cameras, destinations, card watcher, ledger and the current offload together; eject, format, sound |
 | `Theme.swift` | Themes (Default and the colour gradients), window wash and prominent button style, with solid fallbacks |

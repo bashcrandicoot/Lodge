@@ -15,6 +15,8 @@ final class AppModel: ObservableObject {
     let cameras: CameraStore
     let destinations: DestinationStore
     let presets: PresetStore
+    /// The occasional "Support Lodge" card (see SupportPrompt.swift).
+    let supportPrompt: SupportPromptStore
 
     /// The card shown in the funnel (its mount path).
     @Published private(set) var selectedCardID: String?
@@ -76,6 +78,7 @@ final class AppModel: ObservableObject {
 
     init(settings: AppSettings? = nil, ledger: Ledger? = nil, cameras: CameraStore? = nil,
          destinations: DestinationStore? = nil, presets: PresetStore? = nil,
+         supportPrompt: SupportPromptStore? = nil,
          formatter: CardFormatter = CardFormatter(), startWatching: Bool = true) {
         self.formatter = formatter
         self.settings = settings ?? AppSettings()
@@ -84,6 +87,8 @@ final class AppModel: ObservableObject {
         self.destinations = destinations ?? DestinationStore()
         // (As the unit tests' host, never touch the user's saved presets.)
         self.presets = presets ?? (AppModel.isRunningUnitTests ? PresetStore(fileURL: nil) : PresetStore())
+        self.supportPrompt = supportPrompt
+            ?? (AppModel.isRunningUnitTests ? SupportPromptStore(defaults: nil) : SupportPromptStore())
         self.watcher = VolumeWatcher()
 
         // The old Settings ▸ General ▸ Destination folder joins the favorites, once: favorites are
@@ -260,6 +265,13 @@ final class AppModel: ObservableObject {
         } else {
             select(current.card)   // rescan: everything just copied now shows as already offloaded
         }
+        considerSupportPrompt()
+    }
+
+    /// Shows the "Support Lodge" card if it's due, but only while nothing is being copied or formatted.
+    func considerSupportPrompt() {
+        guard !isBusy, !formatState.isFormatting else { return }
+        supportPrompt.showIfDue()
     }
 
     private func clearSelection() {
@@ -276,6 +288,7 @@ final class AppModel: ObservableObject {
             guard let self, let newSession else { return }
             self.refreshInventory(for: newSession)
             let allGood = OffloadFeedback.isCleanSuccess(summary)
+            self.supportPrompt.offloadFinished(cleanSuccess: allGood)
             if OffloadFeedback.shouldPlaySuccessSound(summary, enabled: self.settings.playSuccessSound) {
                 NSSound(named: "Glass")?.play()
             }
@@ -335,6 +348,7 @@ final class AppModel: ObservableObject {
         // A quick dump doesn't use the project, so it doesn't replace the remembered one.
         if !settings.quickDump { settings.rememberProject(session.projectInput) }
         cameras.remember(session.cameraID, forCard: session.card.identity)
+        supportPrompt.hide()   // never on screen during a transfer
         session.start(plan: plan, destination: destination, ledger: ledger)
     }
 
