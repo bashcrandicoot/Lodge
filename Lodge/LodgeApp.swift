@@ -26,9 +26,14 @@ struct LodgeApp: App {
         .windowResizability(.contentMinSize)
         .windowToolbarStyle(.unified)
         .commands {
-            // Lodge ▸ Check for Updates… (right after About Lodge)
-            CommandGroup(after: .appInfo) {
+            // Lodge ▸ About Lodge (with the support link), then Check for Updates…
+            CommandGroup(replacing: .appInfo) {
+                Button("About Lodge") { Support.showAboutPanel() }
                 CheckForUpdatesView(updater: AppUpdates.updater)
+            }
+            // Help ▸ Contact Support…
+            CommandGroup(after: .help) {
+                Button("Contact Support…") { Support.contactSupport() }
             }
         }
 
@@ -72,6 +77,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         #if DEBUG
         if DemoData.launchState != nil { DemoData.drawWindowsAsActive() }
+        // Screenshots: `-LodgeDemoAbout YES` opens the About window.
+        if DemoData.launchState != nil, UserDefaults.standard.bool(forKey: "LodgeDemoAbout") {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { Support.showAboutPanel() }
+        }
         switch UserDefaults.standard.string(forKey: "LodgeDemoAppearance") {
         case "light": NSApp.appearance = NSAppearance(named: .aqua)
         case "dark": NSApp.appearance = NSAppearance(named: .darkAqua)

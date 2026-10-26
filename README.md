@@ -365,6 +365,7 @@ theme, `-LodgeDemoLayout grid` for the thumbnail grid (`-LodgeDemoListThumbnails
 for list thumbnails), `-LodgeDemoScope skipped|offloaded` to show the skipped short clips
 or the files offloaded before, `-LodgeDemoQuickLook C0008.MP4` to open Quick Look on a file,
 `-LodgeDemoFolderTemplate '{project}_{date}/{camera}/{type}'` to use another folder template,
+`-LodgeDemoAbout YES` to open the About window,
 `-LodgeDemoExpandTree YES` (or `files`) to open the whole Layout tree (and its file lists),
 `-LodgeDemoWindowSize 1060x700` to size the window (centred on the sharpest screen), `-LodgeDemoShowFormatAlert YES` to show the Format confirmation, or
 `-LodgeDemoPlainTheme YES` to see the solid colours used with Increase contrast. Demo windows

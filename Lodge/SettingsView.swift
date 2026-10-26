@@ -92,6 +92,10 @@ struct GeneralSettingsView: View {
             if let updater {
                 UpdateSettingsSection(updater: updater)
             }
+            Section {
+            } footer: {
+                SettingsCreditsFooter()
+            }
         }
         .formStyle(.grouped)
         .themeControlTint()
