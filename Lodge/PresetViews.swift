@@ -311,7 +311,13 @@ private struct PresetEditor: View {
                         }
                     }))
             }
-            Toggle("Quick dump: skip project name", isOn: binding(\.quickDump))
+            Toggle(isOn: binding(\.quickDump)) {
+                HStack(spacing: 4) {
+                    Text("Quick dump")
+                    InfoHint(text: QuickDumpHelp.text, subject: "Quick dump")
+                }
+            }
+            .accessibilityHint(QuickDumpHelp.text)
             LabeledContent("File rules") {
                 VStack(alignment: .trailing, spacing: 4) {
                     Text(Self.rulesSummary(preset.fileRules))

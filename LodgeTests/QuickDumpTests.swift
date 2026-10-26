@@ -1,7 +1,7 @@
 import XCTest
 @testable import Lodge
 
-/// "Quick dump: skip project name", and the drag-and-drop folder tree's template edits.
+/// "Quick dump" (skip the project name), and the drag-and-drop folder tree's template edits.
 final class QuickDumpTests: XCTestCase {
     func testProjectDropsOutOfFileNamesCleanly() {
         XCTAssertEqual(QuickDump.fileTemplate("{date}_{project}_{seq}"), "{date}_{seq}")

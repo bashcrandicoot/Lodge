@@ -1,6 +1,6 @@
 import Foundation
 
-/// "Quick dump: skip project name". Takes `{project}` out of the templates cleanly: no empty
+/// "Quick dump" (skips the project name). Takes `{project}` out of the templates cleanly: no empty
 /// folder levels, no doubled or dangling separators. Pure, so it's unit tested.
 enum QuickDump {
     /// Characters that separate parts of a name ("2026-10-25_Coastline_0001").

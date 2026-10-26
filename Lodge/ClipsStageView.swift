@@ -1164,23 +1164,25 @@ private struct CameraField: View {
 }
 #endif
 
-/// "Quick dump: skip project name": for just getting the footage off the camera.
+/// "Quick dump" (with an ⓘ): for just getting the footage off the camera.
 private struct QuickDumpToggle: View {
     let isDisabled: Bool
     @EnvironmentObject private var settings: AppSettings
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 4) {
             Toggle(isOn: Binding(
                 get: { settings.quickDump },
                 set: { value in withAnimation(reduceMotion ? nil : .snappy(duration: 0.25)) { settings.quickDump = value } })) {
-                Text("Quick dump: skip project name")
+                Text("Quick dump")
             }
             .toggleStyle(.checkbox)
             .disabled(isDisabled)
             .fixedSize()
+            .help(QuickDumpHelp.text)
+            .accessibilityHint(QuickDumpHelp.text)
+            InfoHint(text: QuickDumpHelp.text, subject: "Quick dump")
         }
-        .help("Leaves {project} out of folder and file names, so you don’t need to type one. Numbering carries on from what’s already there.")
     }
 }

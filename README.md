@@ -203,7 +203,8 @@ the menu says *Edited* and offers **Update “Name”**. Manage them in **Settin
 
 ## Quick dump
 
-**Quick dump: skip project name** (under the Camera field) is for just getting the footage
+**Quick dump** (under the Camera field; hover its ⓘ for a reminder) skips the project name
+and dumps all the footage straight into a dated folder. It's for just getting the footage
 off a card. `{project}` is taken out of both templates cleanly — `{date}/{project}` +
 `{date}_{project}_{seq}` become `{date}` + `{date}_{seq}` — so there's no project to type.
 Numbering carries on from what's already in the folder.
