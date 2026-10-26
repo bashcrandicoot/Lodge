@@ -1,12 +1,12 @@
 import Foundation
 
 /// The state of offloading one card: what's on it, what the user typed,
-/// and progress while copying. The `OffloadSheet` view displays this.
+/// and progress while copying.
 @MainActor
 final class OffloadSession: ObservableObject, Identifiable {
     enum Phase: Equatable {
         case ready      // waiting for the user to press Offload
-        case running    // copying
+        case running    // copying / verifying
         case finished   // done (or cancelled) — showing the summary
     }
 
@@ -21,6 +21,14 @@ final class OffloadSession: ObservableObject, Identifiable {
     @Published private(set) var phase: Phase = .ready
     @Published private(set) var progress = OffloadProgress()
     @Published private(set) var summary: OffloadSummary?
+    @Published private(set) var startedAt: Date?
+    /// Paths of the files copied in this offload (for "Show in Finder").
+    @Published private(set) var copiedPaths: [String] = []
+    /// The card was ejected or unplugged after the offload started.
+    @Published var cardRemoved = false
+
+    /// Called once when the offload ends (successfully, with failures, or cancelled).
+    var onFinished: ((OffloadSummary) -> Void)?
 
     private var task: Task<Void, Never>?
 
@@ -37,21 +45,11 @@ final class OffloadSession: ObservableObject, Identifiable {
     /// Total size of the new clips, in bytes.
     var newBytes: Int64 { newClips.reduce(0) { $0 + $1.size } }
 
-    /// Example of the first file name, shown under the text field.
-    var exampleName: String? {
-        guard !shootName.isEmpty, let first = newClips.min(by: { $0.captureDate < $1.captureDate }) else { return nil }
-        let date = Renamer.dateString(for: first.captureDate)
-        let file = Renamer.fileName(
-            prefix: Renamer.prefix(dateString: date, shootName: shootName),
-            sequence: 1,
-            fileExtension: first.url.pathExtension)
-        return "\(date)/\(shootName)/\(file)"
-    }
-
     /// Starts copying in the background.
     func start(destination: URL, ledger: Ledger) {
         guard phase == .ready, !shootName.isEmpty, !newClips.isEmpty else { return }
         phase = .running
+        startedAt = Date()
         progress = OffloadProgress(filesTotal: newClips.count, bytesTotal: newBytes)
 
         let job = OffloadJob(
@@ -71,10 +69,12 @@ final class OffloadSession: ObservableObject, Identifiable {
                 },
                 record: { entry in
                     await ledger.add(entry)
+                    await MainActor.run { self.copiedPaths.append(entry.destinationPath) }
                 })
             await MainActor.run {
                 self.summary = result
                 self.phase = .finished
+                self.onFinished?(result)
             }
         }
     }
@@ -83,4 +83,14 @@ final class OffloadSession: ObservableObject, Identifiable {
     func cancel() {
         task?.cancel()
     }
+
+    #if DEBUG
+    /// Puts the session into a given state for previews and screenshots.
+    func applyDemo(phase: Phase, progress: OffloadProgress, startedAt: Date?, summary: OffloadSummary?) {
+        self.phase = phase
+        self.progress = progress
+        self.startedAt = startedAt
+        self.summary = summary
+    }
+    #endif
 }

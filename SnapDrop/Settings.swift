@@ -1,21 +1,32 @@
 import Foundation
 import AppKit
 
-/// User preferences. Right now that's just the destination folder.
+/// User preferences: the destination folder and whether to eject cards when done.
 ///
-/// The folder path is stored in `UserDefaults` (a small built-in key/value store).
-/// That's fine because SnapDrop is not sandboxed, so a plain path keeps working.
+/// Stored in `UserDefaults` (a small built-in key/value store). A plain folder path is
+/// fine because SnapDrop is not sandboxed.
 @MainActor
 final class AppSettings: ObservableObject {
     private static let destinationKey = "destinationPath"
+    private static let ejectKey = "ejectAfterOffload"
+
+    /// Where settings are saved. `nil` = don't save (used for previews and demo mode).
+    private let defaults: UserDefaults?
 
     /// Absolute path of the folder clips are offloaded into, or `nil` if not chosen yet.
     @Published var destinationPath: String? {
-        didSet { UserDefaults.standard.set(destinationPath, forKey: Self.destinationKey) }
+        didSet { defaults?.set(destinationPath, forKey: Self.destinationKey) }
     }
 
-    init() {
-        destinationPath = UserDefaults.standard.string(forKey: Self.destinationKey)
+    /// Eject the card automatically after an offload where every clip verified. Off by default.
+    @Published var ejectAfterOffload: Bool {
+        didSet { defaults?.set(ejectAfterOffload, forKey: Self.ejectKey) }
+    }
+
+    init(defaults: UserDefaults? = .standard) {
+        self.defaults = defaults
+        destinationPath = defaults?.string(forKey: Self.destinationKey)
+        ejectAfterOffload = defaults?.bool(forKey: Self.ejectKey) ?? false
     }
 
     /// The destination as a URL (handier for file operations).

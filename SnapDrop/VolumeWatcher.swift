@@ -126,6 +126,13 @@ final class VolumeWatcher: ObservableObject {
         removed.forEach { onCardRemoved?($0) }
     }
 
+    #if DEBUG
+    /// Previews/demo mode only: pretend these cards are mounted.
+    func injectDemoCards(_ demoCards: [CardVolume]) {
+        cards = demoCards
+    }
+    #endif
+
     /// Reads the volume's properties and returns a `CardVolume` if it qualifies.
     private func makeCard(from url: URL) -> CardVolume? {
         guard let values = try? url.resourceValues(forKeys: Set(Self.resourceKeys)) else { return nil }

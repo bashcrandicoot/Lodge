@@ -37,7 +37,8 @@ enum Copier {
     static func copyAndVerify(
         source: URL,
         to finalURL: URL,
-        onBytes: (Int64) async -> Void = { _ in }
+        onBytes: (Int64) async -> Void = { _ in },
+        onVerify: () async -> Void = {}
     ) async throws -> String {
         let fm = FileManager.default
         let partial = partialURL(for: finalURL)
@@ -78,6 +79,7 @@ enum Copier {
 
             // Step 2: hash the copy as it is on disk.
             try Task.checkCancellation()
+            await onVerify()
             let copyHash = try sha256(of: partial)
             guard copyHash == sourceHash else {
                 throw CopierError.checksumMismatch(source.lastPathComponent)
@@ -130,6 +132,8 @@ struct OffloadProgress: Sendable, Equatable {
     var currentFile = ""
     var bytesDone: Int64 = 0
     var bytesTotal: Int64 = 0
+    /// True while the just-copied file is being re-read and checked.
+    var isVerifying = false
 
     var fraction: Double {
         bytesTotal > 0 ? min(1, Double(bytesDone) / Double(bytesTotal)) : 0
@@ -159,6 +163,13 @@ struct OffloadJob: Sendable {
 /// Runs a whole offload: names, copies and verifies each clip in order.
 /// Meant to be called off the main thread (see `OffloadSession.start`).
 enum Offloader {
+    /// The order clips are copied (and numbered) in: oldest first, then by path.
+    static func order(_ clips: [Clip]) -> [Clip] {
+        clips.sorted {
+            ($0.captureDate, $0.relativePath) < ($1.captureDate, $1.relativePath)
+        }
+    }
+
     static func run(
         job: OffloadJob,
         progress: @Sendable (OffloadProgress) async -> Void,
@@ -167,9 +178,7 @@ enum Offloader {
         var summary = OffloadSummary(skipped: job.alreadyOffloaded)
 
         // Oldest first, so numbering follows the order clips were shot.
-        let ordered = job.clips.sorted {
-            ($0.captureDate, $0.relativePath) < ($1.captureDate, $1.relativePath)
-        }
+        let ordered = order(job.clips)
 
         var state = OffloadProgress(
             filesTotal: ordered.count,
@@ -183,8 +192,15 @@ enum Offloader {
                 break
             }
             state.currentFile = clip.url.lastPathComponent
+            state.isVerifying = false
             await progress(state)
             let bytesBefore = state.bytesDone
+
+            // What the UI shows once this clip is copied and being verified.
+            var verifyingState = state
+            verifyingState.bytesDone = bytesBefore + clip.size
+            verifyingState.isVerifying = true
+            let verifying = verifyingState
 
             do {
                 let date = Renamer.dateString(for: clip.captureDate)
@@ -193,10 +209,14 @@ enum Offloader {
                 let prefix = Renamer.prefix(dateString: date, shootName: job.shootName)
                 let finalURL = allocator.nextFileURL(folder: folder, prefix: prefix, fileExtension: clip.url.pathExtension)
 
-                let hash = try await Copier.copyAndVerify(source: clip.url, to: finalURL) { bytes in
-                    state.bytesDone += bytes
-                    await progress(state)
-                }
+                let hash = try await Copier.copyAndVerify(
+                    source: clip.url,
+                    to: finalURL,
+                    onBytes: { bytes in
+                        state.bytesDone += bytes
+                        await progress(state)
+                    },
+                    onVerify: { await progress(verifying) })
 
                 summary.copied += 1
                 await record(LedgerEntry(
@@ -218,6 +238,7 @@ enum Offloader {
 
             state.bytesDone = bytesBefore + clip.size
             state.filesDone += 1
+            state.isVerifying = false
             await progress(state)
         }
         return summary
