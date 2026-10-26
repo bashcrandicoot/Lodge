@@ -4,7 +4,7 @@ Home base for your media. Lodge is a universal app for Apple silicon and Intel M
 
 The main window reads left to right: **Card**, **Media**, **Destination**, with the offload bar along the bottom. Closing the window quits Lodge.
 
-**Coming in the next update.** The preset menu sits at the top right of the window, just left of **Recent Offloads** and **Settings**, and the window title is hidden. In Lodge 1.0.0 the preset menu is in the center of the toolbar, and the title reads Lodge. Updates, a folder for each file extension, the shorter Quick dump label, and the support items are in their own sections below.
+**Coming in the next update.** The preset menu sits at the top right of the window, just left of **Recent Offloads** and **Settings**, and the window title is hidden. In Lodge 1.0.0 the preset menu is in the center of the toolbar, and the title reads Lodge, with the card’s name under the title. Updates, a folder for each file extension, the shorter Quick dump label, and the support items are in their own sections below.
 
 ![Lodge in Dark mode, ready to offload. The preset control at the top right reads Sony Shoot, and the window title is hidden. Offload 54 Files sits along the bottom.](assets/screenshots/ready-dark.png)
 
@@ -134,7 +134,7 @@ Click a token to insert it into the field you were editing. Mistakes are explain
 
 **Reset to Default** in the **Examples** menu restores `{date}/{project}` and `{date}_{project}_{seq}`.
 
-![Settings > Naming](assets/screenshots/settings-naming.png)
+![Lodge 1.0.0. Settings > Naming](assets/screenshots/settings-naming.png)
 
 ### Tokens
 
@@ -190,7 +190,7 @@ Clips whose length cannot be read, including BRAW and R3D, are always offloaded.
 
 A card whose only remaining files are skipped short clips can still be formatted. The button then reads **Format and Discard 1 Short Clip** or **Format and Discard N Short Clips**.
 
-![Settings > General, including the short-clip slider](assets/screenshots/settings-general.png)
+![Lodge 1.0.0. Settings > General, including the short-clip slider](assets/screenshots/settings-general.png)
 
 ## Presets
 
@@ -204,7 +204,7 @@ A preset saves the destination, the folder and file templates, the camera, the s
 
 In Settings > Presets you can add, rename, duplicate, edit, and remove presets. The one in use is marked **In use**, or **In use · edited** when the window has drifted from it. Editing the preset that is in use, while it still matches, updates the window too.
 
-![Settings > Presets](assets/screenshots/settings-presets.png)
+![Lodge 1.0.0. Settings > Presets](assets/screenshots/settings-presets.png)
 
 Presets are stored in `~/Library/Application Support/Lodge/presets.json`.
 
@@ -247,7 +247,7 @@ A combined level is ordinary template text, so a saved template or preset keeps 
 
 Settings > Files decides which extensions are proxies, which are sidecars, and which names are ignored.
 
-![Settings > Files](assets/screenshots/settings-files.png)
+![Lodge 1.0.0. Settings > Files](assets/screenshots/settings-files.png)
 
 **Proxies** (default `lrv` and `lrf`) are low-resolution copies, such as a GoPro `.LRV` or a DJI `.LRF`. They go in a `Proxies` folder inside the shoot folder and take their clip’s new name. They are never treated as the footage, and they are not skipped as short clips on their own. They follow the clip.
 

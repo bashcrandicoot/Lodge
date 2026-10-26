@@ -10,10 +10,14 @@ Include the macOS version, the Lodge version, and what you observed. Give the ma
 
 ## What Lodge does on your Mac
 
-Lodge does not connect to the network. Copying, the ledger, favorites, cameras, presets, and settings stay on the Mac, under `~/Library/Application Support/Lodge/` and in Lodge’s preferences.
+Lodge 1.0.0 does not connect to the network. Coming in the next update, a daily check for new versions uses Sparkle. You can turn it off with **Automatically check for updates** in Settings > General > Updates. Copying never uploads anything. Copying, the ledger, favorites, cameras, presets, and settings stay on the Mac, under `~/Library/Application Support/Lodge/` and in Lodge’s preferences.
 
 During an offload Lodge only reads the card. It writes on the destination you chose, to a `<name>.lodge-partial` file, and renames that file after the SHA-256 matches.
 
 **Format Card…** does erase a card. It asks first, with Cancel as the default, and it refuses anything that is not the scanned removable volume: the startup disk, a drive that is part of the Mac, a whole disk rather than a volume, and the drive the destination folder is on. It will format exFAT, FAT32, and FAT16 only. If you believe those checks can be bypassed, that is a security report.
 
-The app is not notarized and is not sandboxed. A build you make yourself is signed to run locally. [Download Lodge from Gumroad](https://bashframes.gumroad.com/l/lodge).
+The app is not notarized and is not sandboxed. A build you make yourself is signed to run locally.
+
+On macOS 15 Sequoia and later, open Lodge, click **Done**, then go to **System Settings > Privacy & Security** and click **Open Anyway**. On macOS 14, right-click Lodge and choose **Open**.
+
+[Download Lodge from Gumroad](https://bashframes.gumroad.com/l/lodge).

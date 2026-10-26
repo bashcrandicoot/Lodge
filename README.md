@@ -28,7 +28,7 @@
 </p>
 
 <p align="center">
-  This picture is the next update. Lodge 1.0.0 keeps the preset menu in the center of the toolbar, and the title reads Lodge.
+  This picture shows the next update. Lodge 1.0.0 keeps the preset menu in the center of the toolbar, and the title reads Lodge, with the card’s name under the title.
 </p>
 
 ## Key features
@@ -40,7 +40,7 @@ Lodge 1.0.0 is the download below. **Coming in the next update** marks anything 
 - **A ledger of what was copied.** Lodge remembers each verified file in `~/Library/Application Support/Lodge/ledger.json`. The same card again copies only what is new. If a copy is missing or its size has changed, Media warns you, in orange, and offers **Re-offload**.
 - **Ready to format.** When every file has a verified copy that is still at the destination, the card shows a green **Ready to format** badge, and **Format Card…** is available. Cancel is the default. Lodge keeps exFAT, FAT32, or FAT16, and the card’s name.
 - **Short clips.** **Skip videos shorter than** runs from **Off** to **30 s**. The default is **5 s**. A stepper beside the slider goes up to 60 seconds. Skipped clips stay on the card with their sidecars until you choose **Include Anyway** or **Include All**.
-- **Presets for each camera.** A preset saves the setup: where the footage goes, how the folders and files are named, which camera, short clips, quick dump, and the file rules for proxies, sidecars, and ignored names. You choose it from the preset menu. Lodge remembers the camera you used with each card, by the card’s volume UUID or its name, and selects that camera again when the card is inserted. After you change the setup, the menu says **Edited** and offers to update that preset. Manage them in Settings > Presets. **Coming in the next update.** The preset menu sits at the top right of the window, just left of **Recent Offloads** and **Settings**, and the window title is hidden. In Lodge 1.0.0 the preset menu is in the center of the toolbar, and the title reads Lodge.
+- **Presets for each camera.** A preset saves the setup: where the footage goes, how the folders and files are named, which camera, short clips, quick dump, and the file rules for proxies, sidecars, and ignored names. You choose it from the preset menu. Lodge remembers the camera you used with each card, by the card’s volume UUID or its name, and selects that camera again when the card is inserted. After you change the setup, the menu says **Edited** and offers to update that preset. Manage them in Settings > Presets. **Coming in the next update.** The preset menu sits at the top right of the window, just left of **Recent Offloads** and **Settings**, and the window title is hidden. In Lodge 1.0.0 the preset menu is in the center of the toolbar, and the title reads Lodge, with the card’s name under the title.
 - **Quick dump.** **Quick dump: skip project name** takes `{project}` out of the templates, so there is nothing to type. Numbering carries on from the files already in the folder. **Coming in the next update.** The checkbox reads **Quick dump**, with an ⓘ beside it. Hover or click the ⓘ and it says: Skips the project name and dumps all the footage straight into a dated folder.
 - **Proxies and sidecars.** A `.lrv` file is a low-resolution proxy. Lodge does not copy it as video. With the default file rules, `lrv` and `lrf` go in a **Proxies** folder, and `thm`, `xml`, and `srt` go in a **Sidecars** folder. Both keep the clip’s new name. Lodge never copies the ignore list, or system junk such as `recycler` and `recycled`.
 - **A folder for each extension.** **Coming in the next update.** Inside the folder the template makes, each file goes in a folder named for its extension, in capitals: `MP4/`, `ARW/`, `WAV/`, and the rest. `.mp4` and `.MP4` share `MP4/`. `.JPG`, `.JPEG`, and `.JPE` share `JPG/`. `.TIF` and `.TIFF` share `TIF/`. An extension Lodge does not know still gets a folder (`.xyz` goes in `XYZ/`). A file with no extension stays in the template folder. Proxies stay in **Proxies/** and sidecars stay in **Sidecars/**, not in `LRV/` or `XML/`. Audio recorded with a clip, such as `C0001.WAV`, goes in `WAV/` and keeps that clip’s name and number. A JPEG beside a RAW file is its own photo, in `JPG/`, with the next number. One sequence runs across the whole shoot folder, including every format folder, and continues after files already there. If the template uses `{type}`, the extension folder sits inside `Video/`, `Photo/`, `Audio/`, or `Other/`. In Lodge 1.0.0 the files land in the folder the template makes. Proxies and sidecars already have their own folders, and audio recorded with a clip stays next to that clip.
@@ -79,6 +79,8 @@ Lodge is not notarized. The first time you open it:
 - **macOS 14 Sonoma.** Right-click or Control-click Lodge, choose **Open**, then **Open** again.
 
 The first time Lodge reads a card, macOS asks for access to files on a removable volume. Choose **Allow**.
+
+No account, no analytics. Lodge 1.0.0 doesn’t use the network. Coming in the next update: a daily check for new versions (via Sparkle), which you can turn off with **Automatically check for updates** in Settings > General > Updates. Copying never uploads anything.
 
 ## Getting started
 
