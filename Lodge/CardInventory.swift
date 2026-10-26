@@ -77,7 +77,7 @@ struct OffloadSelection: Equatable, Sendable {
     var offloadedKept = 0
     /// Files with a missing copy in the included types that aren't being copied again.
     var missingKept = 0
-    /// New short videos (and their sidecars) left on the card by "Skip short videos".
+    /// New short videos (and their sidecars) left on the card by "Skip videos shorter than".
     var skippedShort = ShortClipSkip()
 
     /// Short clips are only skipped among new files: anything picked for re-offload is copied.

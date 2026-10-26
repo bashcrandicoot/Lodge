@@ -19,7 +19,7 @@ enum FormatAlert {
         }
         if discarding {
             let clips = readiness.shortSkippedClips == 1 ? "1 short clip" : "\(readiness.shortSkippedClips) short clips"
-            copied += ".\n\n\(clips) (skipped by “Skip short videos”) \(readiness.shortSkippedClips == 1 ? "has" : "have") no copy and will be lost"
+            copied += ".\n\n\(clips) (skipped by “Skip videos shorter than”) \(readiness.shortSkippedClips == 1 ? "has" : "have") no copy and will be lost"
         }
         if readiness.ignoredItems > 0 {
             let items = readiness.ignoredItems == 1 ? "1 ignored item" : "\(readiness.ignoredItems) ignored items"

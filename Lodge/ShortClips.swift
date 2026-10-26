@@ -1,7 +1,7 @@
 import AVFoundation
 import Foundation
 
-/// "Skip short videos": accidental takes under a few seconds aren't offloaded unless included.
+/// "Skip videos shorter than": accidental takes under a few seconds aren't offloaded unless included.
 struct ShortClipRule: Equatable, Sendable {
     var isEnabled = true
     /// Clips shorter than this many seconds are skipped.

@@ -1,7 +1,7 @@
 import XCTest
 @testable import Lodge
 
-/// "Skip short videos": the threshold, unknown lengths, sidecars, readiness and the duration scan.
+/// "Skip videos shorter than": the threshold, unknown lengths, sidecars, readiness and the duration scan.
 final class ShortClipTests: XCTestCase {
     private let identity = "CARD-UUID"
     private let start = Date(timeIntervalSince1970: 1_761_400_000)

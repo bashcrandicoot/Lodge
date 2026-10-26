@@ -770,7 +770,7 @@ private struct PreviewRow: View {
                             .foregroundStyle(.tint)
                             .lineLimit(1)
                             .fixedSize()
-                            .help("Shorter than the “Skip short videos” limit, included anyway")
+                            .help("Shorter than the “Skip videos shorter than” limit, included anyway")
                     }
                     if let primary = item.sidecarOf {
                         Text("· goes with \(primary)")

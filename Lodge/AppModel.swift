@@ -69,7 +69,7 @@ final class AppModel: ObservableObject {
     private var presetsObserver: AnyCancellable?
     /// Video lengths by ledger key (`nil` = couldn't be read), so rescans don't read them again.
     private var durationCache: [String: Double?] = [:]
-    /// Reads video lengths for "Skip short videos" (tests swap in a fake).
+    /// Reads video lengths for "Skip videos shorter than" (tests swap in a fake).
     var durationReader: DurationReading = AVDurationReader()
 
     init(settings: AppSettings? = nil, ledger: Ledger? = nil, cameras: CameraStore? = nil,
@@ -218,7 +218,7 @@ final class AppModel: ObservableObject {
                 var inventory = CardInventory.classify(files: scan.files, volumeIdentity: card.identity,
                                                        entries: entries, fileSize: FormatReadiness.diskFileSize)
                 inventory.ignored = scan.ignored
-                // Video lengths for "Skip short videos" and the list (only files that may be copied).
+                // Video lengths for "Skip videos shorter than" and the list (only files that may be copied).
                 let durations = await DurationScanner.read(inventory.new + inventory.missing,
                                                            volumeIdentity: card.identity, cache: cache, reader: reader)
                 return (inventory, durations)

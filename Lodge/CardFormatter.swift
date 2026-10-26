@@ -18,7 +18,7 @@ struct FormatReadiness: Equatable, Sendable {
     var missingCopies = 0
     /// The folder that holds all the verified copies (their deepest common folder).
     var copiesFolder: String?
-    /// Files left on the card by "Skip short videos" (the clips and their sidecars; not in `notOffloaded`).
+    /// Files left on the card by "Skip videos shorter than" (the clips and their sidecars; not in `notOffloaded`).
     var shortSkippedFiles = 0
     /// How many of those are the short videos themselves.
     var shortSkippedClips = 0

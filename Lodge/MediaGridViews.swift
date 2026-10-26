@@ -194,7 +194,7 @@ struct MediaTile: View {
                     if info.isIncludedShort {
                         Image(systemName: "timer")
                             .foregroundStyle(theme.accent)
-                            .help("Shorter than the “Skip short videos” limit, included anyway")
+                            .help("Shorter than the “Skip videos shorter than” limit, included anyway")
                     }
                 }
                 .font(.caption2)

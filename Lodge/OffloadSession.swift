@@ -34,7 +34,7 @@ final class OffloadSession: ObservableObject, Identifiable {
     }
     /// Video lengths in seconds, by card path (read during the scan; unknown lengths are missing).
     let durations: [String: Double]
-    /// "Skip short videos" (from Settings ▸ General).
+    /// "Skip videos shorter than" (from Settings ▸ General).
     @Published var shortRule: ShortClipRule = .off {
         didSet { refreshFiles() }
     }
