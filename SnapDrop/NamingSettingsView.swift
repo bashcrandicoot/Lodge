@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Settings ▸ Naming: the folder and file templates, token chips, presets and a live example.
+/// Settings ▸ Naming: the folder and file templates, token chips, examples and a live example.
 struct NamingSettingsView: View {
     @EnvironmentObject private var settings: AppSettings
     @FocusState private var focused: TemplateField?
@@ -55,7 +55,7 @@ struct NamingSettingsView: View {
     }
 
     private var presetsMenu: some View {
-        Menu("Presets") {
+        Menu("Examples") {
             ForEach(NamingPreset.all) { preset in
                 Button {
                     settings.apply(preset)

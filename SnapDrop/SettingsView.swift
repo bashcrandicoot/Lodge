@@ -14,12 +14,18 @@ struct SettingsView: View {
             AppearanceSettingsView()
                 .tabItem { Label("Appearance", systemImage: "paintpalette") }
                 .tag(SettingsTab.appearance)
+            PresetsSettingsView()
+                .tabItem { Label("Presets", systemImage: "square.stack.3d.up") }
+                .tag(SettingsTab.presets)
             DestinationsSettingsView()
                 .tabItem { Label("Destinations", systemImage: "externaldrive") }
                 .tag(SettingsTab.destinations)
             NamingSettingsView()
                 .tabItem { Label("Naming", systemImage: "textformat") }
                 .tag(SettingsTab.naming)
+            FilesSettingsView()
+                .tabItem { Label("Files", systemImage: "doc.on.doc") }
+                .tag(SettingsTab.files)
             CamerasSettingsView()
                 .tabItem { Label("Cameras", systemImage: "camera") }
                 .tag(SettingsTab.cameras)
@@ -28,34 +34,18 @@ struct SettingsView: View {
 }
 
 enum SettingsTab: String {
-    case general, appearance, destinations, naming, cameras
+    case general, appearance, presets, destinations, naming, files, cameras
     static let storageKey = "settingsTab"
 }
 
-/// Destination and what happens after an offload.
+/// What gets offloaded and what happens after. (Where files go is the default favorite in
+/// the Destinations tab: the main window's destination picker is the one place to change it.)
 struct GeneralSettingsView: View {
     @EnvironmentObject private var settings: AppSettings
     @EnvironmentObject private var model: AppModel
 
     var body: some View {
         Form {
-            Section("Destination") {
-                LabeledContent("Folder") {
-                    HStack {
-                        Text(settings.destinationPath.map { ($0 as NSString).abbreviatingWithTildeInPath } ?? "Not chosen")
-                            .foregroundStyle(settings.destinationPath == nil ? .secondary : .primary)
-                            .lineLimit(1)
-                            .truncationMode(.middle)
-                        Button("Choose…") {
-                            model.chooseOtherDestination()
-                        }
-                        .disabled(model.isBusy)
-                    }
-                }
-                Text("Save the folders you use often in the Destinations tab. Folder and file names are set in the Naming tab.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
             Section {
                 ForEach(MediaCategory.allCases) { category in
                     Toggle(isOn: Binding(
@@ -67,24 +57,20 @@ struct GeneralSettingsView: View {
             } header: {
                 Text("Files to Offload")
             } footer: {
-                Text("Sidecar files (like C0001M01.XML) get the same name as their clip when Other is on. System files such as .Spotlight-V100 and ._ files are never copied.")
+                Text("Sidecars (like C0001M01.XML) and proxies (like GoPro .LRV) get their clip’s name and their own folders when Other is on. Change the lists and the ignore list in the Files tab.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
             Section {
-                Toggle("Skip short videos", isOn: $settings.skipShortClips)
-                Stepper(value: $settings.shortClipSeconds, in: ShortClipRule.thresholdRange) {
-                    LabeledContent("Shorter than") {
-                        Text(DurationFormatting.threshold(Double(settings.shortClipSeconds)))
-                            .monospacedDigit()
-                    }
+                LabeledContent("Skip videos shorter than") {
+                    ShortClipSlider(seconds: $settings.shortClipSliderSeconds)
+                        .frame(width: 290)
                 }
-                .disabled(!settings.skipShortClips)
             } header: {
                 Text("Short Clips")
             } footer: {
-                Text("Accidental takes stay on the card, with their sidecar files. Include them from the Media list any time. Clips whose length can’t be read (like BRAW or R3D) are always offloaded.")
+                Text("Off keeps every clip. Accidental takes stay on the card, with their sidecars and proxies. Include them from the Media list any time. Clips whose length can’t be read (like BRAW or R3D) are always offloaded.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)

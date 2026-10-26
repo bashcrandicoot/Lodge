@@ -33,6 +33,10 @@ struct ContentView: View {
         }
         .background(ThemeBackground())
         .toolbar {
+            // Presets sit above the funnel: one click changes where files go and how they're named.
+            ToolbarItem(placement: .principal) {
+                PresetSwitcher()
+            }
             ToolbarItem(placement: .primaryAction) {
                 Button {
                     model.showingRecent.toggle()
