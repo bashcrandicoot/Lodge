@@ -14,8 +14,9 @@ and sidecar files — safely, verified, and named the way you want.
    System junk is never copied.
 3. **Names files from a template** you set in Settings → Naming, e.g.
    `{project}/{date}/{camera}` + `{date}_{project}_{camera}_{seq}`. You fill in the
-   project, shoot and camera in the main window; a live preview shows exactly what every
-   file will be called before anything is copied, and the copy uses exactly those names.
+   project (the shoot or job name, e.g. "Beach Shoot") and camera in the main window; a
+   live preview shows exactly what every file will be called before anything is copied,
+   and the copy uses exactly those names.
 4. **Copies only new files**, with the default layout:
 
    ```
@@ -40,7 +41,8 @@ and sidecar files — safely, verified, and named the way you want.
    again only copies files that are new. A file is identified by the card's volume UUID
    (or name) + its path on the card + size + modification time.
 
-SnapDrop **never changes or deletes anything on the card.**
+SnapDrop **never changes or deletes anything on the card** — unless you explicitly ask it
+to [format a card](#formatting-a-card) whose files have all been copied and verified.
 
 ## The window
 
@@ -48,30 +50,88 @@ The main window reads left to right, like a funnel:
 
 **① Card → ② Media → ③ Destination**, with the offload bar along the bottom.
 
-- **Card** — the inserted cards. Pick one if more than one is mounted.
+- **Card** — the inserted cards. Pick one if more than one is mounted. A card whose files
+  are all safely offloaded gets a green **Ready to format** badge; the **…** button (or a
+  right-click) has **Format Card…** and **Eject Card**.
 - **Media** — chips like *18 video · 9 photo · 3 audio · 19 other* and how many files
-  were already offloaded; the **Project**, **Shoot** and **Camera** fields (only the ones
-  your template uses are required); and the live name preview, with an
+  were already offloaded; the **Project** and **Camera** fields (only the ones your
+  template uses are required); and the live name preview, with an
   *All / Video / Photo / Audio / Other* filter. Sidecars are shown indented under their clip.
-- **Destination** — the folder, its free space, and the folder layout files will land in.
+  A card with no media on it says *Card Is Empty*.
+- **Destination** — the folder and its free space. Click the folder to switch between
+  your [favorite destinations](#favorite-destinations). Once a card is scanned it also
+  shows how much space the offload needs and the folder layout files will land in.
 - **Offload bar** — the big **Offload N Files** button. When it's disabled it tells you
   why ("Enter a project name", "Choose a camera", "Not enough space…"). While copying it
   shows the current file, *X of N*, bytes copied, time left and a *Verifying* state, plus
   **Cancel**; the preview highlights the file being copied and ticks off each verified
-  one. When it's done: **Show in Finder**, **Eject Card** and **Done**, and a "Glass"
-  sound plays if everything copied and verified.
+  one. When it's done: **Show in Finder**, **Format Card…** (when the card is ready to
+  format), **Eject Card** and **Done**, and a "Glass" sound plays if everything copied
+  and verified.
 
 When you insert a card SnapDrop fills in the funnel and brings its window to the front —
 no pop-up sheet. The clock button in the toolbar shows **Recent Offloads**.
 Animations follow System Settings → Accessibility → Display → **Reduce motion**.
 
+The colours come from the Comet A app icon — plum, magenta, coral and a warm orange — as a
+very soft wash behind the window, the gradient **Offload** button, the progress bar, the
+glowing border of the step that needs you, the dots flowing between steps while copying
+and the glow when an offload completes. With **Increase contrast** or **Reduce
+transparency** turned on, SnapDrop uses solid colours instead of gradients. The palette
+lives in one place, `Theme.swift`; the app's accent colour (`AccentColor` in the asset
+catalog) is magenta in Light Mode and coral in Dark Mode.
+
 | Ready | Copying | Finished (Dark Mode) |
 | --- | --- | --- |
 | ![](Design/screenshots/ready-light.png) | ![](Design/screenshots/running-light.png) | ![](Design/screenshots/finished-dark.png) |
 
+| No card | Ready (Dark Mode) |
+| --- | --- |
+| ![](Design/screenshots/empty-light.png) | ![](Design/screenshots/ready-dark.png) |
+
+## Formatting a card
+
+When every file on a card has been copied and verified, the card shows a green
+**Ready to format** badge (otherwise it says how many files aren't offloaded yet).
+"Offloaded" means the ledger has the file *and* its copy is still in the destination with
+the right size — if you've moved or deleted copies, the card isn't ready.
+
+**Format Card…** (in the card's **…** menu, its right-click menu, or after an offload)
+asks first, with **Cancel** as the default button:
+
+![The Format confirmation](Design/screenshots/format-confirm.png)
+
+Formatting keeps the card's file system (exFAT, FAT32 or FAT16) and its name, using
+`diskutil eraseVolume`. Before erasing, SnapDrop checks again that the card is still ready
+and refuses unless the volume:
+
+- is the card it scanned, mounted under `/Volumes`, and is a volume on a disk (not a whole
+  disk);
+- is removable media (an SD card in the built-in reader or a card reader) — never the
+  startup disk or another drive that's part of your Mac;
+- isn't the drive your destination folder is on.
+
+If *Eject card after offload* is on, the card is ejected after formatting. Tip: formatting
+in the camera is usually best, because it sets the card up exactly the way the camera
+expects.
+
+## Favorite destinations
+
+Keep a list of places you offload to — "Movies", "Footage SSD", "Client Archive" — and
+switch with one click: click the folder in the **Destination** panel to see your favorites
+with their free space, plus **Choose Other Folder…** and **Edit Favorites…**. A favorite on
+a drive that isn't plugged in shows *Not connected* and can't be picked until it's back.
+
+Manage them in **Settings → Destinations**: add (+), remove (−), rename (click the name
+and type), **Change Folder…**, drag to reorder and **Make Default**. SnapDrop starts with the
+favorite you used last (or the default). Your existing destination becomes the first
+favorite the first time you open this version. The list is saved in
+`~/Library/Application Support/SnapDrop/destinations.json`, with a bookmark for each
+folder so a folder that's renamed or moved is still found.
+
 ## Settings (⌘,)
 
-**General** — destination folder; which [file types](#file-types) to offload (all on by
+**General** — the current destination folder; which [file types](#file-types) to offload (all on by
 default); *Eject card after offload* (off by default, and only when every file copied and
 verified); *Play a sound when an offload finishes* (on by default).
 
@@ -79,12 +139,11 @@ verified); *Play a sound when an offload finishes* (on by default).
 Click a token chip to insert it where you were typing. Mistakes (an unclosed `{`, an
 unknown token, `{seq}` twice, a name starting with `.`) are explained right under the field
 and the Offload button stays off until they're fixed. **Reset to Default** brings back
-`{date}/{shoot}` + `{date}_{shoot}_{seq}`.
+`{date}/{project}` + `{date}_{project}_{seq}`.
 
 | Token | Becomes |
 | --- | --- |
-| `{project}` | Project name from the main window (recent projects are one click away) |
-| `{shoot}` | Shoot name ("Beach Shoot" → `BeachShoot`) |
+| `{project}` | Project name from the main window ("Beach Shoot" → `BeachShoot`; recent projects are one click away) |
 | `{camera}` | The chosen camera's short code, or its name if it has no code |
 | `{date}` | Capture date, `2026-10-25` |
 | `{year}` `{month}` `{day}` | `2026`, `10`, `25` |
@@ -95,9 +154,12 @@ and the Offload button stays off until they're fixed. **Reset to Default** bring
 | `{seq}` | Sequence number, `0001`; `{seq:3}` gives `001` |
 | `{ext}` | File extension, `mp4` (the real extension is always added at the end) |
 
-Use `/` in the folder template for subfolders. Presets: *Date / Shoot* (default),
+Use `/` in the folder template for subfolders. Presets: *Date / Project* (default),
 *Project / Date / Camera*, *Project / Type / Date*, *Year / Month / Day*,
-*Date / Shoot, Original Names*, and *Flat*. Without `{seq}` or `{original}`, files that
+*Date / Project, Original Names*, and *Flat*. Older versions had a separate **Shoot**
+field and `{shoot}` token; they're now one. `{shoot}` still works as another name for
+`{project}`, and saved templates are updated automatically (`{date}/{shoot}` becomes
+`{date}/{project}`, and a doubled `{project}_{project}` collapses to one). Without `{seq}` or `{original}`, files that
 would end up with the same name get `_2`, `_3`… instead of overwriting.
 
 **Cameras** — your list of cameras, each with a name ("Sony FX3") and an optional short
@@ -105,9 +167,11 @@ code ("A") used by `{camera}`. Add, rename, reorder (drag) and delete. In the ma
 pick one from the **Camera** menu; SnapDrop remembers which camera you used with each card
 and picks it again next time. *Edit Cameras…* in that menu jumps straight here.
 
-| Naming | Cameras |
-| --- | --- |
-| ![](Design/screenshots/settings-naming.png) | ![](Design/screenshots/settings-cameras.png) |
+**Destinations** — your [favorite destinations](#favorite-destinations).
+
+| Naming | Cameras | Destinations |
+| --- | --- | --- |
+| ![](Design/screenshots/settings-naming.png) | ![](Design/screenshots/settings-cameras.png) | ![](Design/screenshots/settings-destinations.png) |
 
 ## File types
 
@@ -134,7 +198,7 @@ The type comes from the file extension (upper or lower case).
 2. Press **⌘R**.
 3. First run: click **Choose Folder…** in the *Destination* panel (or in Settings, ⌘,) and
    pick the folder for your footage. It's remembered from then on.
-4. Insert a card, fill in the shoot name (and project/camera if your template uses them),
+4. Insert a card, fill in the project name (and camera if your template uses it),
    and click **Offload N Files**.
 
 The project builds without an Apple developer account ("Sign to Run Locally" /
@@ -175,7 +239,10 @@ open -n build/DerivedData/Build/Products/Debug/SnapDrop.app --args \
 ```
 
 States: `empty`, `ready`, `running`, `finished`. Appearance: `light` or `dark`.
-Add `-SnapDropDemoSettingsTab general|naming|cameras` to open Settings on that tab.
+Add `-SnapDropDemoSettingsTab general|destinations|naming|cameras` to open Settings on that
+tab, `-SnapDropDemoShowFormatAlert YES` to show the Format confirmation, or
+`-SnapDropDemoPlainTheme YES` to see the solid colours used with Increase contrast.
+Formatting can never run in demo mode.
 The sample card has clips with Sony XML sidecars, RAW photos, WAVs and a few cameras.
 Every view also has `#Preview`s you can open in Xcode's canvas.
 
@@ -184,28 +251,33 @@ Every view also has `#Preview`s you can open in Xcode's canvas.
 | File | What's in it |
 | --- | --- |
 | `SnapDropApp.swift` | App entry point: main window and Settings scene |
-| `AppModel.swift` | Ties settings, cameras, card watcher, ledger and the current offload together; eject, sound |
+| `AppModel.swift` | Ties settings, cameras, destinations, card watcher, ledger and the current offload together; eject, format, sound |
+| `Theme.swift` | The Comet A colours, window wash and gradient button style, with solid fallbacks |
 | `ContentView.swift` | Main window: the Card → Media → Destination funnel and toolbar |
 | `FunnelComponents.swift` | Shared pieces: stage panel, step badge, arrows, count pills |
 | `Motion.swift` | Animated pieces: arrow stream, shimmering progress bar, completion burst, row reveal |
-| `CardStageView.swift` | ① Card panel |
-| `ClipsStageView.swift` | ② Media panel: counts, project/shoot/camera, filterable name preview |
-| `DestinationStageView.swift` | ③ Destination panel: folder, free space, layout |
+| `CardStageView.swift` | ① Card panel, Ready to format badge, card actions menu |
+| `ClipsStageView.swift` | ② Media panel: counts, project/camera, filterable name preview |
+| `DestinationStageView.swift` | ③ Destination panel: favorites picker, free space, layout |
+| `FormatViews.swift` | Format confirmation, Ready to format badge, format status and buttons |
 | `OffloadBar.swift` | Bottom bar: Offload button, progress/ETA/Cancel, completion actions |
 | `RecentOffloadsView.swift` | Recent Offloads popover |
 | `SettingsView.swift` | Settings window (⌘,): tabs and the General tab |
 | `NamingSettingsView.swift` | Naming tab: template editors, presets, token chips, example |
 | `CamerasSettingsView.swift` | Cameras tab |
+| `DestinationsSettingsView.swift` | Destinations tab |
 | `NamingTemplate.swift` | Template tokens, parsing/validation, presets, rendering |
 | `OffloadPlanner.swift` | Turns files + templates into final paths; sequence numbers; sidecar matching |
 | `MediaCategory.swift` | Video / Photo / Audio / Other by extension |
 | `CameraStore.swift` | The camera list and per-card camera memory (`cameras.json`) |
+| `DestinationStore.swift` | Favorite destinations, default / last used, connected or not (`destinations.json`) |
+| `CardFormatter.swift` | Ready-to-format check, the safety checks, and `diskutil eraseVolume` |
 | `FlowLogic.swift` | Pure logic for the UI: "why is Offload disabled", ETA and byte text, success feedback |
 | `DemoData.swift` | Sample data for previews and demo mode (Debug only) |
 | `OffloadSession.swift` | State for one card's offload; runs the copy in the background |
 | `VolumeWatcher.swift` | Detects cards being inserted/removed |
 | `ClipScanner.swift` | Finds media on a card, skipping system junk |
-| `Renamer.swift` | Shoot-name cleanup and date formatting |
+| `Renamer.swift` | Project-name cleanup and date formatting |
 | `Copier.swift` | Copy + SHA-256 verify of one file, and the whole-card offload loop |
 | `Ledger.swift` | The JSON record of everything offloaded |
 | `Settings.swift` | Preferences: destination, templates, file types, eject, sound, recent projects |
@@ -214,7 +286,7 @@ Every view also has `#Preview`s you can open in Xcode's canvas.
 | `Design/icon-1024.png` | Master app icon (Comet A, 1024×1024) |
 | `Design/icon-legacy-blue.png`, `.svg` | The previous blue icon, kept for reference |
 | `Design/screenshots/` | Screenshots of the app (taken from demo mode) |
-| `SnapDropTests/` | Unit tests: templates, planner, sidecars, file types, junk skipping, cameras, ledger, copy/verify, end-to-end fake cards |
+| `SnapDropTests/` | Unit tests: templates, planner, sidecars, file types, junk skipping, cameras, ledger, copy/verify, end-to-end fake cards, format readiness and safety checks (with a fake `diskutil`), favorite destinations, theme colours |
 
 The project uses Xcode's folder-synced groups: any `.swift` file you add to the
 `SnapDrop/` folder is automatically part of the app. No third-party dependencies.
