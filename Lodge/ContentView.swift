@@ -8,9 +8,8 @@ struct ContentView: View {
     @EnvironmentObject private var settings: AppSettings
     /// Saved for `MainWindow`, to reopen this window from the menu bar or an import prompt.
     @Environment(\.openWindow) private var openWindow
-    #if DEBUG
+    /// Saved for `MainWindow`, to open Settings from the menu bar icon.
     @Environment(\.openSettings) private var openSettings
-    #endif
 
     var body: some View {
         VStack(spacing: 0) {
