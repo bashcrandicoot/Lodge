@@ -26,10 +26,10 @@
 ## Download
 
 <p align="center">
-  <a href="https://bashframes.gumroad.com/l/lodge"><img src="docs/assets/download-button.png" alt="Download Lodge for Mac" width="320" height="72"></a>
+  <a href="https://ko-fi.com/s/fb9fab53be"><img src="docs/assets/download-button-kofi.png" alt="Download Lodge for Mac on Ko-fi" width="320" height="72"></a>
 </p>
 
-Pay what you want. [Download Lodge from Gumroad](https://bashframes.gumroad.com/l/lodge), open the disk image, and drag Lodge to Applications.
+Pay what you want. [Download Lodge from Ko-fi](https://ko-fi.com/s/fb9fab53be), unzip it, then open the DMG, and drag Lodge to Applications.
 
 ## Install
 
@@ -40,7 +40,7 @@ Lodge is not notarized. The first time you open it:
 
 The first time Lodge reads a card, macOS asks for access to files on a removable volume. Choose **Allow**.
 
-**Coming from 1.0.0?** Lodge 1.0.0 can’t update itself, so download 1.0.1 once by hand from Gumroad. After that, Lodge updates itself.
+**Coming from 1.0.0?** Lodge 1.0.0 can’t update itself, so download 1.0.1 once by hand from Ko-fi. After that, Lodge updates itself.
 
 ## What it does
 
@@ -67,7 +67,7 @@ No account, no analytics, and copying never uploads anything. The only time Lodg
 
 ## Support
 
-Write to [bashframes@gmail.com](mailto:bashframes@gmail.com). If Lodge has been useful, [Support Lodge](https://bashframes.gumroad.com/l/lodge).
+Write to [bashframes@gmail.com](mailto:bashframes@gmail.com). If Lodge has been useful, [Support Lodge](https://ko-fi.com/bashframes).
 
 ## Documentation
 

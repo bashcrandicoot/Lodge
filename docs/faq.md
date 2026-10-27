@@ -64,7 +64,7 @@ The first time Lodge reads a card, also allow access to files on a removable vol
 
 ## How do I get help?
 
-Write to [bashframes@gmail.com](mailto:bashframes@gmail.com). If Lodge has been useful, [Support Lodge](https://bashframes.gumroad.com/l/lodge). Pay what you want.
+Write to [bashframes@gmail.com](mailto:bashframes@gmail.com). If Lodge has been useful, [Support Lodge](https://ko-fi.com/bashframes). Pay what you want.
 
 **Help > Contact Support…** opens an email to that address, subject Lodge Support, with the Lodge and macOS versions under your message. **Help > Support Lodge…** and **Lodge > Support Lodge…** open the same page in your browser. **Lodge > About Lodge** says Made by bashframes, with a link to the same email. Settings > General ends with **Support** and **Support Lodge**.
 
@@ -74,7 +74,7 @@ After five offloads where every file was copied and verified, and at least three
 
 **Lodge > Check for Updates…** looks now. The item is dimmed while a check is already running. In Settings > General, under **Updates**, **Automatically check for updates** is on, and **Automatically download and install updates** is off. The second switch is unavailable while automatic checks are off. Lodge checks once a day. Updates are EdDSA-signed through Sparkle.
 
-Lodge 1.0.0 can’t update itself. [Download Lodge from Gumroad](https://bashframes.gumroad.com/l/lodge) once to get 1.0.1. After that, Lodge updates itself.
+Lodge 1.0.0 can’t update itself. [Download Lodge from Ko-fi](https://ko-fi.com/s/fb9fab53be) once to get 1.0.1. After that, Lodge updates itself.
 
 ## How are files sorted into folders?
 

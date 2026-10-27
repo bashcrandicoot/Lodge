@@ -4,9 +4,9 @@ Home base for your media. Lodge is a universal app for Apple silicon and Intel M
 
 ## Download Lodge
 
-<a href="https://bashframes.gumroad.com/l/lodge"><img src="assets/download-button.png" alt="Download Lodge for Mac" width="320" height="72"></a>
+<a href="https://ko-fi.com/s/fb9fab53be"><img src="assets/download-button-kofi.png" alt="Download Lodge for Mac on Ko-fi" width="320" height="72"></a>
 
-[Download Lodge from Gumroad](https://bashframes.gumroad.com/l/lodge). Open the disk image and drag Lodge to Applications. Pay what you want.
+[Download Lodge from Ko-fi](https://ko-fi.com/s/fb9fab53be). Unzip it, then open the DMG, and drag Lodge to Applications. Pay what you want.
 
 No account, no analytics, and copying never uploads anything. The only time Lodge goes online is a daily check for updates, which you can turn off in Settings > General.
 

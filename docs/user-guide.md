@@ -278,7 +278,7 @@ Settings > General has an **Updates** section:
 
 The note under the switches says you can also choose **Lodge > Check for Updates…** any time. Updates are EdDSA-signed through Sparkle. Copying itself does not upload anything.
 
-Lodge 1.0.0 can’t update itself. [Download Lodge from Gumroad](https://bashframes.gumroad.com/l/lodge) once to get 1.0.1. After that, Lodge updates itself.
+Lodge 1.0.0 can’t update itself. [Download Lodge from Ko-fi](https://ko-fi.com/s/fb9fab53be) once to get 1.0.1. After that, Lodge updates itself.
 
 ## Menu bar mode
 
@@ -307,7 +307,7 @@ macOS keeps notifications quiet while a Focus, such as Do Not Disturb, is on. If
 
 ## Support
 
-Write to [bashframes@gmail.com](mailto:bashframes@gmail.com). If Lodge has been useful, [Support Lodge](https://bashframes.gumroad.com/l/lodge). Pay what you want.
+Write to [bashframes@gmail.com](mailto:bashframes@gmail.com). If Lodge has been useful, [Support Lodge](https://ko-fi.com/bashframes). Pay what you want.
 
 **Help > Contact Support…** opens an email to that address. The subject is Lodge Support. Under a blank line for your message, Lodge adds its version, its build number, and the macOS version. **Lodge > Support Lodge…** and **Help > Support Lodge…** open the Gumroad page in your browser. **Lodge > About Lodge** says Made by bashframes, with a link to the same email. The bottom of Settings > General reads Made by bashframes, then **Support**, then **Support Lodge ♥**.
 
