@@ -77,4 +77,4 @@ The download above is the way to install Lodge. If you want to build it yourself
 
 For help, write to [bashframes@gmail.com](mailto:bashframes@gmail.com).
 
-© 2026 BashFrames
+© 2026 bashframes

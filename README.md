@@ -77,4 +77,4 @@ Write to [bashframes@gmail.com](mailto:bashframes@gmail.com). If Lodge has been 
 
 ## License
 
-MIT. See [LICENSE](LICENSE). © 2026 BashFrames.
+MIT. See [LICENSE](LICENSE). © 2026 bashframes.

@@ -309,9 +309,9 @@ macOS keeps notifications quiet while a Focus, such as Do Not Disturb, is on. If
 
 Write to [bashframes@gmail.com](mailto:bashframes@gmail.com). If Lodge has been useful, [Support Lodge](https://bashframes.gumroad.com/l/lodge). Pay what you want.
 
-**Help > Contact Support…** opens an email to that address. The subject is Lodge Support. Under a blank line for your message, Lodge adds its version, its build number, and the macOS version. **Lodge > Support Lodge…** and **Help > Support Lodge…** open the Gumroad page in your browser. **Lodge > About Lodge** says Made by BashFrames, with a link to the same email. The bottom of Settings > General reads Made by BashFrames, then **Support**, then **Support Lodge ♥**.
+**Help > Contact Support…** opens an email to that address. The subject is Lodge Support. Under a blank line for your message, Lodge adds its version, its build number, and the macOS version. **Lodge > Support Lodge…** and **Help > Support Lodge…** open the Gumroad page in your browser. **Lodge > About Lodge** says Made by bashframes, with a link to the same email. The bottom of Settings > General reads Made by bashframes, then **Support**, then **Support Lodge ♥**.
 
-After five offloads where every file was copied and verified, and at least three days after you first opened this version of Lodge, a short note shows up at most twice. It only appears when Lodge is idle, at launch or after **Done**, never during a copy. The note is titled **Support Lodge**. It says Lodge is made by one person at BashFrames, and that you can chip in on Gumroad. **Maybe Later** asks once more, 30 days later. **Support Lodge** opens the page and does not ask again. **Don’t Ask Again** stops it. If a copy starts while the note is up, it goes away.
+After five offloads where every file was copied and verified, and at least three days after you first opened this version of Lodge, a short note shows up at most twice. It only appears when Lodge is idle, at launch or after **Done**, never during a copy. The note is titled **Support Lodge**. It says Lodge is made by one person at bashframes, and that you can chip in on Gumroad. **Maybe Later** asks once more, 30 days later. **Support Lodge** opens the page and does not ask again. **Don’t Ask Again** stops it. If a copy starts while the note is up, it goes away.
 
 ## Ready to format
 
