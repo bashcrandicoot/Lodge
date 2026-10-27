@@ -115,4 +115,8 @@ final class SupportPromptTests: XCTestCase {
         XCTAssertEqual(Support.emailURL.absoluteString, "mailto:bashframes@gmail.com?subject=Lodge%20Support")
         XCTAssertTrue(Support.supportEmailURL.absoluteString.contains("body="))
     }
+
+    func testDeveloperNameIsLowercase() {
+        XCTAssertEqual(Support.developerName, "bashframes")
+    }
 }

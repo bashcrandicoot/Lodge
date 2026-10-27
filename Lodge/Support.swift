@@ -4,7 +4,7 @@ import AppKit
 /// Who makes Lodge and how to reach them. Change the email here and it changes everywhere:
 /// the About window, Help ▸ Contact Support… and the Settings footer.
 enum Support {
-    static let developerName = "BashFrames"
+    static let developerName = "bashframes"
     static let email = "bashframes@gmail.com"
     /// Tips for Lodge (Help ▸ Support Lodge…, the Settings footer and the support card).
     static let tipJarURL = URL(string: "https://bashframes.gumroad.com/l/lodge")!
@@ -64,7 +64,7 @@ enum Support {
     }
 }
 
-/// The quiet "Made by BashFrames · Support" line at the bottom of Settings ▸ General.
+/// The quiet "Made by bashframes · Support" line at the bottom of Settings ▸ General.
 struct SettingsCreditsFooter: View {
     var body: some View {
         HStack(spacing: 4) {
