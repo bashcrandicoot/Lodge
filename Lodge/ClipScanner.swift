@@ -42,9 +42,14 @@ enum ClipScanner {
         "system volume information", "$recycle.bin", "recycler", "recycled", "thumbs.db", "desktop.ini",
     ]
 
+    /// File types computers leave on cards that are never camera media: disk images (an
+    /// installer .dmg copied onto a card, a Lodge download…). Compared lowercased, without the dot.
+    static let junkExtensions: Set<String> = ["dmg"]
+
     /// True for system junk that should never be copied.
     static func isJunk(_ name: String) -> Bool {
         name.hasPrefix(".") || junkNames.contains(name.lowercased())
+            || junkExtensions.contains((name as NSString).pathExtension.lowercased())
     }
 
     /// True if a file name looks like a video clip.

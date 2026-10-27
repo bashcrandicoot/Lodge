@@ -124,6 +124,31 @@ final class FileRulesTests: XCTestCase {
         XCTAssertEqual(ClipScanner.scan(volumeURL: card).count, 5, "Without the extra patterns, notes.tmp and Cache/a.bin are files")
     }
 
+    func testDiskImagesAreNeverOffloaded() throws {
+        for name in ["Lodge-1.0.2.dmg", "INSTALLER.DMG", "Backup.Dmg"] {
+            XCTAssertTrue(ClipScanner.isJunk(name), name)
+        }
+        for name in ["dmg.MP4", "C0001.MP4", "DMG", "notes.dmgx"] {
+            XCTAssertFalse(ClipScanner.isJunk(name), name)
+        }
+
+        let card = root.appendingPathComponent("DMGCARD")
+        try write("DCIM/100MSDCF/DSC00001.ARW", card: card)
+        try write("Lodge-1.0.2.dmg", card: card)
+        try write("DCIM/OLD.DMG", card: card)
+        // Even with an empty ignore list (Settings ▸ Files), disk images are skipped.
+        let report = ClipScanner.scanReport(volumeURL: card, rules: .keepTogether)
+        XCTAssertEqual(report.files.map(\.relativePath), ["DCIM/100MSDCF/DSC00001.ARW"])
+        XCTAssertEqual(report.ignored, ["DCIM/OLD.DMG", "Lodge-1.0.2.dmg"])
+
+        // So they're never in the list, the counts, the size or the copy.
+        let inventory = CardInventory.classify(files: report.files, volumeIdentity: "ID", knownKeys: [])
+        let selection = OffloadSelection.make(inventory: inventory, categories: Set(MediaCategory.allCases),
+                                              reoffload: .everything, reoffloadIDs: [])
+        XCTAssertEqual(selection.toCopy.map(\.relativePath), ["DCIM/100MSDCF/DSC00001.ARW"])
+        XCTAssertEqual(selection.toCopy.reduce(0) { $0 + $1.size }, 1, "Only the photo’s byte counts")
+    }
+
     func testIgnoredFilesNeverBlockReadyToFormat() {
         let clip = file("DCIM/GX010001.MP4")
         var inventory = CardInventory(new: [], offloaded: [clip])
