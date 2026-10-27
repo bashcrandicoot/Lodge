@@ -20,4 +20,4 @@ The app is not notarized and is not sandboxed. A build you make yourself is sign
 
 On macOS 15 Sequoia and later, open Lodge, click **Done**, then go to **System Settings > Privacy & Security** and click **Open Anyway**. On macOS 14, right-click Lodge and choose **Open**.
 
-[Download Lodge from Gumroad](https://bashframes.gumroad.com/l/lodge).
+[Download Lodge from Ko-fi](https://ko-fi.com/s/fb9fab53be).

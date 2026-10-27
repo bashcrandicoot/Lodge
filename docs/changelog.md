@@ -2,7 +2,7 @@
 
 ## 1.0.1
 
-**Coming from 1.0.0?** Lodge 1.0.0 can’t update itself, so [download 1.0.1 from Gumroad](https://bashframes.gumroad.com/l/lodge) once. After that, Lodge updates itself.
+**Coming from 1.0.0?** Lodge 1.0.0 can’t update itself, so [download 1.0.1 from Ko-fi](https://ko-fi.com/s/fb9fab53be) once. After that, Lodge updates itself.
 
 ### New
 
@@ -17,7 +17,7 @@
 
 ## 1.0.0
 
-First public release of Lodge, a native Mac app (macOS 14 or later) for offloading camera memory cards. [Download Lodge from Gumroad](https://bashframes.gumroad.com/l/lodge).
+First public release of Lodge, a native Mac app (macOS 14 or later) for offloading camera memory cards. [Download Lodge from Ko-fi](https://ko-fi.com/s/fb9fab53be).
 
 ### Offload and verification
 

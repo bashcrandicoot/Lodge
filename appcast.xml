@@ -14,7 +14,7 @@
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
             <description sparkle:format="markdown"><![CDATA[## Lodge 1.0.1
 
-**Coming from 1.0.0?** Lodge 1.0.0 can't check for updates, so download 1.0.1 by hand once: open the disk image and drag Lodge to Applications. From 1.0.1 on, Lodge updates itself.
+**Coming from 1.0.0?** Lodge 1.0.0 can't check for updates, so download 1.0.1 by hand once: unzip it, then open the DMG and drag Lodge to Applications. From 1.0.1 on, Lodge updates itself.
 
 ### New
 
