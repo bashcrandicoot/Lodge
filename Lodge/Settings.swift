@@ -24,6 +24,7 @@ final class AppSettings: ObservableObject {
         static let listThumbnails = "listThumbnails"
         static let quickDump = "quickDump"
         static let fileRules = "fileRules"
+        static let dateFilter = "dateFilter"
         static let destinationMigrated = "destinationMovedToFavorites"
         static let menuBarMode = "keepRunningInMenuBar"
         static let askToImport = "askToImportOnMount"
@@ -115,6 +116,14 @@ final class AppSettings: ObservableObject {
     /// "Quick dump" (main window): `{project}` is left out of the names.
     @Published var quickDump: Bool {
         didSet { defaults?.set(quickDump, forKey: Key.quickDump) }
+    }
+
+    /// "Dates" (main window): copy only files from these days. Remembered like Quick dump.
+    @Published var dateFilter: DateFilter {
+        didSet {
+            guard dateFilter != oldValue else { return }
+            defaults?.set(try? JSONEncoder().encode(dateFilter), forKey: Key.dateFilter)
+        }
     }
 
     /// Proxy and sidecar extensions, and the ignore list (Settings ▸ Files).
@@ -222,6 +231,8 @@ final class AppSettings: ObservableObject {
         mediaLayout = defaults?.string(forKey: Key.mediaLayout).flatMap(MediaLayout.init(rawValue:)) ?? .list
         showListThumbnails = defaults?.bool(forKey: Key.listThumbnails) ?? false
         quickDump = defaults?.bool(forKey: Key.quickDump) ?? false
+        dateFilter = defaults?.data(forKey: Key.dateFilter).flatMap { try? JSONDecoder().decode(DateFilter.self, from: $0) }
+            ?? .any
         keepRunningInMenuBar = defaults?.bool(forKey: Key.menuBarMode) ?? false
         askToImport = defaults?.object(forKey: Key.askToImport) as? Bool ?? true
         showMenuBarIcon = defaults?.object(forKey: Key.showMenuBarIcon) as? Bool ?? true

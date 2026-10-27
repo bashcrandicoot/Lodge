@@ -26,6 +26,7 @@ enum OffloadReadiness {
         newFileCount: Int,
         missingCopies: Int = 0,
         shortClipsSkipped: Int = 0,
+        outsideDates: Int = 0,
         cardIsEmpty: Bool = false,
         namingIsValid: Bool = true,
         needs: NamingNeeds = NamingNeeds(project: true),
@@ -48,6 +49,9 @@ enum OffloadReadiness {
             return shortClipsSkipped == 1
                 ? "Only a short clip is left — choose Include Anyway to offload it"
                 : "Only short clips are left — choose Include All Short Clips to offload them"
+        }
+        if newFileCount == 0 && outsideDates > 0 {
+            return "Nothing new in the chosen dates — choose Any date to see everything"
         }
         if newFileCount == 0 { return "Everything on this card is already offloaded" }
         if !namingIsValid { return "Fix the naming template in Settings" }

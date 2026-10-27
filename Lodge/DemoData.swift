@@ -271,6 +271,7 @@ enum DemoData {
         inventoryWithIgnored.ignored = ignoredItems
         let session = OffloadSession(card: card, inventory: inventoryWithIgnored, durations: durations())
         session.shortRule = settings.shortClipRule
+        session.dateFilter = settings.dateFilter
         session.fileRules = settings.fileRules
         // While copying and when finished, the missing copies are being re-offloaded too.
         if state != .ready { session.reoffloadMode = .missing }

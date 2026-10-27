@@ -136,6 +136,11 @@ private struct ClipsStageContent: View {
                     .buttonStyle(.plain)
                     .help("Videos shorter than \(DurationFormatting.threshold(session.shortRule.threshold)) stay on the card with their sidecars. Change this in Settings ▸ General.")
                 }
+                if session.outsideDatesCount > 0 && session.phase == .ready {
+                    CountPill(text: "\(session.outsideDatesCount) outside \(settings.dateFilter.mode == .custom ? "the dates" : settings.dateFilter.mode.title.lowercased())",
+                              systemImage: "calendar", tint: .secondary)
+                        .help("These new files are from other days, so they stay on the card. Choose Any date under Dates to copy them too.")
+                }
                 if session.offloadedInView > 0 && session.phase == .ready {
                     ReoffloadMenu(session: session)
                 }
@@ -176,6 +181,10 @@ private struct ClipsStageContent: View {
             GridRow {
                 Color.clear.gridCellUnsizedAxes([.horizontal, .vertical])
                 QuickDumpToggle(isDisabled: session.phase != .ready)
+            }
+            GridRow {
+                fieldLabel("Dates")
+                DateFilterPicker(isDisabled: session.phase != .ready)
             }
         }
     }
@@ -390,8 +399,12 @@ private struct ClipsStageContent: View {
 
     /// Nothing will be copied: say why, and offer the way out.
     private var nothingToCopy: some View {
-        ContentUnavailableView {
-            if session.missingCopyCount == 0 && !session.skippedShort.isEmpty {
+        let onlyOtherDates = session.missingCopyCount == 0 && session.skippedShort.isEmpty
+            && session.outsideDatesCount > 0
+        return ContentUnavailableView {
+            if onlyOtherDates {
+                Label("Nothing in These Dates", systemImage: "calendar")
+            } else if session.missingCopyCount == 0 && !session.skippedShort.isEmpty {
                 Label("Only Short Clips", systemImage: "timer")
             } else if session.missingCopyCount > 0 {
                 Label("Copies Missing", systemImage: "exclamationmark.triangle")
@@ -399,7 +412,11 @@ private struct ClipsStageContent: View {
                 Label("All Caught Up", systemImage: "checkmark.seal")
             }
         } description: {
-            if session.missingCopyCount == 0 && !session.skippedShort.isEmpty {
+            if onlyOtherDates {
+                Text(session.outsideDatesCount == 1
+                     ? "The only new file is from another day."
+                     : "The \(session.outsideDatesCount) new files are all from other days.")
+            } else if session.missingCopyCount == 0 && !session.skippedShort.isEmpty {
                 Text(session.skippedShort.clips.count == 1
                      ? "The only new video is shorter than \(DurationFormatting.threshold(session.shortRule.threshold))."
                      : "The \(session.skippedShort.clips.count) new videos are all shorter than \(DurationFormatting.threshold(session.shortRule.threshold)).")
@@ -418,6 +435,9 @@ private struct ClipsStageContent: View {
             }
             if !session.skippedShort.isEmpty && session.phase == .ready {
                 Button("Include All Short Clips") { session.includeAllShort = true }
+            }
+            if onlyOtherDates && session.phase == .ready {
+                Button("Show Any Date") { settings.dateFilter.mode = .any }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -1184,5 +1204,40 @@ private struct QuickDumpToggle: View {
             .accessibilityHint(QuickDumpHelp.text)
             InfoHint(text: QuickDumpHelp.text, subject: "Quick dump")
         }
+    }
+}
+
+/// "Dates" (with an ⓘ): Any date, Today, Last 7 days, or a custom range of days.
+private struct DateFilterPicker: View {
+    let isDisabled: Bool
+    @EnvironmentObject private var settings: AppSettings
+
+    var body: some View {
+        HStack(spacing: 6) {
+            Picker("Dates", selection: $settings.dateFilter.mode) {
+                ForEach(DateFilter.Mode.allCases) { mode in
+                    Text(mode.title).tag(mode)
+                }
+            }
+            .labelsHidden()
+            .pickerStyle(.menu)
+            .fixedSize()
+            .help(DateFilterHelp.text)
+            if settings.dateFilter.mode == .custom {
+                DatePicker("From", selection: $settings.dateFilter.from, displayedComponents: .date)
+                    .labelsHidden()
+                    .datePickerStyle(.compact)
+                    .fixedSize()
+                    .accessibilityLabel("From")
+                Text("to").foregroundStyle(.secondary)
+                DatePicker("To", selection: $settings.dateFilter.to, displayedComponents: .date)
+                    .labelsHidden()
+                    .datePickerStyle(.compact)
+                    .fixedSize()
+                    .accessibilityLabel("To")
+            }
+            InfoHint(text: DateFilterHelp.text, subject: "Dates")
+        }
+        .disabled(isDisabled)
     }
 }

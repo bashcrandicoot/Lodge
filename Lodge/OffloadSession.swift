@@ -42,6 +42,12 @@ final class OffloadSession: ObservableObject, Identifiable {
     @Published var fileRules: FileRules = .standard {
         didSet { if fileRules != oldValue { refreshFiles() } }
     }
+    /// "Dates": copy only files from these days (Any date by default).
+    @Published var dateFilter: DateFilter = .any {
+        didSet { if dateFilter != oldValue { refreshFiles() } }
+    }
+    /// New files (and their sidecars) the date filter leaves on the card.
+    @Published private(set) var outsideDatesCount = 0
     /// Short clips the user chose to offload anyway (card paths).
     @Published var includedShortIDs: Set<String> = [] {
         didSet { refreshFiles() }
@@ -104,8 +110,9 @@ final class OffloadSession: ObservableObject, Identifiable {
                                               reoffload: reoffloadMode, reoffloadIDs: reoffloadIDs,
                                               shortRule: shortRule, durations: durations,
                                               includedShortIDs: includedShortIDs, includeAllShort: includeAllShort,
-                                              rules: fileRules)
+                                              rules: fileRules, dateFilter: dateFilter)
         newClips = selection.toCopy
+        outsideDatesCount = selection.outsideDates
         skippedShort = selection.skippedShort
         reoffloadingIDs = selection.reoffloading
         alreadyOffloadedCount = selection.offloadedKept

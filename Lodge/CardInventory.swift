@@ -75,35 +75,43 @@ struct OffloadSelection: Equatable, Sendable {
     var reoffloading: Set<String> = []
     /// Offloaded files (copy present) in the included types that aren't being copied again.
     var offloadedKept = 0
-    /// Files with a missing copy in the included types that aren't being copied again.
+    /// Files with a missing copy in the included types and dates that aren't being copied again.
     var missingKept = 0
     /// New short videos (and their sidecars) left on the card by "Skip videos shorter than".
     var skippedShort = ShortClipSkip()
+    /// New files (in the included types) left on the card by the date filter, sidecars included.
+    var outsideDates = 0
 
     /// Short clips are only skipped among new files: anything picked for re-offload is copied.
+    /// The date filter applies to everything, except single files picked with "Re-offload This File".
     static func make(inventory: CardInventory, categories: Set<MediaCategory>,
                      reoffload: ReoffloadMode, reoffloadIDs: Set<String>,
                      shortRule: ShortClipRule = .off, durations: [String: Double] = [:],
                      includedShortIDs: Set<String> = [], includeAllShort: Bool = false,
-                     rules: FileRules = .standard) -> OffloadSelection {
+                     rules: FileRules = .standard,
+                     dateFilter: DateFilter = .any, now: Date = Date(), calendar: Calendar = .current) -> OffloadSelection {
         var result = OffloadSelection()
+        let outside = dateFilter.excludedIDs(in: inventory.all, rules: rules, now: now, calendar: calendar)
         let included = { (clip: Clip) in categories.contains(clip.category) }
+        let inDates = { (clip: Clip) in !outside.contains(clip.relativePath) }
         let picked = withSidecars(reoffloadIDs, files: inventory.all, rules: rules)
-        let newFiles = inventory.new.filter(included)
+        let newFiles = inventory.new.filter(included).filter(inDates)
+        result.outsideDates = inventory.new.filter(included).count - newFiles.count
         result.skippedShort = ShortClipSkip.find(candidates: newFiles, files: inventory.all, durations: durations,
                                                  rule: shortRule, included: includedShortIDs,
                                                  includeAll: includeAllShort, rules: rules)
         result.toCopy = newFiles.filter { !result.skippedShort.ids.contains($0.relativePath) }
         for clip in inventory.missing where included(clip) {
-            if reoffload != .off || picked.contains(clip.relativePath) {
+            if (reoffload != .off && inDates(clip)) || picked.contains(clip.relativePath) {
                 result.toCopy.append(clip)
                 result.reoffloading.insert(clip.relativePath)
-            } else {
+            } else if inDates(clip) {
+                // Missing copies from other days aren't offered for re-offload while the dates are set.
                 result.missingKept += 1
             }
         }
         for clip in inventory.offloaded where included(clip) {
-            if reoffload == .everything || picked.contains(clip.relativePath) {
+            if (reoffload == .everything && inDates(clip)) || picked.contains(clip.relativePath) {
                 result.toCopy.append(clip)
                 result.reoffloading.insert(clip.relativePath)
             } else {

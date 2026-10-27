@@ -78,6 +78,7 @@ final class AppModel: ObservableObject {
     private var categoriesObserver: AnyCancellable?
     private var appearanceObserver: AnyCancellable?
     private var shortRuleObserver: AnyCancellable?
+    private var dateFilterObserver: AnyCancellable?
     private var fileRulesObserver: AnyCancellable?
     private var presetsObserver: AnyCancellable?
     private var menuBarObservers: [AnyCancellable] = []
@@ -149,6 +150,11 @@ final class AppModel: ObservableObject {
             .sink { [weak self] enabled, seconds in
                 self?.session?.shortRule = ShortClipRule(isEnabled: enabled, threshold: Double(seconds))
             }
+
+        // "Dates" in the Media stage re-picks the files right away.
+        dateFilterObserver = self.settings.$dateFilter.sink { [weak self] filter in
+            self?.session?.dateFilter = filter
+        }
 
         // Settings ▸ Appearance: Light / Dark / System for every window, alerts and menus included.
         if !AppModel.isRunningUnitTests && !AppModel.demoForcesAppearance {
@@ -386,6 +392,7 @@ final class AppModel: ObservableObject {
         }
         newSession.includedCategories = settings.includedCategories
         newSession.shortRule = settings.shortClipRule
+        newSession.dateFilter = settings.dateFilter
         newSession.fileRules = settings.fileRules
         if newSession.projectInput.isEmpty { newSession.projectInput = settings.lastProject }
         newSession.cameraID = cameras.suggestedCamera(forCard: newSession.card.identity) ?? newSession.cameraID
@@ -413,6 +420,7 @@ final class AppModel: ObservableObject {
             newFileCount: session.newClips.count,
             missingCopies: session.missingCopyCount,
             shortClipsSkipped: session.skippedShort.clips.count,
+            outsideDates: session.outsideDatesCount,
             cardIsEmpty: session.inventory.fileCount == 0,
             namingIsValid: naming != nil,
             needs: NamingNeeds(naming),
