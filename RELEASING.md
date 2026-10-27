@@ -54,8 +54,14 @@ Example: releasing **1.0.1**.
 
        cd build/release
        ditto -c -k --keepParent Lodge.app Lodge-1.0.1.zip
-       # make Lodge-1.0.1.dmg the same way as for 1.0.0
        cd ../..
+       scripts/make-dmg.sh 1.0.1
+
+   `scripts/make-dmg.sh` makes `build/release/Lodge-1.0.1.dmg` with Lodge.app and an
+   Applications shortcut, laid out by `scripts/dmg/DS_Store`. The mounted volume's icon is
+   made from the current AppIcon in `Lodge/Assets.xcassets` each time (`iconutil` →
+   `.VolumeIcon.icns`, plus the custom-icon flag with `SetFile -a C`), so a new app icon
+   needs no extra step. It doesn't open any Finder windows.
 
    Optionally write release notes as `build/release/Lodge-1.0.1.md` (Markdown). They
    appear in Lodge's "A new version is available" window.
