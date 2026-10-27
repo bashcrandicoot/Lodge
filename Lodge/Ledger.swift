@@ -18,6 +18,19 @@ struct LedgerEntry: Codable, Identifiable, Hashable, Sendable {
     var id: String { sourceKey + "\u{0}" + destinationPath }
 }
 
+extension LedgerEntry {
+    /// Video, photo, audio or other, from the copy's file extension (case-insensitive).
+    /// Falls back to the name on the card if the copy's name has no extension.
+    /// Drives the icon in Recent Offloads.
+    var category: MediaCategory {
+        let copyName = (destinationPath as NSString).lastPathComponent
+        let name = (copyName as NSString).pathExtension.isEmpty
+            ? (sourceRelativePath as NSString).lastPathComponent
+            : copyName
+        return MediaCategory.classify(fileName: name)
+    }
+}
+
 /// Builds the identity key for a clip:
 /// card UUID (or name) + path on card + size + modification time.
 /// If any of those differ, it's treated as a different clip.

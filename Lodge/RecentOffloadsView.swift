@@ -49,14 +49,16 @@ struct RecentOffloadsView: View {
     }
 }
 
-/// One row: new file name, where it came from, when and how big.
+/// One row: an icon for its kind (video, photo, audio, other), new file name,
+/// where it came from, when and how big.
 struct RecentRow: View {
     let entry: LedgerEntry
 
     var body: some View {
         HStack(spacing: 10) {
-            Image(systemName: "film")
+            Image(systemName: entry.category.symbol)
                 .foregroundStyle(.secondary)
+                .frame(width: 18)   // symbols differ in width; keep the names lined up
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 Text(URL(fileURLWithPath: entry.destinationPath).lastPathComponent)

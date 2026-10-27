@@ -8,13 +8,13 @@ enum MediaCategory: String, CaseIterable, Codable, Identifiable, Sendable {
 
     /// GoPro's ".lrv" isn't here on purpose: it's a low-res proxy, not footage (see `FileRules`).
     static let videoExtensions: Set<String> = [
-        "mp4", "mov", "mxf", "braw", "r3d", "crm", "mts", "m2ts", "avi", "mkv", "insv", "360",
+        "mp4", "mov", "m4v", "mxf", "braw", "r3d", "crm", "mts", "m2ts", "avi", "mkv", "insv", "360",
     ]
     static let photoExtensions: Set<String> = [
         "jpg", "jpeg", "heic", "heif", "png", "tif", "tiff", "dng", "arw", "cr2", "cr3",
         "nef", "raf", "orf", "rw2", "srw", "pef", "gpr", "insp",
     ]
-    static let audioExtensions: Set<String> = ["wav", "mp3", "aac", "m4a", "bwf"]
+    static let audioExtensions: Set<String> = ["wav", "mp3", "aac", "m4a", "bwf", "aif", "aiff", "flac"]
 
     /// Classifies a file by the extension of its name ("C0001.MP4" -> .video).
     static func classify(fileName: String) -> MediaCategory {
