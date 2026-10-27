@@ -6,6 +6,21 @@
         <description>Updates for Lodge, the SD card offloader for macOS.</description>
         <language>en</language>
         <item>
+            <title>1.0.2</title>
+            <pubDate>Tue, 27 Oct 2026 01:58:48 -0400</pubDate>
+            <link>https://github.com/bashcrandicoot/Lodge</link>
+            <sparkle:version>3</sparkle:version>
+            <sparkle:shortVersionString>1.0.2</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[## Lodge 1.0.2
+
+- **New:** choose which days to offload (Any date, Today, Last 7 days or a custom range); files are judged by when they were recorded.
+- Disk images (.dmg) on a card are now ignored.
+- The installer shows the new Lodge icon.
+]]></description>
+            <enclosure url="https://github.com/bashcrandicoot/Lodge/releases/download/v1.0.2/Lodge-1.0.2.zip" length="8142956" type="application/octet-stream" sparkle:edSignature="sCTbxlFDEx/R4s7su1D04grRCTouYx/rUuiq3uxkOlY6Xn+m2hWYTGMv72km5I0pv2D6buy9p7cLlFNK1ZYEAA=="/>
+        </item>
+        <item>
             <title>1.0.1</title>
             <pubDate>Mon, 26 Oct 2026 17:42:23 -0400</pubDate>
             <link>https://github.com/bashcrandicoot/Lodge</link>
