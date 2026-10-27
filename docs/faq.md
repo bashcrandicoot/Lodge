@@ -66,7 +66,7 @@ The first time Lodge reads a card, also allow access to files on a removable vol
 
 Write to [bashframes@gmail.com](mailto:bashframes@gmail.com). If Lodge has been useful, [Support Lodge](https://bashframes.gumroad.com/l/lodge). Pay what you want.
 
-**Help > Contact Support…** opens an email to that address, subject Lodge Support, with the Lodge and macOS versions under your message. **Help > Support Lodge…** and **Lodge > Support Lodge…** open the same page in your browser. **Lodge > About Lodge** says Made by BashFrames, with a link to the same email. Settings > General ends with **Support** and **Support Lodge**.
+**Help > Contact Support…** opens an email to that address, subject Lodge Support, with the Lodge and macOS versions under your message. **Help > Support Lodge…** and **Lodge > Support Lodge…** open the same page in your browser. **Lodge > About Lodge** says Made by bashframes, with a link to the same email. Settings > General ends with **Support** and **Support Lodge**.
 
 After five offloads where every file was copied and verified, and at least three days after you first open that version, a short **Support Lodge** note shows up at most twice, and only when Lodge is idle. It never appears during a copy. **Maybe Later** asks once more, 30 days later. **Support Lodge** and **Don’t Ask Again** stop it.
 

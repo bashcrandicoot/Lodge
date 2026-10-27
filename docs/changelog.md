@@ -12,7 +12,7 @@
 - **A folder for each file type.** Inside the last folder, files are sorted into one folder per extension (`MP4/`, `WAV/`, `ARW/`). JPG and JPEG share `JPG/`. **Flat** skips the shoot folders and still sorts by type.
 - **Check for Updates.** **Lodge > Check for Updates…** looks now and is dimmed while a check is running. Settings > General: **Automatically check for updates** (on) and **Automatically download and install updates** (off, and unavailable while checks are off). Lodge checks once a day. Updates are EdDSA-signed through Sparkle.
 - **Support Lodge.** A tip link in the Lodge and Help menus and the Settings footer, and a short note that shows up at most twice. The note appears after five clean offloads and three days, when Lodge is idle. **Maybe Later** waits 30 days. **Support Lodge** and **Don’t Ask Again** stop it.
-- **Contact.** **About Lodge** says Made by BashFrames and links to bashframes@gmail.com. **Help > Contact Support…** opens that address.
+- **Contact.** **About Lodge** says Made by bashframes and links to bashframes@gmail.com. **Help > Contact Support…** opens that address.
 - **Also new:** a new app icon, the preset menu at the top right, an expandable Layout tree, and a wagon on the offload bar.
 
 ## 1.0.0
