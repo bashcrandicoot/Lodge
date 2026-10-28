@@ -152,7 +152,7 @@ struct SupportPromptCard: View {
             VStack(spacing: 8) {
                 Text("Support Lodge")
                     .font(.headline)
-                Text("Lodge is made by one person at \(Support.developerName). If it saves you time, you can chip in on Gumroad. Thank you!")
+                Text("Lodge is made by one person at \(Support.developerName). If it saves you time, you can chip in on Ko-fi. Thank you!")
                     .font(.callout)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)

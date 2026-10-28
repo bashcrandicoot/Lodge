@@ -34,9 +34,25 @@ Example: releasing **1.0.1**.
 1. **Bump the version.** In Xcode, click the Lodge project → Lodge target → General:
    - *Version* (`MARKETING_VERSION`): `1.0.1`. This is what people see.
    - *Build* (`CURRENT_PROJECT_VERSION`): one more than last time (1.0.0 was `1`, so
-     1.0.1 is `2`, 1.0.2 is `3`, 1.1.0 is `4`…). **Sparkle compares the build number**,
+     1.0.1 is `2`, 1.0.2 is `3`, 1.0.3 is `4`, 1.0.4 is `5`…). **Sparkle compares the build number**,
      so it must always go up, even for a tiny fix. Never reuse one.
-   Change both Debug and Release (setting them on the target's General tab does).
+   Change both Debug and Release (setting them on the target's General tab does), and
+   set the LodgeTests target to the same Version and Build so the whole project agrees.
+   **In the same commit, update every place that names the current version:**
+   - `README.md`: the "Coming from 1.0.0?" line (download *this* version once by hand).
+   - `docs/index.html`: the **Install Lodge x.y.z** heading and the footer (**Lodge x.y.z ·**).
+   - `SECURITY.md` (the supported release) and the bug report placeholder in
+     `.github/ISSUE_TEMPLATE/bug_report.yml`.
+   - A new section at the top of `docs/changelog.md`.
+   Then run
+
+       scripts/check-version.sh 1.0.1
+
+   It fails if any `MARKETING_VERSION` in the project isn't 1.0.1, if `README.md` or
+   `docs/index.html` don't name 1.0.1, or if they still name an older version (only 1.0.0,
+   the release that can't update itself, may stay). `scripts/make-dmg.sh` and
+   `scripts/make-appcast.sh` run the same check first and stop if it fails, so a release
+   can't be packaged or signed with a stale README or site.
 2. **Build the Release app** (universal, Apple silicon + Intel):
 
        DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \

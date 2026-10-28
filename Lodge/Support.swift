@@ -7,7 +7,7 @@ enum Support {
     static let developerName = "bashframes"
     static let email = "bashframes@gmail.com"
     /// Tips for Lodge (Help ▸ Support Lodge…, the Settings footer and the support card).
-    static let tipJarURL = URL(string: "https://bashframes.gumroad.com/l/lodge")!
+    static let tipJarURL = URL(string: "https://ko-fi.com/bashframes")!
 
     /// A plain `mailto:` link, for the About window and the Settings footer.
     static var emailURL: URL { mailURL(body: nil) }
@@ -25,7 +25,7 @@ enum Support {
         return components.url ?? URL(string: "mailto:\(email)")!
     }
 
-    /// "Lodge 1.0.0 (1), macOS 15.1.0"
+    /// "Lodge 1.0.3 (4), macOS 15.1.0"
     static var versionSummary: String {
         let info = Bundle.main.infoDictionary ?? [:]
         let version = info["CFBundleShortVersionString"] as? String ?? "?"
@@ -58,7 +58,7 @@ enum Support {
         NSWorkspace.shared.open(supportEmailURL)
     }
 
-    /// Opens the Gumroad page in the browser.
+    /// Opens the Ko-fi page in the browser.
     static func openTipJar() {
         NSWorkspace.shared.open(tipJarURL)
     }
@@ -74,7 +74,7 @@ struct SettingsCreditsFooter: View {
                 .help("Email \(Support.email)")
             Text("·").accessibilityHidden(true)
             Link("Support Lodge ♥", destination: Support.tipJarURL)
-                .help("Leave a tip for Lodge on Gumroad")
+                .help("Leave a tip for Lodge on Ko-fi")
                 .accessibilityLabel("Support Lodge")
         }
         .font(.caption)

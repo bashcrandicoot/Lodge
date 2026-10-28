@@ -36,7 +36,7 @@ body:
     id: lodge
     attributes:
       label: Lodge version
-      placeholder: "1.0.0"
+      placeholder: "1.0.3"
     validations:
       required: true
   - type: dropdown

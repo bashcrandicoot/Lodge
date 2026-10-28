@@ -2,7 +2,7 @@
 
 Home base for your media. Lodge is a universal app for Apple silicon and Intel Macs, on macOS 14 or later. It copies video, photos, audio, and the small files that belong with them off a camera card, checks every copy, and names the result from a template. This guide is everything the window does. Install steps are in [Getting started](getting-started.md).
 
-The main window reads left to right: **Card**, **Media**, **Destination**, with the offload bar along the bottom. The preset menu sits at the top right, just left of **Recent Offloads** and **Settings**, and the window title is hidden. The card’s name is in the Card column. Closing the window quits Lodge, unless [menu bar mode](#menu-bar-mode) is on. Lodge 1.0.1 has a new app icon.
+The main window reads left to right: **Card**, **Media**, **Destination**, with the offload bar along the bottom. The preset menu sits at the top right, just left of **Recent Offloads** and **Settings**, and the window title is hidden. The card’s name is in the Card column. Closing the window quits Lodge, unless [menu bar mode](#menu-bar-mode) is on. Lodge has had a new app icon since 1.0.1.
 
 <img src="assets/screenshots/ready-dark.png" width="2704" height="1824" alt="Lodge in Dark mode, ready to offload. The preset menu is at the top right. Offload 29 Files sits along the bottom." style="max-width:100%;height:auto">
 
@@ -278,7 +278,7 @@ Settings > General has an **Updates** section:
 
 The note under the switches says you can also choose **Lodge > Check for Updates…** any time. Updates are EdDSA-signed through Sparkle. Copying itself does not upload anything.
 
-Lodge 1.0.0 can’t update itself. [Download Lodge from Ko-fi](https://ko-fi.com/s/fb9fab53be) once to get 1.0.1. After that, Lodge updates itself.
+Lodge 1.0.0 can’t update itself. [Download Lodge from Ko-fi](https://ko-fi.com/s/fb9fab53be) once to get the latest version. After that, Lodge updates itself.
 
 ## Menu bar mode
 
@@ -309,9 +309,9 @@ macOS keeps notifications quiet while a Focus, such as Do Not Disturb, is on. If
 
 Write to [bashframes@gmail.com](mailto:bashframes@gmail.com). If Lodge has been useful, [Support Lodge](https://ko-fi.com/bashframes). Pay what you want.
 
-**Help > Contact Support…** opens an email to that address. The subject is Lodge Support. Under a blank line for your message, Lodge adds its version, its build number, and the macOS version. **Lodge > Support Lodge…** and **Help > Support Lodge…** open the Gumroad page in your browser. **Lodge > About Lodge** says Made by bashframes, with a link to the same email. The bottom of Settings > General reads Made by bashframes, then **Support**, then **Support Lodge ♥**.
+**Help > Contact Support…** opens an email to that address. The subject is Lodge Support. Under a blank line for your message, Lodge adds its version, its build number, and the macOS version. **Lodge > Support Lodge…** and **Help > Support Lodge…** open the Ko-fi page in your browser. **Lodge > About Lodge** says Made by bashframes, with a link to the same email. The bottom of Settings > General reads Made by bashframes, then **Support**, then **Support Lodge ♥**.
 
-After five offloads where every file was copied and verified, and at least three days after you first opened this version of Lodge, a short note shows up at most twice. It only appears when Lodge is idle, at launch or after **Done**, never during a copy. The note is titled **Support Lodge**. It says Lodge is made by one person at bashframes, and that you can chip in on Gumroad. **Maybe Later** asks once more, 30 days later. **Support Lodge** opens the page and does not ask again. **Don’t Ask Again** stops it. If a copy starts while the note is up, it goes away.
+After five offloads where every file was copied and verified, and at least three days after you first opened this version of Lodge, a short note shows up at most twice. It only appears when Lodge is idle, at launch or after **Done**, never during a copy. The note is titled **Support Lodge**. It says Lodge is made by one person at bashframes, and that you can chip in on Ko-fi. **Maybe Later** asks once more, 30 days later. **Support Lodge** opens the page and does not ask again. **Don’t Ask Again** stops it. If a copy starts while the note is up, it goes away.
 
 ## Ready to format
 

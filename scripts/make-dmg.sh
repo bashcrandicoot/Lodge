@@ -23,6 +23,9 @@ VOLNAME="Lodge"
 ICONS="$ROOT/Lodge/Assets.xcassets/AppIcon.appiconset"
 OUT="$OUT_DIR/Lodge-$VERSION.dmg"
 
+# Refuse to package a release the README, the site or the project don't name yet.
+"$ROOT/scripts/check-version.sh" "$VERSION"
+
 [ -d "$APP" ] || { echo "No app at $APP (build the Release app first, see RELEASING.md)" >&2; exit 1; }
 SETFILE="$(command -v SetFile || xcrun --find SetFile 2>/dev/null || true)"
 [ -n "$SETFILE" ] || { echo "SetFile not found (install Xcode or its command line tools)" >&2; exit 1; }

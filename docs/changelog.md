@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.3
+
+- **Support Lodge now opens Ko-fi.** **Lodge > Support Lodge…**, **Help > Support Lodge…**, the Settings footer and the support note open [ko-fi.com/bashframes](https://ko-fi.com/bashframes). The Gumroad page is gone.
+- The README and the website now show Lodge 1.0.3.
+
+## 1.0.2
+
+- **New:** choose which days to offload (Any date, Today, Last 7 days or a custom range); files are judged by when they were recorded.
+- Disk images (.dmg) on a card are now ignored.
+- The installer shows the new Lodge icon.
+
 ## 1.0.1
 
 **Coming from 1.0.0?** Lodge 1.0.0 can’t update itself, so [download 1.0.1 from Ko-fi](https://ko-fi.com/s/fb9fab53be) once. After that, Lodge updates itself.

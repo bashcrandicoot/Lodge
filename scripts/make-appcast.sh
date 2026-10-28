@@ -28,6 +28,9 @@ fi
 version="${version#v}"
 folder="${2:-$ROOT/build/release}"
 zip="$folder/Lodge-$version.zip"
+
+# Refuse to sign a release the README, the site or the project don't name yet.
+"$ROOT/scripts/check-version.sh" "$version"
 [[ -f "$zip" ]] || { echo "Can't find $zip" >&2; exit 66; }
 
 # Find Sparkle's command-line tools (they come with the Swift package).
