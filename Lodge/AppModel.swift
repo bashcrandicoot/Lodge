@@ -428,6 +428,7 @@ final class AppModel: ObservableObject {
             hasCamera: !cameraTokenValue(for: session).isEmpty,
             hasDestination: settings.destinationURL != nil,
             destinationConnected: settings.destinationPath.map(DestinationStore.isFolder) ?? true,
+            destinationReadOnlyReason: settings.destinationURL.flatMap(VolumeInfo.readOnlyReason(at:)),
             requiredBytes: session.newBytes,
             availableBytes: settings.destinationURL.flatMap(VolumeInfo.availableBytes(at:)))
     }

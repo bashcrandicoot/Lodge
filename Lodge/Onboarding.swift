@@ -346,7 +346,7 @@ struct OnboardingDrive: Identifiable, Hashable, Sendable {
                 kind: isRoot || (values.volumeIsInternal ?? false) ? "Internal" : "External",
                 suggestedPath: isRoot ? movies : url.path,
                 totalBytes: values.volumeTotalCapacity.map(Int64.init),
-                freeBytes: values.volumeAvailableCapacityForImportantUsage,
+                freeBytes: VolumeInfo.availableBytes(at: url),
                 isInternal: isRoot))
         }
         // External drives first (that's where footage usually goes), the startup disk last.
