@@ -2,7 +2,7 @@ import SwiftUI
 import AppKit
 
 /// Who makes Lodge and how to reach them. Change the email here and it changes everywhere:
-/// the About window, Help ▸ Contact Support… and the Settings footer.
+/// the About window, Help ▸ Contact Support… / Report a Bug… and the Settings footer.
 enum Support {
     static let developerName = "bashframes"
     static let email = "bashframes@gmail.com"
@@ -72,6 +72,10 @@ struct SettingsCreditsFooter: View {
             Text("·").accessibilityHidden(true)
             Link("Support", destination: Support.supportEmailURL)
                 .help("Email \(Support.email)")
+            Text("·").accessibilityHidden(true)
+            Button("Report a Bug…") { BugReport.compose() }
+                .buttonStyle(.link)
+                .help("Email a bug report with Lodge’s recent log attached")
             Text("·").accessibilityHidden(true)
             Link("Support Lodge ♥", destination: Support.tipJarURL)
                 .help("Leave a tip for Lodge on Ko-fi")
