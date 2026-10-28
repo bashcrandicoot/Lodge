@@ -6,6 +6,20 @@
         <description>Updates for Lodge, the SD card offloader for macOS.</description>
         <language>en</language>
         <item>
+            <title>1.0.3</title>
+            <pubDate>Wed, 28 Oct 2026 12:35:23 -0400</pubDate>
+            <link>https://github.com/bashcrandicoot/Lodge</link>
+            <sparkle:version>4</sparkle:version>
+            <sparkle:shortVersionString>1.0.3</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[## Lodge 1.0.3
+
+- **Support Lodge** now opens Ko-fi (ko-fi.com/bashframes), from the Lodge and Help menus, the Settings footer and the support note.
+- The README and the website now show Lodge 1.0.3.
+]]></description>
+            <enclosure url="https://github.com/bashcrandicoot/Lodge/releases/download/v1.0.3/Lodge-1.0.3.zip" length="8142953" type="application/octet-stream" sparkle:edSignature="SBubW9DaUpFNyXFWfUfP6aGti1MVlznVTLh5QrFbOa/sZJN3nDxHcNVjrGjfVBdol3Mr9ne0bp3xO761/tnVAg=="/>
+        </item>
+        <item>
             <title>1.0.2</title>
             <pubDate>Tue, 27 Oct 2026 01:58:48 -0400</pubDate>
             <link>https://github.com/bashcrandicoot/Lodge</link>
