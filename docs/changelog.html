@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Changelog · Lodge</title>
+  <meta name="description" content="What changed in each release of Lodge, newest first.">
+  <meta name="author" content="bashframes">
+  <meta name="theme-color" content="#100e18">
+  <meta name="color-scheme" content="dark">
+  <link rel="canonical" href="https://bashcrandicoot.github.io/Lodge/changelog.html">
+  <link rel="icon" href="assets/favicon.ico" sizes="any">
+  <link rel="icon" href="assets/favicon.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Lodge">
+  <meta property="og:url" content="https://bashcrandicoot.github.io/Lodge/changelog.html">
+  <meta property="og:title" content="Changelog · Lodge">
+  <meta property="og:description" content="What changed in each release of Lodge, newest first.">
+  <meta property="og:image" content="https://bashcrandicoot.github.io/Lodge/assets/lodge-social-preview.png">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <style>
+    :root {
+      --bg: #100e18;
+      --ink: #ffffff;
+      --muted: #b7b1c9;
+      --accent: #b7c6ff;
+      --button: #3d4fce;
+      --button-hover: #4d5ed6;
+      --card: #1b1830;
+      --line: rgba(230, 220, 255, 0.12);
+      --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Helvetica, Arial, sans-serif;
+      --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      --max: 1080px;
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 24px;
+      --space-6: 32px;
+      --space-7: 48px;
+      --space-8: 64px;
+      --h1: clamp(40px, 6vw, 56px);
+      --h2: clamp(28px, 4vw, 36px);
+      --h3: 18px;
+      --body: 17px;
+      --small: 15px;
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font);
+      font-size: var(--body);
+      line-height: 1.5;
+      text-rendering: optimizeLegibility;
+    }
+    img { max-width: 100%; height: auto; }
+    a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 0.16em; }
+    a:hover { color: #d7e0ff; }
+    :focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 3px;
+    }
+    h1, h2, h3, p, ul, ol { overflow-wrap: break-word; }
+
+    .skip {
+      position: absolute;
+      left: var(--space-4);
+      top: -48px;
+      background: var(--button);
+      color: #fff;
+      padding: var(--space-2) var(--space-3);
+      border-radius: 8px;
+      z-index: 5;
+    }
+    .skip:focus { top: var(--space-3); }
+
+    .wrap {
+      width: min(var(--max), 100%);
+      margin-inline: auto;
+      padding-inline: var(--space-5);
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 4;
+      background: rgba(16, 14, 24, 0.86);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: saturate(140%) blur(16px);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+      min-height: 64px;
+      padding-block: var(--space-3);
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      color: var(--ink);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      text-decoration: none;
+      flex: none;
+    }
+    .brand img { width: 28px; height: 28px; max-width: none; }
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: var(--space-2) var(--space-4);
+      align-items: center;
+      margin: 0;
+      padding: 0;
+    }
+    .nav-links a {
+      color: var(--ink);
+      text-decoration: none;
+      font-size: var(--small);
+      line-height: 1.2;
+    }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-links .download {
+      color: #fff;
+      background: var(--button);
+      border-radius: 980px;
+      padding: var(--space-2) var(--space-4);
+    }
+    .nav-links .download:hover { background: var(--button-hover); color: #fff; }
+
+    .hero {
+      position: relative;
+      padding-block: var(--space-7) var(--space-5);
+      text-align: center;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: var(--space-5);
+      width: min(820px, 100%);
+      height: 240px;
+      transform: translateX(-50%);
+      background: radial-gradient(ellipse at center, rgba(120, 100, 190, 0.22), rgba(120, 100, 190, 0) 70%);
+      pointer-events: none;
+    }
+    .hero-inner { position: relative; }
+    h1 {
+      margin: 0 0 var(--space-3);
+      font-size: var(--h1);
+      font-weight: 650;
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+    }
+    .lede {
+      max-width: 38rem;
+      margin: 0 auto var(--space-6);
+      color: var(--muted);
+      font-size: 19px;
+      line-height: 1.5;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+      justify-content: center;
+      align-items: center;
+      margin: 0 0 var(--space-3);
+    }
+    a.store { display: inline-block; line-height: 0; border-radius: var(--radius); }
+    a.store img { display: block; width: 320px; max-width: 100%; height: auto; }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--button);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      line-height: 1.2;
+      border-radius: 12px;
+      padding: var(--space-3) var(--space-4);
+      border: 1px solid transparent;
+    }
+    .button:hover { background: var(--button-hover); color: #fff; }
+    .button.secondary {
+      background: transparent;
+      color: var(--ink);
+      border-color: rgba(255, 255, 255, 0.28);
+    }
+    .button.secondary:hover { border-color: var(--accent); color: var(--ink); background: transparent; }
+    .pay {
+      margin: 0 0 var(--space-4);
+      color: var(--muted);
+      font-size: var(--small);
+      line-height: 1.5;
+    }
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+    }
+    .badges img { height: 20px; width: auto; max-width: none; }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      height: 100%;
+      margin: 0;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: var(--space-5);
+      min-width: 0;
+    }
+    code {
+      font-family: var(--mono);
+      font-size: 0.92em;
+      color: #e5e5ea;
+      overflow-wrap: anywhere;
+    }
+
+    section { padding-block: var(--space-6) var(--space-8); }
+    .releases {
+      display: grid;
+      gap: var(--space-4);
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0;
+      list-style: none;
+    }
+    .release {
+      display: grid;
+      grid-template-columns: 180px minmax(0, 1fr);
+      gap: var(--space-5);
+      height: auto;
+    }
+    .release.lead {
+      border-color: rgba(183, 198, 255, 0.72);
+      background:
+        linear-gradient(180deg, rgba(183, 198, 255, 0.1), rgba(183, 198, 255, 0) 48%),
+        var(--card);
+      box-shadow: inset 0 0 0 1px rgba(183, 198, 255, 0.22);
+    }
+    .release.will-enter { opacity: 0; transform: translateY(10px); }
+    .release.is-in { animation: card-in 0.7s ease var(--stagger, 0ms) both; }
+    .meta { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); min-width: 0; }
+    .version {
+      margin: 0;
+      font-size: var(--h2);
+      font-weight: 650;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+    .date { margin: 0; color: var(--muted); font-size: var(--small); line-height: 1.4; }
+    .tag {
+      display: inline-block;
+      color: var(--bg);
+      background: var(--accent);
+      border-radius: 980px;
+      padding: 2px var(--space-2);
+      font-size: 12px;
+      font-weight: 650;
+      line-height: 1.4;
+    }
+    .release h3 {
+      margin: 0 0 var(--space-3);
+      font-size: var(--h3);
+      font-weight: 650;
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+    }
+    .release ul {
+      margin: 0;
+      padding-left: 1.15em;
+      color: var(--muted);
+      font-size: var(--small);
+      line-height: 1.5;
+    }
+    .release li { margin: var(--space-2) 0; }
+    .release li strong { color: var(--ink); font-weight: 600; }
+    .release .note { margin: var(--space-3) 0 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+    .release .gh { display: inline-block; margin-top: var(--space-4); font-size: var(--small); }
+    .older {
+      max-width: 860px;
+      margin: var(--space-6) auto 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding-block: var(--space-6) var(--space-8);
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    footer .wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3) var(--space-5);
+      justify-content: space-between;
+      align-items: center;
+    }
+    footer p { margin: 0; }
+    footer nav { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); }
+    footer a { color: var(--muted); }
+    footer a.support {
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 980px;
+      padding: var(--space-1) var(--space-3);
+      text-decoration: none;
+    }
+    footer a.support:hover { color: var(--accent); border-color: var(--accent); }
+
+    @keyframes card-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: none; }
+    }
+    @media (max-width: 800px) {
+      .release { grid-template-columns: 1fr; gap: var(--space-3); }
+      .meta { flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: var(--space-2) var(--space-3); }
+      section { padding-block: var(--space-5) var(--space-7); }
+      .hero { padding-block: var(--space-6) var(--space-4); }
+    }
+    @media (max-width: 480px) {
+      .wrap { padding-inline: var(--space-4); }
+      .card { padding: var(--space-4); }
+      .nav-inner { flex-wrap: nowrap; min-height: 56px; }
+      .nav-links { flex-wrap: nowrap; }
+      .nav-links a:not(.download) { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .release, .release.will-enter, .release.is-in { animation: none; opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body id="top">
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="./">
+        <img src="assets/app-icon/icon_128x128.png" width="128" height="128" alt="">
+        Lodge
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="./#features">Features</a>
+        <a href="./#themes">Themes</a>
+        <a href="./#install">Install</a>
+        <a href="https://github.com/bashcrandicoot/Lodge/blob/main/docs/user-guide.md">User guide</a>
+        <a href="changelog.html" aria-current="page">Changelog</a>
+        <a class="download" href="https://ko-fi.com/s/fb9fab53be" data-goatcounter-click="kofi-download">Download</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="hero">
+      <div class="hero-inner wrap">
+        <h1>Changelog</h1>
+        <p class="lede">What changed in each release of Lodge, newest first.</p>
+        <div class="actions">
+          <a class="store" href="https://ko-fi.com/s/fb9fab53be" data-goatcounter-click="kofi-download"><img src="assets/download-button-kofi.png" width="320" height="72" alt="Download Lodge for Mac on Ko-fi"></a>
+        </div>
+        <p class="pay">Pay what you want.</p>
+        <p class="badges">
+          <img alt="macOS 14 or later" src="https://img.shields.io/badge/macOS-14%2B-3A3A3C?style=flat&logo=apple&logoColor=white">
+          <a href="https://github.com/bashcrandicoot/Lodge/blob/main/LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-0A84FF?style=flat"></a>
+          <img alt="Vibe coded" src="assets/badges/vibe-coded-gradient.svg" height="20">
+        </p>
+      </div>
+    </div>
+
+    <section aria-label="Releases">
+      <div class="wrap">
+      <ol class="releases" reversed>
+        <li class="card release lead" id="v1-0-3">
+          <div class="meta">
+            <h2 class="version">1.0.3</h2>
+            <p class="date"><time datetime="2026-10-28">Oct 28, 2026</time> EDT</p>
+            <span class="tag">Latest</span>
+          </div>
+          <div>
+            <h3>Support Lodge now opens Ko-fi.</h3>
+            <ul>
+              <li><strong>Support Lodge</strong> now opens Ko-fi (<span style="white-space: nowrap">ko-fi.com/bashframes</span>).</li>
+              <li>That goes for the Lodge and Help menus, the Settings footer and the support note.</li>
+              <li>The README and the website now show Lodge 1.0.3.</li>
+            </ul>
+            <a class="gh" href="https://github.com/bashcrandicoot/Lodge/releases/tag/v1.0.3">Lodge 1.0.3 on GitHub</a>
+          </div>
+        </li>
+        <li class="card release" id="v1-0-2">
+          <div class="meta">
+            <h2 class="version">1.0.2</h2>
+            <p class="date"><time datetime="2026-10-27">Oct 27, 2026</time> EDT</p>
+          </div>
+          <div>
+            <h3>Choose which days to offload.</h3>
+            <ul>
+              <li><strong>Date filter.</strong> Offload Any date, Today, the Last 7 days or a custom range.</li>
+              <li>Files are judged by when they were recorded.</li>
+              <li>Disk images (.dmg) on a card are now ignored.</li>
+              <li>The installer shows the new Lodge icon.</li>
+            </ul>
+            <a class="gh" href="https://github.com/bashcrandicoot/Lodge/releases/tag/v1.0.2">Lodge 1.0.2 on GitHub</a>
+          </div>
+        </li>
+        <li class="card release" id="v1-0-1">
+          <div class="meta">
+            <h2 class="version">1.0.1</h2>
+            <p class="date"><time datetime="2026-10-26">Oct 26, 2026</time> EDT</p>
+          </div>
+          <div>
+            <h3>Menu bar mode, a setup guide, and updates from inside the app.</h3>
+            <ul>
+              <li><strong>Menu bar mode.</strong> Lodge can keep running after you close the window, watch for cards and ask to import them.</li>
+              <li><strong>First-launch setup.</strong> A short guide to your first preset: destination, folders, naming and safety.</li>
+              <li><strong>A folder for each file type</strong> (MP4, WAV, ARW…) inside the last folder. JPG and JPEG share one.</li>
+              <li><strong>Check for Updates</strong> in the Lodge menu, plus automatic checks you can turn off in Settings &gt; General.</li>
+              <li>A Support Lodge link, and bashframes contact details in About Lodge and the Help menu.</li>
+              <li>A new app icon, an expandable Layout tree, a progress strip in the offload bar, and a fix for the window title reappearing.</li>
+            </ul>
+            <p class="note">Coming from 1.0.0? It can’t update itself, so download 1.0.1 by hand once. After that, Lodge updates itself.</p>
+            <a class="gh" href="https://github.com/bashcrandicoot/Lodge/releases/tag/v1.0.1">Lodge 1.0.1 on GitHub</a>
+          </div>
+        </li>
+        <li class="card release" id="v1-0-0">
+          <div class="meta">
+            <h2 class="version">1.0.0</h2>
+            <p class="date"><time datetime="2026-10-26">Oct 26, 2026</time> EDT</p>
+          </div>
+          <div>
+            <h3>First public release: offload camera cards with checked copies.</h3>
+            <ul>
+              <li>Notices cards as you insert them, in a Card, Media, Destination window.</li>
+              <li>Copies only new files. A ledger remembers what was already offloaded.</li>
+              <li>Each file is read back and checked with SHA-256 before it gets its final name. Nothing is overwritten.</li>
+              <li>Folder and file naming templates with a live preview, presets and quick dump.</li>
+              <li>Proxies and sidecars travel with their clip, and videos shorter than 5 seconds stay on the card by default.</li>
+              <li>A <strong>Ready to format</strong> badge once every file has a checked copy, and card formatting that keeps the file system and name.</li>
+            </ul>
+            <p class="note">Requires macOS 14 or later. Universal app for Apple silicon and Intel Macs.</p>
+            <a class="gh" href="https://github.com/bashcrandicoot/Lodge/releases/tag/v1.0.0">Lodge 1.0.0 on GitHub</a>
+          </div>
+        </li>
+      </ol>
+      <p class="older">Every release, with its downloads, is on <a href="https://github.com/bashcrandicoot/Lodge/releases">GitHub Releases</a>. The full notes are in <a href="https://github.com/bashcrandicoot/Lodge/blob/main/docs/changelog.md">changelog.md</a>.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>Lodge 1.0.3 · Home base for your media. · MIT License · © 2026 bashframes</p>
+      <p class="analytics-note">This website counts visits with GoatCounter: anonymous, no cookies. The Lodge app itself has no analytics.</p>
+      <nav aria-label="Footer">
+        <a href="https://github.com/bashcrandicoot/Lodge">GitHub</a>
+        <a href="https://github.com/bashcrandicoot/Lodge/blob/main/docs/user-guide.md">User guide</a>
+        <a href="changelog.html" aria-current="page">Changelog</a>
+        <a href="mailto:bashframes@gmail.com">bashframes@gmail.com</a>
+        <a class="support" href="https://ko-fi.com/bashframes">Support Lodge</a>
+        <a href="https://github.com/bashcrandicoot/Lodge/blob/main/SECURITY.md">Security</a>
+        <a href="https://github.com/bashcrandicoot/Lodge/blob/main/LICENSE">License</a>
+      </nav>
+    </div>
+  </footer>
+  <script>
+    (function () {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      if (!("IntersectionObserver" in window)) return;
+      var items = document.querySelectorAll(".release");
+      if (!items.length) return;
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-in");
+          observer.unobserve(entry.target);
+        });
+      }, { threshold: 0.15 });
+      Array.prototype.forEach.call(items, function (item, index) {
+        item.style.setProperty("--stagger", (Math.min(index, 2) * 80) + "ms");
+        item.classList.add("will-enter");
+        observer.observe(item);
+      });
+    })();
+  </script>
+<script data-goatcounter="https://bashframes.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
