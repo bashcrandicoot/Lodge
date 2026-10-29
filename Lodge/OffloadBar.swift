@@ -338,12 +338,9 @@ private struct CompletionRow: View {
     }
 
     private func showInFinder() {
-        let files = session.copiedPaths.map { URL(fileURLWithPath: $0) }
-        if !files.isEmpty {
-            NSWorkspace.shared.activateFileViewerSelecting(files)
-        } else if let destination = settings.destinationURL {
-            NSWorkspace.shared.activateFileViewerSelecting([destination])
-        }
+        // One Finder window: the folder the copies share (or the one copy, selected).
+        FinderReveal.show(files: session.copiedPaths.map { URL(fileURLWithPath: $0) },
+                          destination: settings.destinationURL)
     }
 
     private func symbol(_ s: OffloadSummary) -> String {

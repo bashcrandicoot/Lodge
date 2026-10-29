@@ -58,6 +58,7 @@ struct LodgeApp: App {
             // .help placement is empty without a Help Book, so items "after" it never show; replace it instead.
             CommandGroup(replacing: .help) {
                 Button("Contact Support…") { Support.contactSupport() }
+                Button("Report a Bug…") { BugReport.compose() }
                 Button("Support Lodge…") { Support.openTipJar() }
             }
         }
@@ -117,6 +118,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         if !AppModel.isRunningUnitTests {
             observeMainWindow()
+            Logger.app.notice("Lodge \(Support.versionSummary, privacy: .public) launched")
+            // Crashed last time? Offer to send the report (once per report, never at login,
+            // never in demo mode). After the window and any setup sheet are up.
+            if !Self.launchedAsLoginItem, !AppModel.isDemo {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { CrashReports.offerIfNeeded() }
+            }
             // First launch: "Set up your first preset" (never when opened at login).
             if !Self.launchedAsLoginItem {
                 DispatchQueue.main.async {

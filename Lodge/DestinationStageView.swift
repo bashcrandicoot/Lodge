@@ -308,7 +308,14 @@ private struct SpaceInfo: View {
     var body: some View {
         let available = VolumeInfo.availableBytes(at: url)
         let total = VolumeInfo.totalBytes(at: url)
+        let readOnly = VolumeInfo.readOnlyReason(at: url)
         VStack(alignment: .leading, spacing: 4) {
+            if let readOnly {
+                Label(readOnly, systemImage: "lock.fill")
+                    .font(.caption)
+                    .foregroundStyle(Color.red)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
             if let available, let total, total > 0 {
                 CapacityBar(fraction: Double(total - available) / Double(total),
                             fill: isShort(available) ? AnyShapeStyle(Color.red) : gaugeFill)

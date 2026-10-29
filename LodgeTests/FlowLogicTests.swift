@@ -83,6 +83,77 @@ final class FlowLogicTests: XCTestCase {
         XCTAssertNil(blocker(needs: NamingNeeds(camera: true), project: "", camera: true))
     }
 
+    // MARK: Free space and read-only drives
+
+    func testFreeSpacePrefersImportantUsageWhenAboveZero() {
+        var statfsCalled = false
+        let free = VolumeInfo.resolveAvailable(important: 900, available: 500, statfs: { statfsCalled = true; return 400 })
+        XCTAssertEqual(free, 900)
+        XCTAssertFalse(statfsCalled, "statfs is only read when it's needed")
+    }
+
+    func testFreeSpaceFallsBackWhenImportantUsageIsZeroOrMissing() {
+        // exFAT / HFS+ / FSKit drives: important-usage says 0 (or nothing) with plenty free.
+        XCTAssertEqual(VolumeInfo.resolveAvailable(important: 0, available: 102_364_479_488, statfs: { 1 }),
+                       102_364_479_488)
+        XCTAssertEqual(VolumeInfo.resolveAvailable(important: nil, available: 500, statfs: { 1 }), 500)
+        // …and on to statfs when the other key is 0 or missing too.
+        XCTAssertEqual(VolumeInfo.resolveAvailable(important: 0, available: 0, statfs: { 700 }), 700)
+        XCTAssertEqual(VolumeInfo.resolveAvailable(important: nil, available: nil, statfs: { 700 }), 700)
+    }
+
+    func testFreeSpaceIsZeroOnlyWhenAFallbackAgrees() {
+        XCTAssertEqual(VolumeInfo.resolveAvailable(important: 0, available: 0, statfs: { 0 }), 0)
+        XCTAssertEqual(VolumeInfo.resolveAvailable(important: 0, available: nil, statfs: { 0 }), 0)
+        XCTAssertEqual(VolumeInfo.resolveAvailable(important: nil, available: 0, statfs: { nil }), 0)
+        // Only the important-usage figure said 0: unknown, not full, so the offload isn't blocked.
+        XCTAssertNil(VolumeInfo.resolveAvailable(important: 0, available: nil, statfs: { nil }))
+        XCTAssertNil(VolumeInfo.resolveAvailable(important: nil, available: nil, statfs: { nil }))
+        XCTAssertNil(OffloadReadiness.blocker(hasCard: true, isScanning: false, newFileCount: 3, project: "Doc",
+                                              hasDestination: true, requiredBytes: 10,
+                                              availableBytes: VolumeInfo.resolveAvailable(
+                                                important: 0, available: nil, statfs: { nil })))
+    }
+
+    func testReadOnlyMessages() {
+        XCTAssertEqual(VolumeInfo.readOnlyMessage(format: "NTFS"),
+                       "This drive is read-only (NTFS). macOS can’t write to it.")
+        XCTAssertEqual(VolumeInfo.readOnlyMessage(format: "exFAT"),
+                       "This drive is read-only (exFAT), so Lodge can’t write to it — choose another")
+        XCTAssertEqual(VolumeInfo.readOnlyMessage(format: nil),
+                       "This drive is read-only, so Lodge can’t write to it — choose another")
+    }
+
+    func testFormatNames() {
+        XCTAssertEqual(VolumeInfo.formatName(fsType: "ntfs", description: nil), "NTFS")
+        XCTAssertEqual(VolumeInfo.formatName(fsType: "exfat", description: "ExFAT"), "exFAT")
+        XCTAssertEqual(VolumeInfo.formatName(fsType: "msdos", description: nil), "FAT32")
+        XCTAssertEqual(VolumeInfo.formatName(fsType: "hfs", description: nil), "Mac OS Extended")
+        XCTAssertEqual(VolumeInfo.formatName(fsType: "apfs", description: nil), "APFS")
+        XCTAssertEqual(VolumeInfo.formatName(fsType: "lifs", description: "Windows NT Filesystem (NTFS)"), "NTFS")
+        XCTAssertEqual(VolumeInfo.formatName(fsType: "weird", description: nil), "weird")
+        XCTAssertNil(VolumeInfo.formatName(fsType: nil, description: nil))
+    }
+
+    func testReadOnlyDestinationBlocksOffloadBeforeSpace() {
+        let reason = VolumeInfo.readOnlyMessage(format: "NTFS")
+        XCTAssertEqual(OffloadReadiness.blocker(hasCard: true, isScanning: false, newFileCount: 3, project: "Doc",
+                                                hasDestination: true, destinationReadOnlyReason: reason,
+                                                requiredBytes: 500, availableBytes: 0), reason)
+    }
+
+    func testLiveVolumeReadsAreSane() {
+        let home = URL(fileURLWithPath: NSHomeDirectory())
+        let free = VolumeInfo.availableBytes(at: home)
+        XCTAssertNotNil(free)
+        XCTAssertGreaterThan(free ?? 0, 0)
+        XCTAssertGreaterThan(VolumeInfo.totalBytes(at: home) ?? 0, 0)
+        XCTAssertNil(VolumeInfo.readOnlyReason(at: home))
+        let info = VolumeInfo.statfsInfo(at: home)
+        XCTAssertNotNil(info)
+        XCTAssertFalse(info?.fsType.isEmpty ?? true)
+    }
+
     func testNamingNeedsFollowTemplates() {
         XCTAssertEqual(NamingNeeds(.standard), NamingNeeds(project: true))
         XCTAssertEqual(NamingNeeds(NamingTemplates(folder: "{project}/{date}/{camera}", file: "{date}_{project}_{camera}_{seq}")),
