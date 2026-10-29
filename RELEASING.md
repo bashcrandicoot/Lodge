@@ -29,28 +29,28 @@ so nobody else can push an update to your users.
 
 ## Every release
 
-Example: releasing **1.0.1**.
+Example: releasing **1.0**.
 
 1. **Bump the version.** In Xcode, click the Lodge project → Lodge target → General:
-   - *Version* (`MARKETING_VERSION`): `1.0.1`. This is what people see.
+   - *Version* (`MARKETING_VERSION`): `1.0`. This is what people see.
    - *Build* (`CURRENT_PROJECT_VERSION`): one more than last time (1.0.0 was `1`, so
-     1.0.1 is `2`, 1.0.2 is `3`, 1.0.3 is `4`, 1.0.4 is `5`…). **Sparkle compares the build number**,
+     1.0.1 is `2`, 1.0.2 is `3`, 1.0.3 is `4`, 1.0 is `6`…). **Sparkle compares the build number**,
      so it must always go up, even for a tiny fix. Never reuse one.
    Change both Debug and Release (setting them on the target's General tab does), and
    set the LodgeTests target to the same Version and Build so the whole project agrees.
    **In the same commit, update every place that names the current version:**
    - `README.md`: the "Coming from 1.0.0?" line (download *this* version once by hand).
-   - `docs/index.html`: the **Install Lodge x.y.z** heading and the footer (**Lodge x.y.z ·**).
+   - `docs/index.html`: the **Install Lodge x.y** heading and the footer (**Lodge x.y ·**).
    - `SECURITY.md` (the supported release) and the bug report placeholder in
      `.github/ISSUE_TEMPLATE/bug_report.yml`.
    - A new section at the top of `docs/changelog.md`.
    Then run
 
-       scripts/check-version.sh 1.0.1
+       scripts/check-version.sh 1.0
 
-   It fails if any `MARKETING_VERSION` in the project isn't 1.0.1, if `README.md` or
-   `docs/index.html` don't name 1.0.1, or if they still name an older version (only 1.0.0,
-   the release that can't update itself, may stay). `scripts/make-dmg.sh` and
+   It fails if any `MARKETING_VERSION` in the project isn't 1.0, if `README.md` or
+   `docs/index.html` don't name 1.0, or if they still name any other version
+   (`LODGE_SKIP_DOC_CHECK=1` skips the README and site part). `scripts/make-dmg.sh` and
    `scripts/make-appcast.sh` run the same check first and stop if it fails, so a release
    can't be packaged or signed with a stale README or site.
 2. **Build the Release app** (universal, Apple silicon + Intel):
@@ -69,34 +69,34 @@ Example: releasing **1.0.1**.
 4. **Make the zip and dmg** in `build/release/`:
 
        cd build/release
-       ditto -c -k --keepParent Lodge.app Lodge-1.0.1.zip
+       ditto -c -k --keepParent Lodge.app Lodge-1.0.zip
        cd ../..
-       scripts/make-dmg.sh 1.0.1
+       scripts/make-dmg.sh 1.0
 
-   `scripts/make-dmg.sh` makes `build/release/Lodge-1.0.1.dmg` with Lodge.app and an
+   `scripts/make-dmg.sh` makes `build/release/Lodge-1.0.dmg` with Lodge.app and an
    Applications shortcut, laid out by `scripts/dmg/DS_Store`. The mounted volume's icon is
    made from the current AppIcon in `Lodge/Assets.xcassets` each time (`iconutil` →
    `.VolumeIcon.icns`, plus the custom-icon flag with `SetFile -a C`), so a new app icon
    needs no extra step. It doesn't open any Finder windows.
 
-   Optionally write release notes as `build/release/Lodge-1.0.1.md` (Markdown). They
+   Optionally write release notes as `build/release/Lodge-1.0.md` (Markdown). They
    appear in Lodge's "A new version is available" window.
 5. **Update the feed:**
 
-       scripts/make-appcast.sh 1.0.1
+       scripts/make-appcast.sh 1.0
 
-   It checks the zip, signs it with your Keychain key and adds a 1.0.1 entry to
+   It checks the zip, signs it with your Keychain key and adds a 1.0 entry to
    `appcast.xml` pointing at
-   `https://github.com/bashcrandicoot/Lodge/releases/download/v1.0.1/Lodge-1.0.1.zip`.
+   `https://github.com/bashcrandicoot/Lodge/releases/download/v1.0/Lodge-1.0.zip`.
    The first time, macOS may ask whether `generate_appcast` can use your Keychain:
    type your Mac login password and click **Always Allow**.
-6. **Commit the feed:** `git add appcast.xml && git commit -m "Appcast: Lodge 1.0.1"`.
-7. **Upload to GitHub:** create the release with the tag **`v1.0.1`** (exactly that, the
-   feed's download link depends on it) and attach `Lodge-1.0.1.zip` and
-   `Lodge-1.0.1.dmg`, for example:
+6. **Commit the feed:** `git add appcast.xml && git commit -m "Appcast: Lodge 1.0"`.
+7. **Upload to GitHub:** create the release with the tag **`v1.0`** (exactly that, the
+   feed's download link depends on it) and attach `Lodge-1.0.zip` and
+   `Lodge-1.0.dmg`, for example:
 
-       gh release create v1.0.1 build/release/Lodge-1.0.1.zip build/release/Lodge-1.0.1.dmg \
-         --title "Lodge 1.0.1" --notes-file build/release/Lodge-1.0.1.md
+       gh release create v1.0 build/release/Lodge-1.0.zip build/release/Lodge-1.0.dmg \
+         --title "Lodge 1.0" --notes-file build/release/Lodge-1.0.md
 
 8. **Push** (`git push`). Do this last: as soon as `appcast.xml` is on `main`, everyone's
    Lodge will see the update, so the zip must already be on the release.
