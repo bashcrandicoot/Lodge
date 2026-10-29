@@ -246,6 +246,7 @@
       border: 1px solid var(--line);
       box-shadow: 0 var(--space-5) 80px rgba(0, 0, 0, 0.45);
     }
+    .shot-figure { margin: 0; min-width: 0; }
     .caption {
       color: var(--muted);
       font-size: 14px;
@@ -573,7 +574,6 @@
           <a class="store" href="https://ko-fi.com/s/fb9fab53be" data-goatcounter-click="kofi-download"><img src="assets/download-button-kofi.png" width="320" height="72" alt="Download Lodge for Mac on Ko-fi"></a>
           <a class="button secondary" href="https://github.com/bashcrandicoot/Lodge/blob/main/docs/getting-started.md">Getting started</a>
         </div>
-        <p class="pay">Pay what you want.</p>
         <p class="badges">
           <img alt="macOS 14 or later" src="https://img.shields.io/badge/macOS-14%2B-3A3A3C?style=flat&logo=apple&logoColor=white">
           <a href="https://www.swift.org"><img alt="Swift 5" src="https://img.shields.io/badge/Swift-5-F05138?style=flat&logo=swift&logoColor=white"></a>
@@ -654,13 +654,19 @@
           </li>
         </ol>
         <div class="step-media"><!-- A step video will go here when it is ready. --></div>
-        <img class="shot" src="assets/screenshots/ready-dark.png" width="2704" height="1824" alt="Lodge in Dark mode, ready to offload. The preset menu is at the top right. Offload 29 Files sits along the bottom.">
+        <figure class="shot-figure">
+          <img class="shot" src="assets/screenshots/ready-dark.png" width="2704" height="1824" alt="Lodge in Dark mode, ready to offload. The preset menu is at the top right. Offload 29 Files sits along the bottom.">
+          <figcaption class="caption">Lodge ready to offload a card. Pick a preset at the top right, then press Offload.</figcaption>
+        </figure>
       </div>
     </section>
 
     <section id="themes">
       <div class="wrap pair themes">
-        <img src="assets/screenshots/ready-ember-dark.png" width="2704" height="1824" alt="Lodge in the Ember theme, Dark mode, ready to offload. The preset menu is at the top right. Offload 29 Files sits along the bottom.">
+        <figure class="shot-figure">
+          <img src="assets/screenshots/ready-ember-dark.png" width="2704" height="1824" alt="Lodge in the Ember theme, Dark mode, ready to offload. The preset menu is at the top right. Offload 29 Files sits along the bottom.">
+          <figcaption class="caption">The Ember theme in Dark mode.</figcaption>
+        </figure>
         <div>
           <h2>Default is neutral black</h2>
           <p class="section-intro">Lodge opens in Dark mode, with no colour wash.</p>
