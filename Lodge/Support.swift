@@ -47,7 +47,22 @@ enum Support {
         var link = base
         link[.link] = emailURL
         credits.append(NSAttributedString(string: email, attributes: link))
+        if let notices = acknowledgements {
+            credits.append(NSAttributedString(string: "\n\nAcknowledgements\n\n", attributes: base))
+            var small = base
+            small[.font] = NSFont.systemFont(ofSize: NSFont.smallSystemFontSize - 1)
+            let left = NSMutableParagraphStyle()
+            left.alignment = .left
+            small[.paragraphStyle] = left
+            credits.append(NSAttributedString(string: notices, attributes: small))
+        }
         return credits
+    }
+
+    /// Open source notices (Sparkle's MIT license), bundled as Acknowledgements.txt.
+    static var acknowledgements: String? {
+        guard let url = Bundle.main.url(forResource: "Acknowledgements", withExtension: "txt") else { return nil }
+        return try? String(contentsOf: url, encoding: .utf8)
     }
 
     static func showAboutPanel() {
