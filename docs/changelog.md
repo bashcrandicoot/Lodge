@@ -1,8 +1,8 @@
 # Changelog
 
-## 1.0.3
+## 1.0
 
-_Oct 28, 2026_
+_DATE_TBD_
 
 Lodge, a native Mac app for offloading camera cards. [Download Lodge from Ko-fi](https://ko-fi.com/s/fb9fab53be).
 
@@ -28,6 +28,10 @@ Lodge, a native Mac app for offloading camera cards. [Download Lodge from Ko-fi]
 - **Check for Updates** through Sparkle, with automatic checks you can turn off in Settings > General.
 - **Support Lodge** opens Ko-fi (ko-fi.com/bashframes). bashframes contact details are in About Lodge and the Help menu.
 - The Lodge Cabin app icon.
-<!-- ADD-1.0-FEATURES -->
+- Free space shows correctly on non-APFS external drives (exFAT, HFS+).
+- Read-only drives, such as NTFS, get a clear message.
+- **Help > Report a Bug…** emails bashframes@gmail.com with the log attached, and Lodge offers to send a crash report after an unexpected quit.
+- Show in Finder opens one window on the parent folder.
+- About Lodge includes Sparkle’s MIT license under Acknowledgements.
 
 Requires macOS 14 or later. Universal app for Apple silicon and Intel Macs. Not notarized.

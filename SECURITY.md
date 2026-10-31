@@ -1,6 +1,6 @@
 # Security
 
-Lodge 1.0.3 is the supported release.
+Lodge 1.0 is the supported release.
 
 ## Reporting
 
