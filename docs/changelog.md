@@ -2,7 +2,7 @@
 
 ## 1.0
 
-_DATE_TBD_
+_Oct 31, 2026_
 
 Lodge, a native Mac app for offloading camera cards. [Download Lodge from Ko-fi](https://ko-fi.com/s/fb9fab53be).
 

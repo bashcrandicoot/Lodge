@@ -29,7 +29,7 @@
   <a href="https://ko-fi.com/s/fb9fab53be"><img src="docs/assets/download-button-kofi.png" alt="Download Lodge for Mac on Ko-fi" width="320" height="72"></a>
 </p>
 
-Pay what you want. [Download Lodge from Ko-fi](https://ko-fi.com/s/fb9fab53be), unzip it, then open the DMG, and drag Lodge to Applications.
+Pay what you want. [Download Lodge 1.0 from Ko-fi](https://ko-fi.com/s/fb9fab53be), unzip it, then open the DMG, and drag Lodge to Applications.
 
 ## Install
 
@@ -44,7 +44,7 @@ The first time Lodge reads a card, macOS asks for access to files on a removable
 
 - Scans a card as soon as you insert it, including one that was already mounted.
 - Filters the list, and previews every finished name before anything is copied.
-- Names files from templates, with a folder for each file type. **Flat** skips the shoot folders.
+- Names files from templates, with a folder for each file type.
 - Saves a setup as a preset, and switches presets from the menu at the top right.
 - Checks every copy with SHA-256. A clean finish reads **Offload Complete**, and **Format Card…** is there when the card can be erased. When every file has a verified copy, the card shows **Ready to format**.
 - Reads the card only. A copy never overwrites a file already at the destination.

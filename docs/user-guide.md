@@ -137,7 +137,7 @@ Destination/2026-10-25/BeachShoot/MP4/2026-10-25_BeachShoot_0001.mp4
 
 The date is the file’s creation date, or its modification date when there is no creation date. The extension is always added, in lower case. Inside the folder the template makes, each file goes in a folder named for its extension. Sequence numbers continue after the highest one already in that shoot folder, including every format folder, so a second card from the same shoot picks up where the first stopped. Nothing is overwritten. A name that would collide, when the template has neither `{seq}` nor `{original}`, gets `_2`, `_3`, and so on.
 
-`/` in the folder template makes a subfolder. An empty folder template skips those shoot folders. **Flat** is that empty folder template. Each file still goes in a folder named for its extension, straight under the destination.
+`/` in the folder template makes a subfolder.
 
 Click a token to insert it into the field you were editing. Mistakes are explained under the field: an unclosed `{`, an unknown token, `{seq}` used twice, `{seq}` in a folder, a name that starts with `.`, and characters file systems will not take (`: \ * ? " < > |`). Offload stays off until the errors are fixed. A warning, rather than an error, tells you when names may need `_2`.
 
@@ -173,7 +173,6 @@ The **Examples** menu in Settings > Naming fills in a folder template and a file
 | Project / Type / Date | `{project}/{type}/{date}` | `{date}_{project}_{seq}` |
 | Year / Month / Day | `{year}/{month}/{day}` | `{date}_{project}_{seq}` |
 | Date / Project, Original Names | `{date}/{project}` | `{original}` |
-| Flat | *(no shoot folders; one folder per file type)* | `{date}_{project}_{seq}` |
 
 The **Example** section under the fields shows a sample video and photo with the templates you have now.
 
@@ -265,7 +264,7 @@ Proxies stay in `Proxies/` and sidecars stay in `Sidecars/`. They do not get `LR
 
 Audio recorded with a clip, such as `C0001.WAV`, goes in `WAV/` and keeps the clip’s new name, including the same sequence number. A JPEG beside a RAW file, such as `DSC00001.JPG` next to `DSC00001.ARW`, is its own photo. It goes in `JPG/` with the next number.
 
-One sequence runs across the whole shoot folder: the template folder and every format folder under it. Numbering continues after the highest number already there, including files an older offload left directly in the shoot folder. **Flat** uses an empty folder template, so there are no shoot folders. The format folders sit straight in the destination.
+One sequence runs across the whole shoot folder: the template folder and every format folder under it. Numbering continues after the highest number already there, including files an older offload left directly in the shoot folder.
 
 ## Updates
 

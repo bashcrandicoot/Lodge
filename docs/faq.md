@@ -78,8 +78,6 @@ After five offloads where every file was copied and verified, and at least three
 
 Files land in the folder the template makes, and then in a folder named for the extension, in capitals: `MP4/`, `ARW/`, `WAV/`, and so on. `.mp4` and `.MP4` share `MP4/`. `.JPG`, `.JPEG`, and `.JPE` share `JPG/`. `.TIF` and `.TIFF` share `TIF/`. An unknown extension still gets a folder. A file with no extension stays in the template folder. With the default file rules, `lrv` and `lrf` go in **Proxies/**, and `thm`, `xml`, and `srt` go in **Sidecars/**, named after their clip. Audio recorded beside a clip, such as `C0001.WAV`, goes in `WAV/` and shares the clip’s new name.
 
-**Flat**, in Settings > Naming, uses an empty folder template. It skips the shoot folders. Each file type still gets its own folder, straight in the destination.
-
 ## Does Lodge need a network?
 
 No account, no analytics, and copying never uploads anything. The only time Lodge goes online is a daily check for updates, which you can turn off in Settings > General. The ledger and your settings stay in your Library folder.
