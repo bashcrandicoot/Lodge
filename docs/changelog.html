@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Changelog · Lodge</title>
-  <meta name="description" content="What changed in each release of Lodge, newest first.">
+  <meta name="description" content="Everything Lodge does, in one release.">
   <meta name="author" content="bashframes">
   <meta name="theme-color" content="#100e18">
   <meta name="color-scheme" content="dark">
@@ -17,7 +17,7 @@
   <meta property="og:site_name" content="Lodge">
   <meta property="og:url" content="https://bashcrandicoot.github.io/Lodge/changelog.html">
   <meta property="og:title" content="Changelog · Lodge">
-  <meta property="og:description" content="What changed in each release of Lodge, newest first.">
+  <meta property="og:description" content="Everything Lodge does, in one release.">
   <meta property="og:image" content="https://bashcrandicoot.github.io/Lodge/assets/lodge-social-preview.png">
   <meta name="twitter:card" content="summary_large_image">
 
@@ -377,7 +377,7 @@
     <div class="hero">
       <div class="hero-inner wrap">
         <h1>Changelog</h1>
-        <p class="lede">What changed in each release of Lodge, newest first.</p>
+        <p class="lede">Everything Lodge does, in one release.</p>
         <div class="actions">
           <a class="store" href="https://ko-fi.com/s/fb9fab53be" data-goatcounter-click="kofi-download"><img src="assets/download-button-kofi.png" width="320" height="72" alt="Download Lodge for Mac on Ko-fi"></a>
         </div>
@@ -392,7 +392,7 @@
 
     <section aria-label="Releases">
       <div class="wrap">
-      <ol class="releases" reversed>
+      <ol class="releases">
         <li class="card release lead" id="v1-0-3">
           <div class="meta">
             <h2 class="version">1.0.3</h2>
@@ -400,71 +400,38 @@
             <span class="tag">Latest</span>
           </div>
           <div>
-            <h3>Support Lodge now opens Ko-fi.</h3>
+            <h3>Offload camera cards with checked copies.</h3>
             <ul>
-              <li><strong>Support Lodge</strong> now opens Ko-fi (<span style="white-space: nowrap">ko-fi.com/bashframes</span>).</li>
-              <li>That goes for the Lodge and Help menus, the Settings footer and the support note.</li>
-              <li>The README and the website now show Lodge 1.0.3.</li>
+              <li>Notices camera cards and removable drives with media as you insert them.</li>
+              <li>A Card, Media, Destination window with an offload bar along the bottom.</li>
+              <li>Copies only new files. An offload ledger remembers what was already copied.</li>
+              <li><strong>Verified copies.</strong> Each file is written under a temporary name, read back and checked with SHA-256, then renamed. Nothing is overwritten.</li>
+              <li><strong>Naming templates</strong> with tokens, a live preview and continued numbering.</li>
+              <li>Sidecars keep their clip’s name. Proxies go into Proxies/ and sidecars into Sidecars/, with an editable extension and ignore list.</li>
+              <li><strong>Presets</strong> for destination, naming, camera, short clips, quick dump and file rules, plus <strong>quick dump</strong>.</li>
+              <li>Skip short videos: a slider from Off to 30 s, and a stepper up to 60 s.</li>
+              <li>Favorite destinations with free space, or drop a Finder folder.</li>
+              <li>Re-offload missing files or the whole card.</li>
+              <li>Safe card formatting, with a <strong>Ready to format</strong> badge.</li>
+              <li>Thumbnails, list and grid view, and Quick Look.</li>
+              <li>Recent Offloads with Show in Finder.</li>
+              <li>Themes: default dark, Aurora, Ocean, Twilight, Ember, Forest and Light mode. Small animations that respect Reduce motion.</li>
+              <li><strong>Menu bar mode</strong> that watches for cards and asks to import them, as a notification or a floating panel.</li>
+              <li><strong>First-launch setup.</strong> A short guide to your first preset.</li>
+              <li>A folder for each file type (MP4, WAV, ARW…) inside the last folder. JPG and JPEG share one.</li>
+              <li><strong>Date filter.</strong> Offload Any date, Today, the Last 7 days or a custom range.</li>
+              <li>Disk images (.dmg) on a card are ignored.</li>
+              <li><strong>Check for Updates</strong> through Sparkle, with automatic checks you can turn off in Settings &gt; General.</li>
+              <li><strong>Support Lodge</strong> opens Ko-fi (<span style="white-space: nowrap">ko-fi.com/bashframes</span>). bashframes contact details are in About Lodge and the Help menu.</li>
+              <li>The Lodge Cabin app icon.</li>
+              <!-- ADD-1.0-FEATURES -->
             </ul>
+            <p class="note">Requires macOS 14 or later. Universal app for Apple silicon and Intel Macs. Not notarized.</p>
             <a class="gh" href="https://github.com/bashcrandicoot/Lodge/releases/tag/v1.0.3">Lodge 1.0.3 on GitHub</a>
           </div>
         </li>
-        <li class="card release" id="v1-0-2">
-          <div class="meta">
-            <h2 class="version">1.0.2</h2>
-            <p class="date"><time datetime="2026-10-27">Oct 27, 2026</time> EDT</p>
-          </div>
-          <div>
-            <h3>Choose which days to offload.</h3>
-            <ul>
-              <li><strong>Date filter.</strong> Offload Any date, Today, the Last 7 days or a custom range.</li>
-              <li>Files are judged by when they were recorded.</li>
-              <li>Disk images (.dmg) on a card are now ignored.</li>
-              <li>The installer shows the new Lodge icon.</li>
-            </ul>
-            <a class="gh" href="https://github.com/bashcrandicoot/Lodge/releases/tag/v1.0.2">Lodge 1.0.2 on GitHub</a>
-          </div>
-        </li>
-        <li class="card release" id="v1-0-1">
-          <div class="meta">
-            <h2 class="version">1.0.1</h2>
-            <p class="date"><time datetime="2026-10-26">Oct 26, 2026</time> EDT</p>
-          </div>
-          <div>
-            <h3>Menu bar mode, a setup guide, and updates from inside the app.</h3>
-            <ul>
-              <li><strong>Menu bar mode.</strong> Lodge can keep running after you close the window, watch for cards and ask to import them.</li>
-              <li><strong>First-launch setup.</strong> A short guide to your first preset: destination, folders, naming and safety.</li>
-              <li><strong>A folder for each file type</strong> (MP4, WAV, ARW…) inside the last folder. JPG and JPEG share one.</li>
-              <li><strong>Check for Updates</strong> in the Lodge menu, plus automatic checks you can turn off in Settings &gt; General.</li>
-              <li>A Support Lodge link, and bashframes contact details in About Lodge and the Help menu.</li>
-              <li>A new app icon, an expandable Layout tree, a progress strip in the offload bar, and a fix for the window title reappearing.</li>
-            </ul>
-            <p class="note">Coming from 1.0.0? It can’t update itself, so download 1.0.1 by hand once. After that, Lodge updates itself.</p>
-            <a class="gh" href="https://github.com/bashcrandicoot/Lodge/releases/tag/v1.0.1">Lodge 1.0.1 on GitHub</a>
-          </div>
-        </li>
-        <li class="card release" id="v1-0-0">
-          <div class="meta">
-            <h2 class="version">1.0.0</h2>
-            <p class="date"><time datetime="2026-10-26">Oct 26, 2026</time> EDT</p>
-          </div>
-          <div>
-            <h3>First public release: offload camera cards with checked copies.</h3>
-            <ul>
-              <li>Notices cards as you insert them, in a Card, Media, Destination window.</li>
-              <li>Copies only new files. A ledger remembers what was already offloaded.</li>
-              <li>Each file is read back and checked with SHA-256 before it gets its final name. Nothing is overwritten.</li>
-              <li>Folder and file naming templates with a live preview, presets and quick dump.</li>
-              <li>Proxies and sidecars travel with their clip, and videos shorter than 5 seconds stay on the card by default.</li>
-              <li>A <strong>Ready to format</strong> badge once every file has a checked copy, and card formatting that keeps the file system and name.</li>
-            </ul>
-            <p class="note">Requires macOS 14 or later. Universal app for Apple silicon and Intel Macs.</p>
-            <a class="gh" href="https://github.com/bashcrandicoot/Lodge/releases/tag/v1.0.0">Lodge 1.0.0 on GitHub</a>
-          </div>
-        </li>
       </ol>
-      <p class="older">Every release, with its downloads, is on <a href="https://github.com/bashcrandicoot/Lodge/releases">GitHub Releases</a>. The full notes are in <a href="https://github.com/bashcrandicoot/Lodge/blob/main/docs/changelog.md">changelog.md</a>.</p>
+      <p class="older">Downloads are on <a href="https://github.com/bashcrandicoot/Lodge/releases">GitHub Releases</a>. The full notes are in <a href="https://github.com/bashcrandicoot/Lodge/blob/main/docs/changelog.md">changelog.md</a>.</p>
       </div>
     </section>
   </main>

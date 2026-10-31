@@ -2,7 +2,7 @@
 
 Home base for your media. Lodge is a universal app for Apple silicon and Intel Macs, on macOS 14 or later. It copies video, photos, audio, and the small files that belong with them off a camera card, checks every copy, and names the result from a template. This guide is everything the window does. Install steps are in [Getting started](getting-started.md).
 
-The main window reads left to right: **Card**, **Media**, **Destination**, with the offload bar along the bottom. The preset menu sits at the top right, just left of **Recent Offloads** and **Settings**, and the window title is hidden. The card’s name is in the Card column. Closing the window quits Lodge, unless [menu bar mode](#menu-bar-mode) is on. Lodge has had a new app icon since 1.0.1.
+The main window reads left to right: **Card**, **Media**, **Destination**, with the offload bar along the bottom. The preset menu sits at the top right, just left of **Recent Offloads** and **Settings**, and the window title is hidden. The card’s name is in the Card column. Closing the window quits Lodge, unless [menu bar mode](#menu-bar-mode) is on.
 
 <img src="assets/screenshots/ready-dark.png" width="2704" height="1824" alt="Lodge in Dark mode, ready to offload. The preset menu is at the top right. Offload 29 Files sits along the bottom." style="max-width:100%;height:auto">
 
@@ -277,8 +277,6 @@ Settings > General has an **Updates** section:
 - **Automatically download and install updates** is off. It is unavailable while automatic checks are off.
 
 The note under the switches says you can also choose **Lodge > Check for Updates…** any time. Updates are EdDSA-signed through Sparkle. Copying itself does not upload anything.
-
-Lodge 1.0.0 can’t update itself. [Download Lodge from Ko-fi](https://ko-fi.com/s/fb9fab53be) once to get the latest version. After that, Lodge updates itself.
 
 ## Menu bar mode
 

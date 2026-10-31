@@ -74,8 +74,6 @@ After five offloads where every file was copied and verified, and at least three
 
 **Lodge > Check for Updates…** looks now. The item is dimmed while a check is already running. In Settings > General, under **Updates**, **Automatically check for updates** is on, and **Automatically download and install updates** is off. The second switch is unavailable while automatic checks are off. Lodge checks once a day. Updates are EdDSA-signed through Sparkle.
 
-Lodge 1.0.0 can’t update itself. [Download Lodge from Ko-fi](https://ko-fi.com/s/fb9fab53be) once to get the latest version. After that, Lodge updates itself.
-
 ## How are files sorted into folders?
 
 Files land in the folder the template makes, and then in a folder named for the extension, in capitals: `MP4/`, `ARW/`, `WAV/`, and so on. `.mp4` and `.MP4` share `MP4/`. `.JPG`, `.JPEG`, and `.JPE` share `JPG/`. `.TIF` and `.TIFF` share `TIF/`. An unknown extension still gets a folder. A file with no extension stays in the template folder. With the default file rules, `lrv` and `lrf` go in **Proxies/**, and `thm`, `xml`, and `srt` go in **Sidecars/**, named after their clip. Audio recorded beside a clip, such as `C0001.WAV`, goes in `WAV/` and shares the clip’s new name.

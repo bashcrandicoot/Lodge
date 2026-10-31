@@ -40,8 +40,6 @@ Lodge is not notarized. The first time you open it:
 
 The first time Lodge reads a card, macOS asks for access to files on a removable volume. Choose **Allow**.
 
-**Coming from 1.0.0?** Lodge 1.0.0 can’t update itself, so download 1.0.3 once by hand from Ko-fi. After that, Lodge updates itself.
-
 ## What it does
 
 - Scans a card as soon as you insert it, including one that was already mounted.
