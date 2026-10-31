@@ -9,9 +9,6 @@ When the feed lists a newer build, Lodge offers it, downloads the zip from the G
 release and installs it. It only installs a zip signed with your private Sparkle key,
 so nobody else can push an update to your users.
 
-> Lodge 1.0.0 was released before Sparkle was added, so it can't update itself. People on
-> 1.0.0 need to download the next version by hand once. From then on, updates are automatic.
-
 ## One-time setup (already done)
 
 - The **private signing key** is in your login Keychain (Keychain Access → login →
@@ -33,13 +30,13 @@ Example: releasing **1.0**.
 
 1. **Bump the version.** In Xcode, click the Lodge project → Lodge target → General:
    - *Version* (`MARKETING_VERSION`): `1.0`. This is what people see.
-   - *Build* (`CURRENT_PROJECT_VERSION`): one more than last time (1.0.0 was `1`, so
-     1.0.1 is `2`, 1.0.2 is `3`, 1.0.3 is `4`, 1.0 is `6`…). **Sparkle compares the build number**,
+   - *Build* (`CURRENT_PROJECT_VERSION`): one more than the last release (Lodge 1.0
+     was `6`, so the next release is `7`). **Sparkle compares the build number**,
      so it must always go up, even for a tiny fix. Never reuse one.
    Change both Debug and Release (setting them on the target's General tab does), and
    set the LodgeTests target to the same Version and Build so the whole project agrees.
    **In the same commit, update every place that names the current version:**
-   - `README.md`: the "Coming from 1.0.0?" line (download *this* version once by hand).
+   - `README.md`: any line that names the current version.
    - `docs/index.html`: the **Install Lodge x.y** heading and the footer (**Lodge x.y ·**).
    - `SECURITY.md` (the supported release) and the bug report placeholder in
      `.github/ISSUE_TEMPLATE/bug_report.yml`.

@@ -36,7 +36,7 @@ enum BugReport {
         }
     }
 
-    /// "Lodge bug report (version 1.0.3 build 4)"
+    /// "Lodge bug report (version <version> build <build>)"
     static func subject(_ info: SystemInfo) -> String {
         "Lodge bug report (version \(info.appVersion) build \(info.build))"
     }

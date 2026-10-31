@@ -25,7 +25,7 @@ enum Support {
         return components.url ?? URL(string: "mailto:\(email)")!
     }
 
-    /// "Lodge 1.0.3 (4), macOS 15.1.0"
+    /// "Lodge <version> (<build>), macOS <x.y.z>"
     static var versionSummary: String {
         let info = Bundle.main.infoDictionary ?? [:]
         let version = info["CFBundleShortVersionString"] as? String ?? "?"
