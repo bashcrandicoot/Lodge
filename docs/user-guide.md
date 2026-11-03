@@ -35,13 +35,13 @@ Lodge recognizes the folders most cameras use (for example `DCIM`, `PRIVATE/M4RO
 
 Lodge waits 20 seconds before it asks about the same card again. If you plug a card in during an offload or a format, Lodge asks when that finishes.
 
-The notification and the floating panel use the same title. A removable volume is a **card**. Anything else Lodge asks about is a **drive**. If the name is exactly card, drive, ssd, or disk, or it ends with a space plus one of those words, the title is **`<name>` connected** (for example **SD Card connected**). Otherwise it is **`<name>` card connected** or **`<name>` drive connected** (for example **A7SIII card connected** or **T7 drive connected**).
+The notification and the floating panel use the same title. A removable volume is a **card**. Anything else Lodge asks about is a **drive**. If the name is exactly card, drive, ssd, or disk, or it ends with a space plus one of those words, the title is **`<name>` connected** (for example **SD Card connected**). Otherwise it is **`<name>` card connected** or **`<name>` drive connected** (for example **A7S III card connected** or **T7 drive connected**).
 
 The notification has three actions: **Import**, **Ignore**, and **Don’t Ask for This Card**.
 
 Lodge shows the same prompt as a floating panel when permission is still undecided, alerts are off, the notification style is **None**, or **Ask with** is **Floating panel**. Its buttons are **Import**, **Ignore**, and **Don’t ask for this card**. The panel does not take the keyboard, so Return does not press **Import**.
 
-If you don't see the prompt, set **Settings ▸ Ask with** to **Floating panel**.
+If you don't see the prompt, set **Settings ▸ General ▸ Menu Bar ▸ Ask with** to **Floating panel**.
 
 <img src="assets/guide/lodge-guide-diagram-import-flow@2x.png" width="1040" height="345" alt="Import a card. Import opens Lodge with that card selected. Ignore or Don’t Ask for This Card leaves the card alone. Only Offload copies files." style="max-width:100%;height:auto">
 
@@ -60,9 +60,9 @@ If card detection is paused, choose **Resume Detection** in the menu bar menu. T
 
 While Lodge is ready, the bar says **Ready. Every file is verified with SHA-256 after copying.** The button help is **Copy and verify the new files**. You'll see **Copying**, then **Verifying**.
 
-<img src="assets/screenshots/ready-dark.png" width="2704" height="1824" alt="Lodge ready to offload. The bar says every file is verified with SHA-256 after copying." style="max-width:100%;height:auto">
+<img src="assets/screenshots/ready-dark.png" width="1352" height="912" alt="Lodge ready to offload. The bar says every file is verified with SHA-256 after copying." style="max-width:100%;height:auto">
 
-<img src="assets/screenshots/running-dark.png" width="2704" height="1824" alt="An offload in progress, in the Copying stage." style="max-width:100%;height:auto">
+<img src="assets/screenshots/running-dark.png" width="1352" height="912" alt="An offload in progress, in the Copying stage." style="max-width:100%;height:auto">
 
 You can also press Return to start.
 
@@ -92,7 +92,7 @@ When the batch finishes, the title is **Offload Complete**, **Finished with Prob
 
 The line under it is **`<copied>` copied · `<skipped>` skipped · `<failed>` failed**. If the card is already gone after an eject, that line gains ** — card ejected, safe to remove**.
 
-<img src="assets/screenshots/finished-dark.png" width="2704" height="1824" alt="A finished offload. The bar reads Offload Complete, with the copied, skipped, and failed counts." style="max-width:100%;height:auto">
+<img src="assets/screenshots/finished-dark.png" width="1352" height="912" alt="A finished offload. The bar reads Offload Complete, with the copied, skipped, and failed counts." style="max-width:100%;height:auto">
 
 If a copy Lodge expected is missing at the destination, Offload tells you to choose Re-offload. The wording is in [Re-offload](#re-offload).
 
@@ -137,9 +137,9 @@ On the setup done screen, Return can be **Offload with `<preset>`**.
 
 **Quick dump** sits under Project in Media. It is off until you turn it on. The hint says **Skips the project name and dumps all the footage straight into a dated folder.** While it is on, the Project field is disabled and its prompt is **Not needed for a quick dump**. `{project}`, and the old `{shoot}` token, are taken out of the templates used for that offload only. The templates you saved stay as written. Empty folder levels disappear, so `{date}/{project}` becomes `{date}` and `{date}_{project}_{seq}` becomes `{date}_{seq}`. If the file template would have no token left, it becomes `{date}_{seq}`. The project you typed is not saved as the last project. Sequence numbers still continue. Each extension still gets its own folder. Proxies still go in `Proxies/` and sidecars in `Sidecars/`. A level Quick dump removes is struck through and tagged **Quick dump**.
 
-<img src="assets/screenshots/ready-presets-dark.png" width="2480" height="1600" alt="The preset menu at the top right of the window." style="max-width:100%;height:auto">
+<img src="assets/screenshots/ready-presets-dark.png" width="1240" height="800" alt="Lodge ready to offload, with the Quick dump toggle under Project." style="max-width:100%;height:auto">
 
-<img src="assets/screenshots/ready-quickdump-dark.png" width="2704" height="1824" alt="Quick dump available on the main window." style="max-width:100%;height:auto">
+<img src="assets/screenshots/ready-quickdump-dark.png" width="1352" height="912" alt="Quick dump available on the main window." style="max-width:100%;height:auto">
 
 ## Sidecars and proxies
 
@@ -211,21 +211,21 @@ In Media, **Re-offload…** is **Re-offloading N** while it is running. Its rows
 
 The manual command is **Eject Card**. After the card is gone, the label is **Ejected**.
 
-**Eject Card** in the card menu is disabled during an offload, a format, or an eject. On the finish bar it is disabled when the card is already gone, or while an eject is in progress, including while a format is running.
+**Eject Card** in the card menu is disabled during an offload, a format, or an eject. On the finish bar it is disabled only when the card is already gone, or while an eject is in progress. A format does not disable the finish-bar button.
 
-**Eject card after offload** is off. Its caption is **Only when every file was copied and verified.** Automatic eject runs when that switch is on and the finish is a clean success: not cancelled, nothing failed, and at least one file copied. Lodge unmounts and ejects the disk. After a successful eject, the finish line can end with ** — card ejected, safe to remove**. If eject fails, that line ends with ** — Couldn’t eject `<card name>`: `<system message>`**.
+**Eject card after offload** is off. Its caption is **Only when every file was copied and verified.** With it on, the card ejects only when the offload was not cancelled, nothing failed, at least one file was copied, and the card is still present. The same switch ejects the card after a successful format. After a successful eject, the finish line can end with ** — card ejected, safe to remove**. If eject fails, that line ends with ** — Couldn’t eject `<card name>`: `<system message>`**.
 
-<img src="assets/guide/lodge-guide-diagram-eject-flow@2x.png" width="1050" height="310" alt="Eject after offload. The card is ejected only when every file verified and Eject card after offload is on. Otherwise it stays in place." style="max-width:100%;height:auto">
+<img src="assets/guide/lodge-guide-diagram-eject-flow@2x.png" width="1050" height="310" alt="Eject after offload. With the switch on, the card ejects only when the offload was not cancelled, nothing failed, at least one file was copied, and the card is still there. It also ejects after a successful format." style="max-width:100%;height:auto">
 
 The **Ready to format** badge shows when the card has at least one file, every file still has its copy at the destination at the same size, and no skipped short clip remains. Ignored system files do not block it. It appears on the selected card’s row and beside the finish-bar title. Its help is **Every file on this card has a verified copy at the destination.**
 
 If the only leftovers are skipped short clips, the badge stays off. The line reads **1 short clip not offloaded** or **N short clips not offloaded**. **Format Card…**, in **Card actions** (the ⋯ button on the card) or on the finish bar, can still be used then. When the card is fully ready, its help is **Erase this card so it’s ready for new footage**.
 
-Choosing **Format Card…** does not erase the card by itself. Lodge erases it only after you confirm. **Formatting erases everything on the card, and you can't undo it.** Before you format, check that the offload says **Offload Complete** and not **Finished with Problems**. While it runs you'll see **Formatting…**. When it's done you'll see **“`<name>`” was formatted and is ready for your camera.**
+Choosing **Format Card…** does not erase the card by itself. Lodge erases it only after you confirm. **Formatting erases everything on “<card name>”. This can’t be undone.** Before you format, check that the offload says **Offload Complete** and not **Finished with Problems**. While it runs you'll see **Formatting…**. When it's done you'll see **“`<name>`” was formatted and is ready for your camera.**
 
 On the format confirmation, Return is **Cancel**. **Format**, **Format and Discard 1 Short Clip**, and **Format and Discard N Short Clips** have no key. The title is **Format “`<card name>`”?**
 
-<img src="assets/screenshots/format-confirm.png" width="2480" height="1600" alt="The format confirmation." style="max-width:100%;height:auto">
+<img src="assets/screenshots/format-confirm.png" width="1240" height="800" alt="The format confirmation." style="max-width:100%;height:auto">
 
 ## Menu bar mode
 
@@ -247,7 +247,7 @@ The menu bar menu has:
 - **Open Lodge**
 - **Cards & Drives**, or **No Cards Connected** when nothing is mounted
 - **Import from `<name>`…** for a connected card
-- **Offloading…** while a copy is running. Imports wait until it is done.
+- **Offloading… (imports wait until it’s done)** while a copy is running.
 - **Pause Detection**, or **Resume Detection** while detection is paused
 - **Settings…** (⌘,)
 - **Quit Lodge** (⌘Q)
@@ -264,7 +264,7 @@ In Settings ▸ Appearance, pick a theme: **Default**, **Aurora**, **Ocean**, **
 
 **Show files as** is **List**. The other choice is **Grid**. **Show thumbnails in the list** is off.
 
-General groups these sections: **Files to Offload**, **Short Clips**, **After Offload**, **Menu Bar**, and **Updates**. **Updates** appears only in builds that include the updater.
+General groups these sections: **Files to Offload**, **Short Clips**, **After Offload**, **Menu Bar**, and **Updates**.
 
 | Setting | Default |
 | --- | --- |
@@ -300,9 +300,9 @@ General groups these sections: **Files to Offload**, **Short Clips**, **After Of
 
 <img src="assets/screenshots/settings-appearance.png" width="1344" height="1410" alt="Settings, Appearance. Theme is Default. Appearance is Dark, with System and Light as the other choices." style="max-width:100%;height:auto">
 
-<img src="assets/screenshots/ready-light.png" width="2704" height="1824" alt="Lodge with Light appearance." style="max-width:100%;height:auto">
+<img src="assets/screenshots/ready-light.png" width="1352" height="912" alt="Lodge with Light appearance." style="max-width:100%;height:auto">
 
-<img src="assets/screenshots/ready-ember-dark.png" width="2704" height="1824" alt="Lodge with a saved theme other than the neutral Default." style="max-width:100%;height:auto">
+<img src="assets/screenshots/ready-ember-dark.png" width="1352" height="912" alt="Lodge with a saved theme other than the neutral Default." style="max-width:100%;height:auto">
 
 <img src="assets/screenshots/settings-presets.png" width="1504" height="1480" alt="Settings, Presets." style="max-width:100%;height:auto">
 
@@ -312,7 +312,7 @@ General groups these sections: **Files to Offload**, **Short Clips**, **After Of
 
 <img src="assets/screenshots/settings-files.png" width="1344" height="1600" alt="Settings, Files. Proxy extensions, sidecar extensions, and ignored names." style="max-width:100%;height:auto">
 
-<img src="assets/screenshots/grid-dark.png" width="2704" height="1824" alt="Media shown as a grid. Show files as can be List or Grid." style="max-width:100%;height:auto">
+<img src="assets/screenshots/grid-dark.png" width="1352" height="912" alt="Media shown as a grid. Show files as can be List or Grid." style="max-width:100%;height:auto">
 
 <img src="assets/screenshots/settings-cameras.png" width="1344" height="1280" alt="Settings, Cameras." style="max-width:100%;height:auto">
 
@@ -335,13 +335,13 @@ The updates footer says: **Lodge checks for a new version once a day. You can al
 
 The destructive buttons on the format confirmation and on **Forget History** have no keyboard equivalent. The other re-offload alert has **Re-offload Everything** (Return) and **Cancel**, and no destructive button.
 
-<img src="assets/screenshots/grid-dark.png" width="2704" height="1824" alt="The media grid. Arrow keys move the selection. Space opens Quick Look. Command-click toggles a file. Shift-click extends the selection." style="max-width:100%;height:auto">
+<img src="assets/screenshots/grid-dark.png" width="1352" height="912" alt="The media grid. Arrow keys move the selection. Space opens Quick Look. Command-click toggles a file. Shift-click extends the selection." style="max-width:100%;height:auto">
 
 ## Troubleshooting
 
 ### Why Offload is waiting
 
-<img src="assets/screenshots/empty-dark.png" width="2120" height="1400" alt="Lodge with no card. Offload is waiting." style="max-width:100%;height:auto">
+<img src="assets/screenshots/empty-dark.png" width="1060" height="700" alt="Lodge with no card. Offload is waiting." style="max-width:100%;height:auto">
 
 | Message | What it means |
 | --- | --- |
@@ -398,9 +398,7 @@ The finish line ends with ** — Couldn’t eject `<card name>`: `<system messag
 
 ## Updates
 
-The **Updates** section appears only in builds that include the updater.
-
-When it is there, **Automatically check for updates** is on. Lodge checks once a day. **Automatically download and install updates** is off.
+**Automatically check for updates** is on. Lodge checks once a day. **Automatically download and install updates** is off.
 
 The footer says: **Lodge checks for a new version once a day. You can also choose Lodge ▸ Check for Updates… any time.**
 
