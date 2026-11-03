@@ -11,32 +11,13 @@
         <language>en</language>
         <item>
             <title>1.0</title>
-            <pubDate>Tue, 03 Nov 2026 12:30:00 -0500</pubDate>
+            <pubDate>Tue, 03 Nov 2026 13:30:00 -0500</pubDate>
             <link>https://github.com/bashcrandicoot/Lodge</link>
-            <sparkle:version>8</sparkle:version>
+            <sparkle:version>9</sparkle:version>
             <sparkle:shortVersionString>1.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <description><![CDATA[<ul><li>New Buy Lodge button in the license window opens the store in your browser.</li><li>A cleaner About window.</li><li>Small wording fixes.</li></ul>]]></description>
-            <enclosure url="https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg" length="8923390" type="application/octet-stream" sparkle:edSignature="ZrYsxCm3MMEaNA0O/yAAOSnL43czRZUkgOkBVP4y2PNp+i42DY8M80oQ0MtKyQILb7Wl14+IOaVoiauEmcxEAQ=="/>
-        </item>
-        <item>
-            <title>1.0</title>
-            <pubDate>Sat, 31 Oct 2026 18:21:23 -0400</pubDate>
-            <link>https://github.com/bashcrandicoot/Lodge</link>
-            <sparkle:version>7</sparkle:version>
-            <sparkle:shortVersionString>1.0</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <description><![CDATA[<h2>Lodge 1.0</h2>
-<p>Home base for your media. Your folders, your names, every card. Every copy is checked with SHA-256, so your footage comes off the card safely.</p>
-<p>Lodge is now a paid app. Try free 3 days, then $10 once for a license.</p>
-<ul>
-<li>Your 3-day trial starts when you open this version. Every feature is included.</li>
-<li>Enter your license key any time from the toolbar or Settings &gt; General. After the trial, Buy Lodge opens checkout with Polar.</li>
-<li>Lodge goes online for a daily update check, which you can turn off in Settings &gt; General, and to activate your license with Polar and confirm it about once a week.</li>
-<li>Updates now come as a signed disk image.</li>
-</ul>
-]]></description>
-            <enclosure url="https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg" length="8911704" type="application/octet-stream" sparkle:edSignature="5S7sMqXS/uxgNTHSEWSGDm8FrMSgzaDB/Rp+J4b7h/wYVlGXE8o/R7n8lWv7uhdxiU++CNmcl4n59eB6Bwo5Ag=="/>
+            <description><![CDATA[<p>Lodge 1.0</p><ul><li>Buy Lodge and Enter License Key are now standard buttons. Buy Lodge opens the store in your browser.</li><li>New Help &gt; Acknowledgements shows the open-source software Lodge uses.</li><li>A simpler About window.</li></ul>]]></description>
+            <enclosure url="https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg" length="8923929" type="application/octet-stream" sparkle:edSignature="P3WSgfuwdCCriMLuhl3/XV8ijLwQw0RN+SJ5SG4oUm5G3uVN61JtwwD91kz9HDmvnGukhIXiRTG47vzc00XYCQ=="/>
         </item>
     </channel>
 </rss>
