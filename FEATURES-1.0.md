@@ -11,7 +11,7 @@ What can look like a trial is the support note, and it does not lock anything. `
 - at least 5 offloads where every file was copied and verified (`requiredOffloads = 5`)
 - at least 3 days after this version was first launched (`minimumUse = 3 * 24 * 60 * 60`)
 - shown fewer than 2 times (`maximumShows = 2`)
-- the user has not chosen Support or Don’t Ask Again (`neverAskAgain`)
+- the user has not chosen the "Support Lodge" button or "Don’t Ask Again" (`neverAskAgain`)
 - `nextAskDate` is unset or has passed
 
 "Maybe Later" waits 30 days (`laterDelay = 30 * 24 * 60 * 60`). The card is not shown during a copy. The title is "Support Lodge". The body is "Lodge is made by one person at bashframes. If it saves you time, you can chip in on Ko-fi. Thank you!" Buttons: "Don’t Ask Again", "Maybe Later" (Escape), "Support Lodge". "Support Lodge" opens `https://ko-fi.com/bashframes` (`Lodge/Support.swift`).
@@ -35,13 +35,13 @@ Camera folders checked include `DCIM`, `PRIVATE/M4ROOT`, `PRIVATE/AVCHD`, `AVCHD
 
 The same card is not asked twice within the debounce interval. A card plugged in during an offload or a format is queued until that finishes (`Lodge/ImportPrompter.swift`).
 
-The notification title is the card name plus "connected", or " card connected" / " drive connected" when the name does not already end in card, drive, ssd, or disk. The body is "Import with Lodge?". Actions are "Import" and "Don’t Ask for This Card".
+The notification title is the card name plus "connected", or " card connected" / " drive connected" when the name does not already end in card, drive, ssd, or disk. The body is "Import with Lodge?". The actions are "Import", "Ignore", and "Don’t Ask for This Card" (`Lodge/ImportPrompter.swift`).
 
-If notifications are off, Lodge shows a floating panel (`Lodge/ImportPromptPanel.swift`) with the same title, the body "Import with Lodge?", and buttons "Import" (Return), "Ignore", and "Don’t ask for this card".
+Lodge shows the floating panel (`Lodge/ImportPromptPanel.swift`) when Ask with is "Floating panel", when notification permission is still undecided, when notifications are off, when alerts are disabled, or when the alert style is None. Posting the notification can also fail and fall back to the panel. The panel uses the same title and the body "Import with Lodge?", with buttons "Import", "Ignore", and "Don’t ask for this card". It is a nonactivating panel (`styleMask` includes `.nonactivatingPanel`) and does not take the keyboard, so Return does not press Import. The buttons are a click.
 
 "Import" opens Lodge with that card selected. Nothing is copied until Offload.
 
-The ask can be turned off. While detection is paused the menu says "Resume Detection". Test failures use these strings (`Lodge/ImportPrompter.swift`):
+The ask can be turned off. While detection is paused the menu says "Resume Detection". Debug builds have Menu bar ▸ Test Import Prompt (`testPrompt`, compiled only inside `#if DEBUG`). Its failures use these strings:
 
 - "Lodge isn't ready yet."
 - "No cards or drives are connected."
@@ -161,9 +161,9 @@ Body starts with "What happened?" and one of:
 - "(What were you doing, and what went wrong? Steps to make it happen again help a lot.)"
 - "(Lodge quit unexpectedly. What were you doing just before?)"
 
-Then "Lodge `<version>` (build `<build>`)", "macOS `<version>`", "Mac: `<model>`, `<chip>`". The log section is "Lodge’s recent log:" or "(nothing logged recently)". Up to 200 of Lodge’s own log lines from the last three days are attached as `Lodge log.txt`. Paths under the home folder, `/Volumes`, `/Users`, `/private`, `/var`, and `/tmp` are replaced with `<path>`.
+Then "Lodge `<version>` (build `<build>`)", "macOS `<version>`", "Mac: `<model>`, `<chip>`". Paths under the home folder, `/Volumes`, `/Users`, `/private`, `/var`, and `/tmp` are replaced with `<path>`.
 
-If Mail cannot attach a crash report, the body adds "(The crash report couldn’t be attached. It’s in Console ▸ Crash Reports, under Lodge.)".
+When Mail can attach files, the log goes out as `Lodge log.txt` (up to 200 of Lodge’s own lines from the last three days) and a crash report, if there is one, goes out as its own `.txt`. The message body names those files under "Attached:" and does not paste the log. The `mailto:` fallback attaches nothing. It puts the log in the body under "Lodge’s recent log:" (or "(nothing logged recently)"), cut to fit. If there was a crash report, that fallback adds "(The crash report couldn’t be attached. It’s in Console ▸ Crash Reports, under Lodge.)".
 
 On the next launch, if a new `Lodge-….ips` or `Lodge_….crash` report is in Diagnostic Reports, the alert is "Lodge quit unexpectedly last time. Send a crash report?" The detail is "This opens a new email to bashframes with the crash report and Lodge’s recent log attached. File, card and drive names are left out. You can read it over before sending." Buttons: "Send Report" and "Not Now". It is not offered at login, and each report is offered once.
 
@@ -216,10 +216,11 @@ Updates footer (`Lodge/Updates.swift`): "Lodge checks for a new version once a d
 | ⌘, | Settings. Also the menu bar item’s key. The setup done screen draws a "⌘ ," keycap. | `Lodge/LodgeApp.swift`, `Lodge/MenuBar.swift`, `Lodge/ContentView.swift`, `Lodge/OnboardingDone.swift` |
 | ⌘Q | Quit. The menu bar item’s key is `q`. The hidden-icon hint says "quit it from there with ⌘Q." | `Lodge/MenuBar.swift`, `Lodge/SettingsView.swift` |
 | ⌘-drag | Drag the menu bar icon out to turn "Show menu bar icon" off. | `Lodge/MenuBar.swift` |
-| Return (`.defaultAction`) | Offload, Done, Import on the floating panel, "Get started", and "Offload with `<preset>`". | `Lodge/OffloadBar.swift`, `Lodge/ImportPromptPanel.swift`, `Lodge/OnboardingView.swift`, `Lodge/OnboardingDone.swift` |
-| Escape (`.cancelAction`) | "Cancel" during an offload. "Maybe Later" on the support note. | `Lodge/OffloadBar.swift`, `Lodge/SupportPrompt.swift` |
-| Return | Default button on the format confirmation and the re-offload confirmation. The destructive button has no key equivalent. | `Lodge/FormatViews.swift`, `Lodge/ReoffloadAlert.swift` |
-| Space | Quick Look on the selection. Space again is handled while the panel is up. | `Lodge/ClipsStageView.swift`, `Lodge/MediaPreview.swift` |
+| Return (`.defaultAction`) | Offload, Done, "Get started", and "Offload with `<preset>`". The import panel is nonactivating, so Return does not press its Import button. | `Lodge/OffloadBar.swift`, `Lodge/OnboardingView.swift`, `Lodge/OnboardingDone.swift`, `Lodge/ImportPromptPanel.swift` |
+| Escape (`.cancelAction`) | "Cancel" during an offload. "Maybe Later" on the support note. The support note’s other button is "Support Lodge". | `Lodge/OffloadBar.swift`, `Lodge/SupportPrompt.swift` |
+| Return | On the format confirmation, "Cancel" (`keyEquivalent` `\r`). "Format" has no key equivalent. | `Lodge/FormatViews.swift` |
+| Return | "Re-offload Everything" and "Forget History" are two alerts (`Lodge/ReoffloadAlert.swift`). On "Re-offload everything on “`<card>`”?", the first button is "Re-offload Everything" and the second is "Cancel". On "Forget the offload history of “`<card>`”?", "Cancel" is Return and "Forget History" has an empty key equivalent. | `Lodge/ReoffloadAlert.swift` |
+| Space | Quick Look on the selection. Space while Quick Look is open closes it. | `Lodge/ClipsStageView.swift`, `Lodge/MediaPreview.swift` |
 | Up, Down, Left, Right | Move the selection in the list or grid. | `Lodge/ClipsStageView.swift` |
 | Escape | Clear the selection. | `Lodge/ClipsStageView.swift` |
 | ⌘-click | Toggle a file in the selection. | `Lodge/ClipsStageView.swift`, `Lodge/MediaPreview.swift` |
