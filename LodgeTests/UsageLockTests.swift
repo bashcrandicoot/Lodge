@@ -2,7 +2,7 @@ import XCTest
 @testable import Lodge
 
 /// After the trial, the model refuses the actions the lock gate is meant to block.
-final class UsageLockTests: XCTestCase {
+@MainActor final class UsageLockTests: XCTestCase {
     func testLockedModelRefusesOffloadReoffloadFormatAndImport() {
         let model = AppModel(startWatching: false)
         model.allowsUse = { false }
