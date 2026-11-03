@@ -2,6 +2,10 @@
 
 Short answers. The [user guide](user-guide.md) has the detail, and [Getting started](getting-started.md) covers the download.
 
+## What happens when the 3-day trial ends?
+
+The trial ends after 3 days. [Buy Lodge for $10 once on Polar](https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1), then paste your Polar license key in Lodge to unlock it. $10 once — Try free 3 days.
+
 ## Which Mac do I need?
 
 macOS 14 Sonoma or later. Lodge is a universal app for Apple silicon and Intel Macs.

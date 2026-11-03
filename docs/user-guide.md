@@ -4,7 +4,7 @@ Lodge copies your footage off a camera card or drive, names each file for you, a
 
 ## Install and first launch
 
-**$10 once via Polar.** [Buy Lodge](https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1). Open the .dmg, and drag Lodge to Applications.
+**$10 once — Try free 3 days.** Download the DMG and try every feature for 3 days. Then [buy for $10 once on Polar](https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1) and paste your license key in Lodge to unlock. Open the .dmg, and drag Lodge to Applications.
 
 Lodge requires macOS 14.0 or later. It isn't notarized yet, which is why **Open Anyway** is needed the first time you open it.
 
@@ -24,6 +24,10 @@ Lodge requires macOS 14.0 or later. It isn't notarized yet, which is why **Open 
 During setup, Return is **Next: …** and **Save preset**. The done screen has **Open Settings**, **Open Lodge**, and **Skip setup**. You can open Settings any time with ⌘,.
 
 During setup, each drive shows how much space is available.
+
+## Trial and license
+
+Download the DMG and try every feature for 3 days. $10 once — Try free 3 days. When the 3 days end, [buy Lodge for $10 once on Polar](https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1). Paste your Polar license key in Lodge to unlock it.
 
 ## Your first offload
 

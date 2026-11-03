@@ -6,7 +6,7 @@ Home base for your media. Lodge is a universal app for Apple silicon and Intel M
 
 <a href="https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1"><img src="assets/lodge-buy-button-640x144.png" alt="Buy Lodge — $10" width="320" height="72"></a>
 
-[Buy Lodge — $10](https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1). Open the .dmg, and drag Lodge to Applications. $10 once — Try free 3 days.
+[Buy Lodge — $10](https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1). Open the .dmg, and drag Lodge to Applications. $10 once — Try free 3 days. Download the DMG and try every feature for 3 days. Then buy for $10 once on Polar and paste your license key in Lodge to unlock.
 
 No account, no analytics, and copying never uploads anything. The only time Lodge goes online is a daily check for updates, which you can turn off in Settings > General.
 
