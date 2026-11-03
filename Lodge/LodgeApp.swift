@@ -31,6 +31,7 @@ struct LodgeApp: App {
 
     /// The one shared "brain" of the app. `@StateObject` keeps it alive for the app's lifetime.
     @StateObject private var model = LodgeApp.makeModel()
+    @StateObject private var license = LicenseModel.live()
 
     init() {
         // Create (and start) Sparkle at launch, as its docs recommend.
@@ -41,7 +42,7 @@ struct LodgeApp: App {
         // A single main window (not a document-style app with many windows).
         Window("Lodge", id: "main") {
             ContentView()
-                .appEnvironment(model)
+                .appEnvironment(model, license: license)
                 .frame(minWidth: 940, minHeight: 580)
         }
         .defaultSize(width: 1080, height: 660)
@@ -52,21 +53,21 @@ struct LodgeApp: App {
             CommandGroup(replacing: .appInfo) {
                 Button("About Lodge") { Support.showAboutPanel() }
                 CheckForUpdatesView(updater: AppUpdates.updater)
-                Button("Support Lodge…") { Support.openTipJar() }
+                Button("Buy Lodge…") { Support.openBuyPage() }
             }
-            // Help ▸ Contact Support… and Support Lodge…
+            // Help ▸ Contact Support… and Buy Lodge…
             // .help placement is empty without a Help Book, so items "after" it never show; replace it instead.
             CommandGroup(replacing: .help) {
                 Button("Contact Support…") { Support.contactSupport() }
                 Button("Report a Bug…") { BugReport.compose() }
-                Button("Support Lodge…") { Support.openTipJar() }
+                Button("Buy Lodge…") { Support.openBuyPage() }
             }
         }
 
         // Lodge ▸ Settings… (⌘,)
         Settings {
             SettingsView(updater: AppUpdates.updater)
-                .appEnvironment(model)
+                .appEnvironment(model, license: license)
         }
     }
 

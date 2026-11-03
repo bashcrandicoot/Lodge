@@ -6,37 +6,22 @@ import AppKit
 struct ContentView: View {
     @EnvironmentObject private var model: AppModel
     @EnvironmentObject private var settings: AppSettings
+    @EnvironmentObject private var license: LicenseModel
     /// Saved for `MainWindow`, to reopen this window from the menu bar or an import prompt.
     @Environment(\.openWindow) private var openWindow
     /// Saved for `MainWindow`, to open Settings from the menu bar icon.
     @Environment(\.openSettings) private var openSettings
 
     var body: some View {
-        VStack(spacing: 0) {
-            HStack(spacing: 0) {
-                CardStageView()
-                    .frame(width: 230)
-                FunnelArrow(lit: model.session != nil, flowing: model.isBusy)
-                ClipsStageView()
-                    .frame(minWidth: 0, maxWidth: .infinity)
-                FunnelArrow(lit: model.session != nil && settings.destinationURL != nil, flowing: model.isBusy)
-                DestinationStageView()
-                    .frame(width: 270)
+        Group {
+            if license.allowsUse || model.isBusy {
+                workspace
+            } else {
+                LicenseGate()
             }
-            .padding(20)
-            .frame(maxHeight: .infinity)
-
-            Divider()
-
-            OffloadBar()
-                .background(.bar)
         }
-        .background(ThemeBackground())
-        .modifier(SupportPromptOverlay())
-        .task {
-            // Lodge is idle a moment after launch: the support card may show then too.
-            try? await Task.sleep(for: .seconds(3))
-            model.considerSupportPrompt()
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+            Task { await license.refresh() }
         }
         .toolbar {
             // With the title hidden the toolbar has nothing on the left, so a flexible space
@@ -115,14 +100,46 @@ struct ContentView: View {
         }
         #endif
     }
+
+    /// The funnel. Hidden until this Mac has a usable license. An offload already running
+    /// stays on screen if the grace period ends mid-copy.
+    private var workspace: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                CardStageView()
+                    .frame(width: 230)
+                FunnelArrow(lit: model.session != nil, flowing: model.isBusy)
+                ClipsStageView()
+                    .frame(minWidth: 0, maxWidth: .infinity)
+                FunnelArrow(lit: model.session != nil && settings.destinationURL != nil, flowing: model.isBusy)
+                DestinationStageView()
+                    .frame(width: 270)
+            }
+            .padding(20)
+            .frame(maxHeight: .infinity)
+
+            Divider()
+
+            OffloadBar()
+                .background(.bar)
+        }
+        .background(ThemeBackground())
+        .modifier(SupportPromptOverlay())
+        .task {
+            // Lodge is idle a moment after launch: the buy note may show then too.
+            try? await Task.sleep(for: .seconds(3))
+            model.considerSupportPrompt()
+        }
+    }
 }
 
 extension View {
     /// Supplies all of the app's shared objects (and the theme settings) to a view
     /// (used by the app and previews).
-    func appEnvironment(_ model: AppModel) -> some View {
+    func appEnvironment(_ model: AppModel, license: LicenseModel? = nil) -> some View {
+        let resolvedLicense = license ?? .previewLicensed()
         // The theme reads the settings, so it goes inside the objects it needs.
-        self
+        return self
             .lodgeTheme()
             .environmentObject(model)
             .environmentObject(model.settings)
@@ -132,6 +149,7 @@ extension View {
             .environmentObject(model.destinations)
             .environmentObject(model.presets)
             .environmentObject(model.supportPrompt)
+            .environmentObject(resolvedLicense)
     }
 }
 

@@ -6,8 +6,8 @@ import AppKit
 enum Support {
     static let developerName = "bashframes"
     static let email = "bashframes@gmail.com"
-    /// Tips for Lodge (Help ▸ Support Lodge…, the Settings footer and the support card).
-    static let tipJarURL = URL(string: "https://ko-fi.com/bashframes")!
+    /// Buy Lodge (Lodge ▸ Buy Lodge…, Help ▸ Buy Lodge…, the Settings footer and the buy note).
+    static var buyURL: URL { LodgeLicense.buyURL }
 
     /// A plain `mailto:` link, for the About window and the Settings footer.
     static var emailURL: URL { mailURL(body: nil) }
@@ -47,6 +47,10 @@ enum Support {
         var link = base
         link[.link] = emailURL
         credits.append(NSAttributedString(string: email, attributes: link))
+        credits.append(NSAttributedString(string: "\n", attributes: base))
+        var buy = base
+        buy[.link] = buyURL
+        credits.append(NSAttributedString(string: "Buy Lodge", attributes: buy))
         if let notices = acknowledgements {
             credits.append(NSAttributedString(string: "\n\nAcknowledgements\n\n", attributes: base))
             var small = base
@@ -73,9 +77,9 @@ enum Support {
         NSWorkspace.shared.open(supportEmailURL)
     }
 
-    /// Opens the Ko-fi page in the browser.
-    static func openTipJar() {
-        NSWorkspace.shared.open(tipJarURL)
+    /// Opens the Polar checkout in the browser.
+    static func openBuyPage() {
+        NSWorkspace.shared.open(buyURL)
     }
 }
 
@@ -92,9 +96,9 @@ struct SettingsCreditsFooter: View {
                 .buttonStyle(.link)
                 .help("Email a bug report with Lodge’s recent log attached")
             Text("·").accessibilityHidden(true)
-            Link("Support Lodge ♥", destination: Support.tipJarURL)
-                .help("Leave a tip for Lodge on Ko-fi")
-                .accessibilityLabel("Support Lodge")
+            Link("Buy Lodge", destination: Support.buyURL)
+                .help("Lodge is $10, one time")
+                .accessibilityLabel("Buy Lodge")
         }
         .font(.caption)
         .foregroundStyle(.secondary)

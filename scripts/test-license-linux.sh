@@ -1,0 +1,40 @@
+#!/bin/bash
+# Runs the license state tests on Linux (or anywhere with a Swift toolchain).
+# The Lodge app target needs macOS, Sparkle, and AppKit, so this compiles only
+# Lodge/License.swift plus LodgeTests/LicenseTests.swift.
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+WORK="$(mktemp -d)"
+trap 'rm -rf "$WORK"' EXIT
+
+mkdir -p "$WORK/Sources/LodgeLicense" "$WORK/Tests/LodgeLicenseTests"
+cp "$ROOT/Lodge/License.swift" "$WORK/Sources/LodgeLicense/License.swift"
+cp "$ROOT/LodgeTests/LicenseTests.swift" "$WORK/Tests/LodgeLicenseTests/LicenseTests.swift"
+cat > "$WORK/Package.swift" <<'EOF'
+// swift-tools-version:5.9
+import PackageDescription
+let package = Package(
+    name: "LodgeLicenseTests",
+    targets: [
+        .target(name: "LodgeLicense"),
+        .testTarget(name: "LodgeLicenseTests", dependencies: ["LodgeLicense"]),
+    ]
+)
+EOF
+
+# The Info.plist feed and the legacy appcast are not part of the Swift tests.
+grep -q 'https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/appcast.xml' "$ROOT/Lodge/Info.plist"
+grep -q '9Y5ssl+tCdpqaggzyIUbmUkGlcm77uCP8TvU4QcjmR4=' "$ROOT/Lodge/Info.plist"
+grep -q 'https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg' "$ROOT/appcast.xml"
+if grep -q '\.zip' "$ROOT/appcast.xml"; then
+    echo "appcast.xml still names a zip" >&2
+    exit 1
+fi
+if grep -q '<enclosure' "$ROOT/release/appcast.xml"; then
+    echo "release/appcast.xml should start with no enclosure items" >&2
+    exit 1
+fi
+
+cd "$WORK"
+swift test

@@ -1,37 +1,46 @@
 #!/bin/bash
-# Adds a new Lodge release to appcast.xml (the Sparkle update feed), signed with the
-# EdDSA private key in your login Keychain.
+# Adds a new Lodge release to release/appcast.xml (the Sparkle feed served from
+# Cloudflare R2), signed with the EdDSA private key in your login Keychain.
 #
 #   scripts/make-appcast.sh <version> [folder-with-the-release-files]
-#   scripts/make-appcast.sh 1.0.1                 # looks in build/release
+#   scripts/make-appcast.sh 1.0                 # looks in build/release
 #
-# The folder must contain Lodge-<version>.zip (Lodge.app zipped with `ditto -c -k
-# --keepParent`). Sparkle downloads the zip; the .dmg is for people downloading by hand.
-# Optional release notes: Lodge-<version>.md (or .html) next to the zip.
+# The folder must contain Lodge-<version>.dmg (from scripts/make-dmg.sh). Sparkle
+# downloads that disk image. There is no zip. Optional release notes:
+# Lodge-<version>.md (or .html) next to the dmg.
 #
-# Only appcast.xml in the repo is changed. Nothing is uploaded or pushed.
-# See RELEASING.md for the whole release, step by step.
+# The enclosure URL is
+#   https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-<version>.dmg
+# Upload that file and release/appcast.xml so they are served at
+#   https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/appcast.xml
+#
+# This script does not change the legacy GitHub feed, appcast.xml at the repo root.
+# See RELEASING.md.
 #
 # Environment (optional):
 #   SPARKLE_BIN    folder with Sparkle's generate_appcast (found automatically otherwise)
 #   ED_KEY_FILE    sign with a private key file instead of the Keychain (testing only)
 set -euo pipefail
 
-REPO_URL="https://github.com/bashcrandicoot/Lodge"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+DOWNLOAD_PREFIX="https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/"
+PUBLIC_KEY="9Y5ssl+tCdpqaggzyIUbmUkGlcm77uCP8TvU4QcjmR4="
+FEED_URL="${DOWNLOAD_PREFIX}appcast.xml"
+REPO_URL="https://github.com/bashcrandicoot/Lodge"
 
 version="${1:-}"
 if [[ -z "$version" ]]; then
-    echo "Usage: $0 <version> [folder]   e.g. $0 1.0.1" >&2
+    echo "Usage: $0 <version> [folder]   e.g. $0 1.0" >&2
     exit 64
 fi
 version="${version#v}"
 folder="${2:-$ROOT/build/release}"
-zip="$folder/Lodge-$version.zip"
+dmg="$folder/Lodge-$version.dmg"
 
 # Refuse to sign a release the README, the site or the project don't name yet.
 "$ROOT/scripts/check-version.sh" "$version"
-[[ -f "$zip" ]] || { echo "Can't find $zip" >&2; exit 66; }
+[[ -f "$dmg" ]] || { echo "Can't find $dmg (DMG only; do not pass a zip)" >&2; exit 66; }
+[[ -f "$ROOT/release/appcast.xml" ]] || { echo "Missing $ROOT/release/appcast.xml" >&2; exit 66; }
 
 # Find Sparkle's command-line tools (they come with the Swift package).
 find_bin() {
@@ -52,37 +61,58 @@ find_bin() {
 bin="$(find_bin)"
 [[ -x "$bin/generate_appcast" ]] || { echo "generate_appcast not found in $bin" >&2; exit 69; }
 
-# Sanity check: the app in the zip must be the version you said, and its build number
-# (CFBundleVersion, which Sparkle compares) must be higher than every build in the feed.
+# Sanity check: the app in the disk image must be the version you said, its feed must
+# already be the R2 appcast, and its build number (CFBundleVersion, which Sparkle
+# compares) must be higher than every build in the R2 feed and the legacy GitHub feed.
 check="$(mktemp -d)"
 staging="$(mktemp -d)"
-trap 'rm -rf "$check" "$staging"' EXIT
-ditto -x -k "$zip" "$check"
-plist="$check/Lodge.app/Contents/Info.plist"
-[[ -f "$plist" ]] || { echo "The zip must contain Lodge.app at its top level." >&2; exit 65; }
+mnt="$check/mnt"
+mkdir -p "$mnt"
+detach() {
+    if mount | grep -q " on $mnt "; then
+        hdiutil detach "$mnt" -quiet || hdiutil detach "$mnt" -force -quiet || true
+    fi
+}
+trap 'detach; rm -rf "$check" "$staging"' EXIT
+hdiutil attach -quiet -nobrowse -readonly -noverify -mountpoint "$mnt" "$dmg"
+plist="$mnt/Lodge.app/Contents/Info.plist"
+[[ -f "$plist" ]] || { echo "The disk image must contain Lodge.app at its top level." >&2; exit 65; }
 app_version="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$plist")"
 app_build="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$plist")"
+app_feed="$(/usr/libexec/PlistBuddy -c 'Print :SUFeedURL' "$plist")"
+app_key="$(/usr/libexec/PlistBuddy -c 'Print :SUPublicEDKey' "$plist" 2>/dev/null || true)"
+detach
 if [[ "$app_version" != "$version" ]]; then
-    echo "The zip contains Lodge $app_version, not $version." >&2; exit 65
+    echo "The disk image contains Lodge $app_version, not $version." >&2; exit 65
 fi
-if ! /usr/libexec/PlistBuddy -c 'Print :SUPublicEDKey' "$plist" >/dev/null 2>&1; then
-    echo "This Lodge.app has no SUPublicEDKey, so it was built without Sparkle." >&2; exit 65
+if [[ "$app_key" != "$PUBLIC_KEY" ]]; then
+    echo "This Lodge.app has no matching SUPublicEDKey, so it was built without Sparkle." >&2; exit 65
 fi
-latest_build="$(grep -o '<sparkle:version>[^<]*' "$ROOT/appcast.xml" | sed 's/.*>//' | sort -n | tail -1 || true)"
+if [[ "$app_feed" != "$FEED_URL" ]]; then
+    echo "SUFeedURL is $app_feed" >&2
+    echo "Expected $FEED_URL" >&2
+    exit 65
+fi
+versions_in() {
+    local file="$1"
+    [[ -f "$file" ]] || return 0
+    grep -o '<sparkle:version>[^<]*' "$file" | sed 's/.*>//' || true
+}
+latest_build="$( { versions_in "$ROOT/release/appcast.xml"; versions_in "$ROOT/appcast.xml"; } | sort -n | tail -1 || true)"
 if [[ -n "$latest_build" ]] && (( app_build <= latest_build )); then
-    echo "Build number $app_build isn't higher than $latest_build, already in appcast.xml." >&2
+    echo "Build number $app_build isn't higher than $latest_build, already in a feed." >&2
     echo "Raise CURRENT_PROJECT_VERSION in the Lodge target and rebuild." >&2
     exit 65
 fi
 
-# generate_appcast works on a folder: give it the current feed plus just this release.
-cp "$ROOT/appcast.xml" "$staging/appcast.xml"
-cp "$zip" "$staging/"
+# generate_appcast works on a folder: give it the R2 feed plus just this disk image.
+cp "$ROOT/release/appcast.xml" "$staging/appcast.xml"
+cp "$dmg" "$staging/"
 for notes in "$folder/Lodge-$version".{md,html,txt}; do
     [[ -f "$notes" ]] && cp "$notes" "$staging/"
 done
 
-args=(--download-url-prefix "$REPO_URL/releases/download/v$version/"
+args=(--download-url-prefix "$DOWNLOAD_PREFIX"
       --link "$REPO_URL"
       --maximum-deltas 0
       --embed-release-notes)
@@ -92,20 +122,36 @@ echo "Signing Lodge $version (build $app_build) with your Sparkle key…"
 echo "(If macOS asks whether generate_appcast may use your Keychain, click Always Allow.)"
 "$bin/generate_appcast" "${args[@]}" "$staging"
 
-# Refuse an unsigned entry: Lodge only installs updates signed with your key.
-# Look anywhere in the new <item>: embedded release notes push the enclosure (which carries
-# the signature) well below <sparkle:version>.
+# Refuse an unsigned entry, a zip enclosure, or a URL that is not this disk image.
 new_item() {
     awk -v b="<sparkle:version>$app_build</sparkle:version>" \
         '/<item>/{buf=""} {buf=buf $0 "\n"} /<\/item>/{if (index(buf, b)) printf "%s", buf}' "$1"
 }
-if ! new_item "$staging/appcast.xml" | grep -q 'sparkle:edSignature='; then
+item="$(new_item "$staging/appcast.xml")"
+expected="${DOWNLOAD_PREFIX}Lodge-$version.dmg"
+if ! printf '%s' "$item" | grep -q 'sparkle:edSignature='; then
     echo "The new entry wasn't signed (does your Keychain key match SUPublicEDKey?)." >&2
-    echo "appcast.xml was left unchanged." >&2
+    echo "release/appcast.xml was left unchanged." >&2
+    exit 70
+fi
+if ! printf '%s' "$item" | grep -q "$expected"; then
+    echo "The enclosure is not $expected" >&2
+    echo "release/appcast.xml was left unchanged." >&2
+    exit 70
+fi
+if printf '%s' "$item" | grep -q '\.zip'; then
+    echo "The new entry points at a zip. Lodge updates are disk images only." >&2
+    echo "release/appcast.xml was left unchanged." >&2
     exit 70
 fi
 
-cp "$staging/appcast.xml" "$ROOT/appcast.xml"
+cp "$staging/appcast.xml" "$ROOT/release/appcast.xml"
 echo
-echo "Updated appcast.xml with Lodge $version. Next: commit it, upload the zip and dmg"
-echo "to the v$version GitHub release, then push (see RELEASING.md)."
+echo "Updated release/appcast.xml with Lodge $version."
+echo "Upload these two objects so the public R2 URL serves them:"
+echo "  $dmg"
+echo "    -> ${expected}"
+echo "  $ROOT/release/appcast.xml"
+echo "    -> ${FEED_URL}"
+echo "Do not add this version to the legacy GitHub feed (appcast.xml) except as the"
+echo "one bridge release in RELEASING.md. Nothing was uploaded."

@@ -348,6 +348,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Lodge/Info.plist;
+				LODGE_POLAR_SANDBOX = NO;
 				INFOPLIST_KEY_CFBundleDisplayName = Lodge;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2026 bashframes";
@@ -385,6 +386,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Lodge/Info.plist;
+				LODGE_POLAR_SANDBOX = NO;
 				INFOPLIST_KEY_CFBundleDisplayName = Lodge;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2026 bashframes";

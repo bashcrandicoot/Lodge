@@ -72,6 +72,7 @@ struct GeneralSettingsView: View {
     var body: some View {
         ScrollViewReader { proxy in
         Form {
+            LicenseSettingsSection()
             Section {
                 ForEach(MediaCategory.allCases) { category in
                     Toggle(isOn: Binding(
