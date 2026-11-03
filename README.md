@@ -28,7 +28,7 @@
   <a href="https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1"><img src="docs/assets/lodge-buy-button-640x144.png" alt="Buy Lodge — $10" width="320" height="72"></a>
 </p>
 
-$10 once — Try free 3 days. [Buy Lodge 1.0 — $10](https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1). Open the .dmg, and drag Lodge to Applications.
+$10 once — Try free 3 days. [Buy Lodge 1.0 — $10](https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1). Download the DMG and try every feature for 3 days. Then buy for $10 once on Polar and paste your license key in Lodge to unlock. Open the .dmg, and drag Lodge to Applications.
 
 ## Install
 
