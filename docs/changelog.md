@@ -4,7 +4,7 @@
 
 _Oct 31, 2026_
 
-Home base for your media. Your folders, your names, every card. Every copy is checked with SHA-256. [Try free 3 days, then $10.](https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg)
+Home base for your media. Your folders, your names, every card. Every copy is checked with SHA-256. [Try free 3 days, then $10.](https://bashfra.me/lodge-dmg)
 
 - Notices camera cards and removable drives with media as you insert them.
 - A Card, Media, Destination window with an offload bar along the bottom.
