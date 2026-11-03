@@ -71,6 +71,7 @@
     }
     img { max-width: 100%; height: auto; }
     a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 0.16em; }
+    .accent { color: var(--accent); }
     a:hover { color: #d7e0ff; }
     :focus-visible {
       outline: 3px solid var(--accent);
@@ -614,7 +615,7 @@
     <div class="hero">
       <div class="hero-inner wrap">
         <img class="header" src="assets/lodge-header-dark.png" width="1600" height="500" alt="Lodge app banner">
-        <h1>Home base for your media.</h1>
+        <h1><span class="accent">Home base</span> for your media.</h1>
         <p class="lede">Your folders, your names, every card.</p>
         <p class="support">Every copy is checked with SHA-256.</p>
         <div class="actions">
@@ -761,7 +762,7 @@
 
   <footer>
     <div class="wrap">
-      <p>Lodge 1.0 · Home base for your media. · © 2026 bashframes</p>
+      <p>Lodge 1.0 · <span class="accent">Home base</span> for your media. · © 2026 bashframes</p>
       <p class="analytics-note">This website counts visits with GoatCounter: anonymous, no cookies. The Lodge app itself has no analytics.</p>
       <nav aria-label="Footer">
         <a href="user-guide.html">User guide</a>
