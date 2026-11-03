@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Lodge — Home base for your media.</title>
-  <meta name="description" content="Lodge gets your footage off camera cards safely, checked and neatly named.">
+  <title>Lodge — Ingest into your own folders and names.</title>
+  <meta name="description" content="Ingest camera media into custom folder structures and naming schemes. Every copy is checked with SHA-256.">
   <meta name="author" content="bashframes">
   <meta name="theme-color" content="#100e18">
   <meta name="color-scheme" content="dark">
@@ -16,16 +16,16 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Lodge">
   <meta property="og:url" content="https://bashcrandicoot.github.io/Lodge/">
-  <meta property="og:title" content="Lodge — Home base for your media.">
-  <meta property="og:description" content="Lodge gets your footage off camera cards safely, checked and neatly named.">
+  <meta property="og:title" content="Lodge — Ingest into your own folders and names.">
+  <meta property="og:description" content="Ingest camera media into custom folder structures and naming schemes. Every copy is checked with SHA-256.">
   <meta property="og:image" content="https://bashcrandicoot.github.io/Lodge/assets/lodge-social-preview.png">
   <meta property="og:image:width" content="1280">
   <meta property="og:image:height" content="640">
   <meta property="og:image:alt" content="Lodge. Home base for your media. A log cabin at night, with pines and mountains.">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Lodge — Home base for your media.">
-  <meta name="twitter:description" content="Lodge gets your footage off camera cards safely, checked and neatly named.">
+  <meta name="twitter:title" content="Lodge — Ingest into your own folders and names.">
+  <meta name="twitter:description" content="Ingest camera media into custom folder structures and naming schemes. Every copy is checked with SHA-256.">
   <meta name="twitter:image" content="https://bashcrandicoot.github.io/Lodge/assets/lodge-social-preview.png">
   <meta name="twitter:image:alt" content="Lodge. Home base for your media. A log cabin at night, with pines and mountains.">
 
@@ -273,6 +273,17 @@
       border-radius: var(--radius);
       border: 1px solid var(--line);
       box-shadow: 0 var(--space-5) 80px rgba(0, 0, 0, 0.45);
+    }
+    .naming-shot {
+      max-width: 712px;
+      margin: 0 auto var(--space-6);
+    }
+    .naming-shot img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
     }
     .shot-figure { margin: 0; min-width: 0; }
     .caption {
@@ -596,8 +607,8 @@
     <div class="hero">
       <div class="hero-inner wrap">
         <img class="header" src="assets/lodge-header-dark.png" width="1600" height="500" alt="Lodge. Home base for your media. A log cabin at night, with pines and mountains.">
-        <h1>From card to calm.</h1>
-        <p class="lede">Lodge gets your footage off camera cards safely, checked and neatly named.</p>
+        <h1>Ingest into your own folders and names.</h1>
+        <p class="lede">Ingest camera media into custom folder structures and naming schemes. Every copy is checked with SHA-256.</p>
         <div class="actions">
           <a class="trial" href="https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg" data-goatcounter-click="trial-download"><span>Try for Free</span><small>for Mac</small></a>
           <a class="button secondary" href="getting-started.html">Getting started</a>
@@ -610,19 +621,14 @@
       </div>
     </div>
 
-    <div class="wrap">
-      <figure class="motion motion-wagon">
-        <video autoplay muted loop playsinline preload="metadata" poster="assets/motion/lodge-wagon-progress@2x.png" width="1060" height="153" aria-label="A wagon crossing the copy progress bar.">
-          <source src="assets/motion/lodge-wagon-progress@2x.mp4" type="video/mp4">
-        </video>
-        <img class="motion-still" src="assets/motion/lodge-wagon-progress@2x.png" width="1060" height="153" alt="A wagon crossing the copy progress bar.">
-      </figure>
-    </div>
-
     <section id="features">
       <div class="wrap">
-        <h2>From the card to a folder you trust</h2>
-        <p class="section-intro">Lodge checks each copy, brings over only what is new, and puts each file type in its own folder.</p>
+        <h2>Folder structure and naming</h2>
+        <p class="section-intro">Ingest into a folder structure and naming scheme you set. Date and project, then a folder for each file type. Every copy is checked with SHA-256.</p>
+        <figure class="shot-figure naming-shot">
+          <img src="assets/screenshots/settings-naming.png" width="712" height="820" alt="Settings, Naming. The folder template and the file template.">
+          <figcaption class="caption">Settings, Naming. The folder template and the file template.</figcaption>
+        </figure>
         <div class="features">
           <article class="card lead">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h6l2 2h8v9H4z"/><path d="M4 11h16"/></svg>
@@ -630,6 +636,16 @@
             <p>Date and project, then a folder for each file type.</p>
             <code class="scheme">2026-10-25/Coastline/MP4/</code>
             <code class="scheme">2026-10-25_Coastline_0001.mp4</code>
+          </article>
+          <article class="card">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h6l2 2h8v9H4z"/></svg>
+            <h3>Drop a folder</h3>
+            <p>Drag a folder onto Lodge to choose where your footage goes.</p>
+          </article>
+          <article class="card">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h7l4 4v12H7z"/><path d="M14 4v4h4"/></svg>
+            <h3>Proxies and sidecars</h3>
+            <p>Proxy files and sidecar files travel with their clip automatically.</p>
           </article>
           <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12.5l2.5 2.5L16 9"/></svg>
@@ -646,16 +662,32 @@
             <h3>Short clips and presets</h3>
             <p>Skip short clips. Switch presets from the menu at the top right.</p>
           </article>
-          <article class="card">
-            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h6l2 2h8v9H4z"/></svg>
-            <h3>Drop a folder</h3>
-            <p>Drag a folder onto Lodge to choose where your footage goes.</p>
-          </article>
-          <article class="card">
-            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h7l4 4v12H7z"/><path d="M14 4v4h4"/></svg>
-            <h3>Proxies and sidecars</h3>
-            <p>Proxy files and sidecar files travel with their clip automatically.</p>
-          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="verified">
+      <div class="wrap">
+        <figure class="motion motion-wagon">
+          <video autoplay muted loop playsinline preload="metadata" poster="assets/motion/lodge-wagon-progress@2x.png" width="1060" height="153" aria-label="A wagon crossing the copy progress bar.">
+            <source src="assets/motion/lodge-wagon-progress@2x.mp4" type="video/mp4">
+          </video>
+          <img class="motion-still" src="assets/motion/lodge-wagon-progress@2x.png" width="1060" height="153" alt="A wagon crossing the copy progress bar.">
+        </figure>
+      </div>
+      <div class="wrap pair verified">
+        <figure class="shot-figure">
+          <img src="assets/screenshots/finished-dark.png" width="2704" height="1824" alt="A finished offload. The bar reads Offload Complete, with 29 copied, 0 skipped, and 0 failed.">
+          <figcaption class="caption">Offload Complete. 29 copied · 0 skipped · 0 failed.</figcaption>
+        </figure>
+        <div>
+          <h2>Verified, never overwritten</h2>
+          <p class="section-intro">Lodge writes each file, reads it back, and checks it with SHA-256. A match is renamed to the final name. A mismatch is deleted.</p>
+          <ul>
+            <li>The card is only read. A file already at the final path is not overwritten.</li>
+            <li>With nothing new to copy, Lodge names a missing copy, a skipped short clip, or the date filter first. <span>Everything on this card is already offloaded</span> is what remains after those.</li>
+            <li>If a copy is missing, choose <span>Re-offload</span>.</li>
+          </ul>
         </div>
       </div>
     </section>
@@ -685,24 +717,6 @@
           <img class="shot" src="assets/screenshots/ready-dark.png" width="2704" height="1824" alt="Lodge in Dark mode, ready to offload. The preset menu is at the top right. Offload 29 Files sits along the bottom.">
           <figcaption class="caption">Lodge ready to offload a card. Pick a preset at the top right, then press Offload.</figcaption>
         </figure>
-      </div>
-    </section>
-
-    <section id="verified">
-      <div class="wrap pair verified">
-        <figure class="shot-figure">
-          <img src="assets/screenshots/finished-dark.png" width="2704" height="1824" alt="A finished offload. The bar reads Offload Complete, with 29 copied, 0 skipped, and 0 failed.">
-          <figcaption class="caption">Offload Complete. 29 copied · 0 skipped · 0 failed.</figcaption>
-        </figure>
-        <div>
-          <h2>Verified, never overwritten</h2>
-          <p class="section-intro">Lodge writes each file, reads it back, and checks it with SHA-256. A match is renamed to the final name. A mismatch is deleted.</p>
-          <ul>
-            <li>The card is only read. A file already at the final path is not overwritten.</li>
-            <li>With nothing new to copy, Lodge names a missing copy, a skipped short clip, or the date filter first. <span>Everything on this card is already offloaded</span> is what remains after those.</li>
-            <li>If a copy is missing, choose <span>Re-offload</span>.</li>
-          </ul>
-        </div>
       </div>
     </section>
 

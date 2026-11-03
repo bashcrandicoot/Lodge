@@ -1,10 +1,10 @@
 # FAQ
 
-Short answers. The [user guide](user-guide.html) has the detail, and [Getting started](getting-started.html) covers the download.
+Ingest camera media into custom folder structures and naming schemes. Every copy is checked with SHA-256. Short answers below. The [user guide](user-guide.html) has the detail, and [Getting started](getting-started.html) covers the download.
 
 ## What happens when the 3-day trial ends?
 
-Buy appears in the app and leads to Polar.
+Lodge asks you to activate a license to keep using it. You can do that from the toolbar or Settings > General.
 
 ## Which Mac do I need?
 
