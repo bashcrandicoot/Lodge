@@ -4,7 +4,7 @@
 
 _Oct 31, 2026_
 
-Lodge, a native Mac app for offloading camera cards. [Download Lodge from Ko-fi](https://ko-fi.com/s/fb9fab53be).
+Lodge, a native Mac app for offloading camera cards. [Buy Lodge](https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1).
 
 - Notices camera cards and removable drives with media as you insert them.
 - A Card, Media, Destination window with an offload bar along the bottom.
@@ -14,7 +14,7 @@ Lodge, a native Mac app for offloading camera cards. [Download Lodge from Ko-fi]
 - Sidecars keep their clip’s name. Proxies go into Proxies/ and sidecars into Sidecars/, with an editable extension and ignore list.
 - **Presets** for destination, naming, camera, short clips, quick dump and file rules, plus **quick dump**.
 - Skip short videos: a slider from Off to 30 s, and a stepper up to 60 s.
-- Favorite destinations with free space, or drop a Finder folder.
+- Favorite destinations with available space, or drop a Finder folder.
 - Re-offload missing files or the whole card.
 - Safe card formatting, with a **Ready to format** badge.
 - Thumbnails, list and grid view, and Quick Look.
@@ -28,7 +28,7 @@ Lodge, a native Mac app for offloading camera cards. [Download Lodge from Ko-fi]
 - **Check for Updates** through Sparkle, with automatic checks you can turn off in Settings > General.
 - **Support Lodge** opens Ko-fi (ko-fi.com/bashframes). bashframes contact details are in About Lodge and the Help menu.
 - The Lodge Cabin app icon.
-- Free space shows correctly on non-APFS external drives (exFAT, HFS+).
+- Available space shows correctly on non-APFS external drives (exFAT, HFS+).
 - Read-only drives, such as NTFS, get a clear message.
 - **Help > Report a Bug…** emails bashframes@gmail.com with the log attached, and Lodge offers to send a crash report after an unexpected quit.
 - Show in Finder opens one window on the parent folder.

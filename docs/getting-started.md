@@ -4,9 +4,9 @@ Home base for your media. Lodge is a universal app for Apple silicon and Intel M
 
 ## Download Lodge
 
-<a href="https://ko-fi.com/s/fb9fab53be"><img src="assets/download-button-kofi.png" alt="Download Lodge for Mac on Ko-fi" width="320" height="72"></a>
+<a href="https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1"><img src="assets/lodge-buy-button-640x144.png" alt="Buy Lodge — $10" width="320" height="72"></a>
 
-[Download Lodge from Ko-fi](https://ko-fi.com/s/fb9fab53be). Unzip it, then open the DMG, and drag Lodge to Applications. Pay what you want.
+[Buy Lodge — $10](https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1). Open the .dmg, and drag Lodge to Applications. $10 once — Try free 3 days. Download the DMG and try every feature for 3 days. Then buy for $10 once on Polar and paste your license key in Lodge to unlock.
 
 No account, no analytics, and copying never uploads anything. The only time Lodge goes online is a daily check for updates, which you can turn off in Settings > General.
 
@@ -67,7 +67,7 @@ The button’s caption is the reason. Common ones:
 - **Enter a project name**
 - **Choose a camera**
 - **Choose a destination folder**
-- **Not enough space**, with the size it needs and the size free
+- **Not enough space**, with the size it needs and the size available
 - **Everything on this card is already offloaded**
 - **Insert a card to begin**
 

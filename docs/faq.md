@@ -2,6 +2,10 @@
 
 Short answers. The [user guide](user-guide.md) has the detail, and [Getting started](getting-started.md) covers the download.
 
+## What happens when the 3-day trial ends?
+
+The trial ends after 3 days. [Buy Lodge for $10 once on Polar](https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1), then paste your Polar license key in Lodge to unlock it. $10 once — Try free 3 days.
+
 ## Which Mac do I need?
 
 macOS 14 Sonoma or later. Lodge is a universal app for Apple silicon and Intel Macs.
@@ -64,7 +68,7 @@ The first time Lodge reads a card, also allow access to files on a removable vol
 
 ## How do I get help?
 
-Write to [bashframes@gmail.com](mailto:bashframes@gmail.com). If Lodge has been useful, [Support Lodge](https://ko-fi.com/bashframes). Pay what you want.
+Write to [bashframes@gmail.com](mailto:bashframes@gmail.com). If Lodge has been useful, [Support Lodge](https://ko-fi.com/bashframes). Built by bashframes.
 
 **Help > Contact Support…** opens an email to that address, subject Lodge Support, with the Lodge and macOS versions under your message. **Help > Support Lodge…** and **Lodge > Support Lodge…** open the same page in your browser. **Lodge > About Lodge** says Made by bashframes, with a link to the same email. Settings > General ends with **Support** and **Support Lodge**.
 
@@ -88,7 +92,7 @@ No account, no analytics, and copying never uploads anything. The only time Lodg
 
 ## Can I use Light mode, or another colour?
 
-Yes. Settings > Appearance. Lodge starts in Dark mode with **Default**: a neutral black and white window, and system-blue controls (or whatever accent you set in System Settings). **Aurora**, **Ocean**, **Twilight**, **Ember**, and **Forest** are optional colour themes. **Light** and **System** are next to **Dark**.
+Yes. Settings > Appearance. Lodge starts in Dark mode with **Default**, and system-blue controls (or whatever accent you set in System Settings). **Aurora**, **Ocean**, **Twilight**, **Ember**, and **Forest** are optional colour themes. **Light** and **System** are next to **Dark**.
 
 ## What if two files would get the same name?
 
