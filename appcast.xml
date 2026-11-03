@@ -11,13 +11,13 @@
         <language>en</language>
         <item>
             <title>1.0</title>
-            <pubDate>Tue, 03 Nov 2026 13:30:00 -0500</pubDate>
+            <pubDate>Tue, 03 Nov 2026 17:40:06 -0500</pubDate>
             <link>https://github.com/bashcrandicoot/Lodge</link>
-            <sparkle:version>9</sparkle:version>
+            <sparkle:version>10</sparkle:version>
             <sparkle:shortVersionString>1.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <description><![CDATA[<p>Lodge 1.0</p><ul><li>Buy Lodge and Enter License Key are now standard buttons. Buy Lodge opens the store in your browser.</li><li>New Help &gt; Acknowledgements shows the open-source software Lodge uses.</li><li>A simpler About window.</li></ul>]]></description>
-            <enclosure url="https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg" length="8923929" type="application/octet-stream" sparkle:edSignature="P3WSgfuwdCCriMLuhl3/XV8ijLwQw0RN+SJ5SG4oUm5G3uVN61JtwwD91kz9HDmvnGukhIXiRTG47vzc00XYCQ=="/>
+            <description><![CDATA[<p>Lodge 1.0</p><ul><li>A thank-you screen now confirms your license after you activate it.</li><li>Clearer screens when Lodge can&#39;t confirm your license or read the Keychain, with a way to try again.</li><li>Safer copying: files are checked after copying, and the history of what was copied is better protected.</li><li>The Tip Jar is now in the Lodge and Help menus and in Settings.</li><li>Updates and downloads now come from dl.bashfra.me.</li></ul>]]></description>
+            <enclosure url="https://dl.bashfra.me/lodge/Lodge-1.0.dmg" length="9013522" type="application/octet-stream" sparkle:edSignature="3HcP7YM/ZOR15TG1GuDS74+9uKRnYmVM6S80IZGti+b9xqTnzITYhksJ/ue4QAk10Cn1jN0dRVRqRGZ/nSMCDQ=="/>
         </item>
     </channel>
 </rss>
