@@ -4,9 +4,13 @@ Taken from the source at tag `v1.0`, commit `d5d4f9f`. Quoted strings are the on
 
 ## Trial and unlock
 
-There is no trial and no unlock flow. A search of that commit finds no license gate, no expiry, and no purchase check in the app. Lodge 1.0 runs without a key.
+Tag `v1.0` has no trial and no unlock. The current app does. A Mac with no license works for 3 days from the first launch stored in the Keychain (`TrialRecord` in `Lodge/License.swift`). Reinstalling does not reset that date. A clock that moves backward ends the trial instead of lengthening it.
 
-What can look like a trial is the support note, and it does not lock anything. `SupportPromptPolicy` in `Lodge/SupportPrompt.swift` shows the note only when all of these are true:
+On each launch while the trial is active, and this Mac has no license, and Lodge is not in demo mode, the main window shows one alert: "Lodge trial: N days left", or "Lodge trial: N hours left" when under a day. The primary button is "Continue". The other button is "Enter License Key…". That alert has no Buy button. It is skipped when a license is active.
+
+During the trial the toolbar keeps the time left and "Enter License". It does not offer Buy Lodge. Buy Lodge, which opens the Polar checkout, appears only after the trial, on the lock gate.
+
+What can look like a trial in tag `v1.0` is the support note, and it does not lock anything. `SupportPromptPolicy` in `Lodge/SupportPrompt.swift` shows the note only when all of these are true:
 
 - at least 5 offloads where every file was copied and verified (`requiredOffloads = 5`)
 - at least 3 days after this version was first launched (`minimumUse = 3 * 24 * 60 * 60`)

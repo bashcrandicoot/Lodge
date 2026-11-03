@@ -160,6 +160,42 @@ enum TrialPolicy {
         record.lastSeen = now
         return record
     }
+
+    /// Time still left, or nil when the trial is over (including a clock that moved backward).
+    static func remaining(record: TrialRecord, now: Date) -> TimeInterval? {
+        guard case .active = access(record: record, now: now) else { return nil }
+        return LodgeLicense.trialLength - now.timeIntervalSince(record.firstLaunch)
+    }
+}
+
+/// The note shown once each launch while the trial is running and this Mac has no license.
+enum TrialLaunchNotice {
+    static let continueTitle = "Continue"
+    static let enterLicense = "Enter License Key…"
+
+    static func shouldPresent(isTrial: Bool, isLicensed: Bool, isDemo: Bool, alreadyPresented: Bool) -> Bool {
+        isTrial && !isLicensed && !isDemo && !alreadyPresented
+    }
+
+    /// "2 days left", or "5 hours left" when under a day. Rounded up, and never 0 while time remains.
+    static func timeLeft(_ remaining: TimeInterval) -> String {
+        let hour: TimeInterval = 60 * 60
+        let day = 24 * hour
+        if remaining < day {
+            let hours = min(23, max(1, Int((remaining / hour).rounded(.up))))
+            return hours == 1 ? "1 hour left" : "\(hours) hours left"
+        }
+        let days = max(1, Int((remaining / day).rounded(.up)))
+        return days == 1 ? "1 day left" : "\(days) days left"
+    }
+
+    static func title(remaining: TimeInterval) -> String {
+        "Lodge trial: \(timeLeft(remaining))"
+    }
+
+    static func toolbar(_ remaining: TimeInterval) -> String {
+        "Trial: \(timeLeft(remaining))"
+    }
 }
 
 enum LicensePolicy {
@@ -541,6 +577,8 @@ final class LicenseController {
         self.machineLabel = machineLabel
         self.phase = .unlicensed
         self.statusLine = LicenseCopy.unlicensed
+        self.trialRemaining = nil
+        self.launchNoticePresented = false
         applyStored()
     }
 
@@ -566,6 +604,25 @@ final class LicenseController {
     var trialDaysLeft: Int? {
         if case .trial(let days) = phase { return days }
         return nil
+    }
+
+    /// Seconds left in the trial. Nil when this Mac is licensed or the trial is over.
+    private(set) var trialRemaining: TimeInterval? {
+        willSet { onChange?() }
+    }
+    private(set) var launchNoticePresented = false
+
+    /// Title for the once-per-launch trial note, or nil when it should not appear.
+    /// A license clears `trialRemaining`, so this stays nil once this Mac is licensed.
+    func launchNoticeTitle(isDemo: Bool) -> String? {
+        guard let remaining = trialRemaining else { return nil }
+        guard TrialLaunchNotice.shouldPresent(isTrial: true, isLicensed: false, isDemo: isDemo,
+                                               alreadyPresented: launchNoticePresented) else { return nil }
+        return TrialLaunchNotice.title(remaining: remaining)
+    }
+
+    func markLaunchNoticePresented() {
+        launchNoticePresented = true
     }
 
     nonisolated static func defaultMachineLabel() -> String {
@@ -675,6 +732,7 @@ final class LicenseController {
     }
 
     private func applyStored() {
+        trialRemaining = nil
         let storedLicense: StoredLicense?
         do {
             storedLicense = try store.load()
@@ -715,6 +773,7 @@ final class LicenseController {
         switch TrialPolicy.access(record: next, now: now()) {
         case .active(let days):
             phase = .trial(daysLeft: days)
+            trialRemaining = TrialPolicy.remaining(record: next, now: now())
         case .expired:
             phase = .unlicensed
         }

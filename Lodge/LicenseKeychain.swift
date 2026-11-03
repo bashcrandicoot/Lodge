@@ -124,6 +124,13 @@ final class LicenseModel: ObservableObject {
     var banner: String? { controller.banner }
     var allowsUse: Bool { controller.allowsUse }
     var trialDaysLeft: Int? { controller.trialDaysLeft }
+    var trialToolbarText: String? {
+        guard let remaining = controller.trialRemaining else { return nil }
+        return TrialLaunchNotice.toolbar(remaining)
+    }
+
+    func launchNoticeTitle(isDemo: Bool) -> String? { controller.launchNoticeTitle(isDemo: isDemo) }
+    func markLaunchNoticePresented() { controller.markLaunchNoticePresented() }
     var canDeactivate: Bool { controller.canDeactivate }
     var needsCheck: Bool { controller.needsCheck }
     var maskedKey: String? { controller.maskedKey }

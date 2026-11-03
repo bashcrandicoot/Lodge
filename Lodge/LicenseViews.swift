@@ -6,25 +6,19 @@ extension LicenseModel {
     }
 }
 
-/// Key entry shown from the trial toolbar. Buying and activating both stay available.
+/// Key entry from the trial. Purchase stays on the lock gate, after the trial.
 struct LicenseEntrySheet: View {
     @EnvironmentObject private var license: LicenseModel
-    @Environment(\.openURL) private var openURL
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(LicenseCopy.enterLicenseKey)
                 .font(.headline)
-            Text(LicenseCopy.price)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
             TextField(LicenseCopy.keyPrompt, text: license.keyDraftBinding)
                 .textFieldStyle(.roundedBorder)
                 .onSubmit { Task { await submit() } }
             HStack {
-                Button(LicenseCopy.buy) { openURL(LodgeLicense.buyURL) }
                 Spacer()
                 Button(LicenseCopy.activate) { Task { await submit() } }
                     .keyboardShortcut(.defaultAction)
@@ -135,8 +129,10 @@ struct LicenseSettingsSection: View {
                 Button(LicenseCopy.activate) { Task { await license.activate() } }
                     .disabled(license.isWorking || LicenseKey.normalize(license.keyDraft).isEmpty)
             }
-            Button(LicenseCopy.buy) { openURL(LodgeLicense.buyURL) }
-                .disabled(license.isWorking)
+            if license.trialDaysLeft == nil {
+                Button(LicenseCopy.buy) { openURL(LodgeLicense.buyURL) }
+                    .disabled(license.isWorking)
+            }
             if license.isWorking {
                 Text(LicenseCopy.checking)
                     .font(.caption)

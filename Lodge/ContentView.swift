@@ -11,8 +11,9 @@ struct ContentView: View {
     @Environment(\.openWindow) private var openWindow
     /// Saved for `MainWindow`, to open Settings from the menu bar icon.
     @Environment(\.openSettings) private var openSettings
-    @Environment(\.openURL) private var openURL
     @State private var enteringLicense = false
+    @State private var showTrialNotice = false
+    @State private var trialNoticeTitle = ""
 
     var body: some View {
         Group {
@@ -47,12 +48,10 @@ struct ContentView: View {
                     RecentOffloadsView()
                 }
             }
-            if let days = license.trialDaysLeft {
+            if let trial = license.trialToolbarText {
                 ToolbarItem(placement: .automatic) {
                     HStack(spacing: 8) {
-                        Text(LicenseCopy.trialStatus(days))
-                        Button(LicenseCopy.buy) { openURL(LodgeLicense.buyURL) }
-                            .buttonStyle(.borderless)
+                        Text(trial)
                         Button(LicenseCopy.enterLicense) { enteringLicense = true }
                             .buttonStyle(.borderless)
                     }
@@ -74,6 +73,12 @@ struct ContentView: View {
         .onAppear {
             MainWindow.openAction = { [openWindow] in openWindow(id: "main") }
             MainWindow.openSettingsAction = { [openSettings] in openSettings() }
+            presentTrialNoticeIfNeeded()
+        }
+        .alert(trialNoticeTitle, isPresented: $showTrialNotice) {
+            Button(TrialLaunchNotice.enterLicense) { enteringLicense = true }
+            Button(TrialLaunchNotice.continueTitle) {}
+                .keyboardShortcut(.defaultAction)
         }
         .sheet(isPresented: $enteringLicense) {
             LicenseEntrySheet()
@@ -116,6 +121,15 @@ struct ContentView: View {
             }
         }
         #endif
+    }
+
+    /// Once each launch, while the trial is running and this Mac has no license.
+    /// Demo mode and a purchased license skip it. Continue dismisses it; there is no Buy button.
+    private func presentTrialNoticeIfNeeded() {
+        guard let title = license.launchNoticeTitle(isDemo: AppModel.isDemo) else { return }
+        trialNoticeTitle = title
+        showTrialNotice = true
+        license.markLaunchNoticePresented()
     }
 
     /// The funnel. Hidden until this Mac has a usable license. An offload already running
