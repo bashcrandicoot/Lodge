@@ -1,6 +1,6 @@
 # User guide
 
-Lodge ingests camera media into custom folder structures and naming schemes, then checks every copy with SHA-256. The window is three columns, left to right: **Card**, **Media**, and **Destination**. Plugging in a card does not start a copy. **Import** only opens Lodge with that card selected. Nothing is copied until you click **Offload N Files** (**Offload 1 File** for one file, or **Offload Files** when nothing is ready).
+Home base for your media. Your folders, your names, every card. Every copy is checked with SHA-256. The window is three columns, left to right: **Card**, **Media**, and **Destination**. Plugging in a card does not start a copy. **Import** only opens Lodge with that card selected. Nothing is copied until you click **Offload N Files** (**Offload 1 File** for one file, or **Offload Files** when nothing is ready).
 
 ## Install and first launch
 
