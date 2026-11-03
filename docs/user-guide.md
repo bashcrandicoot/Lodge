@@ -21,7 +21,7 @@ macOS asks the first time you open Lodge.
 2. Choose **Open**.
 3. Choose **Open** again.
 
-Return is the default button for **Get started** and for **Offload with `<preset>`**. The setup done screen draws a **⌘ ,** keycap. **⌘,** opens Settings.
+During setup, Return is **Next: …** and **Save preset**. The done screen has **Open Settings**, **Open Lodge**, and **Skip setup**, and it draws a **⌘ ,** keycap. **⌘,** opens Settings.
 
 Drive rows during setup show one of:
 
@@ -52,9 +52,13 @@ The same card is not asked twice within the debounce interval. A card plugged in
 
 The title is the card name plus "connected". When the name does not already end in card, drive, ssd, or disk, the title uses " card connected" or " drive connected" (with the leading space). The body is **Import with Lodge?**
 
-On a notification, the actions are **Import** and **Don’t Ask for This Card**.
+The notification has three actions: **Import**, **Ignore**, and **Don’t Ask for This Card**.
 
 If notifications are off, Lodge shows a floating panel with the same title and the same body. Its buttons are **Import** (Return), **Ignore**, and **Don’t ask for this card**.
+
+<img src="assets/guide/lodge-guide-diagram-import-flow@2x.png" width="1040" height="345" alt="Import a card. Import opens Lodge with that card selected. Ignore or Don’t Ask for This Card leaves the card alone. Only Offload copies files." style="max-width:100%;height:auto">
+
+<img src="assets/screenshots/import-prompt-dark.png" width="772" height="270" alt="The import prompt: Import with Lodge?" style="max-width:100%;height:auto">
 
 **Import** opens Lodge with that card selected. **Ask with** chooses **Notification** (the default) or **Floating panel**.
 
@@ -64,11 +68,17 @@ While detection is paused, the menu says **Resume Detection**.
 
 While Lodge is ready, the bar says **Ready. Every file is verified with SHA-256 after copying.** The button help is **Copy and verify the new files**. During the copy the stage label is **Copying**, then **Verifying**.
 
+<img src="assets/screenshots/ready-dark.png" width="2704" height="1824" alt="Lodge ready to offload. The bar says every file is verified with SHA-256 after copying." style="max-width:100%;height:auto">
+
+<img src="assets/screenshots/running-dark.png" width="2704" height="1824" alt="An offload in progress, in the Copying stage." style="max-width:100%;height:auto">
+
 Return is Offload when that is the default button.
 
 If Offload cannot start, its caption is one of the messages in [Why Offload is waiting](#why-offload-is-waiting).
 
 ## Verification
+
+<img src="assets/guide/lodge-guide-diagram-verification-flow@2x.png" width="1070" height="365" alt="How Lodge verifies each file: copy and hash, read the partial file back, then rename it if the hashes match or delete it if they do not." style="max-width:100%;height:auto">
 
 Lodge copies one file like this:
 
@@ -87,6 +97,8 @@ What you see when a file fails:
 When the batch finishes, the title is **Offload Complete**, **Finished with Problems**, or **Offload Cancelled**.
 
 The line under it is **`<copied>` copied · `<skipped>` skipped · `<failed>` failed**. If the card is already gone after an eject, that line gains ** — card ejected, safe to remove**.
+
+<img src="assets/screenshots/finished-dark.png" width="2704" height="1824" alt="A finished offload. The bar reads Offload Complete, with the copied, skipped, and failed counts." style="max-width:100%;height:auto">
 
 If a copy Lodge expected is missing at the destination, Offload tells you to choose Re-offload. The wording is in [Re-offload](#re-offload).
 
@@ -115,6 +127,8 @@ The project name is cleaned separately. Letters, digits, and `-` stay. Any other
 
 Sequence numbers continue after the highest number already in the destination folder.
 
+<img src="assets/screenshots/settings-naming.png" width="1424" height="1640" alt="Settings, Naming. The folder template and the file template." style="max-width:100%;height:auto">
+
 `jpeg` and `jpe` share `jpg`. `tiff` shares `tif`.
 
 ## Presets and quick dump
@@ -125,6 +139,10 @@ On the setup done screen, Return can be **Offload with `<preset>`**.
 
 **Quick dump** is off until you turn it on.
 
+<img src="assets/screenshots/ready-presets-dark.png" width="2480" height="1600" alt="The preset menu at the top right of the window." style="max-width:100%;height:auto">
+
+<img src="assets/screenshots/ready-quickdump-dark.png" width="2704" height="1824" alt="Quick dump available on the main window." style="max-width:100%;height:auto">
+
 ## Sidecars and proxies
 
 Proxies go in `Proxies/`. The default proxy extensions are `lrv` and `lrf`.
@@ -132,6 +150,8 @@ Proxies go in `Proxies/`. The default proxy extensions are `lrv` and `lrf`.
 Sidecars go in `Sidecars/`. The default sidecar extensions are `thm`, `xml`, and `srt`.
 
 They keep the clip’s new name.
+
+<img src="assets/screenshots/settings-files.png" width="1344" height="1600" alt="Settings, Files. Proxy extensions, sidecar extensions, and ignored names." style="max-width:100%;height:auto">
 
 These names are ignored and not copied. The defaults are `.DS_Store`, `._*`, `.Spotlight-V100`, `.Trashes`, `.fseventsd`, `.TemporaryItems`, and `Thumbs.db`.
 
@@ -166,6 +186,8 @@ Offload stays off, and says why, in these cases:
 
 On a favorite, the space reads **`<bytes>` free**. A favorite that is not mounted says **Not connected**.
 
+<img src="assets/screenshots/settings-destinations.png" width="1344" height="1280" alt="Settings, Destinations. Favorite folders." style="max-width:100%;height:auto">
+
 Under the destination, the space reads **`<bytes>` available**, or **Free space unknown**, and **needs `<bytes>`** when a copy is planned.
 
 A read-only destination uses one of:
@@ -183,7 +205,9 @@ When copies are missing at the destination, Offload says:
 - **1 copy is missing at the destination — choose Re-offload**
 - **`<n>` copies are missing at the destination — choose Re-offload**
 
-There is a re-offload confirmation. Return is its default button. The destructive button has no keyboard equivalent.
+One re-offload alert has **Re-offload Everything** (Return) and **Cancel**. That alert has no destructive button.
+
+**Forget History** asks you to confirm. Return is **Cancel**. The destructive button has no keyboard equivalent.
 
 ## Ejecting and the format confirmation
 
@@ -195,7 +219,11 @@ The manual command is **Eject Card**. After the card is gone, the label is **Eje
 
 After a successful eject, the finish line can end with ** — card ejected, safe to remove**.
 
-The format confirmation uses the same keys: Return is the default button, and the destructive button has no keyboard equivalent.
+<img src="assets/guide/lodge-guide-diagram-eject-flow@2x.png" width="1050" height="310" alt="Eject after offload. The card is unmounted only when every file verified and Eject card after offload is on. Otherwise it stays mounted." style="max-width:100%;height:auto">
+
+On the format confirmation, Return is **Cancel**. The destructive button has no keyboard equivalent.
+
+<img src="assets/screenshots/format-confirm.png" width="2480" height="1600" alt="The format confirmation." style="max-width:100%;height:auto">
 
 ## Menu bar mode
 
@@ -212,11 +240,19 @@ These sit with it:
 
 **Open at login** follows whether macOS will open Lodge at login. It is not stored as an ordinary on/off preference. The menu-bar hint includes **Allow Lodge in System Settings ▸ General ▸ Login Items.**
 
-**⌘-drag** the menu bar icon out to turn **Show menu bar icon** off. If the icon is hidden, the hint says to quit with **⌘Q**. The menu bar item’s quit key is `q`.
+The menu bar menu has:
 
-While detection is paused, the menu says **Resume Detection**. The menu bar item for Settings uses **⌘,**.
+- **Open Lodge**
+- **Cards & Drives**, or **No Cards Connected** when nothing is mounted
+- **Import from `<name>`…** for a connected card
+- **Offloading…** while a copy is running. Imports wait until it is done.
+- **Pause Detection**, or **Resume Detection** while detection is paused
+- **Settings…** (⌘,)
+- **Quit Lodge** (⌘Q)
 
-A failed import-prompt test can report **“Ask to import” is off in Settings ▸ General ▸ Menu Bar.**
+**⌘-drag** the menu bar icon out to turn **Show menu bar icon** off. If the icon is hidden, the hint says to quit with **⌘Q**.
+
+<img src="assets/screenshots/menubar-menu-dark.png" width="504" height="394" alt="The menu bar menu: Open Lodge, cards and drives, Pause Detection, Settings, and Quit Lodge." style="max-width:100%;height:auto">
 
 ## Settings reference
 
@@ -226,7 +262,7 @@ Theme is **Default**. Appearance is **Dark**. The other appearance choices are *
 
 **Show files as** is **List**. The other choice is **Grid**. **Show thumbnails in the list** is off.
 
-General groups these sections: **Files to Offload**, **Short Clips**, **After Offload**, **Menu Bar**, and **Updates**.
+General groups these sections: **Files to Offload**, **Short Clips**, **After Offload**, **Menu Bar**, and **Updates**. **Updates** appears only in builds that include the updater.
 
 | Setting | Default |
 | --- | --- |
@@ -260,6 +296,26 @@ General groups these sections: **Files to Offload**, **Short Clips**, **After Of
 
 The folder panel’s message is **Choose the folder Lodge should copy your media into.** Its button is **Choose**.
 
+<img src="assets/screenshots/settings-general.png" width="1344" height="1600" alt="Settings, General." style="max-width:100%;height:auto">
+
+<img src="assets/screenshots/settings-appearance.png" width="1344" height="1410" alt="Settings, Appearance. Theme is Default. Appearance is Dark, with System and Light as the other choices." style="max-width:100%;height:auto">
+
+<img src="assets/screenshots/ready-light.png" width="2704" height="1824" alt="Lodge with Light appearance." style="max-width:100%;height:auto">
+
+<img src="assets/screenshots/ready-ember-dark.png" width="2704" height="1824" alt="Lodge with a saved theme other than the neutral Default." style="max-width:100%;height:auto">
+
+<img src="assets/screenshots/settings-presets.png" width="1504" height="1480" alt="Settings, Presets." style="max-width:100%;height:auto">
+
+<img src="assets/screenshots/settings-destinations.png" width="1344" height="1280" alt="Settings, Destinations. Favorite folders." style="max-width:100%;height:auto">
+
+<img src="assets/screenshots/settings-naming.png" width="1424" height="1640" alt="Settings, Naming. The folder template and the file template." style="max-width:100%;height:auto">
+
+<img src="assets/screenshots/settings-files.png" width="1344" height="1600" alt="Settings, Files. Proxy extensions, sidecar extensions, and ignored names." style="max-width:100%;height:auto">
+
+<img src="assets/screenshots/grid-dark.png" width="2704" height="1824" alt="Media shown as a grid. Show files as can be List or Grid." style="max-width:100%;height:auto">
+
+<img src="assets/screenshots/settings-cameras.png" width="1344" height="1280" alt="Settings, Cameras." style="max-width:100%;height:auto">
+
 The updates footer says: **Lodge checks for a new version once a day. You can also choose Lodge ▸ Check for Updates… any time.**
 
 ## Keyboard shortcuts
@@ -269,7 +325,7 @@ The updates footer says: **Lodge checks for a new version once a day. You can al
 | ⌘, | Settings. The menu bar item uses the same key. The setup done screen draws a **⌘ ,** keycap. The Settings toolbar help is **Settings (⌘,)**. |
 | ⌘Q | Quit. The hidden-icon hint says **quit it from there with ⌘Q.** |
 | ⌘-drag | Drag the menu bar icon out to turn **Show menu bar icon** off. |
-| Return | The default button: Offload, Done, **Import** on the floating panel, **Get started**, and **Offload with `<preset>`**. Also the default button on the format confirmation and the re-offload confirmation. |
+| Return | The default button: Offload, Done, **Import** on the floating panel, **Get started**, and **Offload with `<preset>`**. During setup, **Next: …** and **Save preset**. On the format confirmation and on **Forget History**, Return is **Cancel**. On the other re-offload alert, Return is **Re-offload Everything**. |
 | Escape | **Cancel** during an offload. **Maybe Later** on the support note. Clears the selection in the list or grid. |
 | Space | Quick Look on the selection. Space again is handled while the panel is up. The list and grid hint is **Press Space to preview the selected file with Quick Look**. |
 | Up, Down, Left, Right | Move the selection in the list or grid. |
@@ -277,11 +333,15 @@ The updates footer says: **Lodge checks for a new version once a day. You can al
 | Shift-click | Extend the selection. |
 | Double-click | Quick Look. |
 
-The destructive button on the format confirmation and on the re-offload confirmation has no keyboard equivalent.
+The destructive buttons on the format confirmation and on **Forget History** have no keyboard equivalent. The other re-offload alert has **Re-offload Everything** (Return) and **Cancel**, and no destructive button.
+
+<img src="assets/screenshots/grid-dark.png" width="2704" height="1824" alt="The media grid. Arrow keys move the selection. Space opens Quick Look. Command-click toggles a file. Shift-click extends the selection." style="max-width:100%;height:auto">
 
 ## Troubleshooting
 
 ### Why Offload is waiting
+
+<img src="assets/screenshots/empty-dark.png" width="2120" height="1400" alt="Lodge with no card. Offload is waiting." style="max-width:100%;height:auto">
 
 | Message | What it means |
 | --- | --- |
@@ -315,21 +375,9 @@ A copy that does start can still fail with:
 
 Recognized format names are **NTFS**, **exFAT**, **FAT32**, **Mac OS Extended**, and **APFS**.
 
-### If an import prompt does not appear
-
-A failed import-prompt test uses one of these:
-
-- **Lodge isn't ready yet.**
-- **No cards or drives are connected.**
-- **“Ask to import” is off in Settings ▸ General ▸ Menu Bar.**
-- **Detection is paused (menu bar ▸ Resume Detection).**
-- **None of the connected cards or drives qualify for a prompt. Details are in Console (subsystem com.sebastianphillips.Lodge, category ImportPrompt).**
-
-The same card is also skipped for the rest of the debounce interval, and a card that appears during an offload or a format waits until that finishes.
-
 ### Report a Bug
 
-**Report a Bug…** opens an email to bashframes@gmail.com. Nothing is sent until you send it.
+**Report a Bug…** is in the **Help** menu, alongside **Contact Support…** and **Support Lodge…**. It opens an email to bashframes@gmail.com. Nothing is sent until you send it.
 
 The subject is **Lodge bug report (version `<version>` build `<build>`)**.
 
@@ -350,7 +398,9 @@ The next time you launch, if a new `Lodge-….ips` or `Lodge_….crash` report i
 
 ## Updates
 
-**Automatically check for updates** is on. Lodge checks once a day. **Automatically download and install updates** is off.
+The **Updates** section appears only in builds that include the updater.
+
+When it is there, **Automatically check for updates** is on. Lodge checks once a day. **Automatically download and install updates** is off.
 
 The footer says: **Lodge checks for a new version once a day. You can also choose Lodge ▸ Check for Updates… any time.**
 
