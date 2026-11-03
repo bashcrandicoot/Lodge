@@ -2,7 +2,7 @@ import SwiftUI
 
 extension LicenseModel {
     var keyDraftBinding: Binding<String> {
-        Binding(get: { keyDraft }, set: { keyDraft = $0 })
+        Binding(get: { self.keyDraft }, set: { self.keyDraft = $0 })
     }
 }
 
