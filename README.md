@@ -9,54 +9,16 @@
 <h1 align="center">From card to calm.</h1>
 
 <p align="center">
-  Home base for your media.
-</p>
-
-<p align="center">
   Lodge gets your footage off camera cards safely, checked and neatly named.
 </p>
 
-<p align="center">
-  <img alt="macOS 14 or later" src="https://img.shields.io/badge/macOS-14%2B-3A3A3C?style=flat&logo=apple&logoColor=white">
-  <a href="https://www.swift.org"><img alt="Swift 5" src="https://img.shields.io/badge/Swift-5-F05138?style=flat&logo=swift&logoColor=white"></a>
-  <a href="LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-0A84FF?style=flat"></a>
-</p>
+- Copies each file off the card and checks it with SHA-256.
+- Names files from a template, and skips what is already copied.
+- Shows how many trial days are left. After the trial, Buy in the app leads to Polar.
 
-## Download
+## Download and install
 
-<p align="center">
-  <a href="https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg"><img src="docs/assets/lodge-buy-button-640x144.png" alt="Try free 3 days" width="320" height="72"></a>
-</p>
-
-Try free 3 days, then $10. [Try free 3 days](https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg). Open the .dmg, and drag Lodge to Applications. Lodge shows how many days are left each time it opens. After the trial ends, Buy appears in the app and leads to Polar.
-
-## Install
-
-Lodge is not notarized. The first time you open it:
-
-- **macOS 15 Sequoia and later.** Open Lodge, click **Done** on the warning, then go to **System Settings > Privacy & Security** and click **Open Anyway**.
-- **macOS 14 Sonoma.** Right-click or Control-click Lodge, choose **Open**, then **Open** again.
-
-The first time Lodge reads a card, macOS asks for access to files on a removable volume. Choose **Allow**.
-
-## What it does
-
-- Scans a card as soon as you insert it, including one that was already mounted.
-- Filters the list, and previews every finished name before anything is copied.
-- Names files from templates, with a folder for each file type.
-- Saves a setup as a preset, and switches presets from the menu at the top right.
-- Checks every copy with SHA-256. A clean finish reads **Offload Complete**, and **Format Card…** is there when the card can be erased. When every file has a verified copy, the card shows **Ready to format**.
-- Reads the card only. A copy never overwrites a file already at the destination.
-- Remembers what was offloaded, so the same card again copies only what is new.
-- Shows a wagon crossing the copy bar, and checks for updates once a day.
-
-<p align="center">
-  <img src="docs/assets/motion/lodge-complete-check@2x.gif" width="360" height="100" alt="A green checkmark draws in beside Offload complete. 57 copied, 128 GB.">
-</p>
-
-## Requirements
-
-macOS 14 or later. Lodge is a universal app for Apple silicon and Intel Macs.
+[Try free 3 days, then $10](https://bashcrandicoot.github.io/Lodge/)
 
 ## Privacy
 
@@ -66,12 +28,6 @@ No account, no analytics, and copying never uploads anything. Lodge goes online 
 
 Write to [bashframes@gmail.com](mailto:bashframes@gmail.com). If Lodge has been useful, [Support Lodge](https://ko-fi.com/bashframes).
 
-## Documentation
+[Security](SECURITY.md) · [License](LICENSE)
 
-- [User guide](docs/user-guide.md)
-- [FAQ](docs/faq.md)
-- [Changelog](docs/changelog.md)
-
-## License
-
-MIT. See [LICENSE](LICENSE). © 2026 bashframes.
+© 2026 bashframes
