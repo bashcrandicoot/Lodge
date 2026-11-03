@@ -29,7 +29,7 @@ During setup, each drive shows how much space is available.
 
 ## Trial and license
 
-[3-day trial, then $10 once.](https://bashfra.me/lodge-dmg)
+[3-day trial, then $10 once.](https://dl.bashfra.me/lodge/Lodge-1.0.dmg)
 
 ## Buying Lodge and entering your license key
 
