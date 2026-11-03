@@ -444,13 +444,13 @@
       border-radius: var(--radius);
       border: 1px solid var(--line);
     }
-    .themes ul {
+    .verified ul {
       margin: var(--space-4) 0 0;
       padding-left: 1.15em;
       color: var(--muted);
     }
-    .themes li { margin: var(--space-2) 0; line-height: 1.5; }
-    .themes li span { color: var(--ink); }
+    .verified li { margin: var(--space-2) 0; line-height: 1.5; }
+    .verified li span { color: var(--ink); }
 
     .install-grid {
       display: grid;
@@ -555,7 +555,7 @@
       </a>
       <nav class="nav-links" aria-label="Primary">
         <a href="#features">Features</a>
-        <a href="#themes">Themes</a>
+        <a href="#verified">Verified</a>
         <a href="#install">Install</a>
         <a href="https://github.com/bashcrandicoot/Lodge/blob/main/docs/user-guide.md">User guide</a>
         <a href="changelog.html">Changelog</a>
@@ -661,19 +661,19 @@
       </div>
     </section>
 
-    <section id="themes">
-      <div class="wrap pair themes">
+    <section id="verified">
+      <div class="wrap pair verified">
         <figure class="shot-figure">
-          <img src="assets/screenshots/ready-ember-dark.png" width="2704" height="1824" alt="Lodge in the Ember theme, Dark mode, ready to offload. The preset menu is at the top right. Offload 29 Files sits along the bottom.">
-          <figcaption class="caption">The Ember theme in Dark mode.</figcaption>
+          <img src="assets/screenshots/finished-dark.png" width="2704" height="1824" alt="A finished offload. The bar reads Offload Complete, with 29 copied, 0 skipped, and 0 failed.">
+          <figcaption class="caption">Offload Complete. 29 copied · 0 skipped · 0 failed.</figcaption>
         </figure>
         <div>
-          <h2>Default is neutral black</h2>
-          <p class="section-intro">Lodge opens in Dark mode, with no colour wash.</p>
+          <h2>Verified, never overwritten</h2>
+          <p class="section-intro">Lodge writes each file, reads it back, and checks it with SHA-256. A match is renamed to the final name. A mismatch is deleted.</p>
           <ul>
-            <li><span>Aurora, Ocean, Twilight, Ember, and Forest</span> are optional colour themes.</li>
-            <li><span>Light, Dark, or System.</span> Dark is how Lodge starts.</li>
-            <li><span>Increase Contrast and Reduce Transparency</span> turn every theme solid.</li>
+            <li>The card is only read. A file already at the final path is not overwritten.</li>
+            <li>With nothing new to copy, Lodge names a missing copy, a skipped short clip, or the date filter first. <span>Everything on this card is already offloaded</span> is what remains after those.</li>
+            <li>If a copy is missing, choose <span>Re-offload</span>.</li>
           </ul>
         </div>
       </div>
