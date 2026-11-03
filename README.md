@@ -28,7 +28,7 @@
   <a href="https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1"><img src="docs/assets/lodge-buy-button-640x144.png" alt="Buy Lodge — $10" width="320" height="72"></a>
 </p>
 
-Built by bashframes. $10 once. Try it for 3 days. [Buy Lodge 1.0 — $10](https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1), unzip it, then open the DMG, and drag Lodge to Applications.
+$10 once — Try free 3 days. [Buy Lodge 1.0 — $10](https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1). Open the .dmg, and drag Lodge to Applications.
 
 ## Install
 
