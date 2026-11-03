@@ -354,6 +354,7 @@
       margin-inline: 0;
     }
     #what .section-intro { margin-bottom: 0; }
+    #what .motion-wagon { margin: 40px auto 48px; }
     #install .note { text-align: center; }
 
     .features {
@@ -595,8 +596,9 @@
     @media (max-width: 480px) {
       .hero img.header { aspect-ratio: 1200 / 900; }
       .motion-wagon { --motion-ratio: 1060 / 306; }
+      #what .motion-wagon { margin: 24px auto 32px; }
       .motion .wagon-wide { display: none; }
-      .motion .wagon-narrow { display: block; }
+      .motion video.wagon-narrow { display: block; }
       .wrap { padding-inline: var(--space-4); }
       .features { grid-template-columns: 1fr; }
       .nav-inner { flex-wrap: nowrap; min-height: 56px; }
@@ -665,6 +667,7 @@
     <section id="what" aria-labelledby="what-title">
       <div class="wrap">
         <h2 id="what-title">What is Lodge?</h2>
+        <p class="section-intro">Lodge is a media ingest tool for creators. When you plug in a camera card or drive, it asks <strong>Import with Lodge?</strong>, recognizes the folders most cameras use, and remembers which camera you used with each card. Presets save your destination, folder and file templates, camera, and file rules. Tokens such as {date}, {project}, {camera}, and {seq} shape the folder path and file names. Each offload can filter by file type or date, and skip short clips. Favorite destinations can sit on different drives. Offload into a project folder, or use Quick dump to put footage from different days into a dated folder. Save the setup as a preset and the next shoot is one click.</p>
         <figure class="motion motion-wagon">
           <video class="wagon-wide" autoplay muted loop playsinline preload="metadata" poster="assets/motion/lodge-wagon-progress@2x.png" width="1060" height="153" aria-label="A wagon crossing the copy progress bar.">
             <source src="assets/motion/lodge-wagon-progress@2x.mp4" type="video/mp4">
@@ -675,7 +678,6 @@
           <img class="motion-still wagon-wide" src="assets/motion/lodge-wagon-progress@2x.png" width="1060" height="153" alt="A wagon crossing the copy progress bar.">
           <img class="motion-still wagon-narrow" src="assets/motion/lodge-wagon-progress-mobile@2x.png" width="1060" height="306" alt="A wagon crossing the copy progress bar.">
         </figure>
-        <p class="section-intro">Lodge is a media ingest tool for creators. When you plug in a camera card or drive, it asks <strong>Import with Lodge?</strong>, recognizes the folders most cameras use, and remembers which camera you used with each card. Presets save your destination, folder and file templates, camera, and file rules. Tokens such as {date}, {project}, {camera}, and {seq} shape the folder path and file names. Each offload can filter by file type or date, and skip short clips. Favorite destinations can sit on different drives. Offload into a project folder, or use Quick dump to put footage from different days into a dated folder. Save the setup as a preset and the next shoot is one click.</p>
       </div>
     </section>
 
