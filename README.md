@@ -25,10 +25,10 @@
 ## Download
 
 <p align="center">
-  <a href="https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg"><img src="docs/assets/lodge-buy-button-640x144.png" alt="Download free trial" width="320" height="72"></a>
+  <a href="https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg"><img src="docs/assets/lodge-buy-button-640x144.png" alt="Try free 3 days" width="320" height="72"></a>
 </p>
 
-Free 3-day trial, then $10. [Download free trial](https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg). Open the .dmg, and drag Lodge to Applications. Lodge shows how many days are left each time it opens. After the trial ends, Buy appears in the app and leads to Polar.
+Try free 3 days, then $10. [Try free 3 days](https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg). Open the .dmg, and drag Lodge to Applications. Lodge shows how many days are left each time it opens. After the trial ends, Buy appears in the app and leads to Polar.
 
 ## Install
 

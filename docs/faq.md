@@ -4,7 +4,7 @@ Short answers. The [user guide](user-guide.md) has the detail, and [Getting star
 
 ## What happens when the 3-day trial ends?
 
-Lodge shows how many days are left each time it opens. After the trial ends, Buy appears in the app and leads to Polar. Free 3-day trial, then $10. [Download free trial](https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg).
+Lodge shows how many days are left each time it opens. After the trial ends, Buy appears in the app and leads to Polar. Try free 3 days, then $10. [Try free 3 days](https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg).
 
 ## Which Mac do I need?
 
