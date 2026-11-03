@@ -29,6 +29,12 @@ During setup, each drive shows how much space is available.
 
 [Try free 3 days, then $10.](https://bashfra.me/lodge-dmg)
 
+## Buying Lodge and entering your license key
+
+1. Buy Lodge through the [Polar checkout](https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1), or click **Buy Lodge** inside the app.
+2. Find your license key on the order confirmation page or email, or any time in the Polar customer portal.
+3. In Lodge, click **Enter License Key**, paste the key, and confirm. After that, Lodge is yours to keep.
+
 ## Your first offload
 
 ### When Lodge asks to import
