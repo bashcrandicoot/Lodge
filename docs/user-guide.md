@@ -27,7 +27,7 @@ During setup, each drive shows how much space is available.
 
 ## Trial and license
 
-[Try free 3 days](https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg), then $10. Every feature included. Lodge shows how many days are left each time it opens. After the trial ends, Buy appears in the app and leads to Polar.
+[Try free 3 days, then $10.](https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg)
 
 ## Your first offload
 

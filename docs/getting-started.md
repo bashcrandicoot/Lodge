@@ -6,7 +6,7 @@ Home base for your media. Lodge is a universal app for Apple silicon and Intel M
 
 [Try for Free](https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg) for Mac
 
-Open the .dmg, and drag Lodge to Applications. Try free 3 days, then $10. Every feature included. Lodge shows how many days are left each time it opens. After the trial ends, Buy appears in the app and leads to Polar.
+Open the .dmg, and drag Lodge to Applications. Try free 3 days, then $10.
 
 No account, no analytics, and copying never uploads anything. Lodge goes online for a daily update check, which you can turn off in Settings > General, and to activate your license with Polar and confirm it about once a week.
 

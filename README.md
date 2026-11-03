@@ -17,7 +17,7 @@
 
 ## Download and install
 
-[Try free 3 days, then $10](https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg). Every feature included. Lodge shows how many days are left each time it opens. After the trial ends, Buy appears in the app and leads to Polar.
+[Try free 3 days, then $10.](https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg)
 
 ## Privacy
 
