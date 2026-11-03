@@ -6,7 +6,7 @@ Lodge copies your footage off a camera card or drive, names each file for you, a
 
 **$10 once via Polar.** [Buy Lodge](https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1). Open the .dmg, and drag Lodge to Applications.
 
-macOS asks the first time you open Lodge.
+Lodge requires macOS 14.0 or later. It isn't notarized yet, which is why **Open Anyway** is needed the first time you open it.
 
 ### macOS 15 Sequoia and later
 
@@ -33,17 +33,19 @@ Lodge asks **Import with Lodge?** when you plug in a camera card or a removable 
 
 Lodge recognizes the folders most cameras use (for example `DCIM`, `PRIVATE/M4ROOT`, `XDROOT`, and `CLIPS001`).
 
-Lodge won't ask twice in a row about the same card. If you plug a card in during an offload or a format, Lodge asks when that finishes.
+Lodge waits 20 seconds before it asks about the same card again. If you plug a card in during an offload or a format, Lodge asks when that finishes.
 
 The notification has three actions: **Import**, **Ignore**, and **Don’t Ask for This Card**.
 
-If notifications are off, Lodge shows a floating panel with the same title and the same body. Its buttons are **Import** (Return), **Ignore**, and **Don’t ask for this card**.
+Lodge shows the same prompt as a floating panel when alerts are off, the notification style is **None**, or **Ask with** is **Floating panel**. Its buttons are **Import** (Return), **Ignore**, and **Don’t ask for this card**.
+
+If you don't see the prompt, set **Settings ▸ Ask with** to **Floating panel**.
 
 <img src="assets/guide/lodge-guide-diagram-import-flow@2x.png" width="1040" height="345" alt="Import a card. Import opens Lodge with that card selected. Ignore or Don’t Ask for This Card leaves the card alone. Only Offload copies files." style="max-width:100%;height:auto">
 
 <img src="assets/screenshots/import-prompt-dark.png" width="772" height="270" alt="The import prompt: Import with Lodge?" style="max-width:100%;height:auto">
 
-**Import** opens Lodge with that card selected. Nothing is copied yet. To get a floating panel instead of a notification, set **Ask with** to **Floating panel**. Notifications are the default.
+**Import** opens Lodge with that card selected. Nothing is copied yet. Notifications are the default.
 
 If card detection is paused, choose **Resume Detection** in the menu bar menu. That does not resume an offload.
 
@@ -193,11 +195,10 @@ When copies are missing at the destination, **Offload N Files** says:
 - **1 copy is missing at the destination — choose Re-offload**
 - **`<n>` copies are missing at the destination — choose Re-offload**
 
-Click **Re-offload** to copy the missing files again. Lodge asks you to confirm first.
+Click **Re-offload** to copy the missing files again. Lodge asks you to confirm first. There are two alerts:
 
-One re-offload alert has **Re-offload Everything** (Return) and **Cancel**. That alert has no destructive button.
-
-**Forget This Card’s History…** is in **Card actions**. The confirmation button is **Forget History**. Return is **Cancel**. The destructive button has no keyboard equivalent.
+- **Re-offload Everything** has no destructive button. Return is **Re-offload Everything**. **Cancel** is the other button.
+- **Forget History** is destructive. Return is **Cancel**. **Forget This Card’s History…** in **Card actions** opens it.
 
 ## Eject or format the card
 
@@ -205,17 +206,15 @@ The manual command is **Eject Card**. After the card is gone, the label is **Eje
 
 **Eject Card** is disabled while an offload, a format, or an eject is in progress. On the finish bar it is disabled once the card has already been removed.
 
-**Eject card after offload** is off. Its caption is **Only when every file was copied and verified.** Automatic eject runs only when that switch is on and every file verified. Lodge then ejects the card. If that fails: **Couldn’t eject `<card name>`: `<system message>`**.
-
-After a successful eject, the finish line can end with ** — card ejected, safe to remove**.
+**Eject card after offload** is off. Its caption is **Only when every file was copied and verified.** Automatic eject runs only when that switch is on and every file verified. Lodge then ejects the card. After a successful eject, the finish line can end with ** — card ejected, safe to remove**. If eject fails, that line ends with ** — Couldn’t eject `<card name>`: `<system message>`**.
 
 <img src="assets/guide/lodge-guide-diagram-eject-flow@2x.png" width="1050" height="310" alt="Eject after offload. The card is ejected only when every file verified and Eject card after offload is on. Otherwise it stays in place." style="max-width:100%;height:auto">
 
 When every file on the card has a verified copy at the destination, the card shows **Ready to format**. That seal means every file on this card has a verified copy at the destination. Only then can you choose **Format Card…**, from **Card actions** (the ⋯ button on the card) or from the finish bar. Its help is **Erase this card so it’s ready for new footage**.
 
-**Formatting erases everything on the card, and you can't undo it.** Before you format, check that the offload says **Offload Complete** and not **Finished with Problems**. While it runs you'll see **Formatting…**. When it's done you'll see **“`<name>`” was formatted and is ready for your camera.**
+Choosing **Format Card…** does not erase the card by itself. Lodge erases it only after you confirm. **Formatting erases everything on the card, and you can't undo it.** Before you format, check that the offload says **Offload Complete** and not **Finished with Problems**. While it runs you'll see **Formatting…**. When it's done you'll see **“`<name>`” was formatted and is ready for your camera.**
 
-On the format confirmation, Return is **Cancel**. The destructive button has no keyboard equivalent. The title is **Format “`<card name>`”?** The other button is **Format**, or **Format and Discard N Short Clips** when skipped clips would be erased.
+On the format confirmation, Return is **Cancel**. **Format**, and **Format and Discard N Short Clips** when skipped clips would be erased, have no key. The title is **Format “`<card name>`”?**
 
 <img src="assets/screenshots/format-confirm.png" width="2480" height="1600" alt="The format confirmation." style="max-width:100%;height:auto">
 
@@ -319,7 +318,7 @@ The updates footer says: **Lodge checks for a new version once a day. You can al
 | ⌘-drag | Drag the menu bar icon out to turn **Show menu bar icon** off. |
 | Return | The default button: Offload, Done, **Import** on the floating panel, **Get started**, and **Offload with `<preset>`**. During setup, **Next: …** and **Save preset**. On the format confirmation and on **Forget History**, Return is **Cancel**. On the other re-offload alert, Return is **Re-offload Everything**. |
 | Escape | **Cancel** during an offload. **Maybe Later** on the support note. Clears the selection in the list or grid. |
-| Space | Quick Look on the selection. Press Space again to close it. The list and grid hint is **Press Space to preview the selected file with Quick Look**. |
+| Space | Quick Look on the selection. Space again closes Quick Look. The list and grid hint is **Press Space to preview the selected file with Quick Look**. |
 | Up, Down, Left, Right | Move the selection in the list or grid. |
 | ⌘-click | Toggle a file in the selection. |
 | Shift-click | Extend the selection. |
@@ -378,7 +377,7 @@ The body starts with **What happened?** and one of:
 - **(What were you doing, and what went wrong? Steps to make it happen again help a lot.)**
 - **(Lodge quit unexpectedly. What were you doing just before?)**
 
-Then **Lodge `<version>` (build `<build>`)**, **macOS `<version>`**, and **Mac: `<model>`, `<chip>`**. The log section is **Lodge’s recent log:** or **(nothing logged recently)**. Up to 200 of Lodge’s own log lines from the last three days are attached as `Lodge log.txt`. Paths under your home folder, `/Volumes`, `/Users`, `/private`, `/var`, and `/tmp` are replaced with `<path>`.
+Then **Lodge `<version>` (build `<build>`)**, **macOS `<version>`**, and **Mac: `<model>`, `<chip>`**. The log section is **Lodge’s recent log:** or **(nothing logged recently)**. Up to 200 of Lodge’s own log lines from the last three days go into the report. Only Mail attaches them as `Lodge log.txt`. With no Mail account, the message opens as a mailto: link: the log is in the body, and nothing is attached. Paths under your home folder, `/Volumes`, `/Users`, `/private`, `/var`, and `/tmp` are replaced with `<path>`.
 
 If Mail cannot attach a crash report, the body adds **(The crash report couldn’t be attached. It’s in Console ▸ Crash Reports, under Lodge.)**.
 
@@ -386,7 +385,7 @@ The next time you launch, if a new `Lodge-….ips` or `Lodge_….crash` report i
 
 ### If the card won't eject
 
-**Couldn’t eject `<card name>`: `<system message>`**
+The finish line ends with ** — Couldn’t eject `<card name>`: `<system message>`**.
 
 ## Updates
 
@@ -407,7 +406,7 @@ The note shows only when all of these are true:
 - at least 5 offloads where every file was copied and verified
 - at least 3 days after this version was first launched
 - it has been shown fewer than 2 times
-- you have not chosen **Support** or **Don’t Ask Again**
+- you have not chosen **Support Lodge** or **Don’t Ask Again**
 - the next ask date is unset or has passed
 
 **Maybe Later** waits 30 days. The note is not shown during a copy.
