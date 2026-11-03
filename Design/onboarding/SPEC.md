@@ -71,7 +71,7 @@ Xcode: add the PDFs to the asset catalog with **Preserve Vector Data** on and **
 | Body / option label | SF Pro Text | 13 Regular/Medium | `.body` |
 | Helper / description | SF Pro Text | 12 Regular, helper colour | `.callout` |
 | Section label | SF Pro Text | 12 Semibold, secondary | `.subheadline.weight(.semibold)` |
-| Meta (free space, chips) | SF Pro Text | 11 | `.caption` |
+| Meta (available space, chips) | SF Pro Text | 11 | `.caption` |
 | Paths, file names, tokens | **SF Mono** 11–13 Regular | | `.system(size: 12, design: .monospaced)` |
 
 The PNGs were rendered without SF Mono or Menlo installed. Mono text in the PNGs is **DejaVu Sans Mono** (the font Menlo is derived from), so on a Mac, SF Mono will be slightly narrower and lighter.
@@ -131,7 +131,7 @@ The PNGs were rendered without SF Mono or Menlo installed. Mono text in the PNGs
 - Two columns, gap 16.
 - Left card, "Primary destination":
   - "Required" chip (neutral: white 8% fill, 11 Medium secondary, capsule).
-  - Drive rows: 34 icon tile (white 7%, radius 8), name 13 Semibold, usage bar 5 tall (track white 10%, fill white 45%), free space 11 helper, radio on the right.
+  - Drive rows: 34 icon tile (white 7%, radius 8), name 13 Semibold, usage bar 5 tall (track white 10%, fill white 45%), available space 11 helper, radio on the right.
   - Selected row: fill blue 16%, 1 pt blue 55% stroke, radius 8, blue drive icon, blue usage fill, blue radio.
   - "Folder" field (mono 12.5, folder icon) + **Choose…** push button.
 - Right column:

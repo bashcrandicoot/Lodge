@@ -10,7 +10,7 @@ Include the macOS version, the Lodge version, and what you observed. Give the ma
 
 ## What Lodge does on your Mac
 
-No account, no analytics, and copying never uploads anything. The only time Lodge goes online is a daily check for updates, which you can turn off in Settings > General. Updates are EdDSA-signed through Sparkle. The support link opens Ko-fi in your browser. Copying, the ledger, favorites, cameras, presets, and settings stay on the Mac, under `~/Library/Application Support/Lodge/` and in Lodge’s preferences.
+No account, no analytics, and copying never uploads anything. Lodge goes online for a daily update check, which you can turn off in Settings > General, and to activate your license with Polar and confirm it about once a week. Updates are EdDSA-signed through Sparkle. The support link opens Ko-fi in your browser. Copying, the ledger, favorites, cameras, presets, and settings stay on the Mac, under `~/Library/Application Support/Lodge/` and in Lodge’s preferences.
 
 During an offload Lodge only reads the card. It writes on the destination you chose, to a `<name>.lodge-partial` file, and renames that file after the SHA-256 matches.
 
@@ -20,4 +20,4 @@ The app is not notarized and is not sandboxed. A build you make yourself is sign
 
 On macOS 15 Sequoia and later, open Lodge, click **Done**, then go to **System Settings > Privacy & Security** and click **Open Anyway**. On macOS 14, right-click Lodge and choose **Open**.
 
-[Buy Lodge](https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1).
+[Try free 3 days](https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg). Try free 3 days, then $10. After the trial ends, Buy appears in the app and leads to Polar.

@@ -83,7 +83,7 @@ Palettes live in `Theme.swift`. Each theme is tuned separately for Light and Dar
 | `MediaGridViews.swift` | Grid tiles, status badges, the progress ring |
 | `MediaPreview.swift` | Selection, Quick Look, sidecar folding |
 | `Thumbnails.swift` | Quick Look thumbnails |
-| `DestinationStageView.swift` | Favorites, free space, folder drops |
+| `DestinationStageView.swift` | Favorites, available space, folder drops |
 | `FolderTreeView.swift` | The Layout tree, drag-and-drop levels, side-by-side tokens |
 | `FolderTree.swift` | The planned folders, and the folders already on disk |
 | `InlineLevel.swift` | Tokens placed side by side in one folder level |

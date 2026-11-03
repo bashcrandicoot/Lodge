@@ -4,7 +4,7 @@ Lodge copies your footage off a camera card or drive, names each file for you, a
 
 ## Install and first launch
 
-**$10 once — Try free 3 days.** Download the DMG and try every feature for 3 days. Then [buy for $10 once on Polar](https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1) and paste your license key in Lodge to unlock. Open the .dmg, and drag Lodge to Applications.
+**Try free 3 days, then $10.** [Try free 3 days](https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg). Open the .dmg, and drag Lodge to Applications. Lodge shows how many days are left each time it opens. After the trial ends, Buy appears in the app and leads to Polar.
 
 Lodge requires macOS 14.0 or later. It isn't notarized yet, which is why **Open Anyway** is needed the first time you open it.
 
@@ -27,7 +27,7 @@ During setup, each drive shows how much space is available.
 
 ## Trial and license
 
-Download the DMG and try every feature for 3 days. $10 once — Try free 3 days. When the 3 days end, [buy Lodge for $10 once on Polar](https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1). Paste your Polar license key in Lodge to unlock it.
+[Try free 3 days](https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg) and try every feature for 3 days, then $10. Lodge shows how many days are left each time it opens. After the trial ends, Buy appears in the app and leads to Polar.
 
 ## Your first offload
 
@@ -406,7 +406,7 @@ The footer says: **Lodge checks for a new version once a day. You can also choos
 
 ## Support
 
-If Lodge saves you time, you can leave a tip on [Ko-fi](https://ko-fi.com/bashframes). Tips are optional. You buy Lodge through Polar.
+If Lodge saves you time, you can leave a tip on [Ko-fi](https://ko-fi.com/bashframes). Tips are optional and separate from the $10 license, which you buy in the app after the trial.
 
 The support note is titled **Support Lodge**. Its body is **Lodge is made by one person at bashframes. If it saves you time, you can chip in on Ko-fi. Thank you!** The buttons are **Don’t Ask Again**, **Maybe Later** (Escape), and **Support Lodge**. **Support Lodge** opens [ko-fi.com/bashframes](https://ko-fi.com/bashframes).
 

@@ -4,11 +4,11 @@ Home base for your media. Lodge is a universal app for Apple silicon and Intel M
 
 ## Download Lodge
 
-<a href="https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1"><img src="assets/lodge-buy-button-640x144.png" alt="Buy Lodge — $10" width="320" height="72"></a>
+<a href="https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg"><img src="assets/lodge-buy-button-640x144.png" alt="Try free 3 days" width="320" height="72"></a>
 
-[Buy Lodge — $10](https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1). Open the .dmg, and drag Lodge to Applications. $10 once — Try free 3 days. Download the DMG and try every feature for 3 days. Then buy for $10 once on Polar and paste your license key in Lodge to unlock.
+[Try free 3 days](https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg). Open the .dmg, and drag Lodge to Applications. Try free 3 days, then $10. Lodge shows how many days are left each time it opens. After the trial ends, Buy appears in the app and leads to Polar.
 
-No account, no analytics, and copying never uploads anything. The only time Lodge goes online is a daily check for updates, which you can turn off in Settings > General.
+No account, no analytics, and copying never uploads anything. Lodge goes online for a daily update check, which you can turn off in Settings > General, and to activate your license with Polar and confirm it about once a week.
 
 ## Open Lodge the first time
 
