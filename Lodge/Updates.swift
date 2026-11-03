@@ -4,9 +4,10 @@ import Sparkle
 
 /// App updates, powered by Sparkle (https://sparkle-project.org).
 ///
-/// Sparkle reads the feed at `SUFeedURL` (Info.plist), shows its own "A new version is
-/// available" window, and only installs updates signed with the private key that matches
-/// `SUPublicEDKey`. See RELEASING.md for how to publish an update.
+/// Sparkle reads the feed at `SUFeedURL` (Info.plist): the Cloudflare R2 appcast
+/// `https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/appcast.xml`.
+/// It shows its own "A new version is available" window, and only installs a disk image
+/// signed with the private key that matches `SUPublicEDKey`. See RELEASING.md.
 @MainActor
 enum AppUpdates {
     /// The one Sparkle controller for the app's lifetime. It isn't started for the unit tests'

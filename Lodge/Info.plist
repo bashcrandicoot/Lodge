@@ -3,7 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>SUFeedURL</key>
-	<string>https://raw.githubusercontent.com/bashcrandicoot/Lodge/main/appcast.xml</string>
+	<string>https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/appcast.xml</string>
+	<key>LodgePolarSandbox</key>
+	<string>$(LODGE_POLAR_SANDBOX)</string>
 	<key>SUPublicEDKey</key>
 	<string>9Y5ssl+tCdpqaggzyIUbmUkGlcm77uCP8TvU4QcjmR4=</string>
 	<key>SUEnableAutomaticChecks</key>

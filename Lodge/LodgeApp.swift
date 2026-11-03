@@ -30,9 +30,18 @@ struct LodgeApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
     /// The one shared "brain" of the app. `@StateObject` keeps it alive for the app's lifetime.
-    @StateObject private var model = LodgeApp.makeModel()
+    @StateObject private var model: AppModel
+    @StateObject private var license: LicenseModel
 
     init() {
+        let model = LodgeApp.makeModel()
+        let license = LicenseModel.live()
+        // Offload, import, and the menu read this on each call, so a trial ending locks them.
+        model.allowsUse = { license.allowsUse }
+        model.importPrompter.allowsUse = { license.allowsUse }
+        _model = StateObject(wrappedValue: model)
+        _license = StateObject(wrappedValue: license)
+        AppDelegate.license = license
         // Create (and start) Sparkle at launch, as its docs recommend.
         _ = AppUpdates.controller
     }
@@ -41,7 +50,7 @@ struct LodgeApp: App {
         // A single main window (not a document-style app with many windows).
         Window("Lodge", id: "main") {
             ContentView()
-                .appEnvironment(model)
+                .appEnvironment(model, license: license)
                 .frame(minWidth: 940, minHeight: 580)
         }
         .defaultSize(width: 1080, height: 660)
@@ -52,13 +61,20 @@ struct LodgeApp: App {
             CommandGroup(replacing: .appInfo) {
                 Button("About Lodge") { Support.showAboutPanel() }
                 CheckForUpdatesView(updater: AppUpdates.updater)
+                if license.offersPurchase {
+                    Button("Buy Lodge…") { Support.openBuyPage() }
+                }
                 Button("Support Lodge…") { Support.openTipJar() }
             }
-            // Help ▸ Contact Support… and Support Lodge…
+            // Help ▸ Contact Support…, Buy Lodge…, and Support Lodge…
             // .help placement is empty without a Help Book, so items "after" it never show; replace it instead.
+            // Buy Lodge… is hidden during the trial and while a license is saved.
             CommandGroup(replacing: .help) {
                 Button("Contact Support…") { Support.contactSupport() }
                 Button("Report a Bug…") { BugReport.compose() }
+                if license.offersPurchase {
+                    Button("Buy Lodge…") { Support.openBuyPage() }
+                }
                 Button("Support Lodge…") { Support.openTipJar() }
             }
         }
@@ -66,7 +82,7 @@ struct LodgeApp: App {
         // Lodge ▸ Settings… (⌘,)
         Settings {
             SettingsView(updater: AppUpdates.updater)
-                .appEnvironment(model)
+                .appEnvironment(model, license: license)
         }
     }
 
@@ -106,6 +122,13 @@ struct LodgeApp: App {
 final class AppDelegate: NSObject, NSApplicationDelegate {
     /// The app's model, for the few AppKit events below that need the settings.
     @MainActor static weak var model: AppModel?
+    /// The license, so the trial note can appear when the main window never opens.
+    @MainActor static var license: LicenseModel?
+
+    /// Open at login, staying in the menu bar: the window is closed and the trial note is a panel.
+    @MainActor static var launchesWithoutWindow: Bool {
+        launchedAsLoginItem && (model?.settings.keepRunningInMenuBar ?? false)
+    }
     private var windowObservers: [NSObjectProtocol] = []
 
     func applicationWillFinishLaunching(_ notification: Notification) {
@@ -131,11 +154,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 }
             }
             // Opened at login in menu bar mode: stay in the menu bar, no window.
-            if Self.launchedAsLoginItem, Self.model?.settings.keepRunningInMenuBar == true {
-                DispatchQueue.main.async {
+            // The trial note is a panel then, because the sheet has nothing to attach to.
+            DispatchQueue.main.async {
+                if Self.launchesWithoutWindow {
                     MainWindow.window?.close()
                     NSApp.setActivationPolicy(.accessory)
+                    TrialNotice.presentIfNeeded(license: Self.license)
                 }
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                guard !Self.launchesWithoutWindow, MainWindow.window == nil else { return }
+                TrialNotice.presentIfNeeded(license: Self.license)
             }
         }
         #if DEBUG

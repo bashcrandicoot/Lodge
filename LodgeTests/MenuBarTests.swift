@@ -24,6 +24,12 @@ final class MenuBarItemTests: XCTestCase {
         XCTAssertEqual(MenuBarItem.pause(paused: true).title, "Resume Detection")
     }
 
+    func testLockedMenuKeepsOnlyOpenSettingsAndQuit() {
+        let items = MenuBarItem.items(cards: [a7], isPaused: false, isBusy: false, allowsUse: false)
+        XCTAssertEqual(items, [.openLodge, .divider, .settings, .divider, .quit])
+        XCTAssertFalse(items.contains { if case .importCard = $0 { return true } else { return false } })
+    }
+
     func testImportsWaitDuringAnOffload() {
         let items = MenuBarItem.items(cards: [a7], isPaused: false, isBusy: true)
         XCTAssertTrue(items.contains(.importCard(path: "/Volumes/A7SIII", name: "A7SIII", enabled: false)))

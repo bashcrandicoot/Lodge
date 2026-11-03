@@ -6,7 +6,9 @@ import AppKit
 enum Support {
     static let developerName = "bashframes"
     static let email = "bashframes@gmail.com"
-    /// Tips for Lodge (Help ▸ Support Lodge…, the Settings footer and the support card).
+    /// Buy Lodge (the license gate, the trial toolbar, and Lodge ▸ Buy Lodge…).
+    static var buyURL: URL { LodgeLicense.buyURL }
+    /// Donations. Not the purchase and not the download.
     static let tipJarURL = URL(string: "https://ko-fi.com/bashframes")!
 
     /// A plain `mailto:` link, for the About window and the Settings footer.
@@ -47,6 +49,10 @@ enum Support {
         var link = base
         link[.link] = emailURL
         credits.append(NSAttributedString(string: email, attributes: link))
+        credits.append(NSAttributedString(string: "\n", attributes: base))
+        var buy = base
+        buy[.link] = buyURL
+        credits.append(NSAttributedString(string: "Buy Lodge", attributes: buy))
         if let notices = acknowledgements {
             credits.append(NSAttributedString(string: "\n\nAcknowledgements\n\n", attributes: base))
             var small = base
@@ -73,6 +79,11 @@ enum Support {
         NSWorkspace.shared.open(supportEmailURL)
     }
 
+    /// Opens the Polar checkout in the browser.
+    static func openBuyPage() {
+        NSWorkspace.shared.open(buyURL)
+    }
+
     /// Opens the Ko-fi page in the browser.
     static func openTipJar() {
         NSWorkspace.shared.open(tipJarURL)
@@ -91,6 +102,10 @@ struct SettingsCreditsFooter: View {
             Button("Report a Bug…") { BugReport.compose() }
                 .buttonStyle(.link)
                 .help("Email a bug report with Lodge’s recent log attached")
+            Text("·").accessibilityHidden(true)
+            Link("Buy Lodge", destination: Support.buyURL)
+                .help("Lodge is $10 once, try free 3 days")
+                .accessibilityLabel("Buy Lodge")
             Text("·").accessibilityHidden(true)
             Link("Support Lodge ♥", destination: Support.tipJarURL)
                 .help("Leave a tip for Lodge on Ko-fi")

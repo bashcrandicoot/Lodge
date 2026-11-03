@@ -58,7 +58,9 @@ enum MenuBarItem: Hashable {
     case quit
     case divider
 
-    static func items(cards: [CardVolume], isPaused: Bool, isBusy: Bool) -> [MenuBarItem] {
+    static func items(cards: [CardVolume], isPaused: Bool, isBusy: Bool, allowsUse: Bool = true) -> [MenuBarItem] {
+        // After the trial, only opening Lodge (the license gate), Settings, and Quit stay available.
+        guard allowsUse else { return [.openLodge, .divider, .settings, .divider, .quit] }
         var items: [MenuBarItem] = [.openLodge, .divider, .cardsHeader(empty: cards.isEmpty)]
         items += cards.map { .importCard(path: $0.id, name: $0.name, enabled: !isBusy) }
         if isBusy { items.append(.offloading) }
@@ -167,12 +169,14 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         menu.removeAllItems()
         guard let model else { return }
         let items = MenuBarItem.items(cards: model.watcher.cards, isPaused: model.importPrompter.isPaused,
-                                      isBusy: model.isBusy)
+                                      isBusy: model.isBusy, allowsUse: model.allowsUse())
         for item in items { menu.addItem(menuItem(for: item)) }
         #if DEBUG
         // Debug builds: run the whole "Import with Lodge?" path on a connected card, no re-inserting.
-        menu.insertItem(.separator(), at: max(menu.numberOfItems - 1, 0))
-        menu.insertItem(action("Test Import Prompt", #selector(testImportPrompt)), at: max(menu.numberOfItems - 1, 0))
+        if model.allowsUse() {
+            menu.insertItem(.separator(), at: max(menu.numberOfItems - 1, 0))
+            menu.insertItem(action("Test Import Prompt", #selector(testImportPrompt)), at: max(menu.numberOfItems - 1, 0))
+        }
         #endif
     }
 

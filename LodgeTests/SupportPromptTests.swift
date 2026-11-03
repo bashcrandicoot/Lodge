@@ -112,6 +112,7 @@ final class SupportPromptTests: XCTestCase {
 
     func testTipJarAndSupportEmail() {
         XCTAssertEqual(Support.tipJarURL.absoluteString, "https://ko-fi.com/bashframes")
+        XCTAssertEqual(Support.buyURL.absoluteString, LodgeLicense.buyURL.absoluteString)
         XCTAssertEqual(Support.emailURL.absoluteString, "mailto:bashframes@gmail.com?subject=Lodge%20Support")
         XCTAssertTrue(Support.supportEmailURL.absoluteString.contains("body="))
     }

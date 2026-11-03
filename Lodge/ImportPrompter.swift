@@ -16,6 +16,8 @@ final class ImportPrompter: NSObject, ObservableObject {
     weak var model: AppModel?
     /// False for unit tests and demo mode (always the panel, never a permission prompt).
     let usesNotifications: Bool
+    /// False after the trial, until a license validates. No prompt and no import while it is false.
+    var allowsUse: () -> Bool = { true }
     private var debouncer = MountDebouncer()
     private var panels: [String: ImportPromptPanel] = [:]
     /// "card" for SD/CFexpress readers (removable media), "drive" for SSDs and other drives.
@@ -73,6 +75,7 @@ final class ImportPrompter: NSObject, ObservableObject {
     /// Completion gets `true` when a prompt was shown or queued.
     /// `force` (the DEBUG "Test Import Prompt" item) skips the quick-remount debounce.
     func cardMounted(_ card: CardVolume, force: Bool = false, completion: @escaping (Bool) -> Void = { _ in }) {
+        guard allowsUse() else { return completion(false) }
         guard let model else { return completion(false) }
         guard model.settings.askToImport, !isPaused else {
             Logger.importPrompt.info("No prompt for \(card.url.path, privacy: .public): askToImport \(model.settings.askToImport, privacy: .public), paused \(self.isPaused, privacy: .public)")
@@ -100,6 +103,7 @@ final class ImportPrompter: NSObject, ObservableObject {
     /// card that qualifies, as if it had just been plugged in. Completion gets a problem to show,
     /// or `nil` when a prompt went up.
     func testPrompt(completion: @escaping (String?) -> Void) {
+        guard allowsUse() else { return completion(nil) }
         guard let model else { return completion("Lodge isn't ready yet.") }
         let cards = model.watcher.cards
         Logger.importPrompt.info("Test Import Prompt: \(cards.count, privacy: .public) connected: \(cards.map(\.url.path).joined(separator: ", "), privacy: .public)")
@@ -121,6 +125,7 @@ final class ImportPrompter: NSObject, ObservableObject {
     /// The part after the volume was read (also used by the demo's simulated mount).
     @discardableResult
     func promptIfAllowed(_ card: CardVolume, verdict: ImportPromptPolicy.Verdict, force: Bool = false) -> Bool {
+        guard allowsUse() else { return false }
         let path = card.url.path
         guard verdict == .prompt, let model, model.settings.askToImport, !isPaused else {
             Logger.importPrompt.info("No prompt for \(path, privacy: .public): verdict \(String(describing: verdict), privacy: .public), paused \(self.isPaused, privacy: .public)")
@@ -145,6 +150,7 @@ final class ImportPrompter: NSObject, ObservableObject {
 
     /// The offload (or format) finished: ask about the cards plugged in meanwhile.
     func offloadEnded() {
+        guard allowsUse() else { queued = []; return }
         let waiting = queued
         queued = []
         guard let model, model.settings.askToImport, !isPaused else { return }

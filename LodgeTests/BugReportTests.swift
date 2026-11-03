@@ -4,6 +4,15 @@ import XCTest
 final class BugReportTests: XCTestCase {
     private let info = BugReport.SystemInfo(appVersion: "1.0.4", build: "5", macOSVersion: "27.0 (26A428)",
                                             macModel: "Mac15,6", chip: "Apple M3 Pro")
+    private var defaultsSuites: [String] = []
+
+    override func tearDown() {
+        for name in defaultsSuites {
+            UserDefaults().removePersistentDomain(forName: name)
+        }
+        defaultsSuites.removeAll()
+        super.tearDown()
+    }
 
     // MARK: Subject and body
 
@@ -95,7 +104,9 @@ final class BugReportTests: XCTestCase {
     }
 
     func testEachReportIsOfferedOnce() {
-        let defaults = UserDefaults(suiteName: "BugReportTests-\(UUID().uuidString)")!
+        let suite = "BugReportTests-\(UUID().uuidString)"
+        defaultsSuites.append(suite)
+        let defaults = UserDefaults(suiteName: suite)!
         var files = [file("Lodge-a.ips", 100)]
         // First launch: baseline, nothing offered.
         var seen = defaults.object(forKey: CrashReports.lastSeenKey) as? Date
