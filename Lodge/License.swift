@@ -178,16 +178,22 @@ enum TrialCountdown: Equatable {
 
 /// The note shown once each launch while the trial is running and this Mac has no license.
 enum TrialLaunchNotice {
-    static let welcomeTitle = "Welcome to Lodge"
-    static let welcomeBody = "After your trial, Lodge is a one-time $10 purchase. No subscription."
-    static let endedTitle = "Your Lodge trial has ended"
-    static let endedBody = "Buy Lodge once for $10 to keep using it. No subscription."
+    /// Placeholder line under the countdown. The title itself is `timeLeft`.
+    static let trialSecondary = "Then $10, one time."
+    static let endedTitle = "Lodge trial ended"
+    static let endedSecondary = "Buy once for $10. No subscription."
     static let endedAccessibility = "Trial ended"
+    static let confirmTitle = "Lodge could not confirm this license"
+    static let confirmSecondary = "The 14-day offline period has ended."
     static let continueTitle = "Continue"
     static let enterLicense = "Enter License Key…"
     static let quit = "Quit"
     /// The ring never draws as empty while any of the trial is left.
     static let minimumProgress = 0.02
+
+    static var trialButtons: [String] { [continueTitle, enterLicense] }
+    static var lockButtons: [String] { [LicenseCopy.buy, enterLicense, quit] }
+    static var offlineButtons: [String] { [LicenseCopy.checkAgain, enterLicense, quit] }
 
     static func shouldPresent(isTrial: Bool, isLicensed: Bool, isDemo: Bool, alreadyPresented: Bool) -> Bool {
         isTrial && !isLicensed && !isDemo && !alreadyPresented
@@ -217,17 +223,7 @@ enum TrialLaunchNotice {
         }
     }
 
-    /// The number drawn in the ring. Under an hour that is "<1", not a rounded-up hour.
-    static func centerText(_ remaining: TimeInterval) -> String {
-        switch measure(remaining) {
-        case .days(let count), .hours(let count):
-            return String(count)
-        case .lessThanAnHour:
-            return "<1"
-        }
-    }
-
-    /// VoiceOver for the icon and the ring together: "Trial: N days left of 3".
+    /// VoiceOver for the ring (and the icon drawn inside it): "Trial: N days left of 3".
     static func accessibilityLabel(_ remaining: TimeInterval) -> String {
         "Trial: \(timeLeft(remaining)) of 3"
     }
@@ -244,8 +240,9 @@ enum TrialLaunchNotice {
         remaining < 24 * 60 * 60
     }
 
-    static func title(remaining _: TimeInterval) -> String {
-        welcomeTitle
+    /// The sheet title is the countdown itself.
+    static func title(remaining: TimeInterval) -> String {
+        timeLeft(remaining)
     }
 
     static func toolbar(_ remaining: TimeInterval) -> String {

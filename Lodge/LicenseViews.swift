@@ -48,11 +48,10 @@ struct LicenseGate: View {
     @State private var enteringLicense = false
 
     var body: some View {
-        TrialCard(
-            kind: license.offersPurchase ? .trialEnded : .licenseUnconfirmed,
-            banner: license.banner,
-            onEnterLicense: { enteringLicense = true },
+        LockGate(
+            mode: license.offersPurchase ? .purchase : .offlineLapse,
             onBuy: { Support.openBuyPage() },
+            onEnterLicense: { enteringLicense = true },
             onQuit: { NSApp.terminate(nil) },
             onCheckAgain: { Task { await license.refresh() } }
         )
@@ -64,160 +63,137 @@ struct LicenseGate: View {
     }
 }
 
-/// The launch note and the post-trial lock, in one layout.
-struct TrialCard: View {
-    enum Kind {
-        case welcome(TimeInterval)
-        case trialEnded
-        case licenseUnconfirmed
-    }
-
-    var kind: Kind
-    var banner: String? = nil
-    var onEnterLicense: () -> Void
+/// Launch note. `remaining` and the callbacks are the whole input, so a test can draw it
+/// without a license, the Keychain, or the clock.
+struct TrialSheet: View {
+    var remaining: TimeInterval
     var onContinue: () -> Void = {}
-    var onBuy: () -> Void = {}
-    var onQuit: () -> Void = {}
-    var onCheckAgain: () -> Void = {}
+    var onEnterLicense: () -> Void = {}
+
+    var title: String { TrialLaunchNotice.title(remaining: remaining) }
+    var secondary: String { TrialLaunchNotice.trialSecondary }
+    var buttonTitles: [String] { TrialLaunchNotice.trialButtons }
+    var heroLabel: String { TrialLaunchNotice.accessibilityLabel(remaining) }
 
     var body: some View {
-        VStack(spacing: 0) {
-            hero
-            Text(title)
-                .font(.title3.weight(.semibold))
-                .multilineTextAlignment(.center)
+        TrialColumn(
+            title: title,
+            titleColor: TrialLaunchNotice.isLastDay(remaining) ? .orange : .primary,
+            secondary: secondary
+        ) {
+            TrialProgressRing(remaining: remaining, accessibilityLabel: heroLabel)
+        } actions: {
+            Button(TrialLaunchNotice.continueTitle, action: onContinue)
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .keyboardShortcut(.defaultAction)
                 .frame(maxWidth: .infinity)
-                .accessibilityAddTraits(.isHeader)
-                .padding(.top, 16)
-            Text(label)
-                .font(.callout.weight(.semibold))
-                .foregroundStyle(labelColor)
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: .infinity)
-                .accessibilityHidden(true)
-                .padding(.top, 2)
-            Text(bodyText)
-                .font(.footnote)
+            Button(TrialLaunchNotice.enterLicense, action: onEnterLicense)
+                .buttonStyle(.plain)
+                .font(.callout)
                 .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.top, 8)
-            if let banner {
-                Text(banner)
-                    .font(.footnote)
-                    .foregroundStyle(.red)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: .infinity)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.top, 8)
-            }
-            buttons
-                .padding(.top, 20)
+                .padding(.top, 12)
         }
-        .padding(.top, 24)
-        .padding(.horizontal, 20)
-        .padding(.bottom, 20)
-        .frame(width: 380)
-        .fixedSize(horizontal: false, vertical: true)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-    }
-
-    private var title: String {
-        switch kind {
-        case .welcome: return TrialLaunchNotice.welcomeTitle
-        case .trialEnded: return TrialLaunchNotice.endedTitle
-        case .licenseUnconfirmed: return "Lodge could not confirm this license"
-        }
-    }
-
-    private var label: String {
-        switch kind {
-        case .welcome(let remaining): return TrialLaunchNotice.timeLeft(remaining)
-        case .trialEnded: return TrialLaunchNotice.endedAccessibility
-        case .licenseUnconfirmed: return "Offline period ended"
-        }
-    }
-
-    private var bodyText: String {
-        switch kind {
-        case .welcome: return TrialLaunchNotice.welcomeBody
-        case .trialEnded: return TrialLaunchNotice.endedBody
-        case .licenseUnconfirmed: return "The 14-day offline period has ended."
-        }
-    }
-
-    private var labelColor: Color {
-        switch kind {
-        case .welcome(let remaining):
-            return TrialLaunchNotice.isLastDay(remaining) ? .orange : .accentColor
-        case .trialEnded, .licenseUnconfirmed:
-            return .secondary
-        }
-    }
-
-    @ViewBuilder private var hero: some View {
-        HStack(spacing: 20) {
-            Image(nsImage: NSApp.applicationIconImage ?? NSImage())
-                .resizable()
-                .frame(width: 64, height: 64)
-                .accessibilityHidden(true)
-            switch kind {
-            case .welcome(let remaining):
-                TrialProgressRing(remaining: remaining)
-            case .trialEnded:
-                TrialEndedRing(accessibilityLabel: TrialLaunchNotice.endedAccessibility)
-            case .licenseUnconfirmed:
-                TrialEndedRing(accessibilityLabel: "Lodge could not confirm this license")
-            }
-        }
-        .frame(maxWidth: .infinity)
-    }
-
-    @ViewBuilder private var buttons: some View {
-        switch kind {
-        case .welcome:
-            HStack(spacing: 8) {
-                Spacer(minLength: 0)
-                Button(TrialLaunchNotice.enterLicense, action: onEnterLicense)
-                Button(TrialLaunchNotice.continueTitle, action: onContinue)
-                    .buttonStyle(.borderedProminent)
-                    .keyboardShortcut(.defaultAction)
-            }
-            .background {
-                Button(action: onContinue) { EmptyView() }
-                    .keyboardShortcut(.cancelAction)
-                    .labelsHidden()
-                    .accessibilityHidden(true)
-                    .frame(width: 0, height: 0)
-            }
-        case .trialEnded:
-            HStack(spacing: 8) {
-                Button(TrialLaunchNotice.quit, action: onQuit)
-                    .keyboardShortcut(.cancelAction)
-                Spacer(minLength: 0)
-                Button(TrialLaunchNotice.enterLicense, action: onEnterLicense)
-                Button(LicenseCopy.buy, action: onBuy)
-                    .buttonStyle(.borderedProminent)
-                    .keyboardShortcut(.defaultAction)
-            }
-        case .licenseUnconfirmed:
-            HStack(spacing: 8) {
-                Button(TrialLaunchNotice.quit, action: onQuit)
-                    .keyboardShortcut(.cancelAction)
-                Spacer(minLength: 0)
-                Button(TrialLaunchNotice.enterLicense, action: onEnterLicense)
-                Button(LicenseCopy.checkAgain, action: onCheckAgain)
-                    .buttonStyle(.borderedProminent)
-                    .keyboardShortcut(.defaultAction)
-            }
-        }
+        .onExitCommand(perform: onContinue)
     }
 }
 
-/// Countdown ring. Trim starts at 12 o'clock and runs clockwise.
+/// Post-trial lock, and the same column when a saved license can no longer be confirmed.
+struct LockGate: View {
+    enum Mode: Equatable {
+        case purchase
+        case offlineLapse
+    }
+
+    var mode: Mode = .purchase
+    var onBuy: () -> Void = {}
+    var onEnterLicense: () -> Void = {}
+    var onQuit: () -> Void = {}
+    var onCheckAgain: () -> Void = {}
+
+    var title: String {
+        mode == .purchase ? TrialLaunchNotice.endedTitle : TrialLaunchNotice.confirmTitle
+    }
+    var secondary: String {
+        mode == .purchase ? TrialLaunchNotice.endedSecondary : TrialLaunchNotice.confirmSecondary
+    }
+    var buttonTitles: [String] {
+        mode == .purchase ? TrialLaunchNotice.lockButtons : TrialLaunchNotice.offlineButtons
+    }
+    var heroLabel: String {
+        mode == .purchase ? TrialLaunchNotice.endedAccessibility : TrialLaunchNotice.confirmTitle
+    }
+
+    var body: some View {
+        TrialColumn(title: title, titleColor: .primary, secondary: secondary) {
+            TrialEndedRing(accessibilityLabel: heroLabel)
+        } actions: {
+            Button(buttonTitles[0], action: mode == .purchase ? onBuy : onCheckAgain)
+                .buttonStyle(.borderedProminent)
+                .keyboardShortcut(.defaultAction)
+                .frame(maxWidth: .infinity)
+            Button(TrialLaunchNotice.enterLicense, action: onEnterLicense)
+                .buttonStyle(.bordered)
+                .frame(maxWidth: .infinity)
+                .padding(.top, 8)
+            Button(TrialLaunchNotice.quit, action: onQuit)
+                .buttonStyle(.plain)
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .keyboardShortcut(.cancelAction)
+                .frame(maxWidth: .infinity)
+                .padding(.top, 12)
+        }
+        .onExitCommand(perform: onQuit)
+    }
+}
+
+/// Ring, title, one secondary line, then the actions. 320pt, material, no title bar of its own.
+private struct TrialColumn<Hero: View, Actions: View>: View {
+    var title: String
+    var titleColor: Color
+    var secondary: String
+    @ViewBuilder var hero: () -> Hero
+    @ViewBuilder var actions: () -> Actions
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    var body: some View {
+        VStack(spacing: 0) {
+            hero()
+            Text(title)
+                .font(.title3.weight(.semibold))
+                .monospacedDigit()
+                .foregroundStyle(titleColor)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
+                .contentTransition(reduceMotion ? ContentTransition.identity : ContentTransition.numericText())
+                .accessibilityAddTraits(.isHeader)
+                .padding(.top, 20)
+            Text(secondary)
+                .font(.body)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
+                .padding(.top, 4)
+            actions()
+                .padding(.top, 24)
+        }
+        .padding(.top, 32)
+        .padding(.horizontal, 24)
+        .padding(.bottom, 20)
+        .frame(width: 320)
+        .fixedSize(horizontal: false, vertical: true)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+    }
+}
+
+/// Countdown ring with the app icon inside. Trim starts at 12 o'clock and runs clockwise.
+/// Reduce Motion draws the final arc immediately, which is also what a still render shows.
 private struct TrialProgressRing: View {
     var remaining: TimeInterval
+    var accessibilityLabel: String
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var drawn = 0.0
 
@@ -225,30 +201,32 @@ private struct TrialProgressRing: View {
         TrialLaunchNotice.isLastDay(remaining) ? .orange : .accentColor
     }
 
+    private var shown: Double {
+        reduceMotion ? TrialLaunchNotice.progress(remaining) : drawn
+    }
+
     var body: some View {
         ZStack {
             Circle()
-                .stroke(Color.primary.opacity(0.08), style: StrokeStyle(lineWidth: 6, lineCap: .round))
+                .inset(by: 2.5)
+                .stroke(Color.primary.opacity(0.08), style: StrokeStyle(lineWidth: 5, lineCap: .round))
             Circle()
-                .trim(from: 0, to: drawn)
-                .stroke(tint, style: StrokeStyle(lineWidth: 6, lineCap: .round))
+                .inset(by: 2.5)
+                .trim(from: 0, to: shown)
+                .stroke(tint, style: StrokeStyle(lineWidth: 5, lineCap: .round))
                 .rotationEffect(.degrees(-90))
-            Text(TrialLaunchNotice.centerText(remaining))
-                .font(.title2.weight(.semibold))
-                .monospacedDigit()
-                .foregroundStyle(tint)
+            Image(nsImage: NSApp.applicationIconImage ?? NSImage())
+                .resizable()
+                .frame(width: 72, height: 72)
+                .accessibilityHidden(true)
         }
-        .frame(width: 64, height: 64)
+        .frame(width: 104, height: 104)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(TrialLaunchNotice.accessibilityLabel(remaining))
+        .accessibilityLabel(accessibilityLabel)
         .onAppear {
-            let target = TrialLaunchNotice.progress(remaining)
-            guard !reduceMotion else {
-                drawn = target
-                return
-            }
+            guard !reduceMotion else { return }
             withAnimation(.spring(response: 0.8, dampingFraction: 0.85).delay(0.15)) {
-                drawn = target
+                drawn = TrialLaunchNotice.progress(remaining)
             }
         }
     }
@@ -263,13 +241,14 @@ private struct TrialEndedRing: View {
     var body: some View {
         ZStack {
             Circle()
-                .stroke(Color.primary.opacity(0.08), style: StrokeStyle(lineWidth: 6, lineCap: .round))
+                .inset(by: 2.5)
+                .stroke(Color.primary.opacity(0.08), style: StrokeStyle(lineWidth: 5, lineCap: .round))
             Image(systemName: "lock.fill")
-                .font(.title2)
+                .font(.system(size: 28))
                 .foregroundStyle(.secondary)
                 .symbolEffect(.bounce, value: bounce)
         }
-        .frame(width: 64, height: 64)
+        .frame(width: 104, height: 104)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilityLabel)
         .onAppear {
@@ -309,8 +288,9 @@ private final class TrialNoticeWindow: NSObject {
     }
 
     private init(remaining: TimeInterval) {
-        let card = TrialCard(
-            kind: .welcome(remaining),
+        let card = TrialSheet(
+            remaining: remaining,
+            onContinue: { TrialNoticeWindow.current?.dismiss() },
             onEnterLicense: {
                 TrialNotice.pendingLicenseEntry = true
                 TrialNoticeWindow.current?.dismiss()
@@ -318,10 +298,9 @@ private final class TrialNoticeWindow: NSObject {
                     MainWindow.show()
                     NotificationCenter.default.post(name: TrialNotice.enterLicense, object: nil)
                 }
-            },
-            onContinue: { TrialNoticeWindow.current?.dismiss() }
+            }
         )
-        panel = TrialNoticePanel(contentRect: NSRect(x: 0, y: 0, width: 380, height: 280),
+        panel = TrialNoticePanel(contentRect: NSRect(x: 0, y: 0, width: 320, height: 360),
                                  styleMask: [.borderless],
                                  backing: .buffered,
                                  defer: false)
@@ -334,24 +313,24 @@ private final class TrialNoticeWindow: NSObject {
         panel.isReleasedWhenClosed = false
         panel.hidesOnDeactivate = false
         panel.becomesKeyOnlyIfNeeded = false
-        panel.title = TrialLaunchNotice.welcomeTitle
+        panel.title = TrialLaunchNotice.title(remaining: remaining)
         panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
         install(card)
     }
 
-    private func install(_ card: TrialCard) {
+    private func install(_ card: TrialSheet) {
         let host = NSHostingView(rootView: card)
         host.sizingOptions = [.intrinsicContentSize]
-        host.setFrameSize(NSSize(width: 380, height: 1))
+        host.setFrameSize(NSSize(width: 320, height: 1))
         host.layoutSubtreeIfNeeded()
         var height = host.fittingSize.height
         if !height.isFinite || height < 40 {
             height = host.intrinsicContentSize.height
         }
         if !height.isFinite || height < 40 {
-            height = 280
+            height = 360
         }
-        let size = NSSize(width: 380, height: height)
+        let size = NSSize(width: 320, height: height)
         host.frame = NSRect(origin: .zero, size: size)
         panel.contentView = host
         panel.setContentSize(size)
