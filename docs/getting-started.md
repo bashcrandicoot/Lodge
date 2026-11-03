@@ -71,10 +71,6 @@ The button’s caption is the reason. Common ones:
 - **Everything on this card is already offloaded**
 - **Insert a card to begin**
 
-## Build from source
-
-The download above is the way to install Lodge. If you want to build it yourself, start with the [contribution guide on GitHub](https://github.com/bashcrandicoot/Lodge/blob/main/CONTRIBUTING.md).
-
 For help, write to [bashframes@gmail.com](mailto:bashframes@gmail.com).
 
 © 2026 bashframes
