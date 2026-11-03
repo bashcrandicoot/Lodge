@@ -4,7 +4,7 @@ Lodge is a universal app for Apple silicon and Intel Macs, on macOS 14 or later.
 
 ## Download Lodge
 
-[Try for Free](https://bashfra.me/lodge-dmg) for Mac
+[Try for Free](https://dl.bashfra.me/lodge/Lodge-1.0.dmg) for Mac
 
 Open the .dmg, and drag Lodge to Applications. 3-day trial, then $10 once.
 

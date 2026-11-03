@@ -4,7 +4,7 @@
 
 _Oct 31, 2026_
 
-Home base for your media. [3-day trial, then $10 once.](https://bashfra.me/lodge-dmg)
+Home base for your media. [3-day trial, then $10 once.](https://dl.bashfra.me/lodge/Lodge-1.0.dmg)
 
 - **Naming templates** with tokens, a live preview and continued numbering.
 - A folder for each file type (MP4, WAV, ARW…) inside the last folder. JPG and JPEG share one.
