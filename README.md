@@ -20,13 +20,12 @@
   <img alt="macOS 14 or later" src="https://img.shields.io/badge/macOS-14%2B-3A3A3C?style=flat&logo=apple&logoColor=white">
   <a href="https://www.swift.org"><img alt="Swift 5" src="https://img.shields.io/badge/Swift-5-F05138?style=flat&logo=swift&logoColor=white"></a>
   <a href="LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-0A84FF?style=flat"></a>
-  <img alt="Vibe coded" src=".github/badges/vibe-coded-gradient.svg" height="20">
 </p>
 
 ## Download
 
 <p align="center">
-  <a href="https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1"><img src="docs/assets/download-button-kofi.png" alt="Buy Lodge — $10" width="320" height="72"></a>
+  <a href="https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1"><img src="docs/assets/lodge-buy-button-640x144.png" alt="Buy Lodge — $10" width="320" height="72"></a>
 </p>
 
 Built by bashframes. $10 once. Try it for 3 days. [Buy Lodge 1.0 — $10](https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1), unzip it, then open the DMG, and drag Lodge to Applications.
