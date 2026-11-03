@@ -12,8 +12,6 @@ struct ContentView: View {
     /// Saved for `MainWindow`, to open Settings from the menu bar icon.
     @Environment(\.openSettings) private var openSettings
     @State private var enteringLicense = false
-    @State private var showTrialNotice = false
-    @State private var trialNoticeTitle = ""
 
     var body: some View {
         Group {
@@ -76,11 +74,14 @@ struct ContentView: View {
             MainWindow.openAction = { [openWindow] in openWindow(id: "main") }
             MainWindow.openSettingsAction = { [openSettings] in openSettings() }
             presentTrialNoticeIfNeeded()
+            if TrialNotice.pendingLicenseEntry {
+                TrialNotice.pendingLicenseEntry = false
+                enteringLicense = true
+            }
         }
-        .alert(trialNoticeTitle, isPresented: $showTrialNotice) {
-            Button(TrialLaunchNotice.enterLicense) { enteringLicense = true }
-            Button(TrialLaunchNotice.continueTitle) {}
-                .keyboardShortcut(.defaultAction)
+        .onReceive(NotificationCenter.default.publisher(for: TrialNotice.enterLicense)) { _ in
+            TrialNotice.pendingLicenseEntry = false
+            enteringLicense = true
         }
         .sheet(isPresented: $enteringLicense) {
             LicenseEntrySheet()
@@ -126,12 +127,11 @@ struct ContentView: View {
     }
 
     /// Once each launch, while the trial is running and this Mac has no license.
-    /// Demo mode and a purchased license skip it. Continue dismisses it; there is no Buy button.
+    /// Demo mode and a purchased license skip it. A login launch that stays in the menu bar
+    /// has no window, so the note waits and appears as a panel.
     private func presentTrialNoticeIfNeeded() {
-        guard let title = license.launchNoticeTitle(isDemo: AppModel.isDemo) else { return }
-        trialNoticeTitle = title
-        showTrialNotice = true
-        license.markLaunchNoticePresented()
+        guard !AppDelegate.launchesWithoutWindow else { return }
+        TrialNotice.presentIfNeeded(license: license)
     }
 
     /// The funnel. Hidden until this Mac has a usable license. An offload already running

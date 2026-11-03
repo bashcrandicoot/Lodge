@@ -115,14 +115,15 @@ final class LicenseTests: XCTestCase {
         XCTAssertNotNil(store.trial)
     }
 
-    func testLaunchNoticeUsesDaysThenHoursAndSkipsWhenItShould() {
-        XCTAssertEqual(TrialLaunchNotice.title(remaining: 3 * day), "Lodge trial: 3 days left")
-        XCTAssertEqual(TrialLaunchNotice.title(remaining: 2 * day), "Lodge trial: 2 days left")
-        XCTAssertEqual(TrialLaunchNotice.title(remaining: day), "Lodge trial: 1 day left")
-        XCTAssertEqual(TrialLaunchNotice.title(remaining: 23 * 60 * 60), "Lodge trial: 23 hours left")
-        XCTAssertEqual(TrialLaunchNotice.title(remaining: 60 * 60), "Lodge trial: 1 hour left")
-        XCTAssertEqual(TrialLaunchNotice.title(remaining: 30 * 60), "Lodge trial: 1 hour left")
-        XCTAssertFalse(TrialLaunchNotice.title(remaining: 2 * day).contains("Buy"))
+    func testLaunchNoticeUsesDaysThenHoursAndSkipsWhenItShould() throws {
+        XCTAssertEqual(TrialLaunchNotice.timeLeft(3 * day), "3 days left")
+        XCTAssertEqual(TrialLaunchNotice.timeLeft(2 * day), "2 days left")
+        XCTAssertEqual(TrialLaunchNotice.timeLeft(day), "1 day left")
+        XCTAssertEqual(TrialLaunchNotice.timeLeft(23 * 60 * 60), "23 hours left")
+        XCTAssertEqual(TrialLaunchNotice.timeLeft(60 * 60), "1 hour left")
+        XCTAssertEqual(TrialLaunchNotice.timeLeft(30 * 60), "Less than an hour left")
+        XCTAssertEqual(TrialLaunchNotice.title(remaining: 2 * day), TrialLaunchNotice.welcomeTitle)
+        XCTAssertFalse(TrialLaunchNotice.welcomeBody.contains("Buy"))
         XCTAssertEqual(TrialLaunchNotice.continueTitle, "Continue")
         XCTAssertEqual(TrialLaunchNotice.enterLicense, "Enter License Key…")
 
@@ -133,26 +134,86 @@ final class LicenseTests: XCTestCase {
         XCTAssertFalse(TrialLaunchNotice.shouldPresent(isTrial: true, isLicensed: false, isDemo: false, alreadyPresented: true))
 
         let (active, _, _) = make(startTrial: true)
-        XCTAssertEqual(active.launchNoticeTitle(isDemo: false), "Lodge trial: 3 days left")
+        XCTAssertEqual(active.launchNoticeTitle(isDemo: false), TrialLaunchNotice.welcomeTitle)
+        XCTAssertFalse(active.offersPurchase)
         XCTAssertNil(active.launchNoticeTitle(isDemo: true))
         active.markLaunchNoticePresented()
         XCTAssertNil(active.launchNoticeTitle(isDemo: false))
 
         let (ended, _, _) = make()
         XCTAssertNil(ended.launchNoticeTitle(isDemo: false))
+        XCTAssertTrue(ended.offersPurchase)
 
         let store = MemoryLicenseStore()
         store.saved = stored(age: 0)
         store.trial = TrialRecord(firstLaunch: clock, lastSeen: clock)
         let licensed = LicenseController(store: store, client: .refusing, now: { self.clock }, machineLabel: { "Test Mac" })
         XCTAssertNil(licensed.launchNoticeTitle(isDemo: false))
+        XCTAssertFalse(licensed.offersPurchase)
 
         let origin = clock
         let (_, hourStore, _) = make(startTrial: true)
         clock = origin.addingTimeInterval(2 * day + 60 * 60)
         let hours = LicenseController(store: hourStore, client: .refusing, now: { self.clock }, machineLabel: { "Test Mac" })
-        XCTAssertEqual(hours.launchNoticeTitle(isDemo: false), "Lodge trial: 23 hours left")
+        XCTAssertEqual(hours.launchNoticeTitle(isDemo: false), TrialLaunchNotice.welcomeTitle)
+        let hourRemaining = try XCTUnwrap(hours.trialRemaining)
+        XCTAssertEqual(TrialLaunchNotice.timeLeft(hourRemaining), "23 hours left")
         XCTAssertEqual(TrialLaunchNotice.toolbar(2 * day), "Trial: 2 days left")
+        XCTAssertEqual(TrialLaunchNotice.toolbar(30 * 60), "Trial: Less than an hour left")
+    }
+
+    func testTrialCountdownLabelAndMode() {
+        XCTAssertEqual(TrialLaunchNotice.measure(3 * day), .days(3))
+        XCTAssertEqual(TrialLaunchNotice.centerText(3 * day), "3")
+        XCTAssertEqual(TrialLaunchNotice.accessibilityLabel(3 * day), "Trial: 3 days left of 3")
+        XCTAssertEqual(TrialLaunchNotice.progress(3 * day), 1, accuracy: 0.0001)
+        XCTAssertFalse(TrialLaunchNotice.isLastDay(3 * day))
+
+        XCTAssertEqual(TrialLaunchNotice.measure(day), .days(1))
+        XCTAssertEqual(TrialLaunchNotice.timeLeft(day), "1 day left")
+        XCTAssertEqual(TrialLaunchNotice.accessibilityLabel(day), "Trial: 1 day left of 3")
+        XCTAssertEqual(TrialLaunchNotice.measure(day + 1), .days(2))
+
+        XCTAssertEqual(TrialLaunchNotice.measure(23 * 60 * 60), .hours(23))
+        XCTAssertEqual(TrialLaunchNotice.centerText(23 * 60 * 60), "23")
+        XCTAssertEqual(TrialLaunchNotice.accessibilityLabel(23 * 60 * 60), "Trial: 23 hours left of 3")
+        XCTAssertTrue(TrialLaunchNotice.isLastDay(23 * 60 * 60))
+        XCTAssertEqual(TrialLaunchNotice.measure(24 * 60 * 60 - 1), .hours(24))
+        XCTAssertEqual(TrialLaunchNotice.timeLeft(24 * 60 * 60 - 1), "24 hours left")
+        XCTAssertEqual(TrialLaunchNotice.measure(22 * 60 * 60 + 1), .hours(23))
+
+        XCTAssertEqual(TrialLaunchNotice.measure(60 * 60), .hours(1))
+        XCTAssertEqual(TrialLaunchNotice.timeLeft(60 * 60), "1 hour left")
+        XCTAssertEqual(TrialLaunchNotice.accessibilityLabel(60 * 60), "Trial: 1 hour left of 3")
+
+        XCTAssertEqual(TrialLaunchNotice.measure(30 * 60), .lessThanAnHour)
+        XCTAssertEqual(TrialLaunchNotice.timeLeft(30 * 60), "Less than an hour left")
+        XCTAssertEqual(TrialLaunchNotice.centerText(30 * 60), "<1")
+        XCTAssertEqual(TrialLaunchNotice.accessibilityLabel(30 * 60), "Trial: Less than an hour left of 3")
+        XCTAssertEqual(TrialLaunchNotice.progress(30 * 60), TrialLaunchNotice.minimumProgress, accuracy: 0.0001)
+        XCTAssertEqual(TrialLaunchNotice.progress(1.5 * day), 0.5, accuracy: 0.0001)
+
+        XCTAssertEqual(TrialLaunchNotice.welcomeTitle, "Welcome to Lodge")
+        XCTAssertEqual(TrialLaunchNotice.welcomeBody, "After your trial, Lodge is a one-time $10 purchase. No subscription.")
+        XCTAssertEqual(TrialLaunchNotice.endedTitle, "Your Lodge trial has ended")
+        XCTAssertEqual(TrialLaunchNotice.endedBody, "Buy Lodge once for $10 to keep using it. No subscription.")
+        XCTAssertEqual(TrialLaunchNotice.endedAccessibility, "Trial ended")
+        XCTAssertEqual(TrialLaunchNotice.quit, "Quit")
+    }
+
+    func testBuyIsOfferedOnlyWhenTheTrialHasEndedWithoutALicense() {
+        let (active, _, _) = make(startTrial: true)
+        XCTAssertFalse(active.offersPurchase)
+
+        let (ended, _, _) = make()
+        XCTAssertTrue(ended.offersPurchase)
+        XCTAssertFalse(ended.allowsUse)
+
+        let store = MemoryLicenseStore()
+        store.saved = stored(age: 20)
+        let lapsed = LicenseController(store: store, client: .refusing, now: { self.clock }, machineLabel: { "Test Mac" })
+        XCTAssertFalse(lapsed.allowsUse)
+        XCTAssertFalse(lapsed.offersPurchase)
     }
 
     func testControllerTreatsABackwardClockAsExpired() {

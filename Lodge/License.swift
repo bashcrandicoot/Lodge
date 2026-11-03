@@ -168,29 +168,84 @@ enum TrialPolicy {
     }
 }
 
+/// How the countdown reads. Days while a day or more remains, hours under that, and a
+/// separate phrase once less than an hour is left. Counts are rounded up.
+enum TrialCountdown: Equatable {
+    case days(Int)
+    case hours(Int)
+    case lessThanAnHour
+}
+
 /// The note shown once each launch while the trial is running and this Mac has no license.
 enum TrialLaunchNotice {
+    static let welcomeTitle = "Welcome to Lodge"
+    static let welcomeBody = "After your trial, Lodge is a one-time $10 purchase. No subscription."
+    static let endedTitle = "Your Lodge trial has ended"
+    static let endedBody = "Buy Lodge once for $10 to keep using it. No subscription."
+    static let endedAccessibility = "Trial ended"
     static let continueTitle = "Continue"
     static let enterLicense = "Enter License Key…"
+    static let quit = "Quit"
+    /// The ring never draws as empty while any of the trial is left.
+    static let minimumProgress = 0.02
 
     static func shouldPresent(isTrial: Bool, isLicensed: Bool, isDemo: Bool, alreadyPresented: Bool) -> Bool {
         isTrial && !isLicensed && !isDemo && !alreadyPresented
     }
 
-    /// "2 days left", or "5 hours left" when under a day. Rounded up, and never 0 while time remains.
-    static func timeLeft(_ remaining: TimeInterval) -> String {
+    /// Days at 24 hours and above (`ceil(remaining / 86400)`). Hours below that
+    /// (`ceil(remaining / 3600)`). Under one hour there is no count.
+    static func measure(_ remaining: TimeInterval) -> TrialCountdown {
         let hour: TimeInterval = 60 * 60
         let day = 24 * hour
-        if remaining < day {
-            let hours = min(23, max(1, Int((remaining / hour).rounded(.up))))
-            return hours == 1 ? "1 hour left" : "\(hours) hours left"
+        if remaining >= day {
+            return .days(max(1, Int((remaining / day).rounded(.up))))
         }
-        let days = max(1, Int((remaining / day).rounded(.up)))
-        return days == 1 ? "1 day left" : "\(days) days left"
+        if remaining < hour { return .lessThanAnHour }
+        return .hours(max(1, Int((remaining / hour).rounded(.up))))
     }
 
-    static func title(remaining: TimeInterval) -> String {
-        "Lodge trial: \(timeLeft(remaining))"
+    /// "2 days left", "5 hours left", or "Less than an hour left". Rounded up, and never 0 while time remains.
+    static func timeLeft(_ remaining: TimeInterval) -> String {
+        switch measure(remaining) {
+        case .days(let days):
+            return days == 1 ? "1 day left" : "\(days) days left"
+        case .hours(let hours):
+            return hours == 1 ? "1 hour left" : "\(hours) hours left"
+        case .lessThanAnHour:
+            return "Less than an hour left"
+        }
+    }
+
+    /// The number drawn in the ring. Under an hour that is "<1", not a rounded-up hour.
+    static func centerText(_ remaining: TimeInterval) -> String {
+        switch measure(remaining) {
+        case .days(let count), .hours(let count):
+            return String(count)
+        case .lessThanAnHour:
+            return "<1"
+        }
+    }
+
+    /// VoiceOver for the icon and the ring together: "Trial: N days left of 3".
+    static func accessibilityLabel(_ remaining: TimeInterval) -> String {
+        "Trial: \(timeLeft(remaining)) of 3"
+    }
+
+    /// Fraction of the 3 days still left, clamped so a sliver stays visible.
+    static func progress(_ remaining: TimeInterval) -> Double {
+        let fraction = remaining / LodgeLicense.trialLength
+        guard fraction.isFinite else { return minimumProgress }
+        return min(1, max(minimumProgress, fraction))
+    }
+
+    /// The last day of the trial uses the warning color.
+    static func isLastDay(_ remaining: TimeInterval) -> Bool {
+        remaining < 24 * 60 * 60
+    }
+
+    static func title(remaining _: TimeInterval) -> String {
+        welcomeTitle
     }
 
     static func toolbar(_ remaining: TimeInterval) -> String {
@@ -629,6 +684,12 @@ final class LicenseController {
     var trialDaysLeft: Int? {
         if case .trial(let days) = phase { return days }
         return nil
+    }
+
+    /// Lodge ▸ Buy Lodge… and Help ▸ Buy Lodge…, only once the trial is over and no key is saved.
+    var offersPurchase: Bool {
+        if case .unlicensed = phase { return true }
+        return false
     }
 
     /// Seconds left in the trial. Nil when this Mac is licensed or the trial is over.

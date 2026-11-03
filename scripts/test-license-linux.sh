@@ -45,8 +45,15 @@ if grep -q '\.zip' "$ROOT/appcast.xml"; then
     echo "appcast.xml still names a zip" >&2
     exit 1
 fi
-if grep -q '<enclosure' "$ROOT/release/appcast.xml"; then
-    echo "release/appcast.xml should start with no enclosure items" >&2
+item_count="$(grep -c '<item>' "$ROOT/release/appcast.xml" || true)"
+if [[ "$item_count" != "1" ]]; then
+    echo "release/appcast.xml should have exactly one item (found ${item_count:-0})" >&2
+    exit 1
+fi
+grep -q '<sparkle:version>7</sparkle:version>' "$ROOT/release/appcast.xml"
+grep -q 'url="https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg"' "$ROOT/release/appcast.xml"
+if ! grep -q 'sparkle:edSignature="[^"][^"]*"' "$ROOT/release/appcast.xml"; then
+    echo "release/appcast.xml enclosure is missing an edSignature" >&2
     exit 1
 fi
 

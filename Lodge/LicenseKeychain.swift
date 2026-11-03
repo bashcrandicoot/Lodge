@@ -124,6 +124,8 @@ final class LicenseModel: ObservableObject {
     var banner: String? { controller.banner }
     var allowsUse: Bool { controller.allowsUse }
     var trialDaysLeft: Int? { controller.trialDaysLeft }
+    var trialRemaining: TimeInterval? { controller.trialRemaining }
+    var offersPurchase: Bool { controller.offersPurchase }
     var trialToolbarText: String? {
         guard let remaining = controller.trialRemaining else { return nil }
         return TrialLaunchNotice.toolbar(remaining)
