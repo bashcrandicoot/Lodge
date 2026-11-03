@@ -359,8 +359,8 @@ General groups these sections: **Files to Offload**, **Short Clips**, **After Of
 
 
 <figure>
-<img src="assets/screenshots/ready-ember-dark.png" width="1352" height="912" alt="Lodge with a saved theme other than the neutral Default." style="max-width:100%;height:auto">
-<figcaption>Lodge with a saved theme other than the neutral Default.</figcaption>
+<img src="assets/screenshots/ready-default-dark.png" width="1352" height="912" alt="Lodge in Dark mode with the Default theme, ready to offload 54 files from an A7S III card." style="max-width:100%;height:auto">
+<figcaption>Lodge in Dark mode with the Default theme, ready to offload.</figcaption>
 </figure>
 
 <figure>
