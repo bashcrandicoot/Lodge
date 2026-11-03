@@ -4,7 +4,7 @@
 
 _Oct 31, 2026_
 
-Lodge, a native Mac app for offloading camera cards. [Try free 3 days](https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg). Try free 3 days, then $10. Lodge shows how many days are left each time it opens. After the trial ends, Buy appears in the app and leads to Polar.
+Lodge, a native Mac app for offloading camera cards. [Try free 3 days, then $10](https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg).
 
 - Notices camera cards and removable drives with media as you insert them.
 - A Card, Media, Destination window with an offload bar along the bottom.
