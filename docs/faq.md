@@ -84,7 +84,7 @@ Files land in the folder the template makes, and then in a folder named for the 
 
 ## Does Lodge need a network?
 
-No account, no analytics, and copying never uploads anything. The only time Lodge goes online is a daily check for updates, which you can turn off in Settings > General. The ledger and your settings stay in your Library folder.
+No account, no analytics, and copying never uploads anything. Lodge goes online for a daily update check, which you can turn off in Settings > General, and to activate your license with Polar and confirm it about once a week. The ledger and your settings stay in your Library folder.
 
 ## Where do my settings live?
 

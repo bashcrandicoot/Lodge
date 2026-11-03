@@ -60,7 +60,7 @@ macOS 14 or later. Lodge is a universal app for Apple silicon and Intel Macs.
 
 ## Privacy
 
-No account, no analytics, and copying never uploads anything. The only time Lodge goes online is a daily check for updates, which you can turn off in Settings > General.
+No account, no analytics, and copying never uploads anything. Lodge goes online for a daily update check, which you can turn off in Settings > General, and to activate your license with Polar and confirm it about once a week.
 
 ## Support
 
