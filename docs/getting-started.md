@@ -1,6 +1,6 @@
 # Getting started
 
-Ingest camera media into custom folder structures and naming schemes. Every copy is checked with SHA-256. Lodge is a universal app for Apple silicon and Intel Macs, on macOS 14 or later. This is the path from the download to the first offload. The [user guide](user-guide.html) covers every control.
+Home base for your media. Your folders, your names, every card. Every copy is checked with SHA-256. Lodge is a universal app for Apple silicon and Intel Macs, on macOS 14 or later. This is the path from the download to the first offload. The [user guide](user-guide.html) covers every control.
 
 ## Download Lodge
 

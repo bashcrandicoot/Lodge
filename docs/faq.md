@@ -1,6 +1,6 @@
 # FAQ
 
-Ingest camera media into custom folder structures and naming schemes. Every copy is checked with SHA-256. Short answers below. The [user guide](user-guide.html) has the detail, and [Getting started](getting-started.html) covers the download.
+Home base for your media. Your folders, your names, every card. Every copy is checked with SHA-256. Short answers below. The [user guide](user-guide.html) has the detail, and [Getting started](getting-started.html) covers the download.
 
 ## What happens when the 3-day trial ends?
 
