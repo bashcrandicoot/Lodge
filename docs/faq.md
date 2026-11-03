@@ -88,7 +88,7 @@ No account, no analytics, and copying never uploads anything. The only time Lodg
 
 ## Can I use Light mode, or another colour?
 
-Yes. Settings > Appearance. Lodge starts in Dark mode with **Default**: a neutral black and white window, and system-blue controls (or whatever accent you set in System Settings). **Aurora**, **Ocean**, **Twilight**, **Ember**, and **Forest** are optional colour themes. **Light** and **System** are next to **Dark**.
+Yes. Settings > Appearance. Lodge starts in Dark mode with **Default**, and system-blue controls (or whatever accent you set in System Settings). **Aurora**, **Ocean**, **Twilight**, **Ember**, and **Forest** are optional colour themes. **Light** and **System** are next to **Dark**.
 
 ## What if two files would get the same name?
 

@@ -332,7 +332,7 @@ If something on the card changed and is not offloaded, Lodge stops and tells you
 
 ## Themes and appearance
 
-Lodge opens in **Dark** mode with the **Default** theme. Default is neutral black and white: no colour wash behind the window. In Dark mode the window is a neutral near-black. Buttons, switches, sliders, selected segments, selection, progress, and badges use the system accent. That accent is system blue unless you chose another in System Settings > Appearance. The ready-to-format badge and verified ticks stay green. Warnings stay orange. Destructive actions stay red.
+Lodge opens in **Dark** mode with the **Default** theme. Default has no colour wash behind the window. In Dark mode the window is a neutral near-black. Buttons, switches, sliders, selected segments, selection, progress, and badges use the system accent. That accent is system blue unless you chose another in System Settings > Appearance. The ready-to-format badge and verified ticks stay green. Warnings stay orange. Destructive actions stay red.
 
 **Aurora**, **Ocean**, **Twilight**, **Ember**, and **Forest** are optional colour themes. Each paints a soft wash behind the window, and uses its own gradient on the Offload button, the progress bar, the glowing border of the step that needs you, the dots that flow between the steps while a copy runs, and the glow when an offload finishes.
 
