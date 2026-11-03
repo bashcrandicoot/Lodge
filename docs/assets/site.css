@@ -568,5 +568,7 @@
 .prose pre { overflow: auto; background: var(--card); padding: var(--space-4); border-radius: 12px; border: 1px solid var(--line); }
 .prose pre code { color: var(--muted); }
 .prose img { display: block; margin: var(--space-4) 0; border-radius: var(--radius); border: 1px solid var(--line); }
+.prose figure.natural { width: fit-content; max-width: 100%; margin-inline: auto; }
+.prose figure.natural img { width: auto; max-width: 100%; height: auto; margin-inline: auto; }
 .prose a.trial { margin: var(--space-4) 0; }
 

@@ -62,8 +62,8 @@ If you don't see the prompt, set **Settings ▸ General ▸ Menu Bar ▸ Ask wit
 <figcaption>Import a card.</figcaption>
 </figure>
 
-<figure>
-<img src="assets/screenshots/import-prompt-dark.png" width="386" height="135" alt="The import prompt: Import with Lodge?" style="max-width:100%;height:auto">
+<figure class="natural">
+<img class="natural" src="assets/screenshots/import-prompt-dark.png" width="772" height="270" alt="The import prompt: Import with Lodge?">
 <figcaption>The import prompt: Import with Lodge?.</figcaption>
 </figure>
 
@@ -271,7 +271,7 @@ Choosing **Format Card…** does not erase the card by itself. Lodge erases it o
 On the format confirmation, Return is **Cancel**. **Format**, **Format and Discard 1 Short Clip**, and **Format and Discard N Short Clips** have no key. The title is **Format “`<card name>`”?**
 
 <figure>
-<img src="assets/screenshots/format-confirm.png" width="1240" height="800" alt="The format confirmation." style="max-width:100%;height:auto">
+<img src="assets/screenshots/format-confirm.png" width="1352" height="912" alt="The format confirmation." style="max-width:100%;height:auto">
 <figcaption>The format confirmation.</figcaption>
 </figure>
 
@@ -302,8 +302,8 @@ The menu bar menu has:
 
 **⌘-drag** the menu bar icon out to turn **Show menu bar icon** off. If the icon is hidden, the hint says to quit with **⌘Q**.
 
-<figure>
-<img src="assets/screenshots/menubar-menu-dark.png" width="252" height="197" alt="The menu bar menu: Open Lodge, cards and drives, Pause Detection, Settings, and Quit Lodge." style="max-width:100%;height:auto">
+<figure class="natural">
+<img class="natural" src="assets/screenshots/menubar-menu-dark.png" width="504" height="394" alt="The menu bar menu: Open Lodge, cards and drives, Pause Detection, Settings, and Quit Lodge.">
 <figcaption>The menu bar menu: Open Lodge, cards and drives, Pause Detection, Settings, and Quit Lodge.</figcaption>
 </figure>
 
@@ -422,7 +422,7 @@ The destructive buttons on the format confirmation and on **Forget History** hav
 ### Why Offload is waiting
 
 <figure>
-<img src="assets/screenshots/empty-dark.png" width="1060" height="700" alt="Lodge with no card. Offload is waiting." style="max-width:100%;height:auto">
+<img src="assets/screenshots/empty-dark.png" width="1352" height="912" alt="Lodge with no card. Offload is waiting." style="max-width:100%;height:auto">
 <figcaption>Lodge with no card.</figcaption>
 </figure>
 
