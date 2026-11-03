@@ -2,9 +2,9 @@
 
 Home base for your media. Your folders, your names, every card. Every copy is checked with SHA-256. Short answers below. The [user guide](user-guide.html) has the detail, and [Getting started](getting-started.html) covers the download.
 
-## What happens when the 3-day trial ends?
+## What happens when the trial ends?
 
-Lodge asks you to activate a license to keep using it. You can do that from the toolbar or Settings > General.
+Lodge asks you to activate a license to keep using it. See [Buying Lodge and entering your license key](user-guide.html#buying-lodge-and-entering-your-license-key).
 
 ## Which Mac do I need?
 
@@ -58,11 +58,7 @@ Lodge asks only while it is running, and only when you are in another app. Keep 
 
 ## Why did macOS block Lodge?
 
-Lodge is not notarized.
-
-On macOS 15 Sequoia and later, open Lodge, click **Done**, then go to **System Settings > Privacy & Security**, click **Open Anyway** next to Lodge, and confirm.
-
-On macOS 14 Sonoma, right-click or Control-click Lodge, choose **Open**, then **Open** again.
+Lodge isn't notarized, so the first time, right-click Lodge and choose Open, or go to System Settings > Privacy & Security > Open Anyway.
 
 The first time Lodge reads a card, also allow access to files on a removable volume.
 
@@ -72,7 +68,7 @@ Write to [bashframes@gmail.com](mailto:bashframes@gmail.com). If Lodge has been 
 
 **Help > Contact Support…** opens an email to that address, subject Lodge Support, with the Lodge and macOS versions under your message. **Help > Support Lodge…** and **Lodge > Support Lodge…** open the same page in your browser. **Lodge > About Lodge** says Made by bashframes, with a link to the same email. Settings > General ends with **Support** and **Support Lodge**.
 
-After five offloads where every file was copied and verified, and at least three days after you first open that version, a short **Support Lodge** note shows up at most twice, and only when Lodge is idle. It never appears during a copy. **Maybe Later** asks once more, 30 days later. **Support Lodge** and **Don’t Ask Again** stop it.
+After five offloads where every file was copied and verified, and at least three days after you first open that version, a short **Support Lodge** note shows up at most twice, and only when Lodge is idle. It never appears during a copy. **Maybe Later** asks once more, 30 days later. **Tip Jar…** and **Don’t Ask Again** stop it.
 
 ## How do I update Lodge?
 
@@ -84,15 +80,11 @@ Files land in the folder the template makes, and then in a folder named for the 
 
 ## Does Lodge need a network?
 
-No account, no analytics, and copying never uploads anything. Lodge goes online for a daily update check, which you can turn off in Settings > General, and to activate your license with Polar and confirm it about once a week. The ledger and your settings stay in your Library folder.
+No account, no analytics, and copying never uploads anything. Lodge goes online for a daily update check, which you can turn off in Settings > General. The ledger and your settings stay in your Library folder.
 
 ## Where do my settings live?
 
 `~/Library/Application Support/Lodge/` holds `ledger.json`, `destinations.json`, `cameras.json`, and `presets.json`. Templates, the theme, and the switches live in Lodge’s preferences.
-
-## Can I use Light mode, or another colour?
-
-Yes. Settings > Appearance. Lodge starts in Dark mode with **Default**, and system-blue controls (or whatever accent you set in System Settings). **Aurora**, **Ocean**, **Twilight**, **Ember**, and **Forest** are optional colour themes. **Light** and **System** are next to **Dark**.
 
 ## What if two files would get the same name?
 
@@ -100,7 +92,7 @@ Lodge does not overwrite. With `{seq}` in the template, numbering continues afte
 
 ## What happens the first time I open Lodge?
 
-**Welcome to Lodge** is a short guide to your first preset: destination, folders, naming and safety. It does not show if you already have presets, favorites, or offloads. **Keep Lodge running in the menu bar** is off by default. When it is on, closing the window leaves Lodge running. **Show menu bar icon** and **Open at login** are in Settings > General > Menu Bar. When a card is plugged in while you are in another app, Lodge can ask **Import with Lodge?** as a notification or a floating panel.
+**Welcome to Lodge** walks you through your first preset. It stays hidden if you already have presets, favorites, or offloads. [Getting started](getting-started.html) covers the rest of the first launch.
 
 ## I turned a file type off. Will Format still wait for it?
 

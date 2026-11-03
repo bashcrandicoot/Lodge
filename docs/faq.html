@@ -26,7 +26,7 @@
         <a href="index.html#verified">Verified</a>
         <a href="index.html#install">Install</a>
         <a href="getting-started.html">Getting started</a>
-        <a href="user-guide.html">User guide</a>
+        <a class="guide" href="user-guide.html">User guide</a>
         <a href="faq.html">FAQ</a>
         <a href="changelog.html">Changelog</a>
         <a class="download" href="https://bashfra.me/lodge-dmg" data-goatcounter-click="trial-download">Try for Free</a>
@@ -38,8 +38,8 @@
     <article class="wrap prose">
 <h1 id="faq">FAQ</h1>
 <p>Home base for your media. Your folders, your names, every card. Every copy is checked with SHA-256. Short answers below. The <a href="user-guide.html">user guide</a> has the detail, and <a href="getting-started.html">Getting started</a> covers the download.</p>
-<h2 id="what-happens-when-the-3-day-trial-ends">What happens when the 3-day trial ends?</h2>
-<p>Lodge asks you to activate a license to keep using it. You can do that from the toolbar or Settings &gt; General.</p>
+<h2 id="what-happens-when-the-trial-ends">What happens when the trial ends?</h2>
+<p>Lodge asks you to activate a license to keep using it. See <a href="user-guide.html#buying-lodge-and-entering-your-license-key">Buying Lodge and entering your license key</a>.</p>
 <h2 id="which-mac-do-i-need">Which Mac do I need?</h2>
 <p>macOS 14 Sonoma or later. Lodge is a universal app for Apple silicon and Intel Macs.</p>
 <h2 id="does-lodge-change-the-card-while-it-copies">Does Lodge change the card while it copies?</h2>
@@ -66,28 +66,24 @@
 <h2 id="why-didnt-lodge-ask-to-import-my-card">Why didn’t Lodge ask to import my card?</h2>
 <p>Lodge asks only while it is running, and only when you are in another app. Keep it running after you close the window with <strong>Settings &gt; General &gt; Menu Bar &gt; Keep Lodge running in the menu bar</strong>. If a Focus or Do Not Disturb is on, macOS holds the notification back: set <strong>Ask with</strong> to <strong>Floating panel</strong>. Lodge also skips drives without camera folders or media, your destination drives, and cards you chose <strong>Don’t ask</strong> for. See <a href="user-guide.html#when-lodge-asks-to-import">When Lodge asks to import</a>.</p>
 <h2 id="why-did-macos-block-lodge">Why did macOS block Lodge?</h2>
-<p>Lodge is not notarized.</p>
-<p>On macOS 15 Sequoia and later, open Lodge, click <strong>Done</strong>, then go to <strong>System Settings &gt; Privacy &amp; Security</strong>, click <strong>Open Anyway</strong> next to Lodge, and confirm.</p>
-<p>On macOS 14 Sonoma, right-click or Control-click Lodge, choose <strong>Open</strong>, then <strong>Open</strong> again.</p>
+<p>Lodge isn't notarized, so the first time, right-click Lodge and choose Open, or go to System Settings &gt; Privacy &amp; Security &gt; Open Anyway.</p>
 <p>The first time Lodge reads a card, also allow access to files on a removable volume.</p>
 <h2 id="how-do-i-get-help">How do I get help?</h2>
 <p>Write to <a href="mailto:bashframes@gmail.com">bashframes@gmail.com</a>. If Lodge has been useful, <a href="https://ko-fi.com/bashframes">Support Lodge</a>. Built by bashframes.</p>
 <p><strong>Help &gt; Contact Support…</strong> opens an email to that address, subject Lodge Support, with the Lodge and macOS versions under your message. <strong>Help &gt; Support Lodge…</strong> and <strong>Lodge &gt; Support Lodge…</strong> open the same page in your browser. <strong>Lodge &gt; About Lodge</strong> says Made by bashframes, with a link to the same email. Settings &gt; General ends with <strong>Support</strong> and <strong>Support Lodge</strong>.</p>
-<p>After five offloads where every file was copied and verified, and at least three days after you first open that version, a short <strong>Support Lodge</strong> note shows up at most twice, and only when Lodge is idle. It never appears during a copy. <strong>Maybe Later</strong> asks once more, 30 days later. <strong>Support Lodge</strong> and <strong>Don’t Ask Again</strong> stop it.</p>
+<p>After five offloads where every file was copied and verified, and at least three days after you first open that version, a short <strong>Support Lodge</strong> note shows up at most twice, and only when Lodge is idle. It never appears during a copy. <strong>Maybe Later</strong> asks once more, 30 days later. <strong>Tip Jar…</strong> and <strong>Don’t Ask Again</strong> stop it.</p>
 <h2 id="how-do-i-update-lodge">How do I update Lodge?</h2>
 <p><strong>Lodge &gt; Check for Updates…</strong> looks now. The item is dimmed while a check is already running. In Settings &gt; General, under <strong>Updates</strong>, <strong>Automatically check for updates</strong> is on, and <strong>Automatically download and install updates</strong> is off. The second switch is unavailable while automatic checks are off. Lodge checks once a day. Updates are EdDSA-signed through Sparkle.</p>
 <h2 id="how-are-files-sorted-into-folders">How are files sorted into folders?</h2>
 <p>Files land in the folder the template makes, and then in a folder named for the extension, in capitals: <code>MP4/</code>, <code>ARW/</code>, <code>WAV/</code>, and so on. <code>.mp4</code> and <code>.MP4</code> share <code>MP4/</code>. <code>.JPG</code>, <code>.JPEG</code>, and <code>.JPE</code> share <code>JPG/</code>. <code>.TIF</code> and <code>.TIFF</code> share <code>TIF/</code>. An unknown extension still gets a folder. A file with no extension stays in the template folder. With the default file rules, <code>lrv</code> and <code>lrf</code> go in <strong>Proxies/</strong>, and <code>thm</code>, <code>xml</code>, and <code>srt</code> go in <strong>Sidecars/</strong>, named after their clip. Audio recorded beside a clip, such as <code>C0001.WAV</code>, goes in <code>WAV/</code> and shares the clip’s new name.</p>
 <h2 id="does-lodge-need-a-network">Does Lodge need a network?</h2>
-<p>No account, no analytics, and copying never uploads anything. Lodge goes online for a daily update check, which you can turn off in Settings &gt; General, and to activate your license with Polar and confirm it about once a week. The ledger and your settings stay in your Library folder.</p>
+<p>No account, no analytics, and copying never uploads anything. Lodge goes online for a daily update check, which you can turn off in Settings &gt; General. The ledger and your settings stay in your Library folder.</p>
 <h2 id="where-do-my-settings-live">Where do my settings live?</h2>
 <p><code>~/Library/Application Support/Lodge/</code> holds <code>ledger.json</code>, <code>destinations.json</code>, <code>cameras.json</code>, and <code>presets.json</code>. Templates, the theme, and the switches live in Lodge’s preferences.</p>
-<h2 id="can-i-use-light-mode-or-another-colour">Can I use Light mode, or another colour?</h2>
-<p>Yes. Settings &gt; Appearance. Lodge starts in Dark mode with <strong>Default</strong>, and system-blue controls (or whatever accent you set in System Settings). <strong>Aurora</strong>, <strong>Ocean</strong>, <strong>Twilight</strong>, <strong>Ember</strong>, and <strong>Forest</strong> are optional colour themes. <strong>Light</strong> and <strong>System</strong> are next to <strong>Dark</strong>.</p>
 <h2 id="what-if-two-files-would-get-the-same-name">What if two files would get the same name?</h2>
 <p>Lodge does not overwrite. With <code>{seq}</code> in the template, numbering continues after the highest number already in the shoot folder and every format folder under it. Without <code>{seq}</code> or <code>{original}</code>, a repeated name gets <code>_2</code>, <code>_3</code>, and so on.</p>
 <h2 id="what-happens-the-first-time-i-open-lodge">What happens the first time I open Lodge?</h2>
-<p><strong>Welcome to Lodge</strong> is a short guide to your first preset: destination, folders, naming and safety. It does not show if you already have presets, favorites, or offloads. <strong>Keep Lodge running in the menu bar</strong> is off by default. When it is on, closing the window leaves Lodge running. <strong>Show menu bar icon</strong> and <strong>Open at login</strong> are in Settings &gt; General &gt; Menu Bar. When a card is plugged in while you are in another app, Lodge can ask <strong>Import with Lodge?</strong> as a notification or a floating panel.</p>
+<p><strong>Welcome to Lodge</strong> walks you through your first preset. It stays hidden if you already have presets, favorites, or offloads. <a href="getting-started.html">Getting started</a> covers the rest of the first launch.</p>
 <h2 id="i-turned-a-file-type-off-will-format-still-wait-for-it">I turned a file type off. Will Format still wait for it?</h2>
 <p>The type switches decide what the next offload copies. <strong>Ready to format</strong> looks at the whole card, not only the types you left on. A photo you excluded still has to be offloaded, or the card is not ready. Ignored names are the exception: they are never copied, and they do not block the badge.</p>
     </article>
@@ -99,7 +95,7 @@
       <p class="analytics-note">This website counts visits with GoatCounter: anonymous, no cookies. The Lodge app itself has no analytics.</p>
       <nav aria-label="Footer">
         <a href="getting-started.html">Getting started</a>
-        <a href="user-guide.html">User guide</a>
+        <a class="guide" href="user-guide.html">User guide</a>
         <a href="faq.html">FAQ</a>
         <a href="changelog.html">Changelog</a>
         <a href="mailto:bashframes@gmail.com">bashframes@gmail.com</a>
