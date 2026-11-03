@@ -16,34 +16,14 @@
             <sparkle:version>7</sparkle:version>
             <sparkle:shortVersionString>1.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <description sparkle:format="markdown"><![CDATA[## Lodge 1.0
-
-*Home base for your media.* Lodge offloads camera SD cards (video, photos, audio and sidecar files), verifies every copy and names everything the way you want.
-
-- **Notices cards as you insert them.** Any removable drive with media on it, including cards that were already in when Lodge opened.
-- **A Card → Media → Destination window**, read left to right, with the offload bar along the bottom.
-- **Copies only what's new.** A ledger remembers every offloaded file, so inserting the same card again copies only new files.
-- **Verified copies.** Each file is read back from disk and checked with SHA-256 before it gets its final name. Nothing is ever overwritten.
-- **Naming templates** with tokens (`{project}`, `{camera}`, `{date}`, `{time}`, `{type}`, `{card}`, `{original}`, `{seq}`, `{ext}` and more), template presets and a live preview of every final name.
-- **Sidecars and proxies sorted.** Sidecars keep their clip's name; proxies go into `Proxies/` and sidecars into `Sidecars/`.
-- **Presets.** Save a whole setup and switch to it from the toolbar.
-- **Quick dump.** Skip the project name and offload a card right away.
-- **Skip short videos.** Accidental takes under a few seconds stay on the card.
-- **Favorite destinations** with their free space, one click apart.
-- **Re-offload** missing copies or the whole card, without overwriting.
-- **Format a card safely.** A **Ready to format** badge appears once every file has a verified copy.
-- **Thumbnails, list view and Quick Look.**
-- **Recent Offloads** with **Show in Finder**, which opens one window on the folder the copies share.
-- **Themes and Light mode.**
-- **Menu bar mode.** Keep Lodge in the menu bar to watch for cards.
-- **First-launch setup** that walks you through your first preset.
-- **A folder for each file type** inside the last folder.
-- **Choose which days to offload:** Any date, Today, Last 7 days or a custom range.
-- **Correct free space on external drives** that aren't APFS, and a clear message when a destination drive is read-only.
-- **Help ▸ Report a Bug…** with Lodge's log attached, and a crash-report prompt on the next launch.
-- **Check for Updates** (automatic checks can be turned off in Settings).
-
-Requires macOS 14 Sonoma or later. Universal: runs natively on Apple silicon and Intel Macs.
+            <description><![CDATA[<h2>Lodge 1.0</h2>
+<p>Lodge is now a paid app. Try free 3 days, then $10 once for a license.</p>
+<ul>
+<li>Your 3-day trial starts when you open this version. Every feature is included.</li>
+<li>Enter your license key any time from the toolbar or Settings &gt; General. After the trial, Buy Lodge opens checkout with Polar.</li>
+<li>Lodge goes online for a daily update check, which you can turn off in Settings &gt; General, and to activate your license with Polar and confirm it about once a week.</li>
+<li>Updates now come as a signed disk image.</li>
+</ul>
 ]]></description>
             <enclosure url="https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg" length="8911704" type="application/octet-stream" sparkle:edSignature="5S7sMqXS/uxgNTHSEWSGDm8FrMSgzaDB/Rp+J4b7h/wYVlGXE8o/R7n8lWv7uhdxiU++CNmcl4n59eB6Bwo5Ag=="/>
         </item>
