@@ -45,7 +45,7 @@ If you don't see the prompt, set **Settings ▸ General ▸ Menu Bar ▸ Ask wit
 
 <img src="assets/guide/lodge-guide-diagram-import-flow@2x.png" width="1040" height="345" alt="Import a card. Import opens Lodge with that card selected. Ignore or Don’t Ask for This Card leaves the card alone. Only Offload copies files." style="max-width:100%;height:auto">
 
-<img src="assets/screenshots/import-prompt-dark.png" width="772" height="270" alt="The import prompt: Import with Lodge?" style="max-width:100%;height:auto">
+<img src="assets/screenshots/import-prompt-dark.png" width="386" height="135" alt="The import prompt: Import with Lodge?" style="max-width:100%;height:auto">
 
 **Import** opens Lodge with that card selected. Nothing is copied yet. Notifications are the default.
 
@@ -123,7 +123,7 @@ The project name is cleaned separately. Letters, digits, and `-` stay. Any other
 
 Sequence numbers continue after the highest number already in the destination folder.
 
-<img src="assets/screenshots/settings-naming.png" width="1424" height="1640" alt="Settings, Naming. The folder template and the file template." style="max-width:100%;height:auto">
+<img src="assets/screenshots/settings-naming.png" width="712" height="820" alt="Settings, Naming. The folder template and the file template." style="max-width:100%;height:auto">
 
 Inside the shoot folder, each extension gets its own folder. `.jpeg` and `.jpe` share **JPG**. `.tiff` shares **TIF**. `{ext}` stays that file’s own extension, lowercased.
 
@@ -147,7 +147,7 @@ Sidecars go in `Sidecars/`. The default sidecar extensions are `thm`, `xml`, and
 
 They keep the clip’s new name.
 
-<img src="assets/screenshots/settings-files.png" width="1344" height="1600" alt="Settings, Files. Proxy extensions, sidecar extensions, and ignored names." style="max-width:100%;height:auto">
+<img src="assets/screenshots/settings-files.png" width="672" height="800" alt="Settings, Files. Proxy extensions, sidecar extensions, and ignored names." style="max-width:100%;height:auto">
 
 By default, Lodge skips system files such as `.DS_Store`, `._*`, `.Spotlight-V100`, `.Trashes`, `.fseventsd`, `.TemporaryItems`, and `Thumbs.db`.
 
@@ -180,7 +180,7 @@ Until you pick a folder, the Destination stage shows **No Destination**. Click *
 
 Each favorite shows how much space is available. A favorite that isn't plugged in says **Not connected**.
 
-<img src="assets/screenshots/settings-destinations.png" width="1344" height="1280" alt="Settings, Destinations. Favorite folders." style="max-width:100%;height:auto">
+<img src="assets/screenshots/settings-destinations.png" width="672" height="640" alt="Settings, Destinations. Favorite folders." style="max-width:100%;height:auto">
 
 Under the destination, Lodge shows **`<bytes>` available**, and **needs `<bytes>`** once there's something to copy.
 
@@ -213,7 +213,7 @@ The manual command is **Eject Card**. After the card is gone, the label is **Eje
 
 **Eject card after offload** is off. Its caption is **Only when every file was copied and verified.** With it on, the card ejects only when the offload was not cancelled, nothing failed, at least one file was copied, and the card is still present. The same switch ejects the card after a successful format. After a successful eject, the finish line can end with ** — card ejected, safe to remove**. If eject fails, that line ends with ** — Couldn’t eject `<card name>`: `<system message>`**.
 
-<img src="assets/guide/lodge-guide-diagram-eject-flow@2x.png" width="1050" height="310" alt="Eject after offload. With the switch on, the card ejects only when the offload was not cancelled, nothing failed, at least one file was copied, and the card is still there. It also ejects after a successful format." style="max-width:100%;height:auto">
+<img src="assets/guide/lodge-guide-diagram-eject-flow@2x.png" width="1050" height="310" alt="A simplified eject flow. A verified offload leads to unmount and eject. Otherwise the card stays mounted." style="max-width:100%;height:auto">
 
 The **Ready to format** badge shows when the card has at least one file, every file still has its copy at the destination at the same size, and no skipped short clip remains. Ignored system files do not block it. It appears on the selected card’s row and beside the finish-bar title. Its help is **Every file on this card has a verified copy at the destination.**
 
@@ -252,7 +252,7 @@ The menu bar menu has:
 
 **⌘-drag** the menu bar icon out to turn **Show menu bar icon** off. If the icon is hidden, the hint says to quit with **⌘Q**.
 
-<img src="assets/screenshots/menubar-menu-dark.png" width="504" height="394" alt="The menu bar menu: Open Lodge, cards and drives, Pause Detection, Settings, and Quit Lodge." style="max-width:100%;height:auto">
+<img src="assets/screenshots/menubar-menu-dark.png" width="252" height="197" alt="The menu bar menu: Open Lodge, cards and drives, Pause Detection, Settings, and Quit Lodge." style="max-width:100%;height:auto">
 
 ## Settings reference
 
@@ -294,25 +294,25 @@ General groups these sections: **Files to Offload**, **Short Clips**, **After Of
 | Update check interval | once a day |
 | Automatically download and install updates | off |
 
-<img src="assets/screenshots/settings-general.png" width="1344" height="1600" alt="Settings, General." style="max-width:100%;height:auto">
+<img src="assets/screenshots/settings-general.png" width="672" height="800" alt="Settings, General." style="max-width:100%;height:auto">
 
-<img src="assets/screenshots/settings-appearance.png" width="1344" height="1410" alt="Settings, Appearance. Theme is Default. Appearance is Dark, with System and Light as the other choices." style="max-width:100%;height:auto">
+<img src="assets/screenshots/settings-appearance.png" width="672" height="705" alt="Settings, Appearance. Theme is Default. Appearance is Dark, with System and Light as the other choices." style="max-width:100%;height:auto">
 
 <img src="assets/screenshots/ready-light.png" width="1352" height="912" alt="Lodge with Light appearance." style="max-width:100%;height:auto">
 
 <img src="assets/screenshots/ready-ember-dark.png" width="1352" height="912" alt="Lodge with a saved theme other than the neutral Default." style="max-width:100%;height:auto">
 
-<img src="assets/screenshots/settings-presets.png" width="1504" height="1480" alt="Settings, Presets." style="max-width:100%;height:auto">
+<img src="assets/screenshots/settings-presets.png" width="752" height="740" alt="Settings, Presets." style="max-width:100%;height:auto">
 
-<img src="assets/screenshots/settings-destinations.png" width="1344" height="1280" alt="Settings, Destinations. Favorite folders." style="max-width:100%;height:auto">
+<img src="assets/screenshots/settings-destinations.png" width="672" height="640" alt="Settings, Destinations. Favorite folders." style="max-width:100%;height:auto">
 
-<img src="assets/screenshots/settings-naming.png" width="1424" height="1640" alt="Settings, Naming. The folder template and the file template." style="max-width:100%;height:auto">
+<img src="assets/screenshots/settings-naming.png" width="712" height="820" alt="Settings, Naming. The folder template and the file template." style="max-width:100%;height:auto">
 
-<img src="assets/screenshots/settings-files.png" width="1344" height="1600" alt="Settings, Files. Proxy extensions, sidecar extensions, and ignored names." style="max-width:100%;height:auto">
+<img src="assets/screenshots/settings-files.png" width="672" height="800" alt="Settings, Files. Proxy extensions, sidecar extensions, and ignored names." style="max-width:100%;height:auto">
 
 <img src="assets/screenshots/grid-dark.png" width="1352" height="912" alt="Media shown as a grid. Show files as can be List or Grid." style="max-width:100%;height:auto">
 
-<img src="assets/screenshots/settings-cameras.png" width="1344" height="1280" alt="Settings, Cameras." style="max-width:100%;height:auto">
+<img src="assets/screenshots/settings-cameras.png" width="672" height="640" alt="Settings, Cameras." style="max-width:100%;height:auto">
 
 The updates footer says: **Lodge checks for a new version once a day. You can also choose Lodge ▸ Check for Updates… any time.**
 
