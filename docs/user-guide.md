@@ -137,8 +137,6 @@ On the setup done screen, Return can be **Offload with `<preset>`**.
 
 **Quick dump** sits under Project in Media. It is off until you turn it on. The hint says **Skips the project name and dumps all the footage straight into a dated folder.** While it is on, the Project field is disabled and its prompt is **Not needed for a quick dump**. `{project}`, and the old `{shoot}` token, are taken out of the templates used for that offload only. The templates you saved stay as written. Empty folder levels disappear, so `{date}/{project}` becomes `{date}` and `{date}_{project}_{seq}` becomes `{date}_{seq}`. If the file template would have no token left, it becomes `{date}_{seq}`. The project you typed is not saved as the last project. Sequence numbers still continue. Each extension still gets its own folder. Proxies still go in `Proxies/` and sidecars in `Sidecars/`. A level Quick dump removes is struck through and tagged **Quick dump**.
 
-<img src="assets/screenshots/ready-presets-dark.png" width="1240" height="800" alt="Lodge ready to offload, with the Quick dump toggle under Project." style="max-width:100%;height:auto">
-
 <img src="assets/screenshots/ready-quickdump-dark.png" width="1352" height="912" alt="Quick dump available on the main window." style="max-width:100%;height:auto">
 
 ## Sidecars and proxies
