@@ -4,7 +4,7 @@ Home base for your media. Your folders, your names, every card. Every copy is ch
 
 ## Download Lodge
 
-[Try for Free](https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg) for Mac
+[Try for Free](https://bashfra.me/lodge-dmg) for Mac
 
 Open the .dmg, and drag Lodge to Applications. Try free 3 days, then $10.
 
