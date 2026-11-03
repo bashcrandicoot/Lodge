@@ -11,6 +11,8 @@ struct ContentView: View {
     @Environment(\.openWindow) private var openWindow
     /// Saved for `MainWindow`, to open Settings from the menu bar icon.
     @Environment(\.openSettings) private var openSettings
+    @Environment(\.openURL) private var openURL
+    @State private var enteringLicense = false
 
     var body: some View {
         Group {
@@ -45,6 +47,18 @@ struct ContentView: View {
                     RecentOffloadsView()
                 }
             }
+            if let days = license.trialDaysLeft {
+                ToolbarItem(placement: .automatic) {
+                    HStack(spacing: 8) {
+                        Text(LicenseCopy.trialStatus(days))
+                        Button(LicenseCopy.buy) { openURL(LodgeLicense.buyURL) }
+                            .buttonStyle(.borderless)
+                        Button(LicenseCopy.enterLicense) { enteringLicense = true }
+                            .buttonStyle(.borderless)
+                    }
+                    .font(.caption)
+                }
+            }
             ToolbarItem(placement: .automatic) {
                 SettingsLink {
                     Label("Settings", systemImage: "gearshape")
@@ -60,6 +74,9 @@ struct ContentView: View {
         .onAppear {
             MainWindow.openAction = { [openWindow] in openWindow(id: "main") }
             MainWindow.openSettingsAction = { [openSettings] in openSettings() }
+        }
+        .sheet(isPresented: $enteringLicense) {
+            LicenseEntrySheet()
         }
         #if DEBUG
         .task {

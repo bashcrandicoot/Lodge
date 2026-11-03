@@ -6,6 +6,47 @@ extension LicenseModel {
     }
 }
 
+/// Key entry shown from the trial toolbar. Buying and activating both stay available.
+struct LicenseEntrySheet: View {
+    @EnvironmentObject private var license: LicenseModel
+    @Environment(\.openURL) private var openURL
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(LicenseCopy.enterLicenseKey)
+                .font(.headline)
+            Text(LicenseCopy.price)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            TextField(LicenseCopy.keyPrompt, text: license.keyDraftBinding)
+                .textFieldStyle(.roundedBorder)
+                .onSubmit { Task { await submit() } }
+            HStack {
+                Button(LicenseCopy.buy) { openURL(LodgeLicense.buyURL) }
+                Spacer()
+                Button(LicenseCopy.activate) { Task { await submit() } }
+                    .keyboardShortcut(.defaultAction)
+                    .disabled(license.isWorking || LicenseKey.normalize(license.keyDraft).isEmpty)
+            }
+            if let banner = license.banner {
+                Text(banner)
+                    .font(.caption)
+                    .foregroundStyle(.red)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(20)
+        .frame(width: 420)
+    }
+
+    private func submit() async {
+        await license.activate()
+        if license.allowsUse, license.trialDaysLeft == nil { dismiss() }
+    }
+}
+
 /// Shown in place of the funnel until this Mac has a usable license.
 struct LicenseGate: View {
     @EnvironmentObject private var license: LicenseModel
@@ -40,6 +81,7 @@ struct LicenseGate: View {
                 Button(LicenseCopy.deactivate) { Task { await license.deactivate() } }
                     .disabled(license.isWorking)
             } else {
+                Text(LicenseCopy.enterLicenseKey)
                 TextField(LicenseCopy.keyPrompt, text: license.keyDraftBinding)
                     .textFieldStyle(.roundedBorder)
                     .onSubmit { Task { await license.activate() } }

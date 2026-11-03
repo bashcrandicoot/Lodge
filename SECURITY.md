@@ -10,7 +10,7 @@ Include the macOS version, the Lodge version, and what you observed. Give the ma
 
 ## What Lodge does on your Mac
 
-No account and no analytics. Copying never uploads anything. Lodge contacts Polar to activate a license, to confirm it about once a week, and to deactivate this Mac. A license that cannot be confirmed still works for 14 days after the last confirmation. The license key and its activation are stored in the Keychain. Lodge also checks for updates once a day, which you can turn off in Settings > General. Updates are EdDSA-signed disk images through Sparkle. Buy Lodge opens the Polar checkout in your browser. Copying, the ledger, favorites, cameras, presets, and settings stay on the Mac, under `~/Library/Application Support/Lodge/` and in Lodge’s preferences.
+No account and no analytics. Copying never uploads anything. Lodge contacts Polar to activate a license, to confirm it about once a week, and to deactivate this Mac. A license that cannot be confirmed still works for 14 days after the last confirmation. The license key, its activation, and the trial’s first-launch date are stored in the Keychain. Lodge also checks for updates once a day, which you can turn off in Settings > General. Updates are EdDSA-signed disk images through Sparkle. Buy Lodge opens the Polar checkout in your browser. Support Lodge opens Ko-fi (https://ko-fi.com/bashframes). Copying, the ledger, favorites, cameras, presets, and settings stay on the Mac, under `~/Library/Application Support/Lodge/` and in Lodge’s preferences.
 
 During an offload Lodge only reads the card. It writes on the destination you chose, to a `<name>.lodge-partial` file, and renames that file after the SHA-256 matches.
 

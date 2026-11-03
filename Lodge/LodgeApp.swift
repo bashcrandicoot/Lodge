@@ -54,13 +54,15 @@ struct LodgeApp: App {
                 Button("About Lodge") { Support.showAboutPanel() }
                 CheckForUpdatesView(updater: AppUpdates.updater)
                 Button("Buy Lodge…") { Support.openBuyPage() }
+                Button("Support Lodge…") { Support.openTipJar() }
             }
-            // Help ▸ Contact Support… and Buy Lodge…
+            // Help ▸ Contact Support…, Buy Lodge…, and Support Lodge…
             // .help placement is empty without a Help Book, so items "after" it never show; replace it instead.
             CommandGroup(replacing: .help) {
                 Button("Contact Support…") { Support.contactSupport() }
                 Button("Report a Bug…") { BugReport.compose() }
                 Button("Buy Lodge…") { Support.openBuyPage() }
+                Button("Support Lodge…") { Support.openTipJar() }
             }
         }
 

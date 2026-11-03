@@ -44,10 +44,59 @@ final class KeychainLicenseStore: LicenseStore {
     }
 
     func clear() throws {
+        try delete(account: Self.account)
+    }
+
+    func loadTrial() throws -> TrialRecord? {
+        guard let data = try loadData(account: Self.trialAccount) else { return nil }
+        return try LicenseJSON.decoder().decode(TrialRecord.self, from: data)
+    }
+
+    func saveTrial(_ record: TrialRecord) throws {
+        try saveData(LicenseJSON.encoder().encode(record), account: Self.trialAccount)
+    }
+
+    /// Separate from the license item, so deactivating this Mac does not restart the trial.
+    static let trialAccount = "trial"
+
+    private func loadData(account: String) throws -> Data? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: Self.service,
-            kSecAttrAccount as String: Self.account,
+            kSecAttrAccount as String: account,
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne,
+        ]
+        var item: CFTypeRef?
+        let status = SecItemCopyMatching(query as CFDictionary, &item)
+        if status == errSecItemNotFound { return nil }
+        guard status == errSecSuccess, let data = item as? Data else {
+            throw KeychainLicenseError(status: status)
+        }
+        return data
+    }
+
+    private func saveData(_ data: Data, account: String) throws {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: Self.service,
+            kSecAttrAccount as String: account,
+        ]
+        let update = SecItemUpdate(query as CFDictionary, [kSecValueData as String: data] as CFDictionary)
+        if update == errSecSuccess { return }
+        if update != errSecItemNotFound { throw KeychainLicenseError(status: update) }
+        var add = query
+        add[kSecValueData as String] = data
+        add[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
+        let status = SecItemAdd(add as CFDictionary, nil)
+        guard status == errSecSuccess else { throw KeychainLicenseError(status: status) }
+    }
+
+    private func delete(account: String) throws {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: Self.service,
+            kSecAttrAccount as String: account,
         ]
         let status = SecItemDelete(query as CFDictionary)
         if status == errSecSuccess || status == errSecItemNotFound { return }
@@ -74,6 +123,7 @@ final class LicenseModel: ObservableObject {
     var isWorking: Bool { controller.isWorking }
     var banner: String? { controller.banner }
     var allowsUse: Bool { controller.allowsUse }
+    var trialDaysLeft: Int? { controller.trialDaysLeft }
     var canDeactivate: Bool { controller.canDeactivate }
     var needsCheck: Bool { controller.needsCheck }
     var maskedKey: String? { controller.maskedKey }

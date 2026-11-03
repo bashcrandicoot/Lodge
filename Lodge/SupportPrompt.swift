@@ -115,7 +115,7 @@ final class SupportPromptStore: ObservableObject {
     func choose(_ choice: SupportPromptChoice) {
         state = SupportPromptPolicy.chose(choice, state, now: now())
         isShowing = false
-        if choice == .support { Support.openBuyPage() }
+        if choice == .support { Support.openTipJar() }
     }
 
     /// Puts the card away without an answer (an offload is starting). It waits 30 days.
@@ -150,9 +150,9 @@ struct SupportPromptCard: View {
                 .frame(width: 320, height: 160)
                 .accessibilityHidden(true)
             VStack(spacing: 8) {
-                Text("Buy Lodge")
+                Text("Support Lodge")
                     .font(.headline)
-                Text("Lodge is made by one person at \(Support.developerName). Lodge is $10, one time. Thank you!")
+                Text("Lodge is made by one person at \(Support.developerName). If it saves you time, you can chip in on Ko-fi. Thank you!")
                     .font(.callout)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -169,10 +169,10 @@ struct SupportPromptCard: View {
                 Button("Maybe Later") { prompt.choose(.later) }
                     .keyboardShortcut(.cancelAction)
                     .fixedSize()
-                Button("Buy Lodge") { prompt.choose(.support) }
+                Button("Support Lodge") { prompt.choose(.support) }
                     .buttonStyle(.themeProminent)
                     .fixedSize()
-                    .help("Opens \(Support.buyURL.absoluteString) in your browser")
+                    .help("Opens \(Support.tipJarURL.absoluteString) in your browser")
             }
             .controlSize(.regular)
             .padding(.top, 20)
@@ -189,7 +189,7 @@ struct SupportPromptCard: View {
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .strokeBorder(Color.primary.opacity(0.08)))
         .accessibilityElement(children: .contain)
-        .accessibilityLabel("Buy Lodge")
+        .accessibilityLabel("Support Lodge")
         .accessibilityAddTraits(.isModal)
     }
 }

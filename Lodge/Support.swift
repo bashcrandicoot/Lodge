@@ -6,8 +6,10 @@ import AppKit
 enum Support {
     static let developerName = "bashframes"
     static let email = "bashframes@gmail.com"
-    /// Buy Lodge (Lodge ▸ Buy Lodge…, Help ▸ Buy Lodge…, the Settings footer and the buy note).
+    /// Buy Lodge (the license gate, the trial toolbar, and Lodge ▸ Buy Lodge…).
     static var buyURL: URL { LodgeLicense.buyURL }
+    /// Donations. Not the purchase and not the download.
+    static let tipJarURL = URL(string: "https://ko-fi.com/bashframes")!
 
     /// A plain `mailto:` link, for the About window and the Settings footer.
     static var emailURL: URL { mailURL(body: nil) }
@@ -81,6 +83,11 @@ enum Support {
     static func openBuyPage() {
         NSWorkspace.shared.open(buyURL)
     }
+
+    /// Opens the Ko-fi page in the browser.
+    static func openTipJar() {
+        NSWorkspace.shared.open(tipJarURL)
+    }
 }
 
 /// The quiet "Made by bashframes · Support" line at the bottom of Settings ▸ General.
@@ -97,8 +104,12 @@ struct SettingsCreditsFooter: View {
                 .help("Email a bug report with Lodge’s recent log attached")
             Text("·").accessibilityHidden(true)
             Link("Buy Lodge", destination: Support.buyURL)
-                .help("Lodge is $10, one time")
+                .help("Lodge is $10 once, try free 3 days")
                 .accessibilityLabel("Buy Lodge")
+            Text("·").accessibilityHidden(true)
+            Link("Support Lodge ♥", destination: Support.tipJarURL)
+                .help("Leave a tip for Lodge on Ko-fi")
+                .accessibilityLabel("Support Lodge")
         }
         .font(.caption)
         .foregroundStyle(.secondary)

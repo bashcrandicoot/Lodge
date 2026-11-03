@@ -6,14 +6,16 @@ import FoundationNetworking
 /// Polar license keys for Lodge. The app talks only to Polar's public customer-portal
 /// endpoints and never sends an API token.
 ///
-/// There is no trial. A Mac that has not activated a key, or whose last successful
-/// confirmation is 14 days old and cannot be repeated, does not offload.
+/// A Mac without a key works for 3 days from the first launch stored in the Keychain.
+/// After that, or when a license's last confirmation is 14 days old and cannot be
+/// repeated, Lodge does not offload.
 enum LodgeLicense {
     static let keyPrefix = "LODGE"
     /// Product limit configured on the Polar benefit. Polar enforces it; the app
     /// states it and does not invent a different cap.
     static let activationLimit = 3
     static let priceUSD = 10
+    static let trialLength: TimeInterval = 3 * 24 * 60 * 60
     static let buyURL = URL(string: "https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1")!
     /// Confirm again after a week. The check is skipped until this age.
     static let revalidateAfter: TimeInterval = 7 * 24 * 60 * 60
@@ -117,8 +119,47 @@ enum LicenseFreshness: Equatable {
 }
 
 enum LicensePhase: Equatable {
+    /// The 3-day trial is still running. `daysLeft` is at least 1.
+    case trial(daysLeft: Int)
     case unlicensed
     case licensed(StoredLicense, LicenseFreshness)
+}
+
+/// First launch of this Mac, kept in the Keychain so deleting the app does not start the trial over.
+struct TrialRecord: Codable, Equatable {
+    var firstLaunch: Date
+    /// Latest clock reading that moved forward. A backward step does not replace this.
+    var lastSeen: Date
+}
+
+enum TrialAccess: Equatable {
+    case active(daysLeft: Int)
+    case expired
+}
+
+enum TrialPolicy {
+    /// Days remaining, rounded up, while `elapsed` is still inside the 3 days.
+    static func daysLeft(elapsed: TimeInterval) -> Int {
+        let remaining = LodgeLicense.trialLength - elapsed
+        let day: TimeInterval = 24 * 60 * 60
+        return max(1, Int((remaining / day).rounded(.up)))
+    }
+
+    /// A clock that moves backward does not lengthen the trial. It is treated as over.
+    static func access(record: TrialRecord, now: Date) -> TrialAccess {
+        if now < record.firstLaunch || now < record.lastSeen { return .expired }
+        let elapsed = now.timeIntervalSince(record.firstLaunch)
+        if elapsed >= LodgeLicense.trialLength { return .expired }
+        return .active(daysLeft: daysLeft(elapsed: elapsed))
+    }
+
+    /// Records the first launch, or moves `lastSeen` forward. Never rewrites either date backward.
+    static func advance(record: TrialRecord?, now: Date) -> TrialRecord {
+        guard var record else { return TrialRecord(firstLaunch: now, lastSeen: now) }
+        if now < record.firstLaunch || now < record.lastSeen { return record }
+        record.lastSeen = now
+        return record
+    }
 }
 
 enum LicensePolicy {
@@ -136,22 +177,24 @@ enum LicensePolicy {
 
     static func allowsUse(_ phase: LicensePhase) -> Bool {
         switch phase {
+        case .trial, .licensed(_, .current), .licensed(_, .stale):
+            return true
         case .unlicensed, .licensed(_, .graceExpired):
             return false
-        case .licensed(_, .current), .licensed(_, .stale):
-            return true
         }
     }
 }
 
-/// Every sentence the license screens show. Kept together so a test can reject the word "free".
+/// Every sentence the license screens show.
 enum LicenseCopy {
     static let section = "License"
-    static let price = "Lodge is $10, one time. A license key works on 3 Macs and does not expire."
+    static let price = "Lodge is $10 once, try free 3 days. A license key works on 3 Macs and does not expire."
     static let buy = "Buy Lodge"
     static let activate = "Activate"
     static let deactivate = "Deactivate"
     static let checkAgain = "Check Again"
+    static let enterLicense = "Enter License"
+    static let enterLicenseKey = "Enter License Key"
     static let keyPrompt = "License key"
     static let thisMac = "This Mac"
     static let prefixError = "License keys start with LODGE."
@@ -169,8 +212,13 @@ enum LicenseCopy {
     static let keychainRead = "Lodge could not read the saved license."
     static let keychainWrite = "Lodge could not save the license in the Keychain."
 
+    static func trialStatus(_ days: Int) -> String {
+        days == 1 ? "Trial: 1 day left" : "Trial: \(days) days left"
+    }
+
     static func status(for phase: LicensePhase) -> String {
         switch phase {
+        case .trial(let days): return trialStatus(days)
         case .unlicensed: return unlicensed
         case .licensed(_, .current): return licensed
         case .licensed(_, .stale): return offlineGrace
@@ -179,7 +227,8 @@ enum LicenseCopy {
     }
 
     static let userFacing = [
-        section, price, buy, activate, deactivate, checkAgain, keyPrompt, thisMac,
+        section, price, buy, activate, deactivate, checkAgain, enterLicense, enterLicenseKey, keyPrompt, thisMac,
+        trialStatus(1), trialStatus(3),
         prefixError, enterKey, licensed, offlineGrace, graceEnded, unlicensed, checking,
         unreachable, activateRejected, validateRejected, expired, unreadable,
         keychainRead, keychainWrite,
@@ -190,15 +239,20 @@ protocol LicenseStore: AnyObject {
     func load() throws -> StoredLicense?
     func save(_ license: StoredLicense) throws
     func clear() throws
+    func loadTrial() throws -> TrialRecord?
+    func saveTrial(_ record: TrialRecord) throws
 }
 
 /// In-memory stand-in for the Keychain. Tests use it. Demo mode uses it so screenshots
 /// stay licensed without writing the login Keychain.
 final class MemoryLicenseStore: LicenseStore {
     var saved: StoredLicense?
+    var trial: TrialRecord?
     func load() throws -> StoredLicense? { saved }
     func save(_ license: StoredLicense) throws { saved = license }
     func clear() throws { saved = nil }
+    func loadTrial() throws -> TrialRecord? { trial }
+    func saveTrial(_ record: TrialRecord) throws { trial = record }
 }
 
 struct LicenseRequest: Equatable, Sendable {
@@ -509,6 +563,11 @@ final class LicenseController {
         return LicenseKey.mask(stored.key)
     }
 
+    var trialDaysLeft: Int? {
+        if case .trial(let days) = phase { return days }
+        return nil
+    }
+
     nonisolated static func defaultMachineLabel() -> String {
         let name = Host.current().localizedName?.trimmingCharacters(in: .whitespacesAndNewlines)
         let host = (name?.isEmpty == false ? name! : nil) ?? "Mac"
@@ -616,13 +675,48 @@ final class LicenseController {
     }
 
     private func applyStored() {
+        let storedLicense: StoredLicense?
         do {
-            phase = LicensePolicy.phase(stored: try store.load(), now: now())
+            storedLicense = try store.load()
         } catch {
             phase = .unlicensed
             statusLine = LicenseCopy.status(for: phase)
             banner = LicenseCopy.keychainRead
             return
+        }
+        if let storedLicense {
+            phase = LicensePolicy.phase(stored: storedLicense, now: now())
+            statusLine = LicenseCopy.status(for: phase)
+            return
+        }
+        let existing: TrialRecord?
+        do {
+            existing = try store.loadTrial()
+        } catch {
+            phase = .unlicensed
+            statusLine = LicenseCopy.status(for: phase)
+            banner = LicenseCopy.keychainRead
+            return
+        }
+        let next = TrialPolicy.advance(record: existing, now: now())
+        if next != existing {
+            do {
+                try store.saveTrial(next)
+            } catch {
+                // A trial that was never written down can be restarted by reinstalling.
+                if existing == nil {
+                    phase = .unlicensed
+                    statusLine = LicenseCopy.status(for: phase)
+                    banner = LicenseCopy.keychainWrite
+                    return
+                }
+            }
+        }
+        switch TrialPolicy.access(record: next, now: now()) {
+        case .active(let days):
+            phase = .trial(daysLeft: days)
+        case .expired:
+            phase = .unlicensed
         }
         statusLine = LicenseCopy.status(for: phase)
     }

@@ -45,7 +45,7 @@ ignore both and always use the live organization. Buy Lodge opens
 
     https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1
 
-There is no trial.
+A Mac without a key works for 3 days. That first-launch date is stored in the Keychain.
 
 ## Every release
 

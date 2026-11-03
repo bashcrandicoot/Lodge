@@ -12,8 +12,14 @@ final class LicenseTests: XCTestCase {
     private let day: TimeInterval = 24 * 60 * 60
     private var clock = Date(timeIntervalSince1970: 1_800_000_000)
 
-    private func make(endpoint: PolarEndpoint = .live) -> (LicenseController, MemoryLicenseStore, ScriptedLicenseTransport) {
+    /// `startTrial` leaves the Keychain empty so the controller records this clock as day one.
+    /// Otherwise the trial is already over, and the license tests are looking at the gate.
+    private func make(endpoint: PolarEndpoint = .live, startTrial: Bool = false) -> (LicenseController, MemoryLicenseStore, ScriptedLicenseTransport) {
         let store = MemoryLicenseStore()
+        if !startTrial {
+            let start = clock.addingTimeInterval(-10 * day)
+            store.trial = TrialRecord(firstLaunch: start, lastSeen: clock)
+        }
         let transport = ScriptedLicenseTransport()
         let client = LicenseClient(transport: transport, endpoint: endpoint)
         let controller = LicenseController(
@@ -54,10 +60,70 @@ final class LicenseTests: XCTestCase {
         try XCTUnwrap(JSONSerialization.jsonObject(with: request.body) as? [String: String])
     }
 
-    func testCopyDoesNotSayFree() {
-        for line in LicenseCopy.userFacing {
-            XCTAssertNil(line.range(of: "free", options: [.caseInsensitive]), line)
+    func testPriceIsTenDollarsWithAThreeDayTrial() {
+        XCTAssertEqual(LicenseCopy.price, "Lodge is $10 once, try free 3 days. A license key works on 3 Macs and does not expire.")
+        XCTAssertEqual(LodgeLicense.trialLength, 3 * day)
+    }
+
+    func testTrialDayMath() {
+        let start = clock
+        func record(elapsed: TimeInterval, seen: TimeInterval? = nil) -> TrialRecord {
+            TrialRecord(firstLaunch: start, lastSeen: start.addingTimeInterval(seen ?? elapsed))
         }
+        XCTAssertEqual(TrialPolicy.access(record: record(elapsed: 0), now: start), .active(daysLeft: 3))
+        XCTAssertEqual(TrialPolicy.access(record: record(elapsed: day), now: start.addingTimeInterval(day)), .active(daysLeft: 2))
+        XCTAssertEqual(TrialPolicy.access(record: record(elapsed: 2 * day), now: start.addingTimeInterval(2 * day)), .active(daysLeft: 1))
+        XCTAssertEqual(TrialPolicy.access(record: record(elapsed: 3 * day - 1), now: start.addingTimeInterval(3 * day - 1)), .active(daysLeft: 1))
+        XCTAssertEqual(TrialPolicy.access(record: record(elapsed: 3 * day), now: start.addingTimeInterval(3 * day)), .expired)
+        XCTAssertEqual(TrialPolicy.access(record: record(elapsed: 4 * day), now: start.addingTimeInterval(4 * day)), .expired)
+    }
+
+    func testClockRollbackDoesNotExtendTheTrial() {
+        let start = clock
+        let recorded = TrialRecord(firstLaunch: start, lastSeen: start.addingTimeInterval(2 * day))
+        let rolledBack = start.addingTimeInterval(day)
+        XCTAssertEqual(TrialPolicy.access(record: recorded, now: rolledBack), .expired)
+        XCTAssertEqual(TrialPolicy.advance(record: recorded, now: rolledBack), recorded)
+
+        let beforeStart = start.addingTimeInterval(-3600)
+        let opened = TrialRecord(firstLaunch: start, lastSeen: start)
+        XCTAssertEqual(TrialPolicy.access(record: opened, now: beforeStart), .expired)
+        XCTAssertEqual(TrialPolicy.advance(record: opened, now: beforeStart), opened)
+    }
+
+    func testTrialIsStoredBeforeTheGateAndSurvivesReinstall() {
+        let (controller, store, _) = make(startTrial: true)
+        XCTAssertEqual(controller.trialDaysLeft, 3)
+        XCTAssertTrue(controller.allowsUse)
+        XCTAssertEqual(store.trial?.firstLaunch, clock)
+        XCTAssertEqual(store.trial?.lastSeen, clock)
+        let started = store.trial?.firstLaunch
+
+        clock = clock.addingTimeInterval(2 * day)
+        let reinstalled = LicenseController(store: store, client: .refusing, now: { self.clock }, machineLabel: { "Test Mac" })
+        XCTAssertEqual(store.trial?.firstLaunch, started)
+        XCTAssertEqual(reinstalled.trialDaysLeft, 1)
+        XCTAssertTrue(reinstalled.allowsUse)
+
+        clock = started!.addingTimeInterval(3 * day)
+        let ended = LicenseController(store: store, client: .refusing, now: { self.clock }, machineLabel: { "Test Mac" })
+        XCTAssertEqual(store.trial?.firstLaunch, started)
+        XCTAssertNil(ended.trialDaysLeft)
+        XCTAssertFalse(ended.allowsUse)
+
+        try? store.clear()
+        XCTAssertNotNil(store.trial)
+    }
+
+    func testControllerTreatsABackwardClockAsExpired() {
+        let (controller, store, _) = make(startTrial: true)
+        let started = store.trial
+        clock = clock.addingTimeInterval(-day)
+        let rolled = LicenseController(store: store, client: .refusing, now: { self.clock }, machineLabel: { "Test Mac" })
+        XCTAssertEqual(store.trial, started)
+        XCTAssertFalse(rolled.allowsUse)
+        XCTAssertNil(rolled.trialDaysLeft)
+        XCTAssertTrue(controller.allowsUse)
     }
 
     func testProductConstants() {
