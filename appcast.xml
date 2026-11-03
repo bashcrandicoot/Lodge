@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <!-- Legacy GitHub feed for Lodge builds whose SUFeedURL is this file
      (https://raw.githubusercontent.com/bashcrandicoot/Lodge/main/appcast.xml).
-     Keep the 1.0 item. Do not add later versions except the one bridge release
-     in RELEASING.md. New updates go in release/appcast.xml, uploaded to Cloudflare R2. -->
+     The first item is the bridge release, the latest build. Keep the older 1.0 item.
+     New updates go in Lodge-app release/appcast.xml, uploaded to Cloudflare R2. -->
 <rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
     <channel>
         <title>Lodge</title>
         <link>https://github.com/bashcrandicoot/Lodge</link>
         <description>Updates for Lodge, the SD card offloader for macOS.</description>
         <language>en</language>
+        <item>
+            <title>1.0</title>
+            <pubDate>Tue, 03 Nov 2026 12:30:00 -0500</pubDate>
+            <link>https://github.com/bashcrandicoot/Lodge</link>
+            <sparkle:version>8</sparkle:version>
+            <sparkle:shortVersionString>1.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul><li>New Buy Lodge button in the license window opens the store in your browser.</li><li>A cleaner About window.</li><li>Small wording fixes.</li></ul>]]></description>
+            <enclosure url="https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg" length="8923390" type="application/octet-stream" sparkle:edSignature="ZrYsxCm3MMEaNA0O/yAAOSnL43czRZUkgOkBVP4y2PNp+i42DY8M80oQ0MtKyQILb7Wl14+IOaVoiauEmcxEAQ=="/>
+        </item>
         <item>
             <title>1.0</title>
             <pubDate>Sat, 31 Oct 2026 18:21:23 -0400</pubDate>
