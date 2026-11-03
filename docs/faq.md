@@ -4,7 +4,7 @@ Short answers. The [user guide](user-guide.md) has the detail, and [Getting star
 
 ## What happens when the 3-day trial ends?
 
-The trial ends after 3 days. [Buy Lodge for $10 once on Polar](https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1), then paste your Polar license key in Lodge to unlock it. $10 once — Try free 3 days.
+Lodge shows how many days are left each time it opens. After the trial ends, Buy appears in the app and leads to Polar. Free 3-day trial, then $10. [Download free trial](https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg).
 
 ## Which Mac do I need?
 
