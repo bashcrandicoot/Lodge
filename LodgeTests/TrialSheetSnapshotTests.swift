@@ -20,18 +20,19 @@ final class TrialSheetSnapshotTests: XCTestCase {
         let directory = snapshotDirectory()
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         let visibleBefore = NSApp.windows.filter(\.isVisible).count
+        let icon = lodgeIcon()
 
         let shots = [
             trial(name: "trial-3-days", remaining: 3 * day, title: "3 days left",
-                  hero: "Trial: 3 days left of 3"),
+                  hero: "Trial: 3 days left of 3", icon: icon),
             trial(name: "trial-1-day", remaining: day, title: "1 day left",
-                  hero: "Trial: 1 day left of 3"),
+                  hero: "Trial: 1 day left of 3", icon: icon),
             trial(name: "trial-5-hours", remaining: 5 * hour, title: "5 hours left",
-                  hero: "Trial: 5 hours left of 3"),
+                  hero: "Trial: 5 hours left of 3", icon: icon),
             trial(name: "trial-1-hour", remaining: hour, title: "1 hour left",
-                  hero: "Trial: 1 hour left of 3"),
+                  hero: "Trial: 1 hour left of 3", icon: icon),
             trial(name: "trial-under-an-hour", remaining: 30 * 60, title: "Less than an hour left",
-                  hero: "Trial: Less than an hour left of 3"),
+                  hero: "Trial: Less than an hour left of 3", icon: icon),
             lock(),
             offline(),
         ]
@@ -54,8 +55,8 @@ final class TrialSheetSnapshotTests: XCTestCase {
                        "Snapshot rendering must not open a window")
     }
 
-    private func trial(name: String, remaining: TimeInterval, title: String, hero: String) -> Shot {
-        let sheet = TrialSheet(remaining: remaining, onContinue: {}, onEnterLicense: {}, animated: false)
+    private func trial(name: String, remaining: TimeInterval, title: String, hero: String, icon: NSImage) -> Shot {
+        let sheet = TrialSheet(remaining: remaining, onContinue: {}, onEnterLicense: {}, animated: false, icon: icon)
         return Shot(name: name, title: sheet.title, expectedTitle: title,
                     secondary: sheet.secondary, expectedSecondary: TrialLaunchNotice.trialSecondary,
                     buttons: sheet.buttonTitles, expectedButtons: ["Continue", "Enter License Key…"],
@@ -110,6 +111,19 @@ final class TrialSheetSnapshotTests: XCTestCase {
             return
         }
         try png.write(to: url, options: .atomic)
+    }
+
+    /// Lodge's icon, not the xctest runner's. The asset catalog is the last resort.
+    private func lodgeIcon() -> NSImage {
+        let bundle = Bundle(for: AppModel.self)
+        if let image = bundle.image(forResource: NSImage.Name("AppIcon")), image.size.width > 0 {
+            return image
+        }
+        let hostIcon = NSWorkspace.shared.icon(forFile: bundle.bundleURL.path)
+        if hostIcon.size.width > 0, !hostIcon.representations.isEmpty {
+            return hostIcon
+        }
+        return NSImage(named: NSImage.Name("AppIcon")) ?? NSImage(size: NSSize(width: 72, height: 72))
     }
 
     private func snapshotDirectory() -> URL {

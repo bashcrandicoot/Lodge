@@ -71,6 +71,9 @@ struct TrialSheet: View {
     var onEnterLicense: () -> Void = {}
     /// When false, the ring is already at its final arc. The default animates unless Reduce Motion is on.
     var animated: Bool = true
+    /// Drawn inside the ring. The app uses its own icon; tests pass Lodge's, because
+    /// `NSApp.applicationIconImage` is the test runner's icon there.
+    var icon: NSImage = NSApp.applicationIconImage ?? NSImage()
 
     var title: String { TrialLaunchNotice.title(remaining: remaining) }
     var secondary: String { TrialLaunchNotice.trialSecondary }
@@ -84,7 +87,7 @@ struct TrialSheet: View {
             secondary: secondary,
             animated: animated
         ) {
-            TrialRing(remaining: remaining, accessibilityLabel: heroLabel, animated: animated)
+            TrialRing(remaining: remaining, accessibilityLabel: heroLabel, animated: animated, icon: icon)
         } actions: {
             Button(TrialLaunchNotice.continueTitle, action: onContinue)
                 .buttonStyle(.borderedProminent)
@@ -201,6 +204,7 @@ private struct TrialRing: View {
     var remaining: TimeInterval
     var accessibilityLabel: String
     var animated: Bool = true
+    var icon: NSImage
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var drawn = 0.0
 
@@ -223,7 +227,7 @@ private struct TrialRing: View {
                 .trim(from: 0, to: shown)
                 .stroke(tint, style: StrokeStyle(lineWidth: 5, lineCap: .round))
                 .rotationEffect(.degrees(-90))
-            Image(nsImage: NSApp.applicationIconImage ?? NSImage())
+            Image(nsImage: icon)
                 .resizable()
                 .frame(width: 72, height: 72)
                 .accessibilityHidden(true)

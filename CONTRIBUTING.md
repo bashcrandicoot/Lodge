@@ -62,7 +62,7 @@ Demo windows are drawn as if they were active, so a screenshot taken with the ap
 
 The icon on the website and in the README is `docs/assets/app-icon/` (`icon_16x16.png` through `icon_1024.png`, plus `Contents.json`). The icon the built app uses is `Lodge/Assets.xcassets/AppIcon.appiconset`. Those are separate.
 
-What lives under `Design/`, including earlier icon drafts and the steps for replacing the in-app set, is in [Design/README.md](Design/README.md). The small sizes are drawn for the menu bar and Finder. Generate a real set rather than scaling one PNG.
+What lives under `Design/`, including the night Lodge Cabin set and the steps for replacing the in-app icon, is in [Design/README.md](Design/README.md). The small sizes are drawn for the menu bar and Finder. Generate a real set rather than scaling one PNG.
 
 ## Themes
 
