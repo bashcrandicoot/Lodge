@@ -28,6 +28,6 @@ No account, no analytics, and copying never uploads anything. Lodge goes online 
 
 Write to [bashframes@gmail.com](mailto:bashframes@gmail.com). If Lodge has been useful, [Support Lodge](https://ko-fi.com/bashframes).
 
-[Security](SECURITY.md) · [License](LICENSE)
+[Security](SECURITY.md) · [All rights reserved](LICENSE)
 
 © 2026 bashframes

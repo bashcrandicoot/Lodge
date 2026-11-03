@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>User guide — Lodge</title>
+  <meta name="description" content="Lodge gets your footage off camera cards safely, checked and neatly named.">
+  <meta name="author" content="bashframes">
+  <meta name="theme-color" content="#100e18">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="assets/favicon.ico" sizes="any">
+  <link rel="icon" href="assets/favicon.png" type="image/png" sizes="32x32">
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="index.html">
+        <img src="assets/app-icon/icon_128x128.png" width="128" height="128" alt="">
+        Lodge
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="index.html#features">Features</a>
+        <a href="index.html#verified">Verified</a>
+        <a href="index.html#install">Install</a>
+        <a href="getting-started.html">Getting started</a>
+        <a href="user-guide.html">User guide</a>
+        <a href="faq.html">FAQ</a>
+        <a href="changelog.html">Changelog</a>
+        <a class="download" href="https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg" data-goatcounter-click="trial-download">Try free 3 days</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <article class="wrap prose">
+<h1 id="user-guide">User guide</h1>
+<p>Lodge copies your footage off a camera card or drive, names each file for you, and checks every copy with SHA-256. The window is three columns, left to right: <strong>Card</strong>, <strong>Media</strong>, and <strong>Destination</strong>. Plugging in a card does not start a copy. <strong>Import</strong> only opens Lodge with that card selected. Nothing is copied until you click <strong>Offload N Files</strong> (<strong>Offload 1 File</strong> for one file, or <strong>Offload Files</strong> when nothing is ready).</p>
+<h2 id="install-and-first-launch">Install and first launch</h2>
+<p><strong>Try free 3 days, then $10.</strong> <a href="https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg">Try free 3 days</a>. Open the .dmg, and drag Lodge to Applications. Lodge shows how many days are left each time it opens. After the trial ends, Buy appears in the app and leads to Polar.</p>
+<p>Lodge requires macOS 14.0 or later. It isn't notarized yet, which is why <strong>Open Anyway</strong> is needed the first time you open it.</p>
+<h3 id="macos-15-sequoia-and-later">macOS 15 Sequoia and later</h3>
+<ol>
+<li>Open Lodge.</li>
+<li>Click <strong>Done</strong> on the warning.</li>
+<li>Go to <strong>System Settings &gt; Privacy &amp; Security</strong>.</li>
+<li>Click <strong>Open Anyway</strong> next to Lodge, and confirm.</li>
+</ol>
+<h3 id="macos-14-sonoma">macOS 14 Sonoma</h3>
+<ol>
+<li>Right-click or Control-click Lodge.</li>
+<li>Choose <strong>Open</strong>.</li>
+<li>Choose <strong>Open</strong> again.</li>
+</ol>
+<p>During setup, Return is <strong>Next: …</strong> and <strong>Save preset</strong>. The done screen has <strong>Open Settings</strong>, <strong>Open Lodge</strong>, and <strong>Skip setup</strong>. You can open Settings any time with ⌘,.</p>
+<p>During setup, each drive shows how much space is available.</p>
+<h2 id="trial-and-license">Trial and license</h2>
+<p><a href="https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg">Try free 3 days</a>, then $10. Every feature included. Lodge shows how many days are left each time it opens. After the trial ends, Buy appears in the app and leads to Polar.</p>
+<h2 id="your-first-offload">Your first offload</h2>
+<h3 id="when-lodge-asks-to-import">When Lodge asks to import</h3>
+<p>Lodge asks <strong>Import with Lodge?</strong> when you plug in a camera card or a removable drive. It won't ask about your startup disk, a network or backup drive, a disk image, the drive you copy to, a favorite on that same drive, or a card you've told it to skip.</p>
+<p>Lodge recognizes the folders most cameras use (for example <code>DCIM</code>, <code>PRIVATE/M4ROOT</code>, <code>XDROOT</code>, and <code>CLIPS001</code>).</p>
+<p>Lodge waits 20 seconds before it asks about the same card again. If you plug a card in during an offload or a format, Lodge asks when that finishes.</p>
+<p>The notification and the floating panel use the same title. A removable volume is a <strong>card</strong>. Anything else Lodge asks about is a <strong>drive</strong>. If the name is exactly card, drive, ssd, or disk, or it ends with a space plus one of those words, the title is <strong><code>&lt;name&gt;</code> connected</strong> (for example <strong>SD Card connected</strong>). Otherwise it is <strong><code>&lt;name&gt;</code> card connected</strong> or <strong><code>&lt;name&gt;</code> drive connected</strong> (for example <strong>A7S III card connected</strong> or <strong>T7 drive connected</strong>).</p>
+<p>The notification has three actions: <strong>Import</strong>, <strong>Ignore</strong>, and <strong>Don’t Ask for This Card</strong>.</p>
+<p>Lodge shows the same prompt as a floating panel when permission is still undecided, alerts are off, the notification style is <strong>None</strong>, or <strong>Ask with</strong> is <strong>Floating panel</strong>. Its buttons are <strong>Import</strong>, <strong>Ignore</strong>, and <strong>Don’t ask for this card</strong>. The panel does not take the keyboard, so Return does not press <strong>Import</strong>.</p>
+<p>If you don't see the prompt, set <strong>Settings ▸ General ▸ Menu Bar ▸ Ask with</strong> to <strong>Floating panel</strong>.</p>
+<p><img src="assets/guide/lodge-guide-diagram-import-flow@2x.png" width="1040" height="345" alt="Import a card. Import opens Lodge with that card selected. Ignore or Don’t Ask for This Card leaves the card alone. Only Offload copies files." style="max-width:100%;height:auto"></p>
+<p><img src="assets/screenshots/import-prompt-dark.png" width="386" height="135" alt="The import prompt: Import with Lodge?" style="max-width:100%;height:auto"></p>
+<p><strong>Import</strong> opens Lodge with that card selected. Nothing is copied yet. Notifications are the default.</p>
+<p>If card detection is paused, choose <strong>Resume Detection</strong> in the menu bar menu. That does not resume an offload.</p>
+<h3 id="offload">Offload</h3>
+<ol>
+<li>Insert a card.</li>
+<li>Enter a project name if the template needs one.</li>
+<li>Choose a destination.</li>
+<li>Click <strong>Offload N Files</strong>.</li>
+</ol>
+<p>While Lodge is ready, the bar says <strong>Ready. Every file is verified with SHA-256 after copying.</strong> The button help is <strong>Copy and verify the new files</strong>. You'll see <strong>Copying</strong>, then <strong>Verifying</strong>.</p>
+<p><img src="assets/screenshots/ready-dark.png" width="1352" height="912" alt="Lodge ready to offload. The bar says every file is verified with SHA-256 after copying." style="max-width:100%;height:auto"></p>
+<p><img src="assets/screenshots/running-dark.png" width="1352" height="912" alt="An offload in progress, in the Copying stage." style="max-width:100%;height:auto"></p>
+<p>You can also press Return to start.</p>
+<p>If <strong>Offload N Files</strong> cannot start, its caption is one of the messages in <a href="#why-offload-is-waiting">Why Offload is waiting</a>.</p>
+<h2 id="verification">Verification</h2>
+<p><img src="assets/guide/lodge-guide-diagram-verification-flow@2x.png" width="1070" height="365" alt="How Lodge verifies each file: copy and hash, read the partial file back, then rename it if the hashes match or delete it if they do not." style="max-width:100%;height:auto"></p>
+<p>Lodge copies one file like this:</p>
+<ol>
+<li>It writes <code>&lt;final name&gt;.lodge-partial</code> and hashes the source with SHA-256 as it reads.</li>
+<li>It reads that partial file back from disk and hashes it.</li>
+<li>If the hashes match, it renames the partial file to the final name. If they do not, it deletes the partial file.</li>
+</ol>
+<p>Lodge never changes anything on your card, and it never overwrites a file that's already at the destination.</p>
+<p>Lodge remembers a verified copy by the card’s volume UUID, or the volume name when there is no UUID, plus the path on the card, the size, and the modification time in whole seconds. That match is not a content hash. Change the size or the modification time and Lodge treats the file as new. A copy counts as missing when that same record matches and the file at the destination is gone, or its size differs.</p>
+<p>What you see when a file fails starts with the path on the card, then the reason. For example: <code>DCIM/100MEDIA/C0001.MP4: C0001.MP4 already exists — not overwriting it.</code> The reason is one of:</p>
+<ul>
+<li><strong><code>&lt;name&gt;</code> already exists — not overwriting it.</strong></li>
+<li><strong>Couldn’t create <code>&lt;name&gt;</code> in the destination.</strong></li>
+<li><strong>Checksum mismatch for <code>&lt;name&gt;</code>. The copy was deleted.</strong></li>
+</ul>
+<p>When the batch finishes, the title is <strong>Offload Complete</strong>, <strong>Finished with Problems</strong>, or <strong>Offload Cancelled</strong>.</p>
+<p>The line under it is <strong><code>&lt;copied&gt;</code> copied · <code>&lt;skipped&gt;</code> skipped · <code>&lt;failed&gt;</code> failed</strong>. If the card is already gone after an eject, that line gains ** — card ejected, safe to remove**.</p>
+<p><img src="assets/screenshots/finished-dark.png" width="1352" height="912" alt="A finished offload. The bar reads Offload Complete, with the copied, skipped, and failed counts." style="max-width:100%;height:auto"></p>
+<p>If a copy Lodge expected is missing at the destination, Offload tells you to choose Re-offload. The wording is in <a href="#re-offload">Re-offload</a>.</p>
+<h2 id="naming-templates-and-tokens">Naming templates and tokens</h2>
+<p>The default folder template is <code>{date}/{project}</code>. The default file template is <code>{date}_{project}_{seq}</code>.</p>
+<p>To start from a ready-made template, choose <strong>Examples</strong> in Settings ▸ Naming. The choices are <strong>Date / Project</strong>, <strong>Project / Date / Camera</strong>, <strong>Project / Type / Date</strong>, <strong>Year / Month / Day</strong>, <strong>Date / Project, Original Names</strong>, and <strong>Flat</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Token</th>
+<th>Meaning in the template editor</th>
+<th>Rendered value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>{project}</code></td>
+<td>Project name</td>
+<td>the project field</td>
+</tr>
+<tr>
+<td><code>{camera}</code></td>
+<td>Selected camera</td>
+<td>the camera’s code, when cleaning leaves one; otherwise the cleaned camera name</td>
+</tr>
+<tr>
+<td><code>{date}</code></td>
+<td>Capture date (2026-10-25)</td>
+<td><code>yyyy-MM-dd</code></td>
+</tr>
+<tr>
+<td><code>{year}</code></td>
+<td>Year (2026)</td>
+<td><code>yyyy</code></td>
+</tr>
+<tr>
+<td><code>{month}</code></td>
+<td>Month (10)</td>
+<td><code>MM</code></td>
+</tr>
+<tr>
+<td><code>{day}</code></td>
+<td>Day (25)</td>
+<td><code>dd</code></td>
+</tr>
+<tr>
+<td><code>{time}</code></td>
+<td>Capture time (143005)</td>
+<td><code>HHmmss</code></td>
+</tr>
+<tr>
+<td><code>{type}</code></td>
+<td>Video, Photo, Audio or Other</td>
+<td><strong>Video</strong>, <strong>Photo</strong>, <strong>Audio</strong>, or <strong>Other</strong></td>
+</tr>
+<tr>
+<td><code>{card}</code></td>
+<td>Card (volume) name</td>
+<td>the volume name, cleaned like the project name. If that is empty, <strong>Card</strong></td>
+</tr>
+<tr>
+<td><code>{original}</code></td>
+<td>Original file name, no extension</td>
+<td>the source name, made safe</td>
+</tr>
+<tr>
+<td><code>{seq}</code></td>
+<td>Sequence number (0001); {seq:3} for 001</td>
+<td>at least 4 digits, unless <code>{seq:N}</code> says otherwise</td>
+</tr>
+<tr>
+<td><code>{ext}</code></td>
+<td>File extension (mp4)</td>
+<td>the extension, lowercased</td>
+</tr>
+</tbody>
+</table>
+<p>In a file or folder name, <code>/</code>, <code>:</code>, <code>\</code>, <code>*</code>, <code>?</code>, <code>"</code>, <code>&lt;</code>, <code>&gt;</code>, <code>|</code>, and control characters become <code>-</code>. Spaces at the ends are trimmed, and leading dots are stripped so the name is not a hidden file.</p>
+<p>The project name is cleaned separately. Letters, digits, and <code>-</code> stay. Any other character splits a word, and each word is capitalized, so "beach day" becomes <code>BeachDay</code>. The result is at most 60 characters, and leading or trailing <code>-</code> is removed.</p>
+<p>Sequence numbers continue after the highest number already in the destination folder.</p>
+<p><img src="assets/screenshots/settings-naming.png" width="712" height="820" alt="Settings, Naming. The folder template and the file template." style="max-width:100%;height:auto"></p>
+<p>Inside the shoot folder, each extension gets its own folder. <code>.jpeg</code> and <code>.jpe</code> share <strong>JPG</strong>. <code>.tiff</code> shares <strong>TIF</strong>. <code>{ext}</code> stays that file’s own extension, lowercased.</p>
+<h2 id="presets-and-quick-dump">Presets and quick dump</h2>
+<p>Saved presets start empty. The menu at the top right, just before Recent Offloads and Settings, lists them. It also has <strong>Save Current Setup as Preset…</strong>, <strong>Update “name”</strong> after you edit the setup in use, and <strong>Manage Presets…</strong>. <strong>Manage Presets…</strong> opens Settings ▸ Presets, where you rename, apply, duplicate, delete, reorder, and edit a preset. Presets are stored in <code>~/Library/Application Support/Lodge/presets.json</code>.</p>
+<p>A preset saves where files go, how they're named, the camera, short-clip skipping, quick dump, and the file rules. With no preset chosen, the menu says <strong>No Preset</strong>. The photo-session setup uses the <strong>Date / Project</strong> naming example and suggests the preset name <strong>Photo Session</strong>.</p>
+<p>On the setup done screen, Return can be <strong>Offload with <code>&lt;preset&gt;</code></strong>.</p>
+<p><strong>Quick dump</strong> sits under Project in Media. It is off until you turn it on. The hint says <strong>Skips the project name and dumps all the footage straight into a dated folder.</strong> While it is on, the Project field is disabled and its prompt is <strong>Not needed for a quick dump</strong>. <code>{project}</code>, and the old <code>{shoot}</code> token, are taken out of the templates used for that offload only. The templates you saved stay as written. Empty folder levels disappear, so <code>{date}/{project}</code> becomes <code>{date}</code> and <code>{date}_{project}_{seq}</code> becomes <code>{date}_{seq}</code>. If the file template would have no token left, it becomes <code>{date}_{seq}</code>. The project you typed is not saved as the last project. Sequence numbers still continue. Each extension still gets its own folder. Proxies still go in <code>Proxies/</code> and sidecars in <code>Sidecars/</code>. A level Quick dump removes is struck through and tagged <strong>Quick dump</strong>.</p>
+<p><img src="assets/screenshots/ready-quickdump-dark.png" width="1352" height="912" alt="Quick dump available on the main window." style="max-width:100%;height:auto"></p>
+<h2 id="sidecars-and-proxies">Sidecars and proxies</h2>
+<p>Proxies go in <code>Proxies/</code>. The default proxy extensions are <code>lrv</code> and <code>lrf</code>.</p>
+<p>Sidecars go in <code>Sidecars/</code>. The default sidecar extensions are <code>thm</code>, <code>xml</code>, and <code>srt</code>.</p>
+<p>They keep the clip’s new name.</p>
+<p><img src="assets/screenshots/settings-files.png" width="672" height="800" alt="Settings, Files. Proxy extensions, sidecar extensions, and ignored names." style="max-width:100%;height:auto"></p>
+<p>By default, Lodge skips system files such as <code>.DS_Store</code>, <code>._*</code>, <code>.Spotlight-V100</code>, <code>.Trashes</code>, <code>.fseventsd</code>, <code>.TemporaryItems</code>, and <code>Thumbs.db</code>.</p>
+<p>When a date filter is on, sidecars and proxies go with their clip. Everything else outside the chosen days stays on the card.</p>
+<h2 id="filtering-by-date-and-skipping-short-videos">Filtering by date and skipping short videos</h2>
+<p><strong>Dates</strong> is <strong>Any date</strong> until you change it. The other choices are <strong>Today</strong>, <strong>Last 7 days</strong>, and <strong>Custom range</strong>.</p>
+<p>The date-filter help says: <strong>Copies only files from these days, by the date each file was created (or last changed, if the card doesn’t record that). Sidecars and proxies go with their clip. Everything else stays on the card.</strong></p>
+<p>If the chosen days leave nothing new, Media shows <strong>Nothing in These Dates</strong>. Click <strong>Show Any Date</strong> to see everything. <strong>Offload N Files</strong> says <strong>Nothing new in the chosen dates — choose Any date to see everything</strong>.</p>
+<p><strong>Short clips</strong> skips videos shorter than the time you set. The slider runs from <strong>Off</strong> to <strong>30 s</strong>. The stepper beside it goes up to 60 seconds. The default is 5 seconds, with skipping on.</p>
+<p>If the only videos left were skipped for length, Offload says one of:</p>
+<ul>
+<li><strong>Only a short clip is left — choose Include Anyway to offload it</strong></li>
+<li><strong>Only short clips are left — choose Include All Short Clips to offload them</strong></li>
+</ul>
+<h2 id="destinations-and-space">Destinations and space</h2>
+<p>Until you pick a folder, the Destination stage shows <strong>No Destination</strong>. Click <strong>Choose Folder…</strong>, or drop a folder on it from Finder.</p>
+<p><strong>Offload N Files</strong> stays off, and says why, in these cases:</p>
+<ul>
+<li><strong>Choose a destination folder</strong></li>
+<li><strong>The destination folder isn’t connected — choose another</strong></li>
+<li><strong>Not enough space: needs <code>&lt;needed&gt;</code>, <code>&lt;available&gt;</code> free</strong></li>
+</ul>
+<p>Each favorite shows how much space is available. A favorite that isn't plugged in says <strong>Not connected</strong>.</p>
+<p><img src="assets/screenshots/settings-destinations.png" width="672" height="640" alt="Settings, Destinations. Favorite folders." style="max-width:100%;height:auto"></p>
+<p>Under the destination, Lodge shows <strong><code>&lt;bytes&gt;</code> available</strong>, and <strong>needs <code>&lt;bytes&gt;</code></strong> once there's something to copy.</p>
+<p>A read-only destination uses one of:</p>
+<ul>
+<li><strong>This drive is read-only, so Lodge can’t write to it — choose another</strong> when Lodge has no format name</li>
+<li><strong>This drive is read-only (NTFS). macOS can’t write to it.</strong></li>
+<li><strong>This drive is read-only (<code>&lt;format&gt;</code>), so Lodge can’t write to it — choose another</strong> for any other format</li>
+</ul>
+<p>Format names Lodge recognizes are <strong>NTFS</strong>, <strong>exFAT</strong>, <strong>FAT32</strong>, <strong>Mac OS Extended</strong>, and <strong>APFS</strong>.</p>
+<h2 id="re-offload">Re-offload</h2>
+<p>When copies are missing at the destination, <strong>Offload N Files</strong> says:</p>
+<ul>
+<li><strong>1 copy is missing at the destination — choose Re-offload</strong></li>
+<li><strong><code>&lt;n&gt;</code> copies are missing at the destination — choose Re-offload</strong></li>
+</ul>
+<p>In Media, <strong>Re-offload…</strong> is <strong>Re-offloading N</strong> while it is running. Its rows are <strong>Re-offload Missing Copies</strong> (with the count when there is one), <strong>Re-offload Everything on This Card…</strong>, and <strong>Don’t Re-offload</strong> while a re-offload is active. On a file, the menu is <strong>Re-offload This File</strong> or <strong>Don’t Re-offload This File</strong>.</p>
+<p><strong>Re-offload Everything on This Card…</strong> opens an alert whose buttons are <strong>Re-offload Everything</strong> (Return) and <strong>Cancel</strong>. That alert has no destructive button.</p>
+<p><strong>Forget This Card’s History…</strong> in <strong>Card actions</strong> opens an alert whose destructive button is <strong>Forget History</strong>. Return is <strong>Cancel</strong>.</p>
+<h2 id="eject-or-format-the-card">Eject or format the card</h2>
+<p>The manual command is <strong>Eject Card</strong>. After the card is gone, the label is <strong>Ejected</strong>.</p>
+<p><strong>Eject Card</strong> in the card menu is disabled during an offload, a format, or an eject. On the finish bar it is disabled only when the card is already gone, or while an eject is in progress. A format does not disable the finish-bar button.</p>
+<p><strong>Eject card after offload</strong> is off. Its caption is <strong>Only when every file was copied and verified.</strong> With it on, the card ejects only when the offload was not cancelled, nothing failed, at least one file was copied, and the card is still present. The same switch ejects the card after a successful format. After a successful eject, the finish line can end with ** — card ejected, safe to remove<strong>. If eject fails, that line ends with ** — Couldn’t eject <code>&lt;card name&gt;</code>: <code>&lt;system message&gt;</code></strong>.</p>
+<p><img src="assets/guide/lodge-guide-diagram-eject-flow@2x.png" width="1050" height="310" alt="A simplified eject flow. A verified offload leads to unmount and eject. Otherwise the card stays mounted." style="max-width:100%;height:auto"></p>
+<p>The <strong>Ready to format</strong> badge shows when the card has at least one file, every file still has its copy at the destination at the same size, and no skipped short clip remains. Ignored system files do not block it. It appears on the selected card’s row and beside the finish-bar title. Its help is <strong>Every file on this card has a verified copy at the destination.</strong></p>
+<p>If the only leftovers are skipped short clips, the badge stays off. The line reads <strong>1 short clip not offloaded</strong> or <strong>N short clips not offloaded</strong>. <strong>Format Card…</strong>, in <strong>Card actions</strong> (the ⋯ button on the card) or on the finish bar, can still be used then. When the card is fully ready, its help is <strong>Erase this card so it’s ready for new footage</strong>.</p>
+<p>Choosing <strong>Format Card…</strong> does not erase the card by itself. Lodge erases it only after you confirm. <strong>Formatting erases everything on “<card name>”. This can’t be undone.</strong> Before you format, check that the offload says <strong>Offload Complete</strong> and not <strong>Finished with Problems</strong>. While it runs you'll see <strong>Formatting…</strong>. When it's done you'll see <strong>“<code>&lt;name&gt;</code>” was formatted and is ready for your camera.</strong></p>
+<p>On the format confirmation, Return is <strong>Cancel</strong>. <strong>Format</strong>, <strong>Format and Discard 1 Short Clip</strong>, and <strong>Format and Discard N Short Clips</strong> have no key. The title is <strong>Format “<code>&lt;card name&gt;</code>”?</strong></p>
+<p><img src="assets/screenshots/format-confirm.png" width="1240" height="800" alt="The format confirmation." style="max-width:100%;height:auto"></p>
+<h2 id="menu-bar-mode">Menu bar mode</h2>
+<p>Turn on <strong>Keep Lodge running in the menu bar</strong> (off by default) so Lodge can watch for cards when its window is closed.</p>
+<p>These sit with it:</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ask to import when a card or drive is plugged in</td>
+<td>on</td>
+</tr>
+<tr>
+<td>Show menu bar icon</td>
+<td>on, and only shown while menu bar mode is on</td>
+</tr>
+<tr>
+<td>Ask with</td>
+<td><strong>Notification</strong> (the other choice is <strong>Floating panel</strong>)</td>
+</tr>
+<tr>
+<td>Open at login</td>
+<td>off</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Allow Lodge in System Settings ▸ General ▸ Login Items.</strong> appears only while macOS is still waiting for you to approve <strong>Open at login</strong>.</p>
+<p>The menu bar menu has:</p>
+<ul>
+<li><strong>Open Lodge</strong></li>
+<li><strong>Cards &amp; Drives</strong>, or <strong>No Cards Connected</strong> when nothing is mounted</li>
+<li><strong>Import from <code>&lt;name&gt;</code>…</strong> for a connected card</li>
+<li><strong>Offloading… (imports wait until it’s done)</strong> while a copy is running.</li>
+<li><strong>Pause Detection</strong>, or <strong>Resume Detection</strong> while detection is paused</li>
+<li><strong>Settings…</strong> (⌘,)</li>
+<li><strong>Quit Lodge</strong> (⌘Q)</li>
+</ul>
+<p><strong>⌘-drag</strong> the menu bar icon out to turn <strong>Show menu bar icon</strong> off. If the icon is hidden, the hint says to quit with <strong>⌘Q</strong>.</p>
+<p><img src="assets/screenshots/menubar-menu-dark.png" width="252" height="197" alt="The menu bar menu: Open Lodge, cards and drives, Pause Detection, Settings, and Quit Lodge." style="max-width:100%;height:auto"></p>
+<h2 id="settings-reference">Settings reference</h2>
+<p>Settings tabs are <strong>General</strong>, <strong>Appearance</strong>, <strong>Presets</strong>, <strong>Destinations</strong>, <strong>Naming</strong>, <strong>Files</strong>, and <strong>Cameras</strong>.</p>
+<p>In Settings ▸ Appearance, pick a theme: <strong>Default</strong>, <strong>Aurora</strong>, <strong>Ocean</strong>, <strong>Twilight</strong>, <strong>Ember</strong>, or <strong>Forest</strong>. Then pick <strong>System</strong>, <strong>Light</strong>, or <strong>Dark</strong>. Lodge starts in <strong>Dark</strong>, with the <strong>Default</strong> theme.</p>
+<p><strong>Show files as</strong> is <strong>List</strong>. The other choice is <strong>Grid</strong>. <strong>Show thumbnails in the list</strong> is off.</p>
+<p>General groups these sections: <strong>Files to Offload</strong>, <strong>Short Clips</strong>, <strong>After Offload</strong>, <strong>Menu Bar</strong>, and <strong>Updates</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Destination folder</td>
+<td>none, until you choose one</td>
+</tr>
+<tr>
+<td>Eject card after offload</td>
+<td>off</td>
+</tr>
+<tr>
+<td>Folder template</td>
+<td><code>{date}/{project}</code></td>
+</tr>
+<tr>
+<td>File template</td>
+<td><code>{date}_{project}_{seq}</code></td>
+</tr>
+<tr>
+<td>Last project</td>
+<td>empty</td>
+</tr>
+<tr>
+<td>Recent projects</td>
+<td>empty, and at most 6</td>
+</tr>
+<tr>
+<td>Files to offload</td>
+<td>Video, Photos, Audio, and Other all on. The media filter says <strong>Photo</strong>.</td>
+</tr>
+<tr>
+<td>Play a sound when an offload finishes</td>
+<td>on</td>
+</tr>
+<tr>
+<td>Short clips</td>
+<td>On, 5 seconds. Slider from <strong>Off</strong> to <strong>30 s</strong>; the stepper goes to 60 seconds.</td>
+</tr>
+<tr>
+<td>Theme</td>
+<td>Default</td>
+</tr>
+<tr>
+<td>Appearance</td>
+<td>Dark</td>
+</tr>
+<tr>
+<td>Show files as</td>
+<td>List</td>
+</tr>
+<tr>
+<td>Show thumbnails in the list</td>
+<td>off</td>
+</tr>
+<tr>
+<td>Quick dump</td>
+<td>off</td>
+</tr>
+<tr>
+<td>Dates</td>
+<td>Any date</td>
+</tr>
+<tr>
+<td>Keep Lodge running in the menu bar</td>
+<td>off</td>
+</tr>
+<tr>
+<td>Ask to import when a card or drive is plugged in</td>
+<td>on</td>
+</tr>
+<tr>
+<td>Show menu bar icon</td>
+<td>on, while menu bar mode is on</td>
+</tr>
+<tr>
+<td>Ask with</td>
+<td>Notification</td>
+</tr>
+<tr>
+<td>Open at login</td>
+<td>off</td>
+</tr>
+<tr>
+<td>Don’t ask for these cards</td>
+<td>empty</td>
+</tr>
+<tr>
+<td>Proxies</td>
+<td><code>lrv</code>, <code>lrf</code></td>
+</tr>
+<tr>
+<td>Sidecars</td>
+<td><code>thm</code>, <code>xml</code>, <code>srt</code></td>
+</tr>
+<tr>
+<td>Ignored names</td>
+<td><code>.DS_Store</code>, <code>._*</code>, <code>.Spotlight-V100</code>, <code>.Trashes</code>, <code>.fseventsd</code>, <code>.TemporaryItems</code>, <code>Thumbs.db</code></td>
+</tr>
+<tr>
+<td>Automatically check for updates</td>
+<td>on</td>
+</tr>
+<tr>
+<td>Update check interval</td>
+<td>once a day</td>
+</tr>
+<tr>
+<td>Automatically download and install updates</td>
+<td>off</td>
+</tr>
+</tbody>
+</table>
+<p><img src="assets/screenshots/settings-general.png" width="672" height="800" alt="Settings, General." style="max-width:100%;height:auto"></p>
+<p><img src="assets/screenshots/settings-appearance.png" width="672" height="705" alt="Settings, Appearance. Theme is Default. Appearance is Dark, with System and Light as the other choices." style="max-width:100%;height:auto"></p>
+<p><img src="assets/screenshots/ready-light.png" width="1352" height="912" alt="Lodge with Light appearance." style="max-width:100%;height:auto"></p>
+<p><img src="assets/screenshots/ready-ember-dark.png" width="1352" height="912" alt="Lodge with a saved theme other than the neutral Default." style="max-width:100%;height:auto"></p>
+<p><img src="assets/screenshots/settings-presets.png" width="752" height="740" alt="Settings, Presets." style="max-width:100%;height:auto"></p>
+<p><img src="assets/screenshots/settings-destinations.png" width="672" height="640" alt="Settings, Destinations. Favorite folders." style="max-width:100%;height:auto"></p>
+<p><img src="assets/screenshots/settings-naming.png" width="712" height="820" alt="Settings, Naming. The folder template and the file template." style="max-width:100%;height:auto"></p>
+<p><img src="assets/screenshots/settings-files.png" width="672" height="800" alt="Settings, Files. Proxy extensions, sidecar extensions, and ignored names." style="max-width:100%;height:auto"></p>
+<p><img src="assets/screenshots/grid-dark.png" width="1352" height="912" alt="Media shown as a grid. Show files as can be List or Grid." style="max-width:100%;height:auto"></p>
+<p><img src="assets/screenshots/settings-cameras.png" width="672" height="640" alt="Settings, Cameras." style="max-width:100%;height:auto"></p>
+<p>The updates footer says: <strong>Lodge checks for a new version once a day. You can also choose Lodge ▸ Check for Updates… any time.</strong></p>
+<h2 id="keyboard-shortcuts">Keyboard shortcuts</h2>
+<table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>⌘,</td>
+<td>Settings. The menu bar item uses the same key. The setup done screen shows <strong>⌘ ,</strong>. The Settings toolbar help is <strong>Settings (⌘,)</strong>.</td>
+</tr>
+<tr>
+<td>⌘Q</td>
+<td>Quit. The hidden-icon hint says <strong>quit it from there with ⌘Q.</strong></td>
+</tr>
+<tr>
+<td>⌘-drag</td>
+<td>Drag the menu bar icon out to turn <strong>Show menu bar icon</strong> off.</td>
+</tr>
+<tr>
+<td>Return</td>
+<td><strong>Offload N Files</strong>, Done, <strong>Get started</strong>, and <strong>Offload with <code>&lt;preset&gt;</code></strong>. During setup, <strong>Next: …</strong> and <strong>Save preset</strong>. On the format confirmation and on <strong>Forget History</strong>, Return is <strong>Cancel</strong>. On <strong>Re-offload Everything</strong>, Return is that button. Return does not press <strong>Import</strong> on the floating panel.</td>
+</tr>
+<tr>
+<td>Escape</td>
+<td><strong>Cancel</strong> during an offload. <strong>Maybe Later</strong> on the support note. Clears the selection in the list or grid.</td>
+</tr>
+<tr>
+<td>Space</td>
+<td>Quick Look on the selection. Space again closes Quick Look. The list and grid hint is <strong>Press Space to preview the selected file with Quick Look</strong>.</td>
+</tr>
+<tr>
+<td>Up, Down, Left, Right</td>
+<td>Move the selection in the list or grid.</td>
+</tr>
+<tr>
+<td>⌘-click</td>
+<td>Toggle a file in the selection.</td>
+</tr>
+<tr>
+<td>Shift-click</td>
+<td>Extend the selection.</td>
+</tr>
+<tr>
+<td>Double-click</td>
+<td>Quick Look.</td>
+</tr>
+</tbody>
+</table>
+<p>The destructive buttons on the format confirmation and on <strong>Forget History</strong> have no keyboard equivalent. The other re-offload alert has <strong>Re-offload Everything</strong> (Return) and <strong>Cancel</strong>, and no destructive button.</p>
+<p><img src="assets/screenshots/grid-dark.png" width="1352" height="912" alt="The media grid. Arrow keys move the selection. Space opens Quick Look. Command-click toggles a file. Shift-click extends the selection." style="max-width:100%;height:auto"></p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="why-offload-is-waiting">Why Offload is waiting</h3>
+<p><img src="assets/screenshots/empty-dark.png" width="1060" height="700" alt="Lodge with no card. Offload is waiting." style="max-width:100%;height:auto"></p>
+<table>
+<thead>
+<tr>
+<th>Message</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Insert a card to begin</td>
+<td>No card yet.</td>
+</tr>
+<tr>
+<td>Scanning card…</td>
+<td>Lodge is still reading the card. The card column says <strong>Scanning…</strong>.</td>
+</tr>
+<tr>
+<td>This card is empty</td>
+<td>There is nothing to copy.</td>
+</tr>
+<tr>
+<td>Enter a project name</td>
+<td>The template uses <code>{project}</code>.</td>
+</tr>
+<tr>
+<td>Choose a camera</td>
+<td>The template uses <code>{camera}</code>.</td>
+</tr>
+<tr>
+<td>Fix the naming template in Settings</td>
+<td>The template is not usable.</td>
+</tr>
+<tr>
+<td>Choose a destination folder</td>
+<td>No folder yet.</td>
+</tr>
+<tr>
+<td>The destination folder isn’t connected — choose another</td>
+<td>That drive is not mounted.</td>
+</tr>
+<tr>
+<td>Not enough space: needs <code>&lt;needed&gt;</code>, <code>&lt;available&gt;</code> free</td>
+<td>The destination doesn't have room for this copy. Choose another folder, or make room.</td>
+</tr>
+<tr>
+<td>1 copy is missing at the destination — choose Re-offload</td>
+<td>One expected copy is missing. See <a href="#re-offload">Re-offload</a>.</td>
+</tr>
+<tr>
+<td><code>&lt;n&gt;</code> copies are missing at the destination — choose Re-offload</td>
+<td>Some files Lodge copied before are gone from the destination. Choose Re-offload to copy them again.</td>
+</tr>
+<tr>
+<td>Only a short clip is left — choose Include Anyway to offload it</td>
+<td>The only remaining video was skipped for length.</td>
+</tr>
+<tr>
+<td>Only short clips are left — choose Include All Short Clips to offload them</td>
+<td>The only remaining videos were skipped for length.</td>
+</tr>
+<tr>
+<td>Nothing new in the chosen dates — choose Any date to see everything</td>
+<td>The date filter is hiding every new file.</td>
+</tr>
+<tr>
+<td>Everything on this card is already offloaded</td>
+<td>There is nothing new to copy.</td>
+</tr>
+</tbody>
+</table>
+<p>A copy that does start can still fail. The list shows the path on the card, then one of:</p>
+<ul>
+<li><strong><code>&lt;name&gt;</code> already exists — not overwriting it.</strong></li>
+<li><strong>Couldn’t create <code>&lt;name&gt;</code> in the destination.</strong></li>
+<li><strong>Checksum mismatch for <code>&lt;name&gt;</code>. The copy was deleted.</strong></li>
+</ul>
+<h3 id="if-the-destination-is-read-only">If the destination is read-only</h3>
+<ul>
+<li><strong>This drive is read-only, so Lodge can’t write to it — choose another</strong></li>
+<li><strong>This drive is read-only (NTFS). macOS can’t write to it.</strong></li>
+<li><strong>This drive is read-only (<code>&lt;format&gt;</code>), so Lodge can’t write to it — choose another</strong></li>
+</ul>
+<p>Recognized format names are <strong>NTFS</strong>, <strong>exFAT</strong>, <strong>FAT32</strong>, <strong>Mac OS Extended</strong>, and <strong>APFS</strong>.</p>
+<h3 id="report-a-bug">Report a bug</h3>
+<p><strong>Report a Bug…</strong> is in the <strong>Help</strong> menu, alongside <strong>Contact Support…</strong> and <strong>Support Lodge…</strong>. It opens an email to bashframes@gmail.com. Nothing is sent until you send it.</p>
+<p>The subject is <strong>Lodge bug report (version <code>&lt;version&gt;</code> build <code>&lt;build&gt;</code>)</strong>.</p>
+<p>The body starts with <strong>What happened?</strong> and one of:</p>
+<ul>
+<li><strong>(What were you doing, and what went wrong? Steps to make it happen again help a lot.)</strong></li>
+<li><strong>(Lodge quit unexpectedly. What were you doing just before?)</strong></li>
+</ul>
+<p>Then <strong>Lodge <code>&lt;version&gt;</code> (build <code>&lt;build&gt;</code>)</strong>, <strong>macOS <code>&lt;version&gt;</code></strong>, and <strong>Mac: <code>&lt;model&gt;</code>, <code>&lt;chip&gt;</code></strong>. Up to 200 of Lodge’s own log lines from the last three days go into the report. Paths under your home folder, <code>/Volumes</code>, <code>/Users</code>, <code>/private</code>, <code>/var</code>, and <code>/tmp</code> are replaced with <code>&lt;path&gt;</code>.</p>
+<p>When Mail opens, the body lists <strong>Attached: Lodge log.txt</strong> and the log is that attachment. An empty log file contains <strong>(nothing logged recently)</strong>. A crash report goes out as a <code>.txt</code> file. With no Mail account, the message is a mailto: link: the log is in the body under <strong>Lodge’s recent log:</strong>, nothing is attached, and if a crash report was part of the send the body adds <strong>(The crash report couldn’t be attached. It’s in Console ▸ Crash Reports, under Lodge.)</strong>.</p>
+<p>Lodge asks <strong>Lodge quit unexpectedly last time. Send a crash report?</strong> when a <code>Lodge-….ips</code> or <code>Lodge_….crash</code> report is newer than the last one it recorded. The first launch that sees this records the newest report and does not ask. It is also skipped in demo mode. The detail is <strong>This opens a new email to bashframes with the crash report and Lodge’s recent log attached. File, card and drive names are left out. You can read it over before sending.</strong> The buttons are <strong>Send Report</strong> and <strong>Not Now</strong>. Each report is offered once.</p>
+<h3 id="if-the-card-wont-eject">If the card won't eject</h3>
+<p>The finish line ends with ** — Couldn’t eject <code>&lt;card name&gt;</code>: <code>&lt;system message&gt;</code>**.</p>
+<h2 id="updates">Updates</h2>
+<p><strong>Automatically check for updates</strong> is on. Lodge checks once a day. <strong>Automatically download and install updates</strong> is off.</p>
+<p>The footer says: <strong>Lodge checks for a new version once a day. You can also choose Lodge ▸ Check for Updates… any time.</strong></p>
+<h2 id="privacy">Privacy</h2>
+<p>No account, no analytics, and copying never uploads anything. Lodge goes online for a daily update check, which you can turn off in Settings &gt; General, and to activate your license with Polar and confirm it about once a week.</p>
+<h2 id="support">Support</h2>
+<p>If Lodge saves you time, you can leave a tip on <a href="https://ko-fi.com/bashframes">Ko-fi</a>. Tips are optional and separate from the $10 license, which you buy in the app after the trial.</p>
+<p>The support note is titled <strong>Support Lodge</strong>. Its body is <strong>Lodge is made by one person at bashframes. If it saves you time, you can chip in on Ko-fi. Thank you!</strong> The buttons are <strong>Don’t Ask Again</strong>, <strong>Maybe Later</strong> (Escape), and <strong>Support Lodge</strong>. <strong>Support Lodge</strong> opens <a href="https://ko-fi.com/bashframes">ko-fi.com/bashframes</a>.</p>
+<p>The note shows only when all of these are true:</p>
+<ul>
+<li>at least 5 offloads where every file was copied and verified</li>
+<li>at least 3 days after this version was first launched</li>
+<li>it has been shown fewer than 2 times</li>
+<li>you have not chosen <strong>Support Lodge</strong> or <strong>Don’t Ask Again</strong></li>
+<li>the next ask date is unset or has passed</li>
+</ul>
+<p><strong>Maybe Later</strong> waits 30 days. The note is not shown during a copy or a format.</p>
+    </article>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>Lodge 1.0 · Home base for your media. · © 2026 bashframes</p>
+      <p class="analytics-note">This website counts visits with GoatCounter: anonymous, no cookies. The Lodge app itself has no analytics.</p>
+      <nav aria-label="Footer">
+        <a href="getting-started.html">Getting started</a>
+        <a href="user-guide.html">User guide</a>
+        <a href="faq.html">FAQ</a>
+        <a href="changelog.html">Changelog</a>
+        <a href="mailto:bashframes@gmail.com">bashframes@gmail.com</a>
+        <a class="support" href="https://ko-fi.com/bashframes">Support Lodge</a>
+      </nav>
+    </div>
+  </footer>
+  <script data-goatcounter="https://bashframes.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+</body>
+</html>

@@ -27,7 +27,7 @@ During setup, each drive shows how much space is available.
 
 ## Trial and license
 
-[Try free 3 days](https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg) and try every feature for 3 days, then $10. Lodge shows how many days are left each time it opens. After the trial ends, Buy appears in the app and leads to Polar.
+[Try free 3 days](https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg), then $10. Every feature included. Lodge shows how many days are left each time it opens. After the trial ends, Buy appears in the app and leads to Polar.
 
 ## Your first offload
 
@@ -403,6 +403,10 @@ The finish line ends with ** — Couldn’t eject `<card name>`: `<system messag
 **Automatically check for updates** is on. Lodge checks once a day. **Automatically download and install updates** is off.
 
 The footer says: **Lodge checks for a new version once a day. You can also choose Lodge ▸ Check for Updates… any time.**
+
+## Privacy
+
+No account, no analytics, and copying never uploads anything. Lodge goes online for a daily update check, which you can turn off in Settings > General, and to activate your license with Polar and confirm it about once a week.
 
 ## Support
 
