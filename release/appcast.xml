@@ -12,7 +12,7 @@
             <sparkle:version>7</sparkle:version>
             <sparkle:shortVersionString>1.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg" length="8908264" type="application/octet-stream" sparkle:edSignature="3snDDdhud/xwa87zV+DXLvOEF51YEeWQFMXjkrcUXXoReQddrsIzIvXcVEUIIjjrowNDN/aMDBTeC05/IzS0Cg=="/>
+            <enclosure url="https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg" length="8911704" type="application/octet-stream" sparkle:edSignature="5S7sMqXS/uxgNTHSEWSGDm8FrMSgzaDB/Rp+J4b7h/wYVlGXE8o/R7n8lWv7uhdxiU++CNmcl4n59eB6Bwo5Ag=="/>
         </item>
     </channel>
 </rss>
