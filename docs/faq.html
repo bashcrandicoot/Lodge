@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FAQ — Lodge</title>
+  <meta name="description" content="Lodge gets your footage off camera cards safely, checked and neatly named.">
+  <meta name="author" content="bashframes">
+  <meta name="theme-color" content="#100e18">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="assets/favicon.ico" sizes="any">
+  <link rel="icon" href="assets/favicon.png" type="image/png" sizes="32x32">
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="index.html">
+        <img src="assets/app-icon/icon_128x128.png" width="128" height="128" alt="">
+        Lodge
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="index.html#features">Features</a>
+        <a href="index.html#verified">Verified</a>
+        <a href="index.html#install">Install</a>
+        <a href="getting-started.html">Getting started</a>
+        <a href="user-guide.html">User guide</a>
+        <a href="faq.html">FAQ</a>
+        <a href="changelog.html">Changelog</a>
+        <a class="download" href="https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg" data-goatcounter-click="trial-download">Try free 3 days</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <article class="wrap prose">
+<h1 id="faq">FAQ</h1>
+<p>Short answers. The <a href="user-guide.html">user guide</a> has the detail, and <a href="getting-started.html">Getting started</a> covers the download.</p>
+<h2 id="what-happens-when-the-3-day-trial-ends">What happens when the 3-day trial ends?</h2>
+<p>Lodge shows how many days are left each time it opens. After the trial ends, Buy appears in the app and leads to Polar. Try free 3 days, then $10. <a href="https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg">Try free 3 days</a>.</p>
+<h2 id="which-mac-do-i-need">Which Mac do I need?</h2>
+<p>macOS 14 Sonoma or later. Lodge is a universal app for Apple silicon and Intel Macs.</p>
+<h2 id="does-lodge-change-the-card-while-it-copies">Does Lodge change the card while it copies?</h2>
+<p>The copy only reads the card. Each file is written on the destination, checked with SHA-256, and only then given its final name. <strong>Format Card…</strong> is the command that erases a card, and it asks first.</p>
+<h2 id="what-does-verified-mean">What does “verified” mean?</h2>
+<p>Lodge hashes the file as it reads it from the card, writes a <code>&lt;name&gt;.lodge-partial</code> file, reads that file back, and hashes it again. The two SHA-256 values have to match. The partial file is then renamed. If they do not match, the partial file is deleted and that file is counted as failed.</p>
+<h2 id="what-does-54-new-files-5-ignored-mean">What does “54 new files · 5 ignored” mean?</h2>
+<p>That is the line on the selected card before and during an offload. <strong>57 copied · 5 ignored</strong> is the same line after the offload finishes. The numbers follow your card. Ignored items are system files and your ignore list. They are not copied, and they do not stop the card being ready to format.</p>
+<h2 id="why-is-a-copy-missing-at-destination">Why is a copy “missing at destination”?</h2>
+<p>The ledger has the file, and the copy is gone or its size has changed. Lodge will not copy it again until you choose <strong>Re-offload Missing Copies</strong>, <strong>Re-offload This File</strong>, or <strong>Re-offload Everything on This Card…</strong>. New copies never overwrite what is already in the folder.</p>
+<h2 id="when-can-i-format-the-card">When can I format the card?</h2>
+<p>A clean finish reads <strong>Offload Complete</strong>, and <strong>Format Card…</strong> is the button that erases the card. When every file has a verified copy that is still at the destination, at the same size, the card shows <strong>Ready to format</strong>. If short clips were skipped, the card says how many are not offloaded, such as <strong>2 short clips not offloaded</strong>, and the confirmation button reads <strong>Format and Discard N Short Clips</strong>. Ignored system files do not block the badge. Cancel is the default in the confirmation.</p>
+<p>Lodge formats exFAT, FAT32, and FAT16, and keeps the card’s name. Other formats are left for the camera. It also refuses the startup disk, a drive that is part of the Mac, and the drive your destination folder is on.</p>
+<h2 id="what-is-the-difference-between-a-preset-and-examples">What is the difference between a preset and Examples?</h2>
+<p><strong>Examples</strong>, in Settings &gt; Naming, fills in a folder template and a file template. A preset saves the whole setup: destination, templates, camera, short clips, quick dump, and file rules. After you change that setup, the menu says <strong>Edited</strong>. The preset menu sits at the top right of the window, and the window title is hidden. When a card is inserted, Lodge selects the camera you last used with that card, by its volume UUID or its name.</p>
+<h2 id="how-do-i-change-the-folders-in-layout">How do I change the folders in Layout?</h2>
+<p>Once a card is scanned, <strong>Layout</strong> in Destination shows the folders Lodge will make, including a folder for each extension, then <strong>Proxies</strong> and <strong>Sidecars</strong> when those files are in the plan. Drag a level to move it, or drag or click a token from <strong>Add a level</strong>. The header says <strong>Drag to rearrange</strong>. <strong>Expand All</strong> and <strong>Collapse All</strong> sit beside <strong>Layout</strong>. Expand All’s help reads <strong>Expand All (or Option-click a triangle)</strong>. Collapse All’s label is <strong>Collapse all folders</strong>. A level quick dump removes stays in the tree, struck through.</p>
+<h2 id="what-is-quick-dump">What is quick dump?</h2>
+<p><strong>Quick dump</strong> takes <code>{project}</code> out of the templates so there is nothing to type. An ⓘ beside the checkbox says: Skips the project name and dumps all the footage straight into a dated folder. <code>{date}/{project}</code> and <code>{date}_{project}_{seq}</code> become <code>{date}</code> and <code>{date}_{seq}</code>. Numbering carries on, and each file type still gets its own folder.</p>
+<h2 id="what-does-the-short-clip-slider-do">What does the short-clip slider do?</h2>
+<p><strong>Skip videos shorter than</strong> runs from <strong>Off</strong> to <strong>30 s</strong>. It starts at <strong>5 s</strong>. The stepper next to it goes up to 60 seconds. Clips under the limit stay on the card with their sidecars until you choose <strong>Include Anyway</strong> or <strong>Include All</strong>. Clips whose length cannot be read, such as BRAW and R3D, are always copied.</p>
+<h2 id="which-drives-does-lodge-see">Which drives does Lodge see?</h2>
+<p>Removable or ejectable volumes mounted under <code>/Volumes</code>. A card that was already inserted at launch counts. The startup disk does not, and neither does the volume your destination folder is on.</p>
+<h2 id="why-didnt-lodge-ask-to-import-my-card">Why didn’t Lodge ask to import my card?</h2>
+<p>Lodge asks only while it is running, and only when you are in another app. Keep it running after you close the window with <strong>Settings &gt; General &gt; Menu Bar &gt; Keep Lodge running in the menu bar</strong>. If a Focus or Do Not Disturb is on, macOS holds the notification back: set <strong>Ask with</strong> to <strong>Floating panel</strong>. Lodge also skips drives without camera folders or media, your destination drives, and cards you chose <strong>Don’t ask</strong> for. See <a href="user-guide.html#when-lodge-asks-to-import">When Lodge asks to import</a>.</p>
+<h2 id="why-did-macos-block-lodge">Why did macOS block Lodge?</h2>
+<p>Lodge is not notarized.</p>
+<p>On macOS 15 Sequoia and later, open Lodge, click <strong>Done</strong>, then go to <strong>System Settings &gt; Privacy &amp; Security</strong>, click <strong>Open Anyway</strong> next to Lodge, and confirm.</p>
+<p>On macOS 14 Sonoma, right-click or Control-click Lodge, choose <strong>Open</strong>, then <strong>Open</strong> again.</p>
+<p>The first time Lodge reads a card, also allow access to files on a removable volume.</p>
+<h2 id="how-do-i-get-help">How do I get help?</h2>
+<p>Write to <a href="mailto:bashframes@gmail.com">bashframes@gmail.com</a>. If Lodge has been useful, <a href="https://ko-fi.com/bashframes">Support Lodge</a>. Built by bashframes.</p>
+<p><strong>Help &gt; Contact Support…</strong> opens an email to that address, subject Lodge Support, with the Lodge and macOS versions under your message. <strong>Help &gt; Support Lodge…</strong> and <strong>Lodge &gt; Support Lodge…</strong> open the same page in your browser. <strong>Lodge &gt; About Lodge</strong> says Made by bashframes, with a link to the same email. Settings &gt; General ends with <strong>Support</strong> and <strong>Support Lodge</strong>.</p>
+<p>After five offloads where every file was copied and verified, and at least three days after you first open that version, a short <strong>Support Lodge</strong> note shows up at most twice, and only when Lodge is idle. It never appears during a copy. <strong>Maybe Later</strong> asks once more, 30 days later. <strong>Support Lodge</strong> and <strong>Don’t Ask Again</strong> stop it.</p>
+<h2 id="how-do-i-update-lodge">How do I update Lodge?</h2>
+<p><strong>Lodge &gt; Check for Updates…</strong> looks now. The item is dimmed while a check is already running. In Settings &gt; General, under <strong>Updates</strong>, <strong>Automatically check for updates</strong> is on, and <strong>Automatically download and install updates</strong> is off. The second switch is unavailable while automatic checks are off. Lodge checks once a day. Updates are EdDSA-signed through Sparkle.</p>
+<h2 id="how-are-files-sorted-into-folders">How are files sorted into folders?</h2>
+<p>Files land in the folder the template makes, and then in a folder named for the extension, in capitals: <code>MP4/</code>, <code>ARW/</code>, <code>WAV/</code>, and so on. <code>.mp4</code> and <code>.MP4</code> share <code>MP4/</code>. <code>.JPG</code>, <code>.JPEG</code>, and <code>.JPE</code> share <code>JPG/</code>. <code>.TIF</code> and <code>.TIFF</code> share <code>TIF/</code>. An unknown extension still gets a folder. A file with no extension stays in the template folder. With the default file rules, <code>lrv</code> and <code>lrf</code> go in <strong>Proxies/</strong>, and <code>thm</code>, <code>xml</code>, and <code>srt</code> go in <strong>Sidecars/</strong>, named after their clip. Audio recorded beside a clip, such as <code>C0001.WAV</code>, goes in <code>WAV/</code> and shares the clip’s new name.</p>
+<h2 id="does-lodge-need-a-network">Does Lodge need a network?</h2>
+<p>No account, no analytics, and copying never uploads anything. Lodge goes online for a daily update check, which you can turn off in Settings &gt; General, and to activate your license with Polar and confirm it about once a week. The ledger and your settings stay in your Library folder.</p>
+<h2 id="where-do-my-settings-live">Where do my settings live?</h2>
+<p><code>~/Library/Application Support/Lodge/</code> holds <code>ledger.json</code>, <code>destinations.json</code>, <code>cameras.json</code>, and <code>presets.json</code>. Templates, the theme, and the switches live in Lodge’s preferences.</p>
+<h2 id="can-i-use-light-mode-or-another-colour">Can I use Light mode, or another colour?</h2>
+<p>Yes. Settings &gt; Appearance. Lodge starts in Dark mode with <strong>Default</strong>, and system-blue controls (or whatever accent you set in System Settings). <strong>Aurora</strong>, <strong>Ocean</strong>, <strong>Twilight</strong>, <strong>Ember</strong>, and <strong>Forest</strong> are optional colour themes. <strong>Light</strong> and <strong>System</strong> are next to <strong>Dark</strong>.</p>
+<h2 id="what-if-two-files-would-get-the-same-name">What if two files would get the same name?</h2>
+<p>Lodge does not overwrite. With <code>{seq}</code> in the template, numbering continues after the highest number already in the shoot folder and every format folder under it. Without <code>{seq}</code> or <code>{original}</code>, a repeated name gets <code>_2</code>, <code>_3</code>, and so on.</p>
+<h2 id="what-happens-the-first-time-i-open-lodge">What happens the first time I open Lodge?</h2>
+<p><strong>Welcome to Lodge</strong> is a short guide to your first preset: destination, folders, naming and safety. It does not show if you already have presets, favorites, or offloads. <strong>Keep Lodge running in the menu bar</strong> is off by default. When it is on, closing the window leaves Lodge running. <strong>Show menu bar icon</strong> and <strong>Open at login</strong> are in Settings &gt; General &gt; Menu Bar. When a card is plugged in while you are in another app, Lodge can ask <strong>Import with Lodge?</strong> as a notification or a floating panel.</p>
+<h2 id="i-turned-a-file-type-off-will-format-still-wait-for-it">I turned a file type off. Will Format still wait for it?</h2>
+<p>The type switches decide what the next offload copies. <strong>Ready to format</strong> looks at the whole card, not only the types you left on. A photo you excluded still has to be offloaded, or the card is not ready. Ignored names are the exception: they are never copied, and they do not block the badge.</p>
+    </article>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>Lodge 1.0 · Home base for your media. · © 2026 bashframes</p>
+      <p class="analytics-note">This website counts visits with GoatCounter: anonymous, no cookies. The Lodge app itself has no analytics.</p>
+      <nav aria-label="Footer">
+        <a href="getting-started.html">Getting started</a>
+        <a href="user-guide.html">User guide</a>
+        <a href="faq.html">FAQ</a>
+        <a href="changelog.html">Changelog</a>
+        <a href="mailto:bashframes@gmail.com">bashframes@gmail.com</a>
+        <a class="support" href="https://ko-fi.com/bashframes">Support Lodge</a>
+      </nav>
+    </div>
+  </footer>
+  <script data-goatcounter="https://bashframes.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+</body>
+</html>

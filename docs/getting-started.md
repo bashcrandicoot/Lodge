@@ -1,6 +1,6 @@
 # Getting started
 
-Home base for your media. Lodge is a universal app for Apple silicon and Intel Macs, on macOS 14 or later. This is the path from the download to the first offload. The [user guide](user-guide.md) covers every control.
+Home base for your media. Lodge is a universal app for Apple silicon and Intel Macs, on macOS 14 or later. This is the path from the download to the first offload. The [user guide](user-guide.html) covers every control.
 
 ## Download Lodge
 
@@ -37,7 +37,7 @@ If you chose Don’t Allow, turn it back on in **System Settings > Privacy & Sec
 
 ## Choose a destination
 
-The first time Lodge opens, **Set up your first preset** picks a destination and builds a preset with you. See [First-launch setup](user-guide.md#first-launch-setup). If you skip it, the Destination column starts empty.
+The first time Lodge opens, **Set up your first preset** picks a destination and builds a preset with you. See [Install and first launch](user-guide.html#install-and-first-launch). If you skip it, the Destination column starts empty.
 
 1. Click **Choose Folder…**, or drop a folder from Finder onto Destination.
 2. Lodge remembers that folder.
@@ -73,7 +73,7 @@ The button’s caption is the reason. Common ones:
 
 ## Build from source
 
-The download above is the way to install Lodge. If you want to build it yourself, start with [CONTRIBUTING.md](../CONTRIBUTING.md).
+The download above is the way to install Lodge. If you want to build it yourself, start with the [contribution guide on GitHub](https://github.com/bashcrandicoot/Lodge/blob/main/CONTRIBUTING.md).
 
 For help, write to [bashframes@gmail.com](mailto:bashframes@gmail.com).
 

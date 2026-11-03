@@ -1,6 +1,6 @@
 # FAQ
 
-Short answers. The [user guide](user-guide.md) has the detail, and [Getting started](getting-started.md) covers the download.
+Short answers. The [user guide](user-guide.html) has the detail, and [Getting started](getting-started.html) covers the download.
 
 ## What happens when the 3-day trial ends?
 
@@ -54,7 +54,7 @@ Removable or ejectable volumes mounted under `/Volumes`. A card that was already
 
 ## Why didn’t Lodge ask to import my card?
 
-Lodge asks only while it is running, and only when you are in another app. Keep it running after you close the window with **Settings > General > Menu Bar > Keep Lodge running in the menu bar**. If a Focus or Do Not Disturb is on, macOS holds the notification back: set **Ask with** to **Floating panel**. Lodge also skips drives without camera folders or media, your destination drives, and cards you chose **Don’t ask** for. See [Ask to import](user-guide.md#ask-to-import).
+Lodge asks only while it is running, and only when you are in another app. Keep it running after you close the window with **Settings > General > Menu Bar > Keep Lodge running in the menu bar**. If a Focus or Do Not Disturb is on, macOS holds the notification back: set **Ask with** to **Floating panel**. Lodge also skips drives without camera folders or media, your destination drives, and cards you chose **Don’t ask** for. See [When Lodge asks to import](user-guide.html#when-lodge-asks-to-import).
 
 ## Why did macOS block Lodge?
 

@@ -138,4 +138,4 @@ The README hero is a `<picture>` pointing at `docs/assets/lodge-header-dark.png`
 
 ## License
 
-MIT. See [LICENSE](LICENSE). By contributing, you agree that your contributions are licensed the same way.
+All rights reserved. See [LICENSE](LICENSE). By contributing, you agree that your contributions are covered by that notice.
