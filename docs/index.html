@@ -150,7 +150,7 @@
 
     .hero {
       position: relative;
-      padding-block: var(--space-7) var(--space-5);
+      padding-block: var(--space-7) var(--space-8);
       text-align: center;
     }
     .hero::before {
@@ -322,7 +322,7 @@
     .motion-wagon {
       --motion-ratio: 2120 / 306;
       width: min(1060px, 100%);
-      margin: var(--space-6) auto 0;
+      margin: 0 auto var(--space-6);
     }
 
     section { padding-block: var(--space-8); }
@@ -332,13 +332,22 @@
       letter-spacing: -0.03em;
       line-height: 1.15;
       margin: 0 0 var(--space-3);
+      text-align: center;
     }
     .section-intro {
       color: var(--muted);
       max-width: 40rem;
-      margin: 0 0 var(--space-6);
+      margin: 0 auto var(--space-6);
       line-height: 1.5;
+      text-align: center;
     }
+    .pair h2,
+    .pair .section-intro {
+      text-align: left;
+      margin-inline: 0;
+    }
+    #what .section-intro { margin-bottom: 0; }
+    #install .note { text-align: center; }
 
     .features {
       display: grid;
@@ -520,7 +529,7 @@
       color: var(--muted);
       margin: var(--space-4) 0 0;
     }
-    .download-row { margin: 0; }
+    .download-row { margin: 0; text-align: center; }
 
     footer {
       border-top: 1px solid var(--line);
@@ -531,13 +540,15 @@
     }
     footer .wrap {
       display: flex;
+      flex-direction: column;
       flex-wrap: wrap;
-      gap: var(--space-3) var(--space-5);
-      justify-content: space-between;
+      gap: var(--space-4);
+      justify-content: center;
       align-items: center;
+      text-align: center;
     }
     footer p { margin: 0; }
-    footer nav { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); }
+    footer nav { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); justify-content: center; }
     footer a { color: var(--muted); }
     footer a.support {
       color: var(--ink);
@@ -568,7 +579,8 @@
       .features { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .features h3 { min-height: 0; }
       section { padding-block: var(--space-7); }
-      .hero { padding-block: var(--space-6) var(--space-4); }
+      .hero { padding-block: var(--space-6) var(--space-7); }
+      .pair h2, .pair .section-intro { text-align: center; margin-inline: auto; }
     }
     @media (max-width: 480px) {
       .wrap { padding-inline: var(--space-4); }
@@ -630,6 +642,19 @@
       </div>
     </div>
 
+    <section id="what" aria-labelledby="what-title">
+      <div class="wrap">
+        <h2 id="what-title">What is Lodge?</h2>
+        <figure class="motion motion-wagon">
+          <video autoplay muted loop playsinline preload="metadata" poster="assets/motion/lodge-wagon-progress@2x.png" width="1060" height="153" aria-label="A wagon crossing the copy progress bar.">
+            <source src="assets/motion/lodge-wagon-progress@2x.mp4" type="video/mp4">
+          </video>
+          <img class="motion-still" src="assets/motion/lodge-wagon-progress@2x.png" width="1060" height="153" alt="A wagon crossing the copy progress bar.">
+        </figure>
+        <p class="section-intro">Lodge is a media ingest tool for creators. After every shoot, it offloads your cards straight into your own folder structure and names every file by your rules, so you always know where each clip lives. Then it checks every copy with SHA-256 and tells you when it all passed. Save your setup as a preset and the next shoot is one click.</p>
+      </div>
+    </section>
+
     <section id="features">
       <div class="wrap">
         <h2>Folder structure and naming</h2>
@@ -676,14 +701,6 @@
     </section>
 
     <section id="verified">
-      <div class="wrap">
-        <figure class="motion motion-wagon">
-          <video autoplay muted loop playsinline preload="metadata" poster="assets/motion/lodge-wagon-progress@2x.png" width="1060" height="153" aria-label="A wagon crossing the copy progress bar.">
-            <source src="assets/motion/lodge-wagon-progress@2x.mp4" type="video/mp4">
-          </video>
-          <img class="motion-still" src="assets/motion/lodge-wagon-progress@2x.png" width="1060" height="153" alt="A wagon crossing the copy progress bar.">
-        </figure>
-      </div>
       <div class="wrap pair verified">
         <figure class="shot-figure">
           <img src="assets/screenshots/finished-dark.png" width="2704" height="1824" alt="A finished offload. The bar reads Offload Complete, with 29 copied, 0 skipped, and 0 failed.">
