@@ -6,14 +6,14 @@
   </picture>
 </p>
 
-<h1 align="center">From card to calm.</h1>
+<h1 align="center">Ingest into your own folders and names.</h1>
 
 <p align="center">
-  Lodge gets your footage off camera cards safely, checked and neatly named.
+  Ingest camera media into custom folder structures and naming schemes. Every copy is checked with SHA-256.
 </p>
 
-- Copies each file off the card and checks it with SHA-256.
-- Names files from a template, and skips what is already copied.
+- Puts each file in your folder structure and names it from a template.
+- Checks each copy with SHA-256, and skips what is already copied.
 
 ## Download and install
 

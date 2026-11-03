@@ -20,4 +20,4 @@ The app is not notarized and is not sandboxed. A build you make yourself is sign
 
 On macOS 15 Sequoia and later, open Lodge, click **Done**, then go to **System Settings > Privacy & Security** and click **Open Anyway**. On macOS 14, right-click Lodge and choose **Open**.
 
-[Try free 3 days](https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg). Try free 3 days, then $10. After the trial ends, Buy appears in the app and leads to Polar.
+[Try free 3 days, then $10.](https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg)
