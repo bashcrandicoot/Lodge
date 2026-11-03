@@ -26,10 +26,10 @@
 ## Download
 
 <p align="center">
-  <a href="https://ko-fi.com/s/fb9fab53be"><img src="docs/assets/download-button-kofi.png" alt="Download Lodge for Mac on Ko-fi" width="320" height="72"></a>
+  <a href="https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1"><img src="docs/assets/download-button-kofi.png" alt="Buy Lodge — $10" width="320" height="72"></a>
 </p>
 
-Pay what you want. [Download Lodge 1.0 from Ko-fi](https://ko-fi.com/s/fb9fab53be), unzip it, then open the DMG, and drag Lodge to Applications.
+Built by bashframes. $10 once. Try it for 3 days. [Buy Lodge 1.0 — $10](https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1), unzip it, then open the DMG, and drag Lodge to Applications.
 
 ## Install
 

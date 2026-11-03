@@ -93,7 +93,7 @@ The button’s caption is the reason:
 | Fix the naming template in Settings | An error in Settings > Naming |
 | Choose a destination folder | Pick a folder |
 | The destination folder isn’t connected — choose another | The drive is unplugged |
-| Not enough space: needs …, … free | Free space, or pick another folder |
+| Not enough space: needs …, … free | Make space, or pick another folder |
 | Everything on this card is already offloaded | Nothing new to copy |
 | N copies are missing at the destination — choose Re-offload | See [Re-offloading](#re-offloading) |
 | Only short clips are left — choose Include All Short Clips to offload them | See [Short clips](#short-clips) |
@@ -212,7 +212,7 @@ Presets are stored in `~/Library/Application Support/Lodge/presets.json`.
 
 ## Favorite destinations
 
-Click the folder in Destination to see your favorites and their free space, plus **Choose Other Folder…** and **Edit Favorites…**. **Add “Folder” to Favorites** appears when the current folder is not in the list yet.
+Click the folder in Destination to see your favorites and their available space, plus **Choose Other Folder…** and **Edit Favorites…**. **Add “Folder” to Favorites** appears when the current folder is not in the list yet.
 
 A favorite on a drive that is unplugged says **Not connected** and cannot be selected. The Offload button then says the destination is not connected.
 
@@ -304,7 +304,7 @@ macOS keeps notifications quiet while a Focus, such as Do Not Disturb, is on. If
 
 ## Support
 
-Write to [bashframes@gmail.com](mailto:bashframes@gmail.com). If Lodge has been useful, [Support Lodge](https://ko-fi.com/bashframes). Pay what you want.
+Write to [bashframes@gmail.com](mailto:bashframes@gmail.com). If Lodge has been useful, [Support Lodge](https://ko-fi.com/bashframes). Built by bashframes.
 
 **Help > Contact Support…** opens an email to that address. The subject is Lodge Support. Under a blank line for your message, Lodge adds its version, its build number, and the macOS version. **Lodge > Support Lodge…** and **Help > Support Lodge…** open the Ko-fi page in your browser. **Lodge > About Lodge** says Made by bashframes, with a link to the same email. The bottom of Settings > General reads Made by bashframes, then **Support**, then **Support Lodge ♥**.
 
