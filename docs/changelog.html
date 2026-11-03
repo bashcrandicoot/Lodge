@@ -376,7 +376,7 @@
       .card { padding: var(--space-4); }
       .nav-inner { flex-wrap: nowrap; min-height: 56px; }
       .nav-links { flex-wrap: nowrap; }
-      .nav-links a:not(.download) { display: none; }
+      .nav-links a:not(.download):not(.guide) { display: none; }
     }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
@@ -393,10 +393,10 @@
         Lodge
       </a>
       <nav class="nav-links" aria-label="Primary">
-        <a href="./#features">Features</a>
-        <a href="./#verified">Verified</a>
-        <a href="./#install">Install</a>
-        <a href="user-guide.html">User guide</a>
+        <a href="index.html#features">Features</a>
+        <a href="index.html#verified">Verified</a>
+        <a href="index.html#install">Install</a>
+        <a class="guide" href="user-guide.html">User guide</a>
         <a href="changelog.html" aria-current="page">Changelog</a>
         <a class="download" href="https://bashfra.me/lodge-dmg" data-goatcounter-click="trial-download">Try for Free</a>
       </nav>
@@ -411,7 +411,7 @@
         <div class="actions">
           <a class="trial" href="https://bashfra.me/lodge-dmg" data-goatcounter-click="trial-download"><span>Try for Free</span><small>for Mac</small></a>
         </div>
-        <p class="pay">Try free 3 days, then $10.</p>
+        <p class="pay">3-day trial, then $10 once.</p>
         <p class="badges">
           <img alt="macOS 14 or later" src="https://img.shields.io/badge/macOS-14%2B-3A3A3C?style=flat&logo=apple&logoColor=white">
         </p>
@@ -428,41 +428,40 @@
             <span class="tag">Latest</span>
           </div>
           <div>
-            <h3><span class="accent">Home base</span> for your media. Your folders, your names, every card. Every copy is checked with SHA-256.</h3>
+            <h3><span class="accent">Home base</span> for your media.</h3>
             <ul>
+              <li><strong>Naming templates</strong> with tokens, a live preview and continued numbering.</li>
+              <li>A folder for each file type (MP4, WAV, ARW…) inside the last folder. JPG and JPEG share one.</li>
+              <li><strong>Verified copies.</strong> Each file is written under a temporary name, read back and checked with SHA-256, then renamed. Nothing is overwritten.</li>
               <li>Notices camera cards and removable drives with media as you insert them.</li>
               <li>A Card, Media, Destination window with an offload bar along the bottom.</li>
               <li>Copies only new files. An offload ledger remembers what was already copied.</li>
-              <li><strong>Verified copies.</strong> Each file is written under a temporary name, read back and checked with SHA-256, then renamed. Nothing is overwritten.</li>
-              <li><strong>Naming templates</strong> with tokens, a live preview and continued numbering.</li>
               <li>Sidecars keep their clip’s name. Proxies go into Proxies/ and sidecars into Sidecars/, with an editable extension and ignore list.</li>
-              <li><strong>Presets</strong> for destination, naming, camera, short clips, quick dump and file rules, plus <strong>quick dump</strong>.</li>
+              <li><strong>Presets</strong> for destination, naming, camera, short clips, Quick dump, and file rules.</li>
               <li>Skip short videos: a slider from Off to 30 s, and a stepper up to 60 s.</li>
               <li>Favorite destinations with available space, or drop a Finder folder.</li>
               <li>Re-offload missing files or the whole card.</li>
               <li>Safe card formatting, with a <strong>Ready to format</strong> badge.</li>
               <li>Thumbnails, list and grid view, and Quick Look.</li>
               <li>Recent Offloads with Show in Finder.</li>
-              <li>Themes: default dark, Aurora, Ocean, Twilight, Ember, Forest and Light mode. Small animations that respect Reduce motion.</li>
+              <li>Themes: default dark, Aurora, Ocean, Twilight, Ember, and Forest. Small animations that respect Reduce motion.</li>
               <li><strong>Menu bar mode</strong> that watches for cards and asks to import them, as a notification or a floating panel.</li>
               <li><strong>First-launch setup.</strong> A short guide to your first preset.</li>
-              <li>A folder for each file type (MP4, WAV, ARW…) inside the last folder. JPG and JPEG share one.</li>
               <li><strong>Date filter.</strong> Offload Any date, Today, the Last 7 days or a custom range.</li>
               <li>Disk images (.dmg) on a card are ignored.</li>
-              <li><strong>Check for Updates</strong> through Sparkle, with automatic checks you can turn off in Settings &gt; General.</li>
-              <li><strong>Support Lodge</strong> opens Ko-fi (<span style="white-space: nowrap">ko-fi.com/bashframes</span>). bashframes contact details are in About Lodge and the Help menu.</li>
+              <li><strong>Check for Updates</strong>, with automatic checks you can turn off in Settings &gt; General.</li>
+              <li><strong>Tip Jar…</strong> is the in-app tip. bashframes contact details are in About Lodge and the Help menu.</li>
               <li>The Lodge Cabin app icon.</li>
               <li>Available space shows correctly on non-APFS external drives (exFAT, HFS+).</li>
               <li>Read-only drives, such as NTFS, get a clear message.</li>
               <li><strong>Help &gt; Report a Bug…</strong> emails bashframes@gmail.com with the log attached, and Lodge offers to send a crash report after an unexpected quit.</li>
               <li>Show in Finder opens one window on the parent folder.</li>
-              <li>About Lodge includes Sparkle’s MIT license under Acknowledgements.</li>
+              <li>About Lodge lists the open-source acknowledgements.</li>
             </ul>
-            <p class="note">Requires macOS 14 or later. Universal app for Apple silicon and Intel Macs. Not notarized.</p>
+            <p class="note">Requires macOS 14 or later. Universal app for Apple silicon and Intel Macs. Lodge isn't notarized, so the first time, right-click Lodge and choose Open, or go to System Settings &gt; Privacy &amp; Security &gt; Open Anyway.</p>
           </div>
         </li>
       </ol>
-      <p class="older">The full notes are in <a href="changelog.md">changelog.md</a>.</p>
       </div>
     </section>
   </main>
@@ -472,7 +471,7 @@
       <p>Lodge 1.0 · <span class="accent">Home base</span> for your media. · © 2026 bashframes</p>
       <p class="analytics-note">This website counts visits with GoatCounter: anonymous, no cookies. The Lodge app itself has no analytics.</p>
       <nav aria-label="Footer">
-        <a href="user-guide.html">User guide</a>
+        <a class="guide" href="user-guide.html">User guide</a>
         <a href="changelog.html" aria-current="page">Changelog</a>
         <a href="mailto:bashframes@gmail.com">bashframes@gmail.com</a>
         <a class="support" href="https://ko-fi.com/bashframes">Support Lodge</a>

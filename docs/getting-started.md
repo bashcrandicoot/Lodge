@@ -1,18 +1,18 @@
 # Getting started
 
-Home base for your media. Your folders, your names, every card. Every copy is checked with SHA-256. Lodge is a universal app for Apple silicon and Intel Macs, on macOS 14 or later. This is the path from the download to the first offload. The [user guide](user-guide.html) covers every control.
+Lodge is a universal app for Apple silicon and Intel Macs, on macOS 14 or later. This is the path from the download to the first offload. The [user guide](user-guide.html) covers every control.
 
 ## Download Lodge
 
 [Try for Free](https://bashfra.me/lodge-dmg) for Mac
 
-Open the .dmg, and drag Lodge to Applications. Try free 3 days, then $10.
+Open the .dmg, and drag Lodge to Applications. 3-day trial, then $10 once.
 
-No account, no analytics, and copying never uploads anything. Lodge goes online for a daily update check, which you can turn off in Settings > General, and to activate your license with Polar and confirm it about once a week.
+No account, no analytics, and copying never uploads anything. Lodge goes online for a daily update check, which you can turn off in Settings > General.
 
 ## Open Lodge the first time
 
-Lodge is not notarized, so macOS asks before it will launch.
+Lodge isn't notarized, so the first time, right-click Lodge and choose Open, or go to System Settings > Privacy & Security > Open Anyway.
 
 ### macOS 15 Sequoia and later
 

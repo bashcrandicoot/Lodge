@@ -185,13 +185,6 @@
       font-size: 19px;
       line-height: 1.5;
     }
-    .support {
-      max-width: 38rem;
-      margin: 0 auto var(--space-6);
-      color: var(--muted);
-      font-size: 17px;
-      line-height: 1.5;
-    }
     .actions {
       display: flex;
       flex-wrap: wrap;
@@ -280,7 +273,7 @@
       margin: var(--space-6) 0 0;
       border-radius: var(--radius);
       border: 1px solid var(--line);
-      box-shadow: 0 var(--space-5) 80px rgba(0, 0, 0, 0.45);
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
     }
     .naming-shot {
       max-width: 712px;
@@ -412,6 +405,9 @@
       overflow-wrap: normal;
     }
     .scheme + .scheme { margin-top: 2px; }
+    @media (max-width: 800px) {
+      .scheme { white-space: normal; overflow-wrap: anywhere; }
+    }
     code {
       font-family: var(--mono);
       font-size: 0.92em;
@@ -587,7 +583,7 @@
       .features { grid-template-columns: 1fr; }
       .nav-inner { flex-wrap: nowrap; min-height: 56px; }
       .nav-links { flex-wrap: nowrap; }
-      .nav-links a:not(.download) { display: none; }
+      .nav-links a:not(.download):not(.guide) { display: none; }
     }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
@@ -616,7 +612,7 @@
         <a href="#features">Features</a>
         <a href="#verified">Verified</a>
         <a href="#install">Install</a>
-        <a href="user-guide.html">User guide</a>
+        <a class="guide" href="user-guide.html">User guide</a>
         <a href="changelog.html">Changelog</a>
         <a class="download" href="https://bashfra.me/lodge-dmg" data-goatcounter-click="trial-download">Try for Free</a>
       </nav>
@@ -629,15 +625,13 @@
         <img class="header" src="assets/lodge-header-dark.png" width="1600" height="500" alt="Lodge app banner">
         <h1><span class="accent">Home base</span> for your media.</h1>
         <p class="lede">Your folders, your names, every card.</p>
-        <p class="support">Every copy is checked with SHA-256.</p>
         <div class="actions">
           <a class="trial" href="https://bashfra.me/lodge-dmg" data-goatcounter-click="trial-download"><span>Try for Free</span><small>for Mac</small></a>
           <a class="button secondary" href="getting-started.html">Getting started</a>
         </div>
-        <p class="pay">Try free 3 days, then $10.</p>
+        <p class="pay">3-day trial, then $10 once.</p>
         <p class="badges">
           <img alt="macOS 14 or later" src="https://img.shields.io/badge/macOS-14%2B-3A3A3C?style=flat&logo=apple&logoColor=white">
-          <a href="https://www.swift.org"><img alt="Swift 5" src="https://img.shields.io/badge/Swift-5-F05138?style=flat&logo=swift&logoColor=white"></a>
         </p>
       </div>
     </div>
@@ -651,14 +645,14 @@
           </video>
           <img class="motion-still" src="assets/motion/lodge-wagon-progress@2x.png" width="1060" height="153" alt="A wagon crossing the copy progress bar.">
         </figure>
-        <p class="section-intro">Lodge is a media ingest tool for creators. After every shoot, it offloads your cards straight into your own folder structure and names every file by your rules, so you always know where each clip lives. Then it checks every copy with SHA-256 and tells you when it all passed. Save your setup as a preset and the next shoot is one click.</p>
+        <p class="section-intro">Lodge is a media ingest tool for creators. When you plug in a camera card or drive, it asks <strong>Import with Lodge?</strong>, recognizes the folders most cameras use, and remembers which camera you used with each card. Presets save your destination, folder and file templates, camera, and file rules. Tokens such as {date}, {project}, {camera}, and {seq} shape the folder path and file names. Each offload can filter by file type or date, and skip short clips. Favorite destinations can sit on different drives. Offload into a project folder, or use Quick dump to put footage from different days into a dated folder. Save the setup as a preset and the next shoot is one click.</p>
       </div>
     </section>
 
     <section id="features">
       <div class="wrap">
         <h2>Folder structure and naming</h2>
-        <p class="section-intro">Ingest into a folder structure and naming scheme you set. Date and project, then a folder for each file type. Every copy is checked with SHA-256.</p>
+        <p class="section-intro">Ingest into a folder structure and naming scheme you set. Date and project, then a folder for each file type.</p>
         <figure class="shot-figure naming-shot">
           <img src="assets/screenshots/settings-naming.png" width="712" height="820" alt="Settings, Naming. The folder template and the file template.">
           <figcaption class="caption">Settings, Naming. The folder template and the file template.</figcaption>
@@ -672,29 +666,44 @@
             <code class="scheme">2026-10-25_Coastline_0001.mp4</code>
           </article>
           <article class="card">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M8 7v4M12 7v6"/></svg>
+            <h3>Tokens</h3>
+            <p>{date}, {project}, {camera}, and {seq} shape your folder path and file names.</p>
+          </article>
+          <article class="card">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h16M4 16h16"/><circle cx="9" cy="8" r="2" fill="var(--card)"/><circle cx="15" cy="16" r="2" fill="var(--card)"/></svg>
+            <h3>Presets</h3>
+            <p>Save destination, templates, camera, and file rules, then switch from the menu at the top right.</p>
+          </article>
+          <article class="card">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M8 9l4-4 4 4"/></svg>
+            <h3>Import with Lodge?</h3>
+            <p>Plug in a card or drive and Lodge asks. It recognizes the folders most cameras use and remembers which camera you used with each card.</p>
+          </article>
+          <article class="card">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h6"/></svg>
+            <h3>Filters</h3>
+            <p>Offload by file type or date, and skip short clips. Filters are set for each offload.</p>
+          </article>
+          <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h6l2 2h8v9H4z"/></svg>
-            <h3>Drop a folder</h3>
-            <p>Drag a folder onto Lodge to choose where your footage goes.</p>
+            <h3>Favorite destinations</h3>
+            <p>Save folders on different drives and see the space available.</p>
           </article>
           <article class="card">
-            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h7l4 4v12H7z"/><path d="M14 4v4h4"/></svg>
-            <h3>Proxies and sidecars</h3>
-            <p>Proxy files and sidecar files travel with their clip automatically.</p>
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            <h3>Quick dump</h3>
+            <p>Skip the project name and put footage from different days in a dated folder.</p>
           </article>
           <article class="card">
-            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12.5l2.5 2.5L16 9"/></svg>
-            <h3>Checked with SHA-256</h3>
-            <p>Every copied file is checked against the card, so you know it arrived intact.</p>
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h6l2 2h8v9H4z"/></svg>
+            <h3>Drag in a destination</h3>
+            <p>Drop a folder from Finder onto Lodge to choose where your footage goes.</p>
           </article>
           <article class="card">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7h11v12H8z"/><path d="M5 5h11v2"/></svg>
             <h3>Only what is new</h3>
             <p>Lodge remembers what it already copied and brings over only new files.</p>
-          </article>
-          <article class="card">
-            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h16M4 16h16"/><circle cx="9" cy="8" r="2" fill="var(--card)"/><circle cx="15" cy="16" r="2" fill="var(--card)"/></svg>
-            <h3>Short clips and presets</h3>
-            <p>Skip short clips. Switch presets from the menu at the top right.</p>
           </article>
         </div>
       </div>
@@ -711,7 +720,8 @@
           <p class="section-intro">Lodge writes each file, reads it back, and checks it with SHA-256. A match is renamed to the final name. A mismatch is deleted.</p>
           <ul>
             <li>The card is only read. A file already at the final path is not overwritten.</li>
-            <li>With nothing new to copy, Lodge names a missing copy, a skipped short clip, or the date filter first. <span>Everything on this card is already offloaded</span> is what remains after those.</li>
+            <li>If nothing is new, Lodge says why: a missing copy, a skipped short clip, or the date filter. Otherwise you'll see <span>Everything on this card is already offloaded</span>.</li>
+            <li><span>Ready to format</span> shows only when every file on the card has a verified copy.</li>
             <li>If a copy is missing, choose <span>Re-offload</span>.</li>
           </ul>
         </div>
@@ -725,7 +735,7 @@
           <li>
             <span class="num" aria-hidden="true"><span>1</span></span>
             <h3>Insert the card</h3>
-            <p>A mounted card shows up in Lodge.</p>
+            <p>Plug in a card. Lodge asks Import with Lodge?</p>
           </li>
           <li>
             <span class="num" aria-hidden="true"><span>2</span></span>
@@ -738,7 +748,6 @@
             <p>Copy and check every file.</p>
           </li>
         </ol>
-        <div class="step-media"><!-- A step video will go here when it is ready. --></div>
         <figure class="shot-figure">
           <img class="shot" src="assets/screenshots/ready-dark.png" width="2704" height="1824" alt="Lodge in Dark mode, ready to offload. The preset menu is at the top right. Offload 29 Files sits along the bottom.">
           <figcaption class="caption">Lodge ready to offload a card. Pick a preset at the top right, then press Offload.</figcaption>
@@ -751,7 +760,8 @@
         <h2>Install Lodge 1.0</h2>
         <p class="section-intro">Lodge is a universal app for Apple silicon and Intel Macs. It requires macOS 14 or later. Open the .dmg, and drag Lodge to Applications.</p>
         <p class="download-row"><a class="trial" href="https://bashfra.me/lodge-dmg" data-goatcounter-click="trial-download"><span>Try for Free</span><small>for Mac</small></a></p>
-        <p class="note">No account, no analytics, and copying never uploads anything. Lodge goes online for a daily update check, which you can turn off in Settings &gt; General, and to activate your license with Polar and confirm it about once a week.</p>
+        <p class="note">No account, no analytics, and copying never uploads anything. Lodge goes online for a daily update check, which you can turn off in Settings &gt; General.</p>
+        <p class="note">Lodge isn't notarized, so the first time, right-click Lodge and choose Open, or go to System Settings &gt; Privacy &amp; Security &gt; Open Anyway.</p>
         <div class="install-grid">
           <article class="card">
             <h3>macOS 15 Sequoia and later</h3>
@@ -769,7 +779,6 @@
               <li>Choose <strong>Open</strong>.</li>
               <li>Choose <strong>Open</strong> again.</li>
             </ol>
-            <p>Lodge is not notarized, which is why macOS asks.</p>
           </article>
         </div>
         <p class="note">The first time Lodge reads a card, allow access to files on a removable volume. See the <a href="user-guide.html">user guide</a>, <a href="faq.html">FAQ</a>, and <a href="changelog.html">changelog</a>.</p>
@@ -782,7 +791,7 @@
       <p>Lodge 1.0 · <span class="accent">Home base</span> for your media. · © 2026 bashframes</p>
       <p class="analytics-note">This website counts visits with GoatCounter: anonymous, no cookies. The Lodge app itself has no analytics.</p>
       <nav aria-label="Footer">
-        <a href="user-guide.html">User guide</a>
+        <a class="guide" href="user-guide.html">User guide</a>
         <a href="changelog.html">Changelog</a>
         <a href="mailto:bashframes@gmail.com">bashframes@gmail.com</a>
         <a class="support" href="https://ko-fi.com/bashframes">Support Lodge</a>

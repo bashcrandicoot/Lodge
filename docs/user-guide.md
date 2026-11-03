@@ -1,12 +1,14 @@
 # User guide
 
-Home base for your media. Your folders, your names, every card. Every copy is checked with SHA-256. The window is three columns, left to right: **Card**, **Media**, and **Destination**. Plugging in a card does not start a copy. **Import** only opens Lodge with that card selected. Nothing is copied until you click **Offload N Files** (**Offload 1 File** for one file, or **Offload Files** when nothing is ready).
+Home base for your media. Your folders, your names, every card.
+
+The window is three columns, left to right: **Card**, **Media**, and **Destination**. Plugging in a card does not start a copy. **Import** only opens Lodge with that card selected. Nothing is copied until you click **Offload N Files** (**Offload 1 File** for one file, or **Offload Files** when nothing is ready).
 
 ## Install and first launch
 
 Open the .dmg, and drag Lodge to Applications.
 
-Lodge requires macOS 14.0 or later. It isn't notarized yet, which is why **Open Anyway** is needed the first time you open it.
+Lodge requires macOS 14.0 or later. Lodge isn't notarized, so the first time, right-click Lodge and choose Open, or go to System Settings > Privacy & Security > Open Anyway.
 
 ### macOS 15 Sequoia and later
 
@@ -27,13 +29,15 @@ During setup, each drive shows how much space is available.
 
 ## Trial and license
 
-[Try free 3 days, then $10.](https://bashfra.me/lodge-dmg)
+[3-day trial, then $10 once.](https://bashfra.me/lodge-dmg)
 
 ## Buying Lodge and entering your license key
 
 1. Buy Lodge through the [Polar checkout](https://buy.polar.sh/polar_cl_gS9NEtdIPJuJDXu8sdui02XetKbkwKuHgiYxi4FBkM1), or click **Buy Lodge** inside the app.
 2. Find your license key on the order confirmation page or email, or any time in the Polar customer portal.
 3. In Lodge, click **Enter License Key**, paste the key, and confirm. After that, Lodge is yours to keep.
+
+A license key works on 3 Macs.
 
 ## Your first offload
 
@@ -53,9 +57,15 @@ Lodge shows the same prompt as a floating panel when permission is still undecid
 
 If you don't see the prompt, set **Settings ▸ General ▸ Menu Bar ▸ Ask with** to **Floating panel**.
 
+<figure>
 <img src="assets/guide/lodge-guide-diagram-import-flow@2x.png" width="1040" height="345" alt="Import a card. Import opens Lodge with that card selected. Ignore or Don’t Ask for This Card leaves the card alone. Only Offload copies files." style="max-width:100%;height:auto">
+<figcaption>Import a card.</figcaption>
+</figure>
 
+<figure>
 <img src="assets/screenshots/import-prompt-dark.png" width="386" height="135" alt="The import prompt: Import with Lodge?" style="max-width:100%;height:auto">
+<figcaption>The import prompt: Import with Lodge?.</figcaption>
+</figure>
 
 **Import** opens Lodge with that card selected. Nothing is copied yet. Notifications are the default.
 
@@ -70,9 +80,15 @@ If card detection is paused, choose **Resume Detection** in the menu bar menu. T
 
 While Lodge is ready, the bar says **Ready. Every file is verified with SHA-256 after copying.** The button help is **Copy and verify the new files**. You'll see **Copying**, then **Verifying**.
 
+<figure>
 <img src="assets/screenshots/ready-dark.png" width="1352" height="912" alt="Lodge ready to offload. The bar says every file is verified with SHA-256 after copying." style="max-width:100%;height:auto">
+<figcaption>Lodge ready to offload.</figcaption>
+</figure>
 
+<figure>
 <img src="assets/screenshots/running-dark.png" width="1352" height="912" alt="An offload in progress, in the Copying stage." style="max-width:100%;height:auto">
+<figcaption>An offload in progress, in the Copying stage.</figcaption>
+</figure>
 
 You can also press Return to start.
 
@@ -80,7 +96,10 @@ If **Offload N Files** cannot start, its caption is one of the messages in [Why 
 
 ## Verification
 
+<figure>
 <img src="assets/guide/lodge-guide-diagram-verification-flow@2x.png" width="1070" height="365" alt="How Lodge verifies each file: copy and hash, read the partial file back, then rename it if the hashes match or delete it if they do not." style="max-width:100%;height:auto">
+<figcaption>How Lodge verifies each file: copy and hash, read the partial file back, then rename it if the hashes match or delete it if they do not.</figcaption>
+</figure>
 
 Lodge copies one file like this:
 
@@ -100,9 +119,12 @@ What you see when a file fails starts with the path on the card, then the reason
 
 When the batch finishes, the title is **Offload Complete**, **Finished with Problems**, or **Offload Cancelled**.
 
-The line under it is **`<copied>` copied · `<skipped>` skipped · `<failed>` failed**. If the card is already gone after an eject, that line gains ** — card ejected, safe to remove**.
+The line under it is **`<copied>` copied · `<skipped>` skipped · `<failed>` failed**. If the card is already gone after an eject, that line gains — card ejected, safe to remove.
 
+<figure>
 <img src="assets/screenshots/finished-dark.png" width="1352" height="912" alt="A finished offload. The bar reads Offload Complete, with the copied, skipped, and failed counts." style="max-width:100%;height:auto">
+<figcaption>A finished offload.</figcaption>
+</figure>
 
 If a copy Lodge expected is missing at the destination, Offload tells you to choose Re-offload. The wording is in [Re-offload](#re-offload).
 
@@ -133,21 +155,27 @@ The project name is cleaned separately. Letters, digits, and `-` stay. Any other
 
 Sequence numbers continue after the highest number already in the destination folder.
 
+<figure>
 <img src="assets/screenshots/settings-naming.png" width="712" height="820" alt="Settings, Naming. The folder template and the file template." style="max-width:100%;height:auto">
+<figcaption>Settings, Naming.</figcaption>
+</figure>
 
 Inside the shoot folder, each extension gets its own folder. `.jpeg` and `.jpe` share **JPG**. `.tiff` shares **TIF**. `{ext}` stays that file’s own extension, lowercased.
 
-## Presets and quick dump
+## Presets and Quick dump
 
 Saved presets start empty. The menu at the top right, just before Recent Offloads and Settings, lists them. It also has **Save Current Setup as Preset…**, **Update “name”** after you edit the setup in use, and **Manage Presets…**. **Manage Presets…** opens Settings ▸ Presets, where you rename, apply, duplicate, delete, reorder, and edit a preset. Presets are stored in `~/Library/Application Support/Lodge/presets.json`.
 
-A preset saves where files go, how they're named, the camera, short-clip skipping, quick dump, and the file rules. With no preset chosen, the menu says **No Preset**. The photo-session setup uses the **Date / Project** naming example and suggests the preset name **Photo Session**.
+A preset saves where files go, how they're named, the camera, short-clip skipping, Quick dump, and the file rules. File type and date filters are set for each offload and are not saved in presets. With no preset chosen, the menu says **No Preset**. The photo-session setup uses the **Date / Project** naming example and suggests the preset name **Photo Session**.
 
 On the setup done screen, Return can be **Offload with `<preset>`**.
 
 **Quick dump** sits under Project in Media. It is off until you turn it on. The hint says **Skips the project name and dumps all the footage straight into a dated folder.** While it is on, the Project field is disabled and its prompt is **Not needed for a quick dump**. `{project}`, and the old `{shoot}` token, are taken out of the templates used for that offload only. The templates you saved stay as written. Empty folder levels disappear, so `{date}/{project}` becomes `{date}` and `{date}_{project}_{seq}` becomes `{date}_{seq}`. If the file template would have no token left, it becomes `{date}_{seq}`. The project you typed is not saved as the last project. Sequence numbers still continue. Each extension still gets its own folder. Proxies still go in `Proxies/` and sidecars in `Sidecars/`. A level Quick dump removes is struck through and tagged **Quick dump**.
 
+<figure>
 <img src="assets/screenshots/ready-quickdump-dark.png" width="1352" height="912" alt="Quick dump available on the main window." style="max-width:100%;height:auto">
+<figcaption>Quick dump available on the main window.</figcaption>
+</figure>
 
 ## Sidecars and proxies
 
@@ -157,7 +185,10 @@ Sidecars go in `Sidecars/`. The default sidecar extensions are `thm`, `xml`, and
 
 They keep the clip’s new name.
 
+<figure>
 <img src="assets/screenshots/settings-files.png" width="672" height="800" alt="Settings, Files. Proxy extensions, sidecar extensions, and ignored names." style="max-width:100%;height:auto">
+<figcaption>Settings, Files.</figcaption>
+</figure>
 
 By default, Lodge skips system files such as `.DS_Store`, `._*`, `.Spotlight-V100`, `.Trashes`, `.fseventsd`, `.TemporaryItems`, and `Thumbs.db`.
 
@@ -190,7 +221,10 @@ Until you pick a folder, the Destination stage shows **No Destination**. Click *
 
 Each favorite shows how much space is available. A favorite that isn't plugged in says **Not connected**.
 
+<figure>
 <img src="assets/screenshots/settings-destinations.png" width="672" height="640" alt="Settings, Destinations. Favorite folders." style="max-width:100%;height:auto">
+<figcaption>Settings, Destinations.</figcaption>
+</figure>
 
 Under the destination, Lodge shows **`<bytes>` available**, and **needs `<bytes>`** once there's something to copy.
 
@@ -221,19 +255,25 @@ The manual command is **Eject Card**. After the card is gone, the label is **Eje
 
 **Eject Card** in the card menu is disabled during an offload, a format, or an eject. On the finish bar it is disabled only when the card is already gone, or while an eject is in progress. A format does not disable the finish-bar button.
 
-**Eject card after offload** is off. Its caption is **Only when every file was copied and verified.** With it on, the card ejects only when the offload was not cancelled, nothing failed, at least one file was copied, and the card is still present. The same switch ejects the card after a successful format. After a successful eject, the finish line can end with ** — card ejected, safe to remove**. If eject fails, that line ends with ** — Couldn’t eject `<card name>`: `<system message>`**.
+**Eject card after offload** is off. Its caption is **Only when every file was copied and verified.** With it on, the card ejects only when the offload was not cancelled, nothing failed, at least one file was copied, and the card is still present. The same switch ejects the card after a successful format. After a successful eject, the finish line can end with — card ejected, safe to remove. If eject fails, that line ends with — Couldn’t eject `<card name>`: `<system message>`.
 
+<figure>
 <img src="assets/guide/lodge-guide-diagram-eject-flow@2x.png" width="1050" height="310" alt="A simplified eject flow. A verified offload leads to unmount and eject. Otherwise the card stays mounted." style="max-width:100%;height:auto">
+<figcaption>A simplified eject flow.</figcaption>
+</figure>
 
 The **Ready to format** badge shows when the card has at least one file, every file still has its copy at the destination at the same size, and no skipped short clip remains. Ignored system files do not block it. It appears on the selected card’s row and beside the finish-bar title. Its help is **Every file on this card has a verified copy at the destination.**
 
 If the only leftovers are skipped short clips, the badge stays off. The line reads **1 short clip not offloaded** or **N short clips not offloaded**. **Format Card…**, in **Card actions** (the ⋯ button on the card) or on the finish bar, can still be used then. When the card is fully ready, its help is **Erase this card so it’s ready for new footage**.
 
-Choosing **Format Card…** does not erase the card by itself. Lodge erases it only after you confirm. **Formatting erases everything on “<card name>”. This can’t be undone.** Before you format, check that the offload says **Offload Complete** and not **Finished with Problems**. While it runs you'll see **Formatting…**. When it's done you'll see **“`<name>`” was formatted and is ready for your camera.**
+Choosing **Format Card…** does not erase the card by itself. Lodge erases it only after you confirm. **Formatting erases everything on “`<card name>`”. This can’t be undone.** Before you format, check that the offload says **Offload Complete** and not **Finished with Problems**. While it runs you'll see **Formatting…**. When it's done you'll see **“`<name>`” was formatted and is ready for your camera.**
 
 On the format confirmation, Return is **Cancel**. **Format**, **Format and Discard 1 Short Clip**, and **Format and Discard N Short Clips** have no key. The title is **Format “`<card name>`”?**
 
+<figure>
 <img src="assets/screenshots/format-confirm.png" width="1240" height="800" alt="The format confirmation." style="max-width:100%;height:auto">
+<figcaption>The format confirmation.</figcaption>
+</figure>
 
 ## Menu bar mode
 
@@ -262,13 +302,16 @@ The menu bar menu has:
 
 **⌘-drag** the menu bar icon out to turn **Show menu bar icon** off. If the icon is hidden, the hint says to quit with **⌘Q**.
 
+<figure>
 <img src="assets/screenshots/menubar-menu-dark.png" width="252" height="197" alt="The menu bar menu: Open Lodge, cards and drives, Pause Detection, Settings, and Quit Lodge." style="max-width:100%;height:auto">
+<figcaption>The menu bar menu: Open Lodge, cards and drives, Pause Detection, Settings, and Quit Lodge.</figcaption>
+</figure>
 
 ## Settings reference
 
 Settings tabs are **General**, **Appearance**, **Presets**, **Destinations**, **Naming**, **Files**, and **Cameras**.
 
-In Settings ▸ Appearance, pick a theme: **Default**, **Aurora**, **Ocean**, **Twilight**, **Ember**, or **Forest**. Then pick **System**, **Light**, or **Dark**. Lodge starts in **Dark**, with the **Default** theme.
+In Settings ▸ Appearance, pick a theme: **Default**, **Aurora**, **Ocean**, **Twilight**, **Ember**, or **Forest**. Lodge starts in **Dark**, with the **Default** theme.
 
 **Show files as** is **List**. The other choice is **Grid**. **Show thumbnails in the list** is off.
 
@@ -304,25 +347,51 @@ General groups these sections: **Files to Offload**, **Short Clips**, **After Of
 | Update check interval | once a day |
 | Automatically download and install updates | off |
 
+<figure>
 <img src="assets/screenshots/settings-general.png" width="672" height="800" alt="Settings, General." style="max-width:100%;height:auto">
+<figcaption>Settings, General.</figcaption>
+</figure>
 
-<img src="assets/screenshots/settings-appearance.png" width="672" height="705" alt="Settings, Appearance. Theme is Default. Appearance is Dark, with System and Light as the other choices." style="max-width:100%;height:auto">
+<figure>
+<img src="assets/screenshots/settings-appearance.png" width="672" height="705" alt="Settings, Appearance. Theme is Default. Lodge starts in Dark." style="max-width:100%;height:auto">
+<figcaption>Settings, Appearance. Theme is Default.</figcaption>
+</figure>
 
-<img src="assets/screenshots/ready-light.png" width="1352" height="912" alt="Lodge with Light appearance." style="max-width:100%;height:auto">
 
+<figure>
 <img src="assets/screenshots/ready-ember-dark.png" width="1352" height="912" alt="Lodge with a saved theme other than the neutral Default." style="max-width:100%;height:auto">
+<figcaption>Lodge with a saved theme other than the neutral Default.</figcaption>
+</figure>
 
+<figure>
 <img src="assets/screenshots/settings-presets.png" width="752" height="740" alt="Settings, Presets." style="max-width:100%;height:auto">
+<figcaption>Settings, Presets.</figcaption>
+</figure>
 
+<figure>
 <img src="assets/screenshots/settings-destinations.png" width="672" height="640" alt="Settings, Destinations. Favorite folders." style="max-width:100%;height:auto">
+<figcaption>Settings, Destinations.</figcaption>
+</figure>
 
+<figure>
 <img src="assets/screenshots/settings-naming.png" width="712" height="820" alt="Settings, Naming. The folder template and the file template." style="max-width:100%;height:auto">
+<figcaption>Settings, Naming.</figcaption>
+</figure>
 
+<figure>
 <img src="assets/screenshots/settings-files.png" width="672" height="800" alt="Settings, Files. Proxy extensions, sidecar extensions, and ignored names." style="max-width:100%;height:auto">
+<figcaption>Settings, Files.</figcaption>
+</figure>
 
+<figure>
 <img src="assets/screenshots/grid-dark.png" width="1352" height="912" alt="Media shown as a grid. Show files as can be List or Grid." style="max-width:100%;height:auto">
+<figcaption>Media shown as a grid.</figcaption>
+</figure>
 
+<figure>
 <img src="assets/screenshots/settings-cameras.png" width="672" height="640" alt="Settings, Cameras." style="max-width:100%;height:auto">
+<figcaption>Settings, Cameras.</figcaption>
+</figure>
 
 The updates footer says: **Lodge checks for a new version once a day. You can also choose Lodge ▸ Check for Updates… any time.**
 
@@ -343,13 +412,19 @@ The updates footer says: **Lodge checks for a new version once a day. You can al
 
 The destructive buttons on the format confirmation and on **Forget History** have no keyboard equivalent. The other re-offload alert has **Re-offload Everything** (Return) and **Cancel**, and no destructive button.
 
+<figure>
 <img src="assets/screenshots/grid-dark.png" width="1352" height="912" alt="The media grid. Arrow keys move the selection. Space opens Quick Look. Command-click toggles a file. Shift-click extends the selection." style="max-width:100%;height:auto">
+<figcaption>The media grid.</figcaption>
+</figure>
 
 ## Troubleshooting
 
 ### Why Offload is waiting
 
+<figure>
 <img src="assets/screenshots/empty-dark.png" width="1060" height="700" alt="Lodge with no card. Offload is waiting." style="max-width:100%;height:auto">
+<figcaption>Lodge with no card.</figcaption>
+</figure>
 
 | Message | What it means |
 | --- | --- |
@@ -387,22 +462,22 @@ Recognized format names are **NTFS**, **exFAT**, **FAT32**, **Mac OS Extended**,
 
 **Report a Bug…** is in the **Help** menu, alongside **Contact Support…** and **Support Lodge…**. It opens an email to bashframes@gmail.com. Nothing is sent until you send it.
 
-The subject is **Lodge bug report (version `<version>` build `<build>`)**.
+The subject is **Lodge bug report (version `<version>`)**.
 
 The body starts with **What happened?** and one of:
 
 - **(What were you doing, and what went wrong? Steps to make it happen again help a lot.)**
 - **(Lodge quit unexpectedly. What were you doing just before?)**
 
-Then **Lodge `<version>` (build `<build>`)**, **macOS `<version>`**, and **Mac: `<model>`, `<chip>`**. Up to 200 of Lodge’s own log lines from the last three days go into the report. Paths under your home folder, `/Volumes`, `/Users`, `/private`, `/var`, and `/tmp` are replaced with `<path>`.
+Then **Lodge `<version>`**, **macOS `<version>`**, and **Mac: `<model>`, `<chip>`**. Up to 200 of Lodge’s own log lines from the last three days go into the report. Paths under your home folder, `/Volumes`, `/Users`, `/private`, `/var`, and `/tmp` are replaced with `<path>`.
 
 When Mail opens, the body lists **Attached: Lodge log.txt** and the log is that attachment. An empty log file contains **(nothing logged recently)**. A crash report goes out as a `.txt` file. With no Mail account, the message is a mailto: link: the log is in the body under **Lodge’s recent log:**, nothing is attached, and if a crash report was part of the send the body adds **(The crash report couldn’t be attached. It’s in Console ▸ Crash Reports, under Lodge.)**.
 
-Lodge asks **Lodge quit unexpectedly last time. Send a crash report?** when a `Lodge-….ips` or `Lodge_….crash` report is newer than the last one it recorded. The first launch that sees this records the newest report and does not ask. It is also skipped in demo mode. The detail is **This opens a new email to bashframes with the crash report and Lodge’s recent log attached. File, card and drive names are left out. You can read it over before sending.** The buttons are **Send Report** and **Not Now**. Each report is offered once.
+Lodge shows the prompt **“Lodge quit unexpectedly last time. Send a crash report?”** when a `Lodge-….ips` or `Lodge_….crash` report is newer than the last one it recorded. The first launch that sees this records the newest report and does not ask. It is also skipped in demo mode. The detail is **This opens a new email to bashframes with the crash report and Lodge’s recent log attached. File, card and drive names are left out. You can read it over before sending.** The buttons are **Send Report** and **Not Now**. Each report is offered once.
 
 ### If the card won't eject
 
-The finish line ends with ** — Couldn’t eject `<card name>`: `<system message>`**.
+The finish line ends with — Couldn’t eject `<card name>`: `<system message>`.
 
 ## Updates
 
@@ -412,20 +487,20 @@ The footer says: **Lodge checks for a new version once a day. You can also choos
 
 ## Privacy
 
-No account, no analytics, and copying never uploads anything. Lodge goes online for a daily update check, which you can turn off in Settings > General, and to activate your license with Polar and confirm it about once a week.
+No account, no analytics, and copying never uploads anything. Lodge goes online for a daily update check, which you can turn off in Settings > General.
 
 ## Support
 
 If Lodge saves you time, you can leave a tip on [Ko-fi](https://ko-fi.com/bashframes). Tips are optional and separate from the $10 license.
 
-The support note is titled **Support Lodge**. Its body is **Lodge is made by one person at bashframes. If it saves you time, you can chip in on Ko-fi. Thank you!** The buttons are **Don’t Ask Again**, **Maybe Later** (Escape), and **Support Lodge**. **Support Lodge** opens [ko-fi.com/bashframes](https://ko-fi.com/bashframes).
+The support note is titled **Support Lodge**. Its body is **Lodge is made by one person at bashframes. If it saves you time, you can chip in with Tip Jar…. Thank you!** The buttons are **Don’t Ask Again**, **Maybe Later** (Escape), and **Tip Jar…**. **Tip Jar…** opens [ko-fi.com/bashframes](https://ko-fi.com/bashframes).
 
 The note shows only when all of these are true:
 
 - at least 5 offloads where every file was copied and verified
 - at least 3 days after this version was first launched
 - it has been shown fewer than 2 times
-- you have not chosen **Support Lodge** or **Don’t Ask Again**
+- you have not chosen **Tip Jar…** or **Don’t Ask Again**
 - the next ask date is unset or has passed
 
 **Maybe Later** waits 30 days. The note is not shown during a copy or a format.
