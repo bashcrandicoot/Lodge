@@ -4,6 +4,20 @@
 # Lodge/License.swift plus LodgeTests/LicenseTests.swift.
 set -euo pipefail
 
+if ! command -v swift >/dev/null 2>&1; then
+    echo "test-license-linux: Swift 6.1 or later is required. The swift command was not found." >&2
+    exit 69
+fi
+swift_version="$(swift --version 2>/dev/null | sed -n 's/.*Swift version \([0-9][0-9]*\.[0-9][0-9]*\).*/\1/p' | head -1)"
+swift_major="${swift_version%%.*}"
+swift_minor="${swift_version#*.}"
+swift_minor="${swift_minor%%.*}"
+if [[ -z "$swift_version" || "$swift_major" -lt 6 || ( "$swift_major" -eq 6 && "$swift_minor" -lt 1 ) ]]; then
+    echo "test-license-linux: Swift 6.1 or later is required. Found: ${swift_version:-unknown}." >&2
+    echo "Install a Swift 6.1+ toolchain and put it on PATH, then run this script again." >&2
+    exit 69
+fi
+
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT

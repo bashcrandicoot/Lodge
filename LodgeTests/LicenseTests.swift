@@ -199,6 +199,9 @@ final class LicenseTests: XCTestCase {
         XCTAssertEqual(LicensePolicy.freshness(lastValidatedAt: almostGrace, now: clock), .stale)
         let grace = clock.addingTimeInterval(-LodgeLicense.offlineGrace)
         XCTAssertEqual(LicensePolicy.freshness(lastValidatedAt: grace, now: clock), .graceExpired)
+        let future = clock.addingTimeInterval(day)
+        XCTAssertEqual(LicensePolicy.freshness(lastValidatedAt: future, now: clock), .graceExpired)
+        XCTAssertFalse(LicensePolicy.allowsUse(.licensed(validated, .graceExpired)))
         XCTAssertEqual(LicensePolicy.phase(stored: nil, now: clock), .unlicensed)
         XCTAssertFalse(LicensePolicy.allowsUse(.unlicensed))
         XCTAssertTrue(LicensePolicy.allowsUse(.licensed(validated, .current)))
@@ -269,7 +272,7 @@ final class LicenseTests: XCTestCase {
         let cases: [(LicenseHTTPResponse, String)] = [
             (activateOK(status: "revoked"), LicenseCopy.validateRejected),
             (activateOK(expires: "2000-01-01T00:00:00Z"), LicenseCopy.expired),
-            (rejected(403, "Activation limit reached"), "Activation limit reached"),
+            (rejected(403, "License key activation limit reached"), LicenseCopy.activationLimitReached),
         ]
         for (response, message) in cases {
             let (controller, store, transport) = make()
@@ -365,7 +368,7 @@ final class LicenseTests: XCTestCase {
         XCTAssertNil(store.saved)
         XCTAssertFalse(controller.allowsUse)
         XCTAssertFalse(controller.canDeactivate)
-        XCTAssertEqual(controller.banner, "License key is revoked")
+        XCTAssertEqual(controller.banner, LicenseCopy.validateRejected)
     }
 
     func testMismatchedActivationClearsTheStoredLicense() async {
@@ -411,7 +414,7 @@ final class LicenseTests: XCTestCase {
         transport.responses = [.success(rejected(404, "License key not found"))]
         await controller.deactivate()
         XCTAssertNil(store.saved)
-        XCTAssertEqual(controller.banner, "License key not found")
+        XCTAssertEqual(controller.banner, LicenseCopy.keyNotFound)
     }
 
     func testKeyMaskAndPrefix() {

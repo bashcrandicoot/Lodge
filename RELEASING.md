@@ -128,12 +128,22 @@ Lodge 1.0 (build 6) has `SUFeedURL` set to
     https://raw.githubusercontent.com/bashcrandicoot/Lodge/main/appcast.xml
 
 That file stays in the repo so those installs keep finding build 6. GitHub does not
-redirect `raw.githubusercontent.com`, so the old URL cannot 301 to R2. Its 1.0
-enclosure URL is the R2 disk image `lodge/Lodge-1.0.dmg` (8,663,909 bytes, the size
-of `Lodge-1.0.dmg` on the v1.0 GitHub release). The `sparkle:edSignature` on that
-item was produced for `Lodge-1.0.zip` and does not match the disk image. Re-sign
-the DMG with `sign_update` on a Mac before relying on that item. The v1.0 GitHub
-release is left as it is, zip included.
+redirect `raw.githubusercontent.com`, so the old URL cannot 301 to R2. The only
+download is one signed disk image, hosted on R2:
+
+    https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-<version>.dmg
+
+There is no zip. The v1.0 GitHub release carries only `Lodge-1.0.dmg`.
+
+The enclosure’s `sparkle:edSignature` is a signature of that disk image. On a Mac,
+with the Sparkle private key in the login Keychain:
+
+    <sparkle-bin>/sign_update Lodge-1.0.dmg
+
+`sign_update` prints the file length and the EdDSA signature. Put that length and
+`sparkle:edSignature` on the `<enclosure>` in `appcast.xml`. `scripts/make-appcast.sh`
+does the same thing through `generate_appcast` and writes them into `release/appcast.xml`.
+Do not reuse a signature that was made for a zip.
 
 Ship **one bridge release** on that old feed, then stop:
 

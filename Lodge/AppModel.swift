@@ -22,6 +22,9 @@ final class AppModel: ObservableObject {
     let importPrompter: ImportPrompter
     /// Settings ▸ General ▸ Menu Bar ▸ Open at login.
     let loginItem: LoginItem
+    /// False after the trial, until a license validates. The app wires this to the license model.
+    /// Offload, re-offload, format, and import all refuse while it is false.
+    var allowsUse: () -> Bool = { true }
     /// The menu bar icon is showing (menu bar mode with "Show menu bar icon" on).
     /// `StatusItemController` follows it. Only `menuBarIconRemovedByUser()` (⌘-dragging the icon
     /// out) turns "Show menu bar icon" off; turning menu bar mode off leaves that setting alone.
@@ -219,6 +222,7 @@ final class AppModel: ObservableObject {
             select(card, keepFormatState: true)
             return
         }
+        guard allowsUse() else { return }
         guard isNewMount else {
             Logger.importPrompt.info("Card already there at launch: \(card.url.path, privacy: .public) (selected, no prompt)")
             // Already there at launch: the window opens with it (nothing to bring forward).
@@ -244,6 +248,7 @@ final class AppModel: ObservableObject {
     /// The prompt's Import (or the menu bar's "Import from …"): show Lodge with `card` selected.
     /// Never starts an offload.
     func showForImport(_ card: CardVolume) {
+        guard allowsUse() else { return }
         if !isBusy, !formatState.isFormatting, selectedCardID != card.id || (session == nil && !isScanning) {
             select(card)
         }
@@ -434,6 +439,7 @@ final class AppModel: ObservableObject {
     }
 
     func startOffload() {
+        guard allowsUse() else { return }
         guard let session, session.phase == .ready, offloadBlocker == nil,
               let destination = settings.destinationURL, let naming = settings.effectiveNaming else { return }
         let plan = OffloadPlanner.plan(
@@ -497,6 +503,7 @@ final class AppModel: ObservableObject {
     /// Chooses what gets copied again. "Everything" asks first, because it makes a second
     /// set of copies of the whole card.
     func setReoffloadMode(_ mode: ReoffloadMode) {
+        guard allowsUse() else { return }
         guard let session, session.phase == .ready else { return }
         guard mode == .everything else {
             session.reoffloadMode = mode
@@ -519,6 +526,7 @@ final class AppModel: ObservableObject {
     /// Asks, then removes every ledger entry for the selected card and rescans it:
     /// its files show as new again. Copies at the destination are left alone.
     func confirmForgetSelectedCardHistory() {
+        guard allowsUse() else { return }
         guard !isBusy, !formatState.isFormatting, let card = selectedCard else { return }
         let count = ledger.entryCount(forVolume: card.identity)
         guard count > 0 else { return }
@@ -532,6 +540,7 @@ final class AppModel: ObservableObject {
 
     /// Removes one entry from the history (Recent Offloads ▸ Forget).
     func forgetLedgerEntry(_ entry: LedgerEntry) {
+        guard allowsUse() else { return }
         ledger.forget(entry)
         // The selected card may now have new files.
         if let card = selectedCard, session?.phase == .ready, entry.sourceKey.hasPrefix(card.identity + "|"),
@@ -685,6 +694,7 @@ final class AppModel: ObservableObject {
 
     /// Format Card… is offered only for a mounted, fully offloaded card while nothing else runs.
     var canFormatSelectedCard: Bool {
+        guard allowsUse() else { return false }
         guard let card = selectedCard, watcher.cards.contains(card),
               let readiness = formatReadiness, readiness.isReady || readiness.isReadyExceptShortClips,
               !isBusy, !isScanning, !isEjecting, !formatState.isFormatting, session?.cardRemoved != true else { return false }
@@ -693,6 +703,7 @@ final class AppModel: ObservableObject {
 
     /// Asks for confirmation (Cancel is the default button), then formats.
     func confirmFormatSelectedCard() {
+        guard allowsUse() else { return }
         guard canFormatSelectedCard, let card = selectedCard, let readiness = formatReadiness else { return }
         let alert = FormatAlert.make(cardName: card.name, readiness: readiness)
         presentSheet(alert) { [weak self] response in
@@ -703,6 +714,7 @@ final class AppModel: ObservableObject {
 
     /// Erases the selected card with diskutil (same file system and name) after re-checking it.
     func formatSelectedCard() {
+        guard allowsUse() else { return }
         guard canFormatSelectedCard, let card = selectedCard else { return }
         formatState = .formatting(cardName: card.name)
         formattingCardPath = card.url.path

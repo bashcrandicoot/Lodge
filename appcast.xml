@@ -42,7 +42,6 @@
 - **Correct free space on external drives** that aren't APFS, and a clear message when a destination drive is read-only.
 - **Help ▸ Report a Bug…** with Lodge's log attached, and a crash-report prompt on the next launch.
 - **Check for Updates** (automatic checks can be turned off in Settings).
-- **Buy Lodge** opens the Polar checkout. Lodge is $10, one time.
 
 Requires macOS 14 Sonoma or later. Universal: runs natively on Apple silicon and Intel Macs.
 ]]></description>

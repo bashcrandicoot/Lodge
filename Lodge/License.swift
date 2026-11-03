@@ -200,6 +200,9 @@ enum TrialLaunchNotice {
 
 enum LicensePolicy {
     static func freshness(lastValidatedAt: Date, now: Date) -> LicenseFreshness {
+        // A stamp in the future means the clock moved back after a check. That does not
+        // extend the offline grace: the license is treated as expired until it validates again.
+        if lastValidatedAt > now { return .graceExpired }
         let age = now.timeIntervalSince(lastValidatedAt)
         if age < LodgeLicense.revalidateAfter { return .current }
         if age < LodgeLicense.offlineGrace { return .stale }
@@ -242,6 +245,9 @@ enum LicenseCopy {
     static let checking = "Checking the license…"
     static let unreachable = "Lodge could not reach the license server. Try again when you are online."
     static let activateRejected = "This license could not be activated."
+    static let activationLimitReached = "This key is already active on 3 Macs. Deactivate it on another Mac in Lodge Settings, then try again."
+    static let keyNotFound = "No license key matches that. Check the key and try again."
+    static let unreadableKey = "That license key could not be read. Check it and try again."
     static let validateRejected = "This license is no longer valid on this Mac."
     static let expired = "This license has expired."
     static let unreadable = "Lodge could not read the reply from the license server."
@@ -266,7 +272,8 @@ enum LicenseCopy {
         section, price, buy, activate, deactivate, checkAgain, enterLicense, enterLicenseKey, keyPrompt, thisMac,
         trialStatus(1), trialStatus(3),
         prefixError, enterKey, licensed, offlineGrace, graceEnded, unlicensed, checking,
-        unreachable, activateRejected, validateRejected, expired, unreadable,
+        unreachable, activateRejected, activationLimitReached, keyNotFound, unreadableKey,
+        validateRejected, expired, unreadable,
         keychainRead, keychainWrite,
     ]
 }
@@ -472,19 +479,37 @@ enum LicenseResponseInterpreter {
     }
 
     private static func failure(for response: LicenseHTTPResponse, route: LicenseRoute) -> LicenseServerResult {
-        let fallback: String
-        switch route {
-        case .activate: fallback = LicenseCopy.activateRejected
-        case .validate, .deactivate: fallback = LicenseCopy.validateRejected
-        }
-        let message = PolarErrorMessage.extract(from: response.body) ?? fallback
+        let detail = PolarErrorMessage.extract(from: response.body)
+        let message = LicenseCopy.serverMessage(status: response.status, detail: detail, route: route)
         if response.status == 408 || response.status == 429 || (500...599).contains(response.status) {
-            return .unavailable(message)
+            return .unavailable(LicenseCopy.unreachable)
         }
         if (400...499).contains(response.status) {
             return .rejected(message)
         }
-        return .unavailable(message)
+        return .unavailable(LicenseCopy.unreachable)
+    }
+}
+
+extension LicenseCopy {
+    /// Turns a Polar error into something a person can act on.
+    static func serverMessage(status: Int, detail: String?, route: LicenseRoute) -> String {
+        let lower = detail?.lowercased() ?? ""
+        if status == 403, route == .activate,
+           lower.contains("activat"),
+           lower.contains("limit") || lower.contains("maximum") || lower.contains("exceed") {
+            return activationLimitReached
+        }
+        if status == 403, lower.contains("revok") || lower.contains("disabled") {
+            return validateRejected
+        }
+        if status == 404 { return keyNotFound }
+        if status == 422 {
+            if let detail, !detail.isEmpty { return detail }
+            return unreadableKey
+        }
+        if let detail, !detail.isEmpty { return detail }
+        return route == .activate ? activateRejected : validateRejected
     }
 }
 

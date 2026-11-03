@@ -30,10 +30,17 @@ struct LodgeApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
     /// The one shared "brain" of the app. `@StateObject` keeps it alive for the app's lifetime.
-    @StateObject private var model = LodgeApp.makeModel()
-    @StateObject private var license = LicenseModel.live()
+    @StateObject private var model: AppModel
+    @StateObject private var license: LicenseModel
 
     init() {
+        let model = LodgeApp.makeModel()
+        let license = LicenseModel.live()
+        // Offload, import, and the menu read this on each call, so a trial ending locks them.
+        model.allowsUse = { license.allowsUse }
+        model.importPrompter.allowsUse = { license.allowsUse }
+        _model = StateObject(wrappedValue: model)
+        _license = StateObject(wrappedValue: license)
         // Create (and start) Sparkle at launch, as its docs recommend.
         _ = AppUpdates.controller
     }

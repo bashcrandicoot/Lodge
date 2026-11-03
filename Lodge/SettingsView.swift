@@ -10,7 +10,18 @@ struct SettingsView: View {
     /// Which tab is showing. Stored so "Edit Cameras…" can open straight to Cameras.
     @AppStorage(SettingsTab.storageKey) private var tab: SettingsTab = .general
 
+    @EnvironmentObject private var license: LicenseModel
+
     var body: some View {
+        if !license.allowsUse {
+            LicenseSettingsSection()
+                .settingsPaneSize()
+        } else {
+            licensedTabs
+        }
+    }
+
+    private var licensedTabs: some View {
         TabView(selection: $tab) {
             GeneralSettingsView(updater: updater)
                 .tabItem { Label("General", systemImage: "gearshape") }

@@ -34,18 +34,20 @@ struct ContentView: View {
             }
             // Presets: one click changes where files go and how they're named. Kept at the
             // right, out of the way, just before Recent Offloads and Settings.
-            ToolbarItem(placement: .automatic) {
-                PresetSwitcher()
-            }
-            ToolbarItem(placement: .automatic) {
-                Button {
-                    model.showingRecent.toggle()
-                } label: {
-                    Label("Recent Offloads", systemImage: "clock.arrow.circlepath")
+            if license.allowsUse {
+                ToolbarItem(placement: .automatic) {
+                    PresetSwitcher()
                 }
-                .help("Recent Offloads")
-                .popover(isPresented: $model.showingRecent, arrowEdge: .bottom) {
-                    RecentOffloadsView()
+                ToolbarItem(placement: .automatic) {
+                    Button {
+                        model.showingRecent.toggle()
+                    } label: {
+                        Label("Recent Offloads", systemImage: "clock.arrow.circlepath")
+                    }
+                    .help("Recent Offloads")
+                    .popover(isPresented: $model.showingRecent, arrowEdge: .bottom) {
+                        RecentOffloadsView()
+                    }
                 }
             }
             if let trial = license.trialToolbarText {
