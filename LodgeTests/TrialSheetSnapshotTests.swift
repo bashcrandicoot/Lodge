@@ -4,8 +4,8 @@ import XCTest
 @testable import Lodge
 
 /// Off-screen stills of `TrialSheet` and `LockGate`. `ImageRenderer` draws a bitmap.
-/// It does not create or show a window. Reduce Motion is on so the ring is the finished
-/// arc (the first frame of the spring would still be empty).
+/// It does not create or show a window. `animated: false` draws the finished arc and
+/// skips the lock bounce, so the still is not the first frame of the spring.
 ///
 /// ```
 /// xcodebuild test -scheme Lodge -only-testing:LodgeTests/TrialSheetSnapshotTests
@@ -55,7 +55,7 @@ final class TrialSheetSnapshotTests: XCTestCase {
     }
 
     private func trial(name: String, remaining: TimeInterval, title: String, hero: String) -> Shot {
-        let sheet = TrialSheet(remaining: remaining, onContinue: {}, onEnterLicense: {})
+        let sheet = TrialSheet(remaining: remaining, onContinue: {}, onEnterLicense: {}, animated: false)
         return Shot(name: name, title: sheet.title, expectedTitle: title,
                     secondary: sheet.secondary, expectedSecondary: TrialLaunchNotice.trialSecondary,
                     buttons: sheet.buttonTitles, expectedButtons: ["Continue", "Enter License Key…"],
@@ -64,7 +64,8 @@ final class TrialSheetSnapshotTests: XCTestCase {
     }
 
     private func lock() -> Shot {
-        let gate = LockGate(mode: .purchase, onBuy: {}, onEnterLicense: {}, onQuit: {}, onCheckAgain: {})
+        let gate = LockGate(mode: .purchase, onBuy: {}, onEnterLicense: {}, onQuit: {}, onCheckAgain: {},
+                            animated: false)
         return Shot(name: "lock-gate", title: gate.title, expectedTitle: "Lodge trial ended",
                     secondary: gate.secondary, expectedSecondary: "Buy once for $10. No subscription.",
                     buttons: gate.buttonTitles, expectedButtons: ["Buy Lodge", "Enter License Key…", "Quit"],
@@ -73,7 +74,8 @@ final class TrialSheetSnapshotTests: XCTestCase {
     }
 
     private func offline() -> Shot {
-        let gate = LockGate(mode: .offlineLapse, onBuy: {}, onEnterLicense: {}, onQuit: {}, onCheckAgain: {})
+        let gate = LockGate(mode: .offlineLapse, onBuy: {}, onEnterLicense: {}, onQuit: {}, onCheckAgain: {},
+                            animated: false)
         return Shot(name: "offline-lapse", title: gate.title,
                     expectedTitle: "Lodge could not confirm this license",
                     secondary: gate.secondary,
@@ -87,22 +89,23 @@ final class TrialSheetSnapshotTests: XCTestCase {
     private func render(_ view: AnyView, scheme: ColorScheme) throws -> NSImage {
         let content = view
             .environment(\.colorScheme, scheme)
-            .environment(\.accessibilityReduceMotion, true)
+            .transaction { $0.disablesAnimations = true }
             .frame(width: 320)
         let renderer = ImageRenderer(content: content)
         renderer.scale = 2
         renderer.isOpaque = false
         renderer.proposedSize = ProposedViewSize(width: 320, height: nil)
-        let image = try XCTUnwrap(renderer.nsImage, "ImageRenderer produced no image")
+        let image: NSImage = try XCTUnwrap(renderer.nsImage, "ImageRenderer produced no image")
         XCTAssertGreaterThan(image.size.width, 0)
         XCTAssertGreaterThan(image.size.height, 0)
         return image
     }
 
     private func writePNG(_ image: NSImage, to url: URL) throws {
+        let properties: [NSBitmapImageRep.PropertyKey: Any] = [:]
         guard let tiff = image.tiffRepresentation,
               let rep = NSBitmapImageRep(data: tiff),
-              let png = rep.representation(using: .png, properties: [:]) else {
+              let png = rep.representation(using: .png, properties: properties) else {
             XCTFail("Could not encode \(url.lastPathComponent)")
             return
         }

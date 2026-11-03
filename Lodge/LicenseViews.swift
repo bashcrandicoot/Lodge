@@ -69,6 +69,8 @@ struct TrialSheet: View {
     var remaining: TimeInterval
     var onContinue: () -> Void = {}
     var onEnterLicense: () -> Void = {}
+    /// When false, the ring is already at its final arc. The default animates unless Reduce Motion is on.
+    var animated: Bool = true
 
     var title: String { TrialLaunchNotice.title(remaining: remaining) }
     var secondary: String { TrialLaunchNotice.trialSecondary }
@@ -79,9 +81,10 @@ struct TrialSheet: View {
         TrialColumn(
             title: title,
             titleColor: TrialLaunchNotice.isLastDay(remaining) ? .orange : .primary,
-            secondary: secondary
+            secondary: secondary,
+            animated: animated
         ) {
-            TrialProgressRing(remaining: remaining, accessibilityLabel: heroLabel)
+            TrialRing(remaining: remaining, accessibilityLabel: heroLabel, animated: animated)
         } actions: {
             Button(TrialLaunchNotice.continueTitle, action: onContinue)
                 .buttonStyle(.borderedProminent)
@@ -111,6 +114,8 @@ struct LockGate: View {
     var onEnterLicense: () -> Void = {}
     var onQuit: () -> Void = {}
     var onCheckAgain: () -> Void = {}
+    /// When false, the lock does not bounce. The default animates unless Reduce Motion is on.
+    var animated: Bool = true
 
     var title: String {
         mode == .purchase ? TrialLaunchNotice.endedTitle : TrialLaunchNotice.confirmTitle
@@ -126,8 +131,8 @@ struct LockGate: View {
     }
 
     var body: some View {
-        TrialColumn(title: title, titleColor: .primary, secondary: secondary) {
-            TrialEndedRing(accessibilityLabel: heroLabel)
+        TrialColumn(title: title, titleColor: .primary, secondary: secondary, animated: animated) {
+            TrialEndedRing(accessibilityLabel: heroLabel, animated: animated)
         } actions: {
             Button(buttonTitles[0], action: mode == .purchase ? onBuy : onCheckAgain)
                 .buttonStyle(.borderedProminent)
@@ -154,6 +159,7 @@ private struct TrialColumn<Hero: View, Actions: View>: View {
     var title: String
     var titleColor: Color
     var secondary: String
+    var animated: Bool = true
     @ViewBuilder var hero: () -> Hero
     @ViewBuilder var actions: () -> Actions
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -167,7 +173,7 @@ private struct TrialColumn<Hero: View, Actions: View>: View {
                 .foregroundStyle(titleColor)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)
-                .contentTransition(reduceMotion ? ContentTransition.identity : ContentTransition.numericText())
+                .contentTransition(animated && !reduceMotion ? ContentTransition.numericText() : ContentTransition.identity)
                 .accessibilityAddTraits(.isHeader)
                 .padding(.top, 20)
             Text(secondary)
@@ -190,10 +196,11 @@ private struct TrialColumn<Hero: View, Actions: View>: View {
 }
 
 /// Countdown ring with the app icon inside. Trim starts at 12 o'clock and runs clockwise.
-/// Reduce Motion draws the final arc immediately, which is also what a still render shows.
-private struct TrialProgressRing: View {
+/// `animated` false, and Reduce Motion, both draw the final arc with no spring.
+private struct TrialRing: View {
     var remaining: TimeInterval
     var accessibilityLabel: String
+    var animated: Bool = true
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var drawn = 0.0
 
@@ -201,8 +208,9 @@ private struct TrialProgressRing: View {
         TrialLaunchNotice.isLastDay(remaining) ? .orange : .accentColor
     }
 
+    /// A still (or Reduce Motion) must not wait for `onAppear`: the first frame is the final arc.
     private var shown: Double {
-        reduceMotion ? TrialLaunchNotice.progress(remaining) : drawn
+        animated && !reduceMotion ? drawn : TrialLaunchNotice.progress(remaining)
     }
 
     var body: some View {
@@ -224,7 +232,7 @@ private struct TrialProgressRing: View {
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilityLabel)
         .onAppear {
-            guard !reduceMotion else { return }
+            guard animated, !reduceMotion else { return }
             withAnimation(.spring(response: 0.8, dampingFraction: 0.85).delay(0.15)) {
                 drawn = TrialLaunchNotice.progress(remaining)
             }
@@ -232,9 +240,10 @@ private struct TrialProgressRing: View {
     }
 }
 
-/// Track only, with a lock that bounces once. Reduce Motion leaves it still.
+/// Track only, with a lock that bounces once. `animated` false, and Reduce Motion, leave it still.
 private struct TrialEndedRing: View {
     var accessibilityLabel: String
+    var animated: Bool = true
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var bounce = false
 
@@ -252,7 +261,7 @@ private struct TrialEndedRing: View {
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilityLabel)
         .onAppear {
-            guard !reduceMotion else { return }
+            guard animated, !reduceMotion else { return }
             bounce = true
         }
     }
