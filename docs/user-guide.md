@@ -1,6 +1,6 @@
 # User guide
 
-Lodge copies your footage off a camera card or drive, names each file for you, and checks every copy with SHA-256. Plugging in a card does not start a copy. **Import** only opens Lodge with that card selected. Nothing is copied until you click **Offload N Files** (**Offload 1 File** for one file, or **Offload Files** when nothing is ready).
+Lodge copies your footage off a camera card or drive, names each file for you, and checks every copy with SHA-256. The window is three columns, left to right: **Card**, **Media**, and **Destination**. Plugging in a card does not start a copy. **Import** only opens Lodge with that card selected. Nothing is copied until you click **Offload N Files** (**Offload 1 File** for one file, or **Offload Files** when nothing is ready).
 
 ## Install and first launch
 
@@ -29,15 +29,17 @@ During setup, each drive shows how much space is available.
 
 ### When Lodge asks to import
 
-Lodge asks **Import with Lodge?** when you plug in a camera card or a removable drive. It won't ask about your startup disk, a network or backup drive, a disk image, the drive you copy to, or a card you've told it to skip.
+Lodge asks **Import with Lodge?** when you plug in a camera card or a removable drive. It won't ask about your startup disk, a network or backup drive, a disk image, the drive you copy to, a favorite on that same drive, or a card you've told it to skip.
 
 Lodge recognizes the folders most cameras use (for example `DCIM`, `PRIVATE/M4ROOT`, `XDROOT`, and `CLIPS001`).
 
 Lodge waits 20 seconds before it asks about the same card again. If you plug a card in during an offload or a format, Lodge asks when that finishes.
 
+The notification and the floating panel use the same title. A removable volume is a **card**. Anything else Lodge asks about is a **drive**. If the name is exactly card, drive, ssd, or disk, or it ends with a space plus one of those words, the title is **`<name>` connected** (for example **SD Card connected**). Otherwise it is **`<name>` card connected** or **`<name>` drive connected** (for example **A7SIII card connected** or **T7 drive connected**).
+
 The notification has three actions: **Import**, **Ignore**, and **Don’t Ask for This Card**.
 
-Lodge shows the same prompt as a floating panel when alerts are off, the notification style is **None**, or **Ask with** is **Floating panel**. Its buttons are **Import** (Return), **Ignore**, and **Don’t ask for this card**.
+Lodge shows the same prompt as a floating panel when permission is still undecided, alerts are off, the notification style is **None**, or **Ask with** is **Floating panel**. Its buttons are **Import**, **Ignore**, and **Don’t ask for this card**. The panel does not take the keyboard, so Return does not press **Import**.
 
 If you don't see the prompt, set **Settings ▸ Ask with** to **Floating panel**.
 
@@ -78,7 +80,9 @@ Lodge copies one file like this:
 
 Lodge never changes anything on your card, and it never overwrites a file that's already at the destination.
 
-What you see when a file fails:
+Lodge remembers a verified copy by the card’s volume UUID, or the volume name when there is no UUID, plus the path on the card, the size, and the modification time in whole seconds. That match is not a content hash. Change the size or the modification time and Lodge treats the file as new. A copy counts as missing when that same record matches and the file at the destination is gone, or its size differs.
+
+What you see when a file fails starts with the path on the card, then the reason. For example: `DCIM/100MEDIA/C0001.MP4: C0001.MP4 already exists — not overwriting it.` The reason is one of:
 
 - **`<name>` already exists — not overwriting it.**
 - **Couldn’t create `<name>` in the destination.**
@@ -101,14 +105,14 @@ To start from a ready-made template, choose **Examples** in Settings ▸ Naming.
 | Token | Meaning in the template editor | Rendered value |
 | --- | --- | --- |
 | `{project}` | Project name | the project field |
-| `{camera}` | Selected camera | the selected camera |
+| `{camera}` | Selected camera | the camera’s code, when cleaning leaves one; otherwise the cleaned camera name |
 | `{date}` | Capture date (2026-10-25) | `yyyy-MM-dd` |
 | `{year}` | Year (2026) | `yyyy` |
 | `{month}` | Month (10) | `MM` |
 | `{day}` | Day (25) | `dd` |
 | `{time}` | Capture time (143005) | `HHmmss` |
 | `{type}` | Video, Photo, Audio or Other | **Video**, **Photo**, **Audio**, or **Other** |
-| `{card}` | Card (volume) name | the card’s name |
+| `{card}` | Card (volume) name | the volume name, cleaned like the project name. If that is empty, **Card** |
 | `{original}` | Original file name, no extension | the source name, made safe |
 | `{seq}` | Sequence number (0001); {seq:3} for 001 | at least 4 digits, unless `{seq:N}` says otherwise |
 | `{ext}` | File extension (mp4) | the extension, lowercased |
@@ -121,15 +125,17 @@ Sequence numbers continue after the highest number already in the destination fo
 
 <img src="assets/screenshots/settings-naming.png" width="1424" height="1640" alt="Settings, Naming. The folder template and the file template." style="max-width:100%;height:auto">
 
-Lodge treats .jpeg and .jpe as .jpg, and .tiff as .tif.
+Inside the shoot folder, each extension gets its own folder. `.jpeg` and `.jpe` share **JPG**. `.tiff` shares **TIF**. `{ext}` stays that file’s own extension, lowercased.
 
 ## Presets and quick dump
 
-A preset saves where files go, how they're named, the camera, short-clip skipping, quick dump, and the file rules. To save one, choose **Save Current Setup as Preset…** from the preset menu at the top right. With no preset chosen, the menu says **No Preset**.
+Saved presets start empty. The menu at the top right, just before Recent Offloads and Settings, lists them. It also has **Save Current Setup as Preset…**, **Update “name”** after you edit the setup in use, and **Manage Presets…**. **Manage Presets…** opens Settings ▸ Presets, where you rename, apply, duplicate, delete, reorder, and edit a preset. Presets are stored in `~/Library/Application Support/Lodge/presets.json`.
+
+A preset saves where files go, how they're named, the camera, short-clip skipping, quick dump, and the file rules. With no preset chosen, the menu says **No Preset**. The photo-session setup uses the **Date / Project** naming example and suggests the preset name **Photo Session**.
 
 On the setup done screen, Return can be **Offload with `<preset>`**.
 
-Turn on **Quick dump** to skip the project name and copy everything straight into a dated folder. It is off until you turn it on.
+**Quick dump** sits under Project in Media. It is off until you turn it on. The hint says **Skips the project name and dumps all the footage straight into a dated folder.** While it is on, the Project field is disabled and its prompt is **Not needed for a quick dump**. `{project}`, and the old `{shoot}` token, are taken out of the templates used for that offload only. The templates you saved stay as written. Empty folder levels disappear, so `{date}/{project}` becomes `{date}` and `{date}_{project}_{seq}` becomes `{date}_{seq}`. If the file template would have no token left, it becomes `{date}_{seq}`. The project you typed is not saved as the last project. Sequence numbers still continue. Each extension still gets its own folder. Proxies still go in `Proxies/` and sidecars in `Sidecars/`. A level Quick dump removes is struck through and tagged **Quick dump**.
 
 <img src="assets/screenshots/ready-presets-dark.png" width="2480" height="1600" alt="The preset menu at the top right of the window." style="max-width:100%;height:auto">
 
@@ -195,26 +201,29 @@ When copies are missing at the destination, **Offload N Files** says:
 - **1 copy is missing at the destination — choose Re-offload**
 - **`<n>` copies are missing at the destination — choose Re-offload**
 
-Click **Re-offload** to copy the missing files again. Lodge asks you to confirm first. There are two alerts:
+In Media, **Re-offload…** is **Re-offloading N** while it is running. Its rows are **Re-offload Missing Copies** (with the count when there is one), **Re-offload Everything on This Card…**, and **Don’t Re-offload** while a re-offload is active. On a file, the menu is **Re-offload This File** or **Don’t Re-offload This File**.
 
-- **Re-offload Everything** has no destructive button. Return is **Re-offload Everything**. **Cancel** is the other button.
-- **Forget History** is destructive. Return is **Cancel**. **Forget This Card’s History…** in **Card actions** opens it.
+**Re-offload Everything on This Card…** opens an alert whose buttons are **Re-offload Everything** (Return) and **Cancel**. That alert has no destructive button.
+
+**Forget This Card’s History…** in **Card actions** opens an alert whose destructive button is **Forget History**. Return is **Cancel**.
 
 ## Eject or format the card
 
 The manual command is **Eject Card**. After the card is gone, the label is **Ejected**.
 
-**Eject Card** is disabled while an offload, a format, or an eject is in progress. On the finish bar it is disabled once the card has already been removed.
+**Eject Card** in the card menu is disabled during an offload, a format, or an eject. On the finish bar it is disabled when the card is already gone, or while an eject is in progress, including while a format is running.
 
-**Eject card after offload** is off. Its caption is **Only when every file was copied and verified.** Automatic eject runs only when that switch is on and every file verified. Lodge then ejects the card. After a successful eject, the finish line can end with ** — card ejected, safe to remove**. If eject fails, that line ends with ** — Couldn’t eject `<card name>`: `<system message>`**.
+**Eject card after offload** is off. Its caption is **Only when every file was copied and verified.** Automatic eject runs when that switch is on and the finish is a clean success: not cancelled, nothing failed, and at least one file copied. Lodge unmounts and ejects the disk. After a successful eject, the finish line can end with ** — card ejected, safe to remove**. If eject fails, that line ends with ** — Couldn’t eject `<card name>`: `<system message>`**.
 
 <img src="assets/guide/lodge-guide-diagram-eject-flow@2x.png" width="1050" height="310" alt="Eject after offload. The card is ejected only when every file verified and Eject card after offload is on. Otherwise it stays in place." style="max-width:100%;height:auto">
 
-When every file on the card has a verified copy at the destination, the card shows **Ready to format**. That seal means every file on this card has a verified copy at the destination. Only then can you choose **Format Card…**, from **Card actions** (the ⋯ button on the card) or from the finish bar. Its help is **Erase this card so it’s ready for new footage**.
+The **Ready to format** badge shows when the card has at least one file, every file still has its copy at the destination at the same size, and no skipped short clip remains. Ignored system files do not block it. It appears on the selected card’s row and beside the finish-bar title. Its help is **Every file on this card has a verified copy at the destination.**
+
+If the only leftovers are skipped short clips, the badge stays off. The line reads **1 short clip not offloaded** or **N short clips not offloaded**. **Format Card…**, in **Card actions** (the ⋯ button on the card) or on the finish bar, can still be used then. When the card is fully ready, its help is **Erase this card so it’s ready for new footage**.
 
 Choosing **Format Card…** does not erase the card by itself. Lodge erases it only after you confirm. **Formatting erases everything on the card, and you can't undo it.** Before you format, check that the offload says **Offload Complete** and not **Finished with Problems**. While it runs you'll see **Formatting…**. When it's done you'll see **“`<name>`” was formatted and is ready for your camera.**
 
-On the format confirmation, Return is **Cancel**. **Format**, and **Format and Discard N Short Clips** when skipped clips would be erased, have no key. The title is **Format “`<card name>`”?**
+On the format confirmation, Return is **Cancel**. **Format**, **Format and Discard 1 Short Clip**, and **Format and Discard N Short Clips** have no key. The title is **Format “`<card name>`”?**
 
 <img src="assets/screenshots/format-confirm.png" width="2480" height="1600" alt="The format confirmation." style="max-width:100%;height:auto">
 
@@ -231,7 +240,7 @@ These sit with it:
 | Ask with | **Notification** (the other choice is **Floating panel**) |
 | Open at login | off |
 
-If **Open at login** won't stay on, allow Lodge in **System Settings ▸ General ▸ Login Items.**
+**Allow Lodge in System Settings ▸ General ▸ Login Items.** appears only while macOS is still waiting for you to approve **Open at login**.
 
 The menu bar menu has:
 
@@ -316,7 +325,7 @@ The updates footer says: **Lodge checks for a new version once a day. You can al
 | ⌘, | Settings. The menu bar item uses the same key. The setup done screen shows **⌘ ,**. The Settings toolbar help is **Settings (⌘,)**. |
 | ⌘Q | Quit. The hidden-icon hint says **quit it from there with ⌘Q.** |
 | ⌘-drag | Drag the menu bar icon out to turn **Show menu bar icon** off. |
-| Return | The default button: Offload, Done, **Import** on the floating panel, **Get started**, and **Offload with `<preset>`**. During setup, **Next: …** and **Save preset**. On the format confirmation and on **Forget History**, Return is **Cancel**. On the other re-offload alert, Return is **Re-offload Everything**. |
+| Return | **Offload N Files**, Done, **Get started**, and **Offload with `<preset>`**. During setup, **Next: …** and **Save preset**. On the format confirmation and on **Forget History**, Return is **Cancel**. On **Re-offload Everything**, Return is that button. Return does not press **Import** on the floating panel. |
 | Escape | **Cancel** during an offload. **Maybe Later** on the support note. Clears the selection in the list or grid. |
 | Space | Quick Look on the selection. Space again closes Quick Look. The list and grid hint is **Press Space to preview the selected file with Quick Look**. |
 | Up, Down, Left, Right | Move the selection in the list or grid. |
@@ -352,7 +361,7 @@ The destructive buttons on the format confirmation and on **Forget History** hav
 | Nothing new in the chosen dates — choose Any date to see everything | The date filter is hiding every new file. |
 | Everything on this card is already offloaded | There is nothing new to copy. |
 
-A copy that does start can still fail with:
+A copy that does start can still fail. The list shows the path on the card, then one of:
 
 - **`<name>` already exists — not overwriting it.**
 - **Couldn’t create `<name>` in the destination.**
@@ -377,11 +386,11 @@ The body starts with **What happened?** and one of:
 - **(What were you doing, and what went wrong? Steps to make it happen again help a lot.)**
 - **(Lodge quit unexpectedly. What were you doing just before?)**
 
-Then **Lodge `<version>` (build `<build>`)**, **macOS `<version>`**, and **Mac: `<model>`, `<chip>`**. The log section is **Lodge’s recent log:** or **(nothing logged recently)**. Up to 200 of Lodge’s own log lines from the last three days go into the report. Only Mail attaches them as `Lodge log.txt`. With no Mail account, the message opens as a mailto: link: the log is in the body, and nothing is attached. Paths under your home folder, `/Volumes`, `/Users`, `/private`, `/var`, and `/tmp` are replaced with `<path>`.
+Then **Lodge `<version>` (build `<build>`)**, **macOS `<version>`**, and **Mac: `<model>`, `<chip>`**. Up to 200 of Lodge’s own log lines from the last three days go into the report. Paths under your home folder, `/Volumes`, `/Users`, `/private`, `/var`, and `/tmp` are replaced with `<path>`.
 
-If Mail cannot attach a crash report, the body adds **(The crash report couldn’t be attached. It’s in Console ▸ Crash Reports, under Lodge.)**.
+When Mail opens, the body lists **Attached: Lodge log.txt** and the log is that attachment. An empty log file contains **(nothing logged recently)**. A crash report goes out as a `.txt` file. With no Mail account, the message is a mailto: link: the log is in the body under **Lodge’s recent log:**, nothing is attached, and if a crash report was part of the send the body adds **(The crash report couldn’t be attached. It’s in Console ▸ Crash Reports, under Lodge.)**.
 
-The next time you launch, if a new `Lodge-….ips` or `Lodge_….crash` report is in Diagnostic Reports, Lodge asks **Lodge quit unexpectedly last time. Send a crash report?** The detail is **This opens a new email to bashframes with the crash report and Lodge’s recent log attached. File, card and drive names are left out. You can read it over before sending.** The buttons are **Send Report** and **Not Now**. This is not offered at login, and each report is offered once.
+Lodge asks **Lodge quit unexpectedly last time. Send a crash report?** when a `Lodge-….ips` or `Lodge_….crash` report is newer than the last one it recorded. The first launch that sees this records the newest report and does not ask. It is also skipped in demo mode. The detail is **This opens a new email to bashframes with the crash report and Lodge’s recent log attached. File, card and drive names are left out. You can read it over before sending.** The buttons are **Send Report** and **Not Now**. Each report is offered once.
 
 ### If the card won't eject
 
@@ -409,4 +418,4 @@ The note shows only when all of these are true:
 - you have not chosen **Support Lodge** or **Don’t Ask Again**
 - the next ask date is unset or has passed
 
-**Maybe Later** waits 30 days. The note is not shown during a copy.
+**Maybe Later** waits 30 days. The note is not shown during a copy or a format.
