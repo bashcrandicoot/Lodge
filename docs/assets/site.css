@@ -160,8 +160,36 @@
       align-items: center;
       margin: 0 0 var(--space-3);
     }
-    a.store { display: inline-block; line-height: 0; border-radius: var(--radius); }
-    a.store img { display: block; width: 320px; max-width: 100%; height: auto; }
+    a.trial {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      box-sizing: border-box;
+      width: 320px;
+      max-width: 100%;
+      height: 72px;
+      background: var(--button);
+      color: #fff;
+      text-decoration: none;
+      font-family: var(--font);
+      font-weight: 600;
+      font-size: 19px;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      border-radius: var(--radius);
+      border: 1px solid transparent;
+      padding: 0 var(--space-4);
+    }
+    a.trial:hover { background: var(--button-hover); color: #fff; }
+    a.trial small {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0;
+      line-height: 1.2;
+      opacity: 0.85;
+    }
     .button {
       display: inline-flex;
       align-items: center;
@@ -539,4 +567,5 @@
 .prose pre { overflow: auto; background: var(--card); padding: var(--space-4); border-radius: 12px; border: 1px solid var(--line); }
 .prose pre code { color: var(--muted); }
 .prose img { display: block; margin: var(--space-4) 0; border-radius: var(--radius); border: 1px solid var(--line); }
+.prose a.trial { margin: var(--space-4) 0; }
 

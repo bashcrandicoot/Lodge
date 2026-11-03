@@ -14,11 +14,10 @@
 
 - Copies each file off the card and checks it with SHA-256.
 - Names files from a template, and skips what is already copied.
-- Shows how many trial days are left. After the trial, Buy in the app leads to Polar.
 
 ## Download and install
 
-[Try free 3 days, then $10](https://bashcrandicoot.github.io/Lodge/)
+[Try free 3 days, then $10](https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg). Every feature included. Lodge shows how many days are left each time it opens. After the trial ends, Buy appears in the app and leads to Polar.
 
 ## Privacy
 

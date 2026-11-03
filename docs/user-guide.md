@@ -4,7 +4,7 @@ Lodge copies your footage off a camera card or drive, names each file for you, a
 
 ## Install and first launch
 
-**Try free 3 days, then $10.** [Try free 3 days](https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg). Open the .dmg, and drag Lodge to Applications. Lodge shows how many days are left each time it opens. After the trial ends, Buy appears in the app and leads to Polar.
+Open the .dmg, and drag Lodge to Applications.
 
 Lodge requires macOS 14.0 or later. It isn't notarized yet, which is why **Open Anyway** is needed the first time you open it.
 
@@ -410,7 +410,7 @@ No account, no analytics, and copying never uploads anything. Lodge goes online 
 
 ## Support
 
-If Lodge saves you time, you can leave a tip on [Ko-fi](https://ko-fi.com/bashframes). Tips are optional and separate from the $10 license, which you buy in the app after the trial.
+If Lodge saves you time, you can leave a tip on [Ko-fi](https://ko-fi.com/bashframes). Tips are optional and separate from the $10 license.
 
 The support note is titled **Support Lodge**. Its body is **Lodge is made by one person at bashframes. If it saves you time, you can chip in on Ko-fi. Thank you!** The buttons are **Don’t Ask Again**, **Maybe Later** (Escape), and **Support Lodge**. **Support Lodge** opens [ko-fi.com/bashframes](https://ko-fi.com/bashframes).
 
