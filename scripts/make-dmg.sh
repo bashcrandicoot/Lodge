@@ -1,9 +1,10 @@
 #!/bin/bash
 # Makes the drag-to-install disk image for a Lodge release.
 #
-#   scripts/make-dmg.sh 1.0.2                 # build/release/Lodge.app -> build/release/Lodge-1.0.2.dmg
-#   scripts/make-dmg.sh 1.0.2 path/to/Lodge.app path/to/out-dir
+#   scripts/make-dmg.sh 1.0                 # build/release/Lodge.app -> build/release/Lodge-1.0.dmg
+#   scripts/make-dmg.sh 1.0 path/to/Lodge.app path/to/out-dir
 #
+# This disk image is the only user download and the Sparkle enclosure. There is no zip.
 # The image holds Lodge.app and an Applications shortcut, laid out by scripts/dmg/DS_Store
 # (a 540×360 window, no background picture). The mounted volume's icon is the app's
 # current AppIcon: the PNGs in Lodge/Assets.xcassets/AppIcon.appiconset are turned into an

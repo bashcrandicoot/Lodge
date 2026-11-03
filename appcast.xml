@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!-- Legacy GitHub feed for Lodge builds whose SUFeedURL is this file
+     (https://raw.githubusercontent.com/bashcrandicoot/Lodge/main/appcast.xml).
+     Keep the 1.0 item. Do not add later versions except the one bridge release
+     in RELEASING.md. New updates go in release/appcast.xml, uploaded to Cloudflare R2. -->
 <rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
     <channel>
         <title>Lodge</title>
@@ -9,7 +13,7 @@
             <title>1.0</title>
             <pubDate>Sat, 31 Oct 2026 18:21:23 -0400</pubDate>
             <link>https://github.com/bashcrandicoot/Lodge</link>
-            <sparkle:version>6</sparkle:version>
+            <sparkle:version>7</sparkle:version>
             <sparkle:shortVersionString>1.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
             <description sparkle:format="markdown"><![CDATA[## Lodge 1.0
@@ -38,11 +42,10 @@
 - **Correct free space on external drives** that aren't APFS, and a clear message when a destination drive is read-only.
 - **Help ▸ Report a Bug…** with Lodge's log attached, and a crash-report prompt on the next launch.
 - **Check for Updates** (automatic checks can be turned off in Settings).
-- **Support Lodge** on Ko-fi.
 
 Requires macOS 14 Sonoma or later. Universal: runs natively on Apple silicon and Intel Macs.
 ]]></description>
-            <enclosure url="https://github.com/bashcrandicoot/Lodge/releases/download/v1.0/Lodge-1.0.zip" length="8207146" type="application/octet-stream" sparkle:edSignature="dl+SdOMYYm1QtV7jM2zp2mRN4QqhjWbsXQnZ3tPKn4HpGOdk+KodnDci2NJ9M5ROWL61WnM8IJrLYrjvypzyDg=="/>
+            <enclosure url="https://pub-dc943f7d0c2042e992edc65b72cb7efe.r2.dev/lodge/Lodge-1.0.dmg" length="8911704" type="application/octet-stream" sparkle:edSignature="5S7sMqXS/uxgNTHSEWSGDm8FrMSgzaDB/Rp+J4b7h/wYVlGXE8o/R7n8lWv7uhdxiU++CNmcl4n59eB6Bwo5Ag=="/>
         </item>
     </channel>
 </rss>
