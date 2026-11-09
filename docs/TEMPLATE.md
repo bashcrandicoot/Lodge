@@ -1,4 +1,4 @@
-# Bashframes app landing pages
+# bashframes app landing pages
 
 Every bashframes app landing page must include an All apps link in the top nav and in the footer. Both go to https://bashfra.me/apps/, not a github.io URL.
 
