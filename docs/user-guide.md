@@ -58,12 +58,12 @@ Lodge shows the same prompt as a floating panel when permission is still undecid
 If you don't see the prompt, set **Settings ▸ General ▸ Menu Bar ▸ Ask with** to **Floating panel**.
 
 <figure>
-<img src="assets/guide/lodge-guide-diagram-import-flow@2x.png" width="1040" height="345" alt="Import a card. Import opens Lodge with that card selected. Ignore or Don’t Ask for This Card leaves the card alone. Only Offload copies files." style="max-width:100%;height:auto">
+<img src="assets/guide/lodge-guide-diagram-import-flow@2x.webp" width="1040" height="345" alt="Import a card. Import opens Lodge with that card selected. Ignore or Don’t Ask for This Card leaves the card alone. Only Offload copies files." style="max-width:100%;height:auto">
 <figcaption>Import a card.</figcaption>
 </figure>
 
 <figure class="natural">
-<img class="natural" src="assets/screenshots/import-prompt-dark.png" width="772" height="270" alt="The import prompt: Import with Lodge?">
+<img class="natural" src="assets/screenshots/import-prompt-dark.webp" width="772" height="270" alt="The import prompt: Import with Lodge?">
 <figcaption>The import prompt: Import with Lodge?.</figcaption>
 </figure>
 
@@ -81,12 +81,12 @@ If card detection is paused, choose **Resume Detection** in the menu bar menu. T
 While Lodge is ready, the bar says **Ready. Every file is verified with SHA-256 after copying.** The button help is **Copy and verify the new files**. You'll see **Copying**, then **Verifying**.
 
 <figure>
-<img src="assets/screenshots/ready-dark.png" width="1352" height="912" alt="Lodge ready to offload. The bar says every file is verified with SHA-256 after copying." style="max-width:100%;height:auto">
+<img src="assets/screenshots/ready-dark.webp" width="1352" height="912" alt="Lodge ready to offload. The bar says every file is verified with SHA-256 after copying." style="max-width:100%;height:auto">
 <figcaption>Lodge ready to offload.</figcaption>
 </figure>
 
 <figure>
-<img src="assets/screenshots/running-dark.png" width="1352" height="912" alt="An offload in progress, in the Copying stage." style="max-width:100%;height:auto">
+<img src="assets/screenshots/running-dark.webp" width="1352" height="912" alt="An offload in progress, in the Copying stage." style="max-width:100%;height:auto">
 <figcaption>An offload in progress, in the Copying stage.</figcaption>
 </figure>
 
@@ -97,7 +97,7 @@ If **Offload N Files** cannot start, its caption is one of the messages in [Why 
 ## Verification
 
 <figure>
-<img src="assets/guide/lodge-guide-diagram-verification-flow@2x.png" width="1070" height="365" alt="How Lodge verifies each file: copy and hash, read the partial file back, then rename it if the hashes match or delete it if they do not." style="max-width:100%;height:auto">
+<img src="assets/guide/lodge-guide-diagram-verification-flow@2x.webp" width="1070" height="365" alt="How Lodge verifies each file: copy and hash, read the partial file back, then rename it if the hashes match or delete it if they do not." style="max-width:100%;height:auto">
 <figcaption>How Lodge verifies each file: copy and hash, read the partial file back, then rename it if the hashes match or delete it if they do not.</figcaption>
 </figure>
 
@@ -122,7 +122,7 @@ When the batch finishes, the title is **Offload Complete**, **Finished with Prob
 The line under it is **`<copied>` copied · `<skipped>` skipped · `<failed>` failed**. If the card is already gone after an eject, that line gains — card ejected, safe to remove.
 
 <figure>
-<img src="assets/screenshots/finished-dark.png" width="1352" height="912" alt="A finished offload. The bar reads Offload Complete, with the copied, skipped, and failed counts." style="max-width:100%;height:auto">
+<img src="assets/screenshots/finished-dark.webp" width="1352" height="912" alt="A finished offload. The bar reads Offload Complete, with the copied, skipped, and failed counts." style="max-width:100%;height:auto">
 <figcaption>A finished offload.</figcaption>
 </figure>
 
@@ -156,7 +156,7 @@ The project name is cleaned separately. Letters, digits, and `-` stay. Any other
 Sequence numbers continue after the highest number already in the destination folder.
 
 <figure>
-<img src="assets/screenshots/settings-naming.png" width="712" height="820" alt="Settings, Naming. The folder template and the file template." style="max-width:100%;height:auto">
+<img src="assets/screenshots/settings-naming.webp" width="712" height="820" alt="Settings, Naming. The folder template and the file template." style="max-width:100%;height:auto">
 <figcaption>Settings, Naming.</figcaption>
 </figure>
 
@@ -173,7 +173,7 @@ On the setup done screen, Return can be **Offload with `<preset>`**.
 **Quick dump** sits under Project in Media. It is off until you turn it on. The hint says **Skips the project name and dumps all the footage straight into a dated folder.** While it is on, the Project field is disabled and its prompt is **Not needed for a quick dump**. `{project}`, and the old `{shoot}` token, are taken out of the templates used for that offload only. The templates you saved stay as written. Empty folder levels disappear, so `{date}/{project}` becomes `{date}` and `{date}_{project}_{seq}` becomes `{date}_{seq}`. If the file template would have no token left, it becomes `{date}_{seq}`. The project you typed is not saved as the last project. Sequence numbers still continue. Each extension still gets its own folder. Proxies still go in `Proxies/` and sidecars in `Sidecars/`. A level Quick dump removes is struck through and tagged **Quick dump**.
 
 <figure>
-<img src="assets/screenshots/ready-quickdump-dark.png" width="1352" height="912" alt="Quick dump available on the main window." style="max-width:100%;height:auto">
+<img src="assets/screenshots/ready-quickdump-dark.webp" width="1352" height="912" alt="Quick dump available on the main window." style="max-width:100%;height:auto">
 <figcaption>Quick dump available on the main window.</figcaption>
 </figure>
 
@@ -186,7 +186,7 @@ Sidecars go in `Sidecars/`. The default sidecar extensions are `thm`, `xml`, and
 They keep the clip’s new name.
 
 <figure>
-<img src="assets/screenshots/settings-files.png" width="672" height="800" alt="Settings, Files. Proxy extensions, sidecar extensions, and ignored names." style="max-width:100%;height:auto">
+<img src="assets/screenshots/settings-files.webp" width="672" height="800" alt="Settings, Files. Proxy extensions, sidecar extensions, and ignored names." style="max-width:100%;height:auto">
 <figcaption>Settings, Files.</figcaption>
 </figure>
 
@@ -222,7 +222,7 @@ Until you pick a folder, the Destination stage shows **No Destination**. Click *
 Each favorite shows how much space is available. A favorite that isn't plugged in says **Not connected**.
 
 <figure>
-<img src="assets/screenshots/settings-destinations.png" width="672" height="640" alt="Settings, Destinations. Favorite folders." style="max-width:100%;height:auto">
+<img src="assets/screenshots/settings-destinations.webp" width="672" height="640" alt="Settings, Destinations. Favorite folders." style="max-width:100%;height:auto">
 <figcaption>Settings, Destinations.</figcaption>
 </figure>
 
@@ -258,7 +258,7 @@ The manual command is **Eject Card**. After the card is gone, the label is **Eje
 **Eject card after offload** is off. Its caption is **Only when every file was copied and verified.** With it on, the card ejects only when the offload was not cancelled, nothing failed, at least one file was copied, and the card is still present. The same switch ejects the card after a successful format. After a successful eject, the finish line can end with — card ejected, safe to remove. If eject fails, that line ends with — Couldn’t eject `<card name>`: `<system message>`.
 
 <figure>
-<img src="assets/guide/lodge-guide-diagram-eject-flow@2x.png" width="1050" height="310" alt="A simplified eject flow. A verified offload leads to unmount and eject. Otherwise the card stays mounted." style="max-width:100%;height:auto">
+<img src="assets/guide/lodge-guide-diagram-eject-flow@2x.webp" width="1050" height="310" alt="A simplified eject flow. A verified offload leads to unmount and eject. Otherwise the card stays mounted." style="max-width:100%;height:auto">
 <figcaption>A simplified eject flow.</figcaption>
 </figure>
 
@@ -271,7 +271,7 @@ Choosing **Format Card…** does not erase the card by itself. Lodge erases it o
 On the format confirmation, Return is **Cancel**. **Format**, **Format and Discard 1 Short Clip**, and **Format and Discard N Short Clips** have no key. The title is **Format “`<card name>`”?**
 
 <figure>
-<img src="assets/screenshots/format-confirm.png" width="1352" height="912" alt="The format confirmation." style="max-width:100%;height:auto">
+<img src="assets/screenshots/format-confirm.webp" width="1352" height="912" alt="The format confirmation." style="max-width:100%;height:auto">
 <figcaption>The format confirmation.</figcaption>
 </figure>
 
@@ -303,7 +303,7 @@ The menu bar menu has:
 **⌘-drag** the menu bar icon out to turn **Show menu bar icon** off. If the icon is hidden, the hint says to quit with **⌘Q**.
 
 <figure class="natural">
-<img class="natural" src="assets/screenshots/menubar-menu-dark.png" width="504" height="394" alt="The menu bar menu: Open Lodge, cards and drives, Pause Detection, Settings, and Quit Lodge.">
+<img class="natural" src="assets/screenshots/menubar-menu-dark.webp" width="504" height="394" alt="The menu bar menu: Open Lodge, cards and drives, Pause Detection, Settings, and Quit Lodge.">
 <figcaption>The menu bar menu: Open Lodge, cards and drives, Pause Detection, Settings, and Quit Lodge.</figcaption>
 </figure>
 
@@ -348,48 +348,48 @@ General groups these sections: **Files to Offload**, **Short Clips**, **After Of
 | Automatically download and install updates | off |
 
 <figure>
-<img src="assets/screenshots/settings-general.png" width="672" height="800" alt="Settings, General." style="max-width:100%;height:auto">
+<img src="assets/screenshots/settings-general.webp" width="672" height="800" alt="Settings, General." style="max-width:100%;height:auto">
 <figcaption>Settings, General.</figcaption>
 </figure>
 
 <figure>
-<img src="assets/screenshots/settings-appearance.png" width="672" height="705" alt="Settings, Appearance. Theme is Default. Lodge starts in Dark." style="max-width:100%;height:auto">
+<img src="assets/screenshots/settings-appearance.webp" width="672" height="705" alt="Settings, Appearance. Theme is Default. Lodge starts in Dark." style="max-width:100%;height:auto">
 <figcaption>Settings, Appearance. Theme is Default.</figcaption>
 </figure>
 
 
 <figure>
-<img src="assets/screenshots/ready-default-dark.png" width="1352" height="912" alt="Lodge in Dark mode with the Default theme, ready to offload 54 files from an A7S III card." style="max-width:100%;height:auto">
+<img src="assets/screenshots/ready-default-dark.webp" width="1352" height="912" alt="Lodge in Dark mode with the Default theme, ready to offload 54 files from an A7S III card." style="max-width:100%;height:auto">
 <figcaption>Lodge in Dark mode with the Default theme, ready to offload.</figcaption>
 </figure>
 
 <figure>
-<img src="assets/screenshots/settings-presets.png" width="752" height="740" alt="Settings, Presets." style="max-width:100%;height:auto">
+<img src="assets/screenshots/settings-presets.webp" width="752" height="740" alt="Settings, Presets." style="max-width:100%;height:auto">
 <figcaption>Settings, Presets.</figcaption>
 </figure>
 
 <figure>
-<img src="assets/screenshots/settings-destinations.png" width="672" height="640" alt="Settings, Destinations. Favorite folders." style="max-width:100%;height:auto">
+<img src="assets/screenshots/settings-destinations.webp" width="672" height="640" alt="Settings, Destinations. Favorite folders." style="max-width:100%;height:auto">
 <figcaption>Settings, Destinations.</figcaption>
 </figure>
 
 <figure>
-<img src="assets/screenshots/settings-naming.png" width="712" height="820" alt="Settings, Naming. The folder template and the file template." style="max-width:100%;height:auto">
+<img src="assets/screenshots/settings-naming.webp" width="712" height="820" alt="Settings, Naming. The folder template and the file template." style="max-width:100%;height:auto">
 <figcaption>Settings, Naming.</figcaption>
 </figure>
 
 <figure>
-<img src="assets/screenshots/settings-files.png" width="672" height="800" alt="Settings, Files. Proxy extensions, sidecar extensions, and ignored names." style="max-width:100%;height:auto">
+<img src="assets/screenshots/settings-files.webp" width="672" height="800" alt="Settings, Files. Proxy extensions, sidecar extensions, and ignored names." style="max-width:100%;height:auto">
 <figcaption>Settings, Files.</figcaption>
 </figure>
 
 <figure>
-<img src="assets/screenshots/grid-dark.png" width="1352" height="912" alt="Media shown as a grid. Show files as can be List or Grid." style="max-width:100%;height:auto">
+<img src="assets/screenshots/grid-dark.webp" width="1352" height="912" alt="Media shown as a grid. Show files as can be List or Grid." style="max-width:100%;height:auto">
 <figcaption>Media shown as a grid.</figcaption>
 </figure>
 
 <figure>
-<img src="assets/screenshots/settings-cameras.png" width="672" height="640" alt="Settings, Cameras." style="max-width:100%;height:auto">
+<img src="assets/screenshots/settings-cameras.webp" width="672" height="640" alt="Settings, Cameras." style="max-width:100%;height:auto">
 <figcaption>Settings, Cameras.</figcaption>
 </figure>
 
@@ -413,7 +413,7 @@ The updates footer says: **Lodge checks for a new version once a day. You can al
 The destructive buttons on the format confirmation and on **Forget History** have no keyboard equivalent. The other re-offload alert has **Re-offload Everything** (Return) and **Cancel**, and no destructive button.
 
 <figure>
-<img src="assets/screenshots/grid-dark.png" width="1352" height="912" alt="The media grid. Arrow keys move the selection. Space opens Quick Look. Command-click toggles a file. Shift-click extends the selection." style="max-width:100%;height:auto">
+<img src="assets/screenshots/grid-dark.webp" width="1352" height="912" alt="The media grid. Arrow keys move the selection. Space opens Quick Look. Command-click toggles a file. Shift-click extends the selection." style="max-width:100%;height:auto">
 <figcaption>The media grid.</figcaption>
 </figure>
 
@@ -422,7 +422,7 @@ The destructive buttons on the format confirmation and on **Forget History** hav
 ### Why Offload is waiting
 
 <figure>
-<img src="assets/screenshots/empty-dark.png" width="1352" height="912" alt="Lodge with no card. Offload is waiting." style="max-width:100%;height:auto">
+<img src="assets/screenshots/empty-dark.webp" width="1352" height="912" alt="Lodge with no card. Offload is waiting." style="max-width:100%;height:auto">
 <figcaption>Lodge with no card.</figcaption>
 </figure>
 
