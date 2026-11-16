@@ -1,5 +1,7 @@
 # Lodge
 
+<img alt="Vibe coded" src=".github/badges/vibe-coded-gradient.svg" height="20">
+
 Home base for your media. Your folders, your names, every card. Every copy is checked with SHA-256.
 
 Download it at [bashcrandicoot.github.io/Lodge](https://bashcrandicoot.github.io/Lodge/).
